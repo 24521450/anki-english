@@ -231,6 +231,19 @@ _Avoid_: tactile rule, physical rule, Rule B addendum
 If dropping a sense would leave the card with no gloss, keep it regardless of domain restriction. Never produce an empty gloss. Example: `measure` at C1 is the only music-domain sense; Rule B would drop it as niche, but Rule C forces it to stay so the card has content.
 _Avoid_: safety net, Rule C
 
+**Rule-Shape Consistency**:
+A `Gloss Verdict` must have a separator/chunk shape consistent with its `rule_applied`. The rule encodes the structural promise; the gloss must honor it.
+
+| `rule_applied` | Required shape |
+|---|---|
+| `rule_b_pick1`, `concrete_1sense`, `multi_pos_pick1` | one chunk allowed (no separator) |
+| `2sense_distinct`, `3sense_distinct`, `rule_b_pick2`, `rule_b_pick2_addendum`, `multi_pos_pick2` | **must have more than one chunk** (`|` or `;`) |
+| `2sense_samedomain` | one chunk allowed when Rule A collapses near-synonyms; otherwise `;` or `|` may be justified by review |
+| `pos_aware_gloss` | policy review (one chunk may be intentional, see P4B addendum) |
+
+A `rule_b_pick2` verdict with a single-chunk gloss is a **rule-shape contradiction** — the rule says "pick 2" but the gloss has only 1. Caught and fixed by P4B (`tools/_apply_p4b_rule_shape_fix.py`). The reverse — many `def_before` segments collapsing to one gloss — is **not** automatically a bug: Rule A allows near-synonym collapse, Rule B allows same-concept collapse, Rule C forces retention. Use `tools/_audit_gloss_policy_coverage.py` to classify rows into `allowed_single_gloss` / `rule_shape_contradiction` / `policy_review` / `metadata_error` buckets.
+_Avoid_: rule-shape mismatch, "1-chunk with multi-def def_before is a bug" (it isn't always — see Rule A/B/C).
+
 **`|` vs `;` separator semantics** (strict):
 - `|` (pipe, no spaces) = distinct senses in different domains → rendered as separate rows on the card. The template splits on `|` to pair each chunk with its example.
 - `;` (semicolon-space) = senses in the same domain (variants, sub-nuances, related uses) → 1 row, both glosses in the same def slot. The template does NOT split on `;` — the chunk is kept as one definition text.
