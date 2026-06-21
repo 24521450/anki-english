@@ -3,8 +3,7 @@
 Workflow:
   1. User manually edits `data/audit_expanded_needs_gloss.jsonl` (the
      "needs gloss" set after defs were expanded to multi-sense).
-  2. They fill in `gloss_after` (and optionally `separator`, `rule_applied`,
-     `gloss_word_count`, `gate_status`) for each row.
+  2. They fill in `gloss_after` for each row.
   3. They run `python -m tools._merge_expanded_glosses` to write the
      updated glosses back into `data/audit_full_deck_v2.jsonl`.
   4. The build pipeline (`tools/build_notes.py`) reads the merged
@@ -21,10 +20,10 @@ Behavior:
   - For each expanded row, find matching master row(s).
   - Default: error out on multiple matches (defensive — the audit file
     should be deduped at the source).
-  - If exactly one match: copy the expanded row's `gloss_after` and any
-    present audit fields (separator, rule_applied, gloss_word_count,
-    gate_status) into the master row. Preserve all other fields of the
-    master row.
+  - If exactly one match: copy the expanded row's `gloss_after` into the
+    master row, then NORMALIZE via ``src.deck_builder.gloss_hygiene`` and
+    RECOMPUTE ``separator`` and ``gloss_word_count``. Manual metadata is
+    no longer trusted (P0 hygiene cleanup, 2026-06-21).
   - Skip expanded rows whose `gloss_after` is empty (still pending manual
     edit) — report them as "pending".
   - Skip expanded rows whose (word, pos, cefr) has no match in master —
@@ -50,18 +49,21 @@ from collections import Counter
 from pathlib import Path
 
 PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.deck_builder.gloss_hygiene import normalize_gloss  # noqa: E402
+
 DEFAULT_EXPANDED = PROJECT_ROOT / 'data' / 'audit_expanded_needs_gloss.jsonl'
 DEFAULT_MASTER = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
 
-# Fields copied from the expanded row to the master row when present.
-# def_before is intentionally NOT in this set — the master already has the
-# expanded def (it came from the same source). If the user edited def_before
-# in the expanded file, it should match the master's value; if it doesn't,
-# that's a data-integrity issue we surface as a warning rather than silently
-# overwriting.
-COPY_FIELDS = ('gloss_after', 'separator', 'rule_applied',
-               'gloss_word_count', 'gate_status')
-
+# Fields copied VERBATIM from the expanded row to the master row when present.
+# Only ``gloss_after`` is copied raw — the rest are either preserved from
+# master (``gate_status``) or recomputed by hygiene helper (``separator``,
+# ``gloss_word_count``, ``rule_applied``). Per P0 cleanup (2026-06-21):
+# manual metadata in the expanded file is no longer trusted for separator/wc
+# because manual edits have introduced drift (literal ``\\|``, padded pipes,
+# stale wc).
+COPY_FIELDS = ('gloss_after', 'gate_status')
 
 def load_jsonl(path: Path) -> list[dict]:
     """Load a JSONL file, skipping blank lines. Preserves field order."""
@@ -92,19 +94,23 @@ def merge(
 ) -> tuple[list[dict], dict]:
     """Merge expanded glosses into master. Returns (updated_master, stats).
 
-    Stats keys: updated, pending, no_match, multi_match, def_mismatch.
+    Stats keys: updated, pending, no_match, multi_match, def_mismatch,
+                gloss_normalized.
     """
     master_idx = index_by_key(master)
     updated_master = [dict(r) for r in master]  # deep enough — values are scalars/lists
     stats = Counter(updated=0, pending=0, no_match=0,
-                    multi_match=0, def_mismatch=0)
+                    multi_match=0, def_mismatch=0,
+                    gloss_normalized=0, unescaped_pipe=0,
+                    pipe_spacing_compacted=0,
+                    sep_recomputed=0, wc_recomputed=0)
 
     for exp in expanded:
         key = (exp.get('word'), exp.get('pos'), exp.get('cefr'))
-        gloss = (exp.get('gloss_after') or '').strip()
+        gloss_raw = (exp.get('gloss_after') or '').strip()
 
         # Skip expanded rows that have no gloss yet — still pending manual edit.
-        if not gloss:
+        if not gloss_raw:
             stats['pending'] += 1
             continue
 
@@ -112,8 +118,22 @@ def merge(
         if not master_indices:
             stats['no_match'] += 1
             continue
+        if len(master_indices) > 1:
+            stats['multi_match'] += 1
+            continue
 
-        # Copy edited fields from expanded into all matching master rows.
+        # Normalize the gloss via the shared hygiene helper (P0 cleanup).
+        # This un-escapes literal ``\|``, compacts pipe spacing, and gives us
+        # the canonical separator + word count.
+        res = normalize_gloss(gloss_raw)
+        if res.unescaped_pipe:
+            stats['unescaped_pipe'] += 1
+        if res.pipe_spacing_compacted:
+            stats['pipe_spacing_compacted'] += 1
+        if res.changed():
+            stats['gloss_normalized'] += 1
+
+        # Copy edited fields from expanded into the matching master row.
         for i in master_indices:
             # Defensive: if def_before in expanded differs from master, flag it.
             # (Don't silently overwrite — the master is the authoritative source.)
@@ -122,10 +142,26 @@ def merge(
             if exp_def and exp_def != master_def:
                 stats['def_mismatch'] += 1
 
-            # Copy edited fields from expanded into master.
+            # Copy verbatim fields (gloss_after, gate_status).
             for field in COPY_FIELDS:
                 if field in exp and exp[field] is not None:
                     updated_master[i][field] = exp[field]
+
+            # Apply the normalized gloss (overwrites whatever COPY_FIELDS put there
+            # if we just copied a non-normalized gloss_after).
+            if updated_master[i].get('gloss_after') != res.gloss:
+                updated_master[i]['gloss_after'] = res.gloss
+
+            # Recompute separator and word count from the normalized gloss.
+            # Per P0 cleanup: manual metadata is no longer trusted.
+            old_sep = updated_master[i].get('separator')
+            if old_sep != res.separator:
+                stats['sep_recomputed'] += 1
+            updated_master[i]['separator'] = res.separator
+            old_wc = updated_master[i].get('gloss_word_count')
+            if old_wc != res.gloss_word_count:
+                stats['wc_recomputed'] += 1
+            updated_master[i]['gloss_word_count'] = res.gloss_word_count
 
             # Tag the master row so downstream consumers know it came from the
             # expanded-gloss path (the original fix_status was 'rebuilt' or similar).
@@ -180,11 +216,16 @@ def main() -> int:
 
     print()
     print(f'Summary:')
-    print(f'  updated:     {stats["updated"]}')
-    print(f'  pending:     {stats["pending"]}  (no gloss_after yet)')
-    print(f'  no_match:    {stats["no_match"]}  (no master row for this key)')
-    print(f'  multi_match: {stats["multi_match"]}  (ambiguous, skipped)')
-    print(f'  def_mismatch:{stats["def_mismatch"]}  (def_before differs — investigate)')
+    print(f'  updated:          {stats["updated"]}')
+    print(f'  pending:          {stats["pending"]}  (no gloss_after yet)')
+    print(f'  no_match:         {stats["no_match"]}  (no master row for this key)')
+    print(f'  multi_match:      {stats["multi_match"]}  (ambiguous, skipped)')
+    print(f'  def_mismatch:     {stats["def_mismatch"]}  (def_before differs — investigate)')
+    print(f'  gloss_normalized: {stats["gloss_normalized"]}  (hygiene mutated gloss_after)')
+    print(f'  unescaped_pipe:   {stats["unescaped_pipe"]}')
+    print(f'  spacing_compacted:{stats["pipe_spacing_compacted"]}')
+    print(f'  sep_recomputed:   {stats["sep_recomputed"]}  (separator field updated)')
+    print(f'  wc_recomputed:    {stats["wc_recomputed"]}  (gloss_word_count updated)')
 
     # Non-zero exit if anything unexpected happened, so a CI/script caller
     # can detect anomalies. (updated=0 with no_match>0 → likely user error.)
