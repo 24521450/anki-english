@@ -244,6 +244,35 @@ A `Gloss Verdict` must have a separator/chunk shape consistent with its `rule_ap
 A `rule_b_pick2` verdict with a single-chunk gloss is a **rule-shape contradiction** — the rule says "pick 2" but the gloss has only 1. Caught and fixed by P4B (`tools/_apply_p4b_rule_shape_fix.py`). The reverse — many `def_before` segments collapsing to one gloss — is **not** automatically a bug: Rule A allows near-synonym collapse, Rule B allows same-concept collapse, Rule C forces retention. Use `tools/_audit_gloss_policy_coverage.py` to classify rows into `allowed_single_gloss` / `rule_shape_contradiction` / `policy_review` / `metadata_error` buckets.
 _Avoid_: rule-shape mismatch, "1-chunk with multi-def def_before is a bug" (it isn't always — see Rule A/B/C).
 
+**Policy Review Ledger**:
+A separate JSONL file (`data/gloss_policy_review_p4c.jsonl` for the P4C pass, future passes use the same convention) that records the **human review decision** for every `policy_review` row. The ledger is the source of truth for which `policy_review` rows have been triaged; the audit master row stays as-is and gains nothing from the review.
+
+Schema (one JSON object per line):
+```json
+{
+  "word": "curious", "pos": "adjective", "cefr": "B2",
+  "rule_applied": "2sense_samedomain",
+  "def_before": "having a strong desire to know about something|strange and unusual",
+  "old_gloss": "inquisitive",
+  "decision": "keep_single" | "repair_gloss",
+  "new_gloss": "inquisitive|strange",   // required iff decision=repair_gloss; ignored iff keep_single
+  "separator": "|",                      // "|" / ";" / "none" — derived from new_gloss for repair_gloss, "none" for keep_single
+  "gloss_word_count": 2,                 // computed
+  "reason": "sense 2 'strange' dropped by old gloss",
+  "p4c_version": "2026-06-21"
+}
+```
+
+Decisions:
+- `keep_single` — current single-gloss reviewed as covering all major academic meaning; no audit change. The ledger row is the only artifact of the review.
+- `repair_gloss` — current gloss has a clear semantic loss (multi-POS drops a POS, def_before shows a domain the gloss can't suggest, gloss is too narrow or drift). Updates audit + TXT + JSONL via `tools/build_notes.py`.
+
+The audit policy tool (`tools/_audit_gloss_policy_coverage.py`) reads the ledger and splits `policy_review` into three sub-buckets:
+- `policy_review_open` — policy_review rows with no ledger row (untriaged). Hard fail (exit 1).
+- `policy_review_reviewed_keep` — ledger has a `keep_single` decision. Informational.
+- `policy_review_repaired` — ledger has a `repair_gloss` decision and the audit row reflects it. Informational.
+_Avoid_: putting review metadata into `data/audit_full_deck_v2.jsonl` (the audit master is for production data, not review state).
+
 **`|` vs `;` separator semantics** (strict):
 - `|` (pipe, no spaces) = distinct senses in different domains → rendered as separate rows on the card. The template splits on `|` to pair each chunk with its example.
 - `;` (semicolon-space) = senses in the same domain (variants, sub-nuances, related uses) → 1 row, both glosses in the same def slot. The template does NOT split on `;` — the chunk is kept as one definition text.

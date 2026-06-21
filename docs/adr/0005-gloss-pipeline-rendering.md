@@ -402,3 +402,73 @@ This is a clarification of the existing gloss-pipeline decision (gate
 semantics + Rule A/B/C authority), not a new architectural decision. The
 Rule-Shape Consistency term is added to CONTEXT.md as a glossary entry,
 and this addendum documents the policy-aware audit reasoning.
+
+---
+
+## Addendum 2026-06-21 (P4C) — Policy Review Ledger + Targeted Semantic Fix
+
+### Why a separate review ledger (not edits to the audit master)
+
+The 64 rows that fall into `policy_review` after P4B are *not* automatic
+fixes — Rule A (near-synonyms) and Rule C (safety net) genuinely permit
+many of them to stay one-chunk. Forcing them all into multi-chunk would
+either widen glosses past their actual learner-meaning coverage or
+duplicate Rule A's synonym collapses under a different name.
+
+The decision per row is *semantic* (does this single-gloss cover the
+IELTS-relevant meaning?) and can't be made by a mechanical rule. It
+needs a human or M3 review.
+
+**Decision:** keep review state out of `data/audit_full_deck_v2.jsonl`.
+The audit master is the source of truth for production card data —
+review metadata doesn't belong there. The Policy Review Ledger
+(`data/gloss_policy_review_p4c.jsonl` for the P4C pass) is a separate
+JSONL file with one record per reviewed row.
+
+### Ledger schema
+
+```json
+{
+  "word": "curious", "pos": "adjective", "cefr": "B2",
+  "rule_applied": "2sense_samedomain",
+  "def_before": "having a strong desire to know about something|strange and unusual",
+  "old_gloss": "inquisitive",
+  "decision": "keep_single" | "repair_gloss",
+  "new_gloss": "inquisitive|strange",   // required iff decision=repair_gloss
+  "separator": "|",                      // derived
+  "gloss_word_count": 2,
+  "reason": "sense 2 'strange' dropped by old gloss",
+  "p4c_version": "2026-06-21"
+}
+```
+
+### Triage outcome (P4C)
+
+64 policy_review rows triaged. Result:
+- 7 `repair_gloss` — clear semantic loss the current gloss doesn't cover.
+- 57 `keep_single` — current single-gloss reviewed as covering the
+  IELTS-relevant meaning (Rule A/C legitimize the collapse, or the
+  dominant sense subsumes the others).
+
+The P4C pass explicitly does **not** widen the remaining 57 rows
+mechanically. A future P4D or M3 regen pass can revisit them if
+auditing shows specific learner confusion.
+
+### New audit buckets
+
+`tools/_audit_gloss_policy_coverage.py` reads the ledger and reports:
+- `policy_review_open` — policy_review rows with no ledger row (untriaged). **Hard fail.**
+- `policy_review_reviewed_keep` — ledger has `keep_single`. Informational.
+- `policy_review_repaired` — ledger has `repair_gloss` and audit reflects it. Informational.
+- `allowed_single_gloss` / `rule_shape_contradiction` / `metadata_error` / `other` — unchanged from P4B.
+
+Exit 1 conditions: `rule_shape_contradiction > 0`, `metadata_error > 0`,
+or **`policy_review_open > 0`** (the new hard fail).
+
+### Why no new ADR
+
+This is a process change (separate ledger) and a terminology addition
+(Policy Review Ledger). The P4B policy-aware audit reasoning is
+extended, not replaced. The ledger separation is the right separation
+of concerns (production data vs review state) but doesn't change the
+gloss-pipeline architecture.
