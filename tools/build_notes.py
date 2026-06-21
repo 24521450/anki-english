@@ -6,6 +6,9 @@ Output:
 
 Pipeline:
 1. Load existing txt → (word_lower, pos, cefr) → GUID + tag set
+   (word_lower preserves parenthetical disambiguators like "counter (argue against)"
+   so audit glosses for homonym cards can be looked up exactly — see
+   `_parse_existing_txt` and `lookup_gloss`.)
 2. Load vocab_list/Oxford/{3000,5000}.md + AWL.md → set of (word, pos, cefr) target cards
 3. For each jsonl record, run simplify_record (with γ merged_text override)
 4. For each target (word, pos, cefr) in vocab_list:
@@ -13,6 +16,13 @@ Pipeline:
    b. Reuse GUID from old txt
    c. Regenerate tags from data
    d. Use γ merged_text if available, else auto-concat
+
+Card Identity contract (2026-06-21): a card is uniquely identified by
+`(Word, CEFR, LIST)`. `LIST` is the primary corpus/list bucket derived from
+the card's tags via `primary_list_from_tags` (Oxford_5000 > Oxford_3000 > AWL >
+NO_LIST). This module is responsible for the Word + CEFR side of identity;
+the LIST side is enforced by the P3B verifier (see
+`tools/_verify_deck_output_p3b.py`).
 
 Files modified:
 - data/anki_notes.jsonl (new)
@@ -164,7 +174,22 @@ def _parse_vocab_list(path: Path) -> set[tuple[str, str, str]]:
 def _parse_existing_txt(path: Path) -> dict[tuple[str, str, str], dict]:
     """Return map (word_lower, pos, cefr) → {guid, source1, source2, deck, tags, uk_audio, us_audio, all_17_cols}.
 
-    Word: split on ' (' to handle multi-word forms like 'a (an)'.
+    Card Identity contract (2026-06-21): the key's `word_lower` preserves the
+    parenthetical disambiguator verbatim (lowercased). Examples:
+        "counter (argue against)"  → key uses the full string, not "counter"
+        "grave (serious)"         → full string
+        "strip (long narrow piece)" → full string
+
+    Rationale: audit glosses (`data/audit_full_deck_v2.jsonl`) are keyed by
+    the FULL disambiguated word, so exact-match lookup requires preserving it
+    here. Source lookup against the Oxford jsonl still uses
+    `get_word_candidates()` which strips parentheticals, so word resolution
+    is unaffected.
+
+    A separate `word_base` field (the disambiguator-stripped base word) is
+    stored on each row to ease downstream JSONL lookups. Multi-word forms
+    like "a (an)" continue to split on ' (' for legacy reasons.
+
     Accepts both 16-col (legacy) and 17-col (current) rows; 16-col rows are
     read with idioms='' and tags=parts[15].
     """
@@ -181,12 +206,14 @@ def _parse_existing_txt(path: Path) -> dict[tuple[str, str, str], dict]:
             # Legacy 16-col row: idioms field missing, tags in last col.
             guid, notetype, deck, word, pos, ipa, defn, ex, coll, wf, uk, us, src1, src2, cefr, tags = parts[:16]
             idioms = ''
-        word_clean = word.split(' (')[0].strip().lower()
-        by_key[(word_clean, pos, cefr)] = {
+        word_lower = word.strip().lower()  # preserve parenthetical disambiguator
+        word_base = word_lower.split(' (')[0].strip()  # base word for source lookup
+        by_key[(word_lower, pos, cefr)] = {
             'guid': guid,
             'notetype': notetype,
             'deck': deck,
-            'word_orig': word,  # keep original case/spelling
+            'word_orig': word,  # keep original case/spelling (with disambiguator)
+            'word_base': word_base,
             'pos': pos,
             'ipa': ipa,
             'definition_orig': defn,
@@ -688,6 +715,120 @@ def _merge_collocations_dicts(dicts: list[dict]) -> dict:
     return out
 
 
+# === Audit gloss lookup ======================================================
+
+def lookup_gloss(
+    audit_glosses: dict[tuple[str, str, str], str],
+    word: str,
+    pos_str: str,
+    cefr: str,
+    resolved_word: str,
+    resolved_pos_parts: list[str],
+    new_cefr: str,
+) -> str | None:
+    """Look up an audit gloss for `(word, pos, cefr)`.
+
+    Card Identity contract (2026-06-21): the TXT word may carry a
+    parenthetical disambiguator (e.g. "counter (argue against)") while
+    the audit glosses are keyed by the FULL disambiguated word. Lookup
+    order:
+
+    1. Try the FULL TXT word (with disambiguator if any) first — this
+       matches audit glosses for homonym cards exactly.
+    2. If the FULL word has a disambiguator AND the audit gloss dict
+       has disambiguated sibling keys at the same (pos, cefr) (e.g.
+       "counter (long flat surface)" alongside "counter (argue against)"),
+       REFUSE to fall back to the base word. The base word would be a
+       ghost verdict from a different sense — applying it would emit
+       wrong-meaning definitions for disambiguated cards.
+    3. Otherwise, fall back to the base word (parens-stripped) and try
+       the same chain.
+    4. Finally, try individual POS parts (multi-POS cards like
+       "noun, verb" → match either audit gloss and join with ' | ').
+
+    The disambiguator guard logic mirrors the one in
+    `tools/_apply_glosses_to_txt.py::_lookup_verdict` — both must agree
+    on the same fallback semantics for a given card.
+
+    Module-level (not nested in `main`) so tests can call it directly.
+    """
+    word_lower = (word or '').strip().lower()
+    word_base = word_lower.split(' (')[0].strip()
+    has_disambiguator = word_base != word_lower
+    pos_lower = pos_str.strip().lower()
+
+    # 1. Direct match on FULL TXT word (preserves parenthetical).
+    full_key = (word_lower, pos_lower, cefr)
+    if full_key in audit_glosses:
+        return audit_glosses[full_key]
+
+    # 2. Disambiguator guard: if the TXT word has a parenthetical AND
+    # the audit has disambiguated siblings at this (pos, cefr), the
+    # base-word key would be a ghost verdict from a different sense —
+    # refuse to apply it.
+    if has_disambiguator:
+        sibling_present = any(
+            k[0].startswith(word_base + ' (') and (k[1], k[2]) == (pos_lower, cefr)
+            for k in audit_glosses
+        )
+        if sibling_present:
+            # Try resolved-CEFR under same guard before giving up.
+            if cefr != new_cefr:
+                sib_cefr_present = any(
+                    k[0].startswith(word_base + ' (') and (k[1], k[2]) == (pos_lower, new_cefr)
+                    for k in audit_glosses
+                )
+                if sib_cefr_present:
+                    return None
+            return None
+
+    # 3. Safe to try base word (no disambiguator, or no siblings).
+    # Try base-word direct match at original CEFR, then resolved CEFR.
+    _resolved_pos_str = ', '.join(resolved_pos_parts) if resolved_pos_parts else pos_lower
+    base_candidate_keys = [
+        (word_base, _resolved_pos_str, new_cefr),
+        (word_base, pos_lower, new_cefr),
+        (word_base, _resolved_pos_str, cefr),
+        (word_base, pos_lower, cefr),
+    ]
+    for gk in base_candidate_keys:
+        if gk in audit_glosses:
+            return audit_glosses[gk]
+
+    # 4. Multi-POS: try individual POS parts at base word (no
+    # disambiguator case — disambiguated cards stop here at step 2).
+    orig_pos_parts = [p.strip().lower() for p in pos_str.split(',') if p.strip()]
+    res_pos_parts = [p.strip().lower() for p in resolved_pos_parts]
+
+    all_parts = []
+    seen_parts = set()
+    for p in orig_pos_parts + res_pos_parts:
+        if p not in seen_parts:
+            all_parts.append(p)
+            seen_parts.add(p)
+
+    matched_glosses = []
+    seen_glosses = set()
+    for p in all_parts:
+        _pos_lookup_keys = [
+            (word_lower, p, cefr),
+            (word_base, p, new_cefr),
+            (word_lower, p, new_cefr),
+            (word_base, p, cefr),
+        ]
+        for gk in _pos_lookup_keys:
+            if gk in audit_glosses:
+                g = audit_glosses[gk]
+                if g not in seen_glosses:
+                    matched_glosses.append(g)
+                    seen_glosses.add(g)
+                break  # found for this POS part
+
+    if matched_glosses:
+        return ' | '.join(matched_glosses)
+    return None
+
+
 # === Main =====================================================================
 
 def main() -> int:
@@ -853,51 +994,6 @@ def main() -> int:
     pos_fixed_keys: list[tuple] = []  # for audit
     dropped_keys: list[tuple] = []
 
-    def lookup_gloss(word: str, pos_str: str, cefr: str, resolved_word: str, resolved_pos_parts: list[str], new_cefr: str) -> str | None:
-        # 1. Direct match on combined keys
-        _resolved_pos_str = ', '.join(resolved_pos_parts) if resolved_pos_parts else pos_str
-        _gloss_lookup_keys = [
-            (word, pos_str.lower(), cefr),                        # original txt key
-            (resolved_word, _resolved_pos_str.lower(), new_cefr), # resolved key
-            (word, pos_str.lower(), new_cefr),                    # original word, resolved CEFR
-            (resolved_word, pos_str.lower(), new_cefr),           # resolved word, original POS
-        ]
-        for gk in _gloss_lookup_keys:
-            if gk in audit_glosses:
-                return audit_glosses[gk]
-
-        # 2. Try individual POS parts (Q2: check both original and resolved POS parts)
-        orig_pos_parts = [p.strip().lower() for p in pos_str.split(',') if p.strip()]
-        res_pos_parts = [p.strip().lower() for p in resolved_pos_parts]
-        
-        all_parts = []
-        seen_parts = set()
-        for p in orig_pos_parts + res_pos_parts:
-            if p not in seen_parts:
-                all_parts.append(p)
-                seen_parts.add(p)
-                
-        matched_glosses = []
-        seen_glosses = set()
-        for p in all_parts:
-            _pos_lookup_keys = [
-                (word, p, cefr),
-                (resolved_word, p, new_cefr),
-                (word, p, new_cefr),
-                (resolved_word, p, cefr),
-            ]
-            for gk in _pos_lookup_keys:
-                if gk in audit_glosses:
-                    g = audit_glosses[gk]
-                    if g not in seen_glosses:
-                        matched_glosses.append(g)
-                        seen_glosses.add(g)
-                    break  # found for this POS part
-                    
-        if matched_glosses:
-            return ' | '.join(matched_glosses)
-        return None
-
     for key in sorted(existing.keys()):
         word_lower, pos_str, cefr = key
         if key in seen_keys:
@@ -907,7 +1003,7 @@ def main() -> int:
             # Preserve injected card verbatim to prevent remapping/collisions
             # Overwrite definition if matched in audit_glosses
             filled_pos_parts = [p.strip().lower() for p in old['pos'].split(',') if p.strip()]
-            g = lookup_gloss(word_lower, old['pos'], cefr, word_lower, filled_pos_parts, cefr)
+            g = lookup_gloss(audit_glosses, word_lower, old['pos'], cefr, word_lower, filled_pos_parts, cefr)
             defn_override = g if g is not None else old['definition_orig']
             card = BuiltCard(
                 guid=old['guid'],
@@ -1070,7 +1166,7 @@ def main() -> int:
         defn = DEF_SEPARATOR.join((s.text or '') for s in capped if (s.text or ''))
 
         # Apply gloss_after override from audit_full_deck_v2.jsonl
-        g = lookup_gloss(word_lower, pos_str, cefr, resolved_word, resolved_pos_parts, new_cefr)
+        g = lookup_gloss(audit_glosses, word_lower, pos_str, cefr, resolved_word, resolved_pos_parts, new_cefr)
         if g is not None:
             defn = g
         ex = EX_SEP.join(_format_examples(s.examples or []) for s in capped)
@@ -1104,8 +1200,23 @@ def main() -> int:
         is_awl = any(sf.startswith('awl_') for sf in (rec.get('source_files') or []))
         # Resolved POS: use the first resolved POS (single value for tag matching)
         resolved_pos = resolved_pos_parts[0] if resolved_pos_parts else pos_parts[0]
-        # Resolved word: use the new word (lemmatized) if it changed
-        card_word = resolved_word if resolved_word != word_lower else old['word_orig']
+        # Resolved word: use the new word (lemmatized) only when the
+        # change is a true inflection rewrite, not just parenthetical
+        # stripping. Card Identity contract (2026-06-21): parenthetical
+        # disambiguators like "counter (argue against)" must be preserved
+        # in the card's display word — see the firm / yield / counter /
+        # grave / strip worked examples in CONTEXT.md § Card Identity.
+        word_lower_base = re.sub(r"\s*\(.*?\)\s*", "", word_lower).strip()
+        if word_lower_base == resolved_word:
+            # word_lower differs from resolved_word only because of the
+            # parenthetical — keep the original (which preserves case +
+            # disambiguator) verbatim.
+            card_word = old['word_orig']
+        else:
+            # True lemmatization rewrite (e.g. "setbacks" → "setback").
+            # Use the lemmatized base word; no parenthetical applies here
+            # because Type B words are inflected forms, not homonyms.
+            card_word = resolved_word
 
         # Tags — use resolved word+pos+cefr
         is_in_3000 = (resolved_word, resolved_pos, new_cefr) in vocab_3000

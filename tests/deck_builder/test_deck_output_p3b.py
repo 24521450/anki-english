@@ -10,7 +10,9 @@ from tools._verify_deck_output_p3b import (
     verify_card_identity,
     verify_definition_sync,
     parse_build_output,
-    extract_type_a_keys
+    extract_type_a_keys,
+    primary_list_from_tags,
+    LIST_PRIORITY,
 )
 
 
@@ -53,14 +55,91 @@ def test_txt_parser_fails_on_escaped_pipe():
 
 
 def test_card_identity_duplicate_word_cefr_detection():
-    # word-cefr duplicate key
+    # word-cefr duplicate key — under the new (Word, CEFR, LIST) identity
+    # rule, two rows that share `(word, CEFR)` but resolve to the same LIST
+    # (here both NO_LIST because tags carry no list token) ARE still a real
+    # duplicate. Hard check should still fail.
     data_rows = [
-        ["G1", "M", "D", "absent", "adjective", "ipa", "defn", "ex", "c", "wf", "uk", "us", "s1", "s2", "C1", "id", "tag"],
-        ["G2", "M", "D", "absent", "noun", "ipa", "defn", "ex", "c", "wf", "uk", "us", "s1", "s2", "C1", "id", "tag"]
+        ["G1", "M", "D", "absent", "adjective", "ipa", "defn", "ex", "c", "wf", "uk", "us", "s1", "s2", "C1", "id", "Source::Oxford CEFR::C1 CEFR::oxford"],
+        ["G2", "M", "D", "absent", "noun", "ipa", "defn", "ex", "c", "wf", "uk", "us", "s1", "s2", "C1", "id", "Source::Oxford CEFR::C1 CEFR::oxford"],
     ]
     audit_rows = []
     with pytest.raises(SystemExit):
         verify_card_identity(data_rows, audit_rows)
+
+
+def test_card_identity_firm_split_passes():
+    """`firm` at B2 across Oxford_3000 and Oxford_5000 is a legitimate split
+    under the list-aware identity rule (2026-06-21). The verifier must NOT
+    fail on `(Word, CEFR)` duplicates; only `(Word, CEFR, LIST)` is hard.
+    """
+    data_rows = [
+        ["G1", "M", "D", "firm", "adjective", "ipa", "solid", "ex", "c", "wf", "uk", "us", "s1", "s2", "B2", "id", "Source::Oxford CEFR::B2 CEFR::oxford Oxford_5000"],
+        ["G2", "M", "D", "firm", "noun",      "ipa", "company", "ex", "c", "wf", "uk", "us", "s1", "s2", "B2", "id", "Source::Oxford CEFR::B2 CEFR::oxford Oxford_3000"],
+    ]
+    audit_rows = []  # No audit check on these synthetic rows
+    # Should NOT raise — (word, CEFR) duplicates are informational only.
+    verify_card_identity(data_rows, audit_rows)
+
+
+def test_card_identity_word_cefr_list_duplicate_fails():
+    """Two rows that share `(Word, CEFR, LIST)` is a hard duplicate — verifier
+    must exit 1. This is the core contract of list-aware identity."""
+    data_rows = [
+        ["G1", "M", "D", "yield", "noun", "ipa", "output", "ex", "c", "wf", "uk", "us", "s1", "s2", "C1", "id", "Source::Oxford CEFR::C1 CEFR::oxford Oxford_5000"],
+        ["G2", "M", "D", "yield", "verb", "ipa", "produce", "ex", "c", "wf", "uk", "us", "s1", "s2", "C1", "id", "Source::Oxford CEFR::C1 CEFR::oxford Oxford_5000"],
+    ]
+    audit_rows = []
+    with pytest.raises(SystemExit):
+        verify_card_identity(data_rows, audit_rows)
+
+
+def test_card_identity_word_pos_cefr_duplicate_still_fails():
+    """(Word, pos, CEFR) duplicates remain a hard contract — even when LIST
+    differs, two cards at the same word+POS+CEFR is a real bug."""
+    data_rows = [
+        ["G1", "M", "D", "firm", "adjective", "ipa", "solid",   "ex", "c", "wf", "uk", "us", "s1", "s2", "B2", "id", "Source::Oxford CEFR::B2 CEFR::oxford Oxford_5000"],
+        ["G2", "M", "D", "firm", "adjective", "ipa", "sturdy",  "ex", "c", "wf", "uk", "us", "s1", "s2", "B2", "id", "Source::Oxford CEFR::B2 CEFR::oxford Oxford_3000"],
+    ]
+    audit_rows = []
+    with pytest.raises(SystemExit):
+        verify_card_identity(data_rows, audit_rows)
+
+
+class TestPrimaryListFromTags:
+    """Card Identity = (Word, CEFR, LIST). LIST is resolved from the card's
+    tags via `primary_list_from_tags` per the fixed priority
+    Oxford_5000 > Oxford_3000 > AWL > NO_LIST."""
+
+    def test_priority_5000_wins_when_all_present(self):
+        assert primary_list_from_tags("Oxford_5000 Oxford_3000 AWL") == "Oxford_5000"
+
+    def test_3000_wins_over_AWL(self):
+        assert primary_list_from_tags("Oxford_3000 AWL") == "Oxford_3000"
+
+    def test_only_AWL_returns_AWL(self):
+        assert primary_list_from_tags("AWL") == "AWL"
+
+    def test_no_list_tokens_returns_NO_LIST(self):
+        assert primary_list_from_tags("") == "NO_LIST"
+
+    def test_unrelated_tags_returns_NO_LIST(self):
+        assert primary_list_from_tags("Source::Oxford CEFR::B2 CEFR::oxford") == "NO_LIST"
+
+    def test_priority_order_is_fixed(self):
+        """LIST_PRIORITY must remain Oxford_5000 > Oxford_3000 > AWL so
+        identity stays stable across runs and rebuilds."""
+        assert LIST_PRIORITY == ("Oxford_5000", "Oxford_3000", "AWL")
+
+    def test_full_firm_tags_resolve_correctly(self):
+        """Regression: the `firm` worked example — Oxford_5000 and Oxford_3000
+        tags on different rows must resolve to their respective lists."""
+        adj_tags = "Source::Oxford CEFR::B2 CEFR::oxford Oxford_5000 idioms"
+        noun_tags = "Source::Oxford CEFR::B2 CEFR::oxford Oxford_3000 idioms"
+        assert primary_list_from_tags(adj_tags) == "Oxford_5000"
+        assert primary_list_from_tags(noun_tags) == "Oxford_3000"
+        # And the two (Word, CEFR, LIST) tuples differ — verifier should pass.
+        assert ("firm", "B2", "Oxford_5000") != ("firm", "B2", "Oxford_3000")
 
 
 def test_definition_mismatch_against_audit():

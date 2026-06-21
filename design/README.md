@@ -130,14 +130,27 @@ Ví dụ:
 - `aggregate` (C2) có 4 senses → giữ tất cả 4 senses
 - `tackle` (C1) có 4 senses → giữ tất cả 4 senses (legacy cap sẽ drop 1)
 
-### Rule 2 — Card Identity (1 CEFR = 1 card)
+### Rule 2 — Card Identity (Word, CEFR, LIST = 1 card)
 
-Cùng `(Word, CEFRLevel)` = cùng card. Khác CEFR = khác card. Bất kể POS.
+Cùng `(Word, CEFRLevel, LIST)` = cùng card. Khác bất kỳ thành phần nào trong 3 = khác card. **LIST** là bucket corpus/list primary, lấy từ tags theo priority cố định:
+
+```text
+Oxford_5000 > Oxford_3000 > AWL > NO_LIST
+```
+
+Card chỉ mang **1** list tag duy nhất — list cao nhất mà nó sở hữu. Card không có `Oxford_5000` / `Oxford_3000` / `AWL` → `NO_LIST` (vẫn là identity bucket hợp lệ).
 
 Hệ quả:
-- Multi-POS word (vd `absent` = adjective/verb/preposition) → 1 card duy nhất cho mỗi CEFR level, POS chips list tất cả POS trong top-bar (xem [Vùng 4 sample card](#cấu-trúc-indexhtml-5-vùng) — card ② `absent` minh hoạ).
-- Cùng word nhưng Oxford scrape trả về 2 CEFR khác nhau (vd `X` có nghĩa A2 và B2) → 2 cards riêng, mỗi card cho 1 CEFR.
+- Multi-POS word (vd `absent` = adjective/verb/preposition, `yield` = noun/verb) → 1 card duy nhất cho mỗi `(CEFR, LIST)`, POS chips list tất cả POS trong top-bar (xem [Vùng 4 sample card](#cấu-trúc-indexhtml-5-vùng) — card ② `absent` minh hoạ).
+- Cùng word nhưng khác CEFR → nhiều cards (vd `tackle` ở B2 và C1 = 2 cards).
+- Cùng `(word, CEFR)` nhưng khác LIST → nhiều cards. Ví dụ `firm`:
+  - `(firm, B2, Oxford_5000)` — adjective ("solid|unlikely to change")
+  - `(firm, B2, Oxford_3000)` — noun ("a business or company")
+  Hai cards hợp lệ, **không merge**, vì chúng đến từ 2 curriculum khác nhau.
 - 1 raw note có CEFR trống → 1 card với `cefr-badge-UNCLASSIFIED` (xem Vùng 4 card ⑤ `paradigm`).
+- **Lý do đổi rule (2026-06-21)**: rule cũ `(Word, CEFRLevel)` ép merge các cards cùng CEFR kể cả khi chúng ở 2 list khác nhau → mất thông tin curriculum. Rule mới giữ đúng ranh giới list.
+
+**Hard contract**: P3B verifier fail nếu phát hiện duplicate `(Word, CEFRLevel, LIST)`. Verifier cũ vẫn báo duplicate `(Word, CEFRLevel)` nhưng chỉ mang tính tham khảo (vì `firm` split là case hợp lệ theo rule mới).
 
 ### Tại sao không filter ở scrape?
 

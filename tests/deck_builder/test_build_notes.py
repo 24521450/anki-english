@@ -1,13 +1,17 @@
-"""Tests for build_notes.py encoding fix.
+"""Tests for build_notes.py encoding fix + parenthetical lookup.
 
-Locks in the `|` separator change (was ` ; `) and the max_n=1 default
-in `_format_examples` (was 2). These are paired: def and ex must have
-the same number of pipe-separated chunks for the template to pair
-def[i] with ex[i] correctly.
+Locks in:
+1. The `|` separator change (was ` ; `) and the max_n=1 default
+   in `_format_examples` (was 2). These are paired: def and ex must have
+   the same number of pipe-separated chunks for the template to pair
+   def[i] with ex[i] correctly.
+2. Card Identity = (Word, CEFR, LIST) — `_parse_existing_txt` preserves
+   parenthetical disambiguators in the lookup key, and `lookup_gloss`
+   exact-matches the full disambiguated word before falling back to the
+   base word (with a ghost-verdict guard).
 
-See CONTEXT.md § Sense Sorting (replaces the legacy Sense Cap, removed
-2026-06-21) and the Rule B addendum discussion in the gloss pipeline
-handoff (2026-06-16).
+See CONTEXT.md § Card Identity (2026-06-21) and § Sense Sorting
+(replaces the legacy Sense Cap, removed 2026-06-21).
 """
 import sys
 from pathlib import Path
@@ -15,7 +19,14 @@ from pathlib import Path
 PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from tools.build_notes import _format_examples, DEF_SEPARATOR, EX_SEP
+from tools.build_notes import (
+    _format_examples,
+    DEF_SEPARATOR,
+    EX_SEP,
+    _parse_existing_txt,
+    get_word_candidates,
+    lookup_gloss,
+)
 
 
 class TestSeparators:
@@ -202,3 +213,217 @@ class TestBuildRecordCardsPairing:
         # The old default of max_n=2 would have produced 6 chunks, breaking the
         # def[i]/ex[i] pairing. We don't test the old path directly (it's gone),
         # but the assertion on `ex.count('|') == 2` documents the invariant.
+
+
+class TestParseExistingTxtPreservesParenthetical:
+    """Card Identity = (Word, CEFR, LIST). `_parse_existing_txt` keeps the
+    parenthetical disambiguator in the lookup key so audit glosses for
+    homonym cards can be exact-matched.
+
+    Regression for the P3C bug: pre-2026-06-21, the parser stripped
+    parentheticals into base-word keys, so `counter (argue against)`
+    and `counter (long flat surface)` both mapped to `counter` and could
+    not be distinguished during gloss lookup. Audit glosses keyed by the
+    full disambiguated word were silently bypassed.
+    """
+
+    def _write_minimal_txt(self, tmp_path: Path, data_rows: list[str]) -> Path:
+        """Write a minimal 17-col TXT with the required header."""
+        header = (
+            "#separator:tab\n"
+            "#html:true\n"
+            "#guid column:1\n"
+            "#notetype column:2\n"
+            "#deck column:3\n"
+            "#tags column:17\n"
+        )
+        path = tmp_path / "vocab.txt"
+        path.write_text(header + "\n".join(data_rows) + "\n", encoding="utf-8")
+        return path
+
+    def _make_row(
+        self,
+        guid: str,
+        word: str,
+        pos: str,
+        cefr: str,
+        defn: str = "stub",
+        tags: str = "Source::Oxford CEFR::B2 CEFR::oxford",
+    ) -> str:
+        """Build a 17-col TSV row matching the EAVM contract."""
+        return "\t".join([
+            guid,                                # 1: GUID
+            "English Academic Vocabulary Model", # 2: notetype
+            "English Academic Vocabulary::Oxford", # 3: deck
+            word,                                # 4: word
+            pos,                                 # 5: pos
+            "/ipa/",                             # 6: ipa
+            defn,                                # 7: definition
+            "stub ex",                           # 8: example
+            "",                                  # 9: collocations
+            "",                                  # 10: wordfamily
+            "[sound:stub_uk.mp3]",               # 11: uk_audio
+            "[sound:stub_us.mp3]",               # 12: us_audio
+            "Oxford",                            # 13: source1
+            "Oxford",                            # 14: source2
+            cefr,                                # 15: cefr
+            "",                                  # 16: idioms
+            tags,                                # 17: tags
+        ])
+
+    def test_parenthetical_word_preserved_in_key(self, tmp_path):
+        path = self._write_minimal_txt(tmp_path, [
+            self._make_row("G1", "counter (argue against)", "verb", "C1"),
+            self._make_row("G2", "counter (long flat surface)", "noun", "B2"),
+        ])
+        parsed = _parse_existing_txt(path)
+        assert ("counter (argue against)", "verb", "C1") in parsed
+        assert ("counter (long flat surface)", "noun", "B2") in parsed
+        # And the base-word key MUST NOT exist (would silently collapse
+        # the two homonym rows into one key — the P3C bug).
+        assert ("counter", "verb", "C1") not in parsed
+        assert ("counter", "noun", "B2") not in parsed
+
+    def test_word_base_field_strips_parenthetical(self, tmp_path):
+        path = self._write_minimal_txt(tmp_path, [
+            self._make_row("G1", "grave (serious)", "adjective", "C1"),
+        ])
+        parsed = _parse_existing_txt(path)
+        row = parsed[("grave (serious)", "adjective", "C1")]
+        assert row["word_base"] == "grave"
+        assert row["word_orig"] == "grave (serious)"
+
+    def test_no_parenthetical_unchanged(self, tmp_path):
+        path = self._write_minimal_txt(tmp_path, [
+            self._make_row("G1", "yield", "noun, verb", "C1"),
+        ])
+        parsed = _parse_existing_txt(path)
+        assert ("yield", "noun, verb", "C1") in parsed
+        row = parsed[("yield", "noun, verb", "C1")]
+        assert row["word_base"] == "yield"
+        assert row["word_orig"] == "yield"
+
+
+class TestGetWordCandidatesStripsParenthetical:
+    """`get_word_candidates` strips parentheticals for source (jsonl)
+    lookup. Card Identity keeps the disambiguator in the build key;
+    this function still produces base-word candidates only."""
+
+    def test_parenthetical_word_yields_base_first(self):
+        cands = get_word_candidates("counter (argue against)")
+        assert cands[0] == "counter", (
+            f"First candidate must be base word 'counter', got {cands[0]!r}"
+        )
+        # And the full disambiguated word is NOT a candidate.
+        assert "counter (argue against)" not in cands
+
+    def test_three_documented_examples(self):
+        # The 3 examples called out in the P3C spec.
+        assert get_word_candidates("counter (argue against)")[0] == "counter"
+        assert get_word_candidates("grave (serious)")[0] == "grave"
+        assert get_word_candidates("strip (long narrow piece)")[0] == "strip"
+
+    def test_no_parenthetical_unchanged(self):
+        assert get_word_candidates("yield")[:1] == ["yield"]
+        assert get_word_candidates("firm")[:1] == ["firm"]
+
+
+class TestLookupGlossParentheticalHandling:
+    """Card Identity (2026-06-21): parenthetical disambiguators must be
+    preserved through gloss lookup, and unsafe base-word fallbacks must
+    be blocked when disambiguated siblings exist."""
+
+    def test_exact_match_parenthetical(self):
+        """`counter (argue against)|verb|C1` exact-matches the audit key."""
+        audit = {
+            ("counter (argue against)", "verb", "C1"): "oppose",
+            ("counter (long flat surface)", "noun", "B2"): "service desk",
+        }
+        result = lookup_gloss(
+            audit, "counter (argue against)", "verb", "C1",
+            "counter", ["verb"], "C1",
+        )
+        assert result == "oppose"
+
+    def test_exact_match_long_flat_surface(self):
+        audit = {
+            ("counter (argue against)", "verb", "C1"): "oppose",
+            ("counter (long flat surface)", "noun", "B2"): "service desk",
+        }
+        result = lookup_gloss(
+            audit, "counter (long flat surface)", "noun", "B2",
+            "counter", ["noun"], "B2",
+        )
+        assert result == "service desk"
+
+    def test_unsafe_fallback_blocked_with_disambiguated_siblings(self):
+        """When TXT word has disambiguator AND audit has disambiguated
+        siblings at the same (pos, cefr), base-word fallback is unsafe.
+        The function must NOT apply a ghost verdict from a different sense."""
+        audit = {
+            # Disambiguated siblings at (verb, C1) — same base word "counter"
+            ("counter (argue against)", "verb", "C1"): "oppose",
+            ("counter (long flat surface)", "noun", "B2"): "service desk",
+            # Ghost verdict for base counter at (verb, C1) — wrong sense
+            ("counter", "verb", "C1"): "WRONG_GHOST_VERDICT",
+        }
+        # TXT card with parenthetical + (verb, C1) → must return the
+        # disambiguated gloss ("oppose"), NOT the ghost verdict.
+        result = lookup_gloss(
+            audit, "counter (argue against)", "verb", "C1",
+            "counter", ["verb"], "C1",
+        )
+        assert result == "oppose", (
+            f"Disambiguator guard failed — got {result!r}, "
+            f"ghost verdict was incorrectly applied"
+        )
+
+    def test_no_siblings_falls_back_to_base_safely(self):
+        """When TXT word has disambiguator but NO disambiguated siblings
+        exist in the audit, base-word fallback is safe (no ghost to avoid)."""
+        audit = {
+            ("counter", "verb", "C1"): "respond",
+        }
+        result = lookup_gloss(
+            audit, "counter (some disamb)", "verb", "C1",
+            "counter", ["verb"], "C1",
+        )
+        assert result == "respond"
+
+    def test_no_parenthetical_uses_base_word(self):
+        audit = {
+            ("firm", "adjective", "B2"): "solid|unlikely to change",
+            ("firm", "noun", "B2"): "a business or company",
+        }
+        result = lookup_gloss(
+            audit, "firm", "adjective", "B2",
+            "firm", ["adjective"], "B2",
+        )
+        assert result == "solid|unlikely to change"
+
+    def test_multi_pos_joins_with_pipe(self):
+        """Multi-POS card (yield|noun, verb|C1) joins individual POS
+        glosses with ' | '."""
+        audit = {
+            ("yield", "noun", "C1"): "output",
+            ("yield", "verb", "C1"): "produce|surrender",
+        }
+        result = lookup_gloss(
+            audit, "yield", "noun, verb", "C1",
+            "yield", ["noun", "verb"], "C1",
+        )
+        # The POS-order in the joined result follows all_parts (orig + res).
+        assert result is not None
+        assert "output" in result
+        assert "produce|surrender" in result
+        assert " | " in result
+
+    def test_no_match_returns_none(self):
+        audit = {
+            ("unrelated", "noun", "C1"): "x",
+        }
+        result = lookup_gloss(
+            audit, "completely_different", "verb", "C1",
+            "completely_different", ["verb"], "C1",
+        )
+        assert result is None

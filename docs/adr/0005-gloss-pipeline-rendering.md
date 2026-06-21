@@ -325,3 +325,80 @@ toward genuine 1-sense cases.
 - 2 specific fixes documented
 - Apply script bug documented
 - Next session P1: 134 self-ref regen (30-40 min)
+
+---
+
+## Addendum 2026-06-21 (P4B) — Rule-Shape Consistency + Policy-Aware Coverage Audit
+
+### Why "multi `def_before` segments → one gloss" is NOT a defect
+
+Three mechanics in the gloss pipeline legitimately collapse many source
+senses into a single gloss word:
+
+1. **Gloss Rule A** — near-synonym senses collapse to one word
+   (`ridiculous; nonsensical → ridiculous`).
+2. **Gloss Rule B** — same-domain sense variants collapse to one word
+   (`plan; organize → plan; organize` collapses if M3 judges them variants).
+3. **Gloss Rule C** (safety net) — a domain-restricted sense is kept when
+   dropping it would leave the card empty.
+
+So a naive "1-chunk gloss with N-segment `def_before`" detector is
+**overinclusive** — it flags both legitimate collapses and true
+under-collapses. A 2026-06-19 audit using this naive detector reported
+102 "high-risk" rows; the actual rule-shape contradictions were only 24
+(of which 26 were P4A's distinct-sense targets, and 24 are P4B's
+rule-shape contradictions).
+
+### P4B policy — Rule-Shape Consistency
+
+We add a new term (also in `CONTEXT.md § Rule-Shape Consistency`):
+
+> A `Gloss Verdict` must have a separator/chunk shape consistent with
+> its `rule_applied`. The rule encodes the structural promise; the gloss
+> must honor it.
+
+| Rule | Required shape |
+|---|---|
+| `rule_b_pick1`, `concrete_1sense`, `multi_pos_pick1` | one chunk OK |
+| `2sense_distinct`, `3sense_distinct`, `rule_b_pick2`, `rule_b_pick2_addendum`, `multi_pos_pick2` | **must have >1 chunk** |
+| `2sense_samedomain` | one chunk OK if Rule A applies, else `;` or `|` |
+| `pos_aware_gloss` | policy review (one chunk may be intentional) |
+
+### Tools and buckets
+
+P4B ships three read-only / write tools:
+
+- `tools/_apply_p4b_rule_shape_fix.py` — guarded apply for 24
+  rule-shape contradictions (P4B scope). Mirrors the P4A apply tool:
+  dry-run default, `--apply` writes, aborts on guard mismatch, backups
+  audit + TXT before write, regenerates JSONL via `build_notes`.
+- `tools/_verify_p4b_rule_shape_fix.py` — asserts the 24 rows are now
+  multi-chunk across audit/TXT/JSONL, all 24 pass `validate_verdict`,
+  P3B and P4A verifiers still PASS.
+- `tools/_audit_gloss_policy_coverage.py` — read-only classification:
+  every audit row goes into exactly one of:
+  - `allowed_single_gloss` — rule permits one chunk
+  - `rule_shape_contradiction` — rule says pick2/distinct but one chunk
+  - `policy_review` — `pos_aware_gloss` or `2sense_samedomain` collapsed
+    to one chunk (Rule A may justify, M3 + human review required)
+  - `metadata_error` — separator / count / validator mismatch
+  - `other` — already multi-chunk per rule, no action needed
+
+### Numbers before / after P4B
+
+| Bucket | Before P4B | After P4B |
+|---|---:|---:|
+| `rule_shape_contradiction` | 24 | 0 |
+| `policy_review` (pos_aware_gloss + 2sense_samedomain one-chunk) | 64 | 64 (unchanged) |
+| `metadata_error` | 0 | 0 |
+| Naive multi-def one-gloss (informational only) | 398 | 374 |
+
+P4B does **not** touch `pos_aware_gloss` or `2sense_samedomain` rows —
+those require semantic M3 + human review, not mechanical expansion.
+
+### Why no new ADR
+
+This is a clarification of the existing gloss-pipeline decision (gate
+semantics + Rule A/B/C authority), not a new architectural decision. The
+Rule-Shape Consistency term is added to CONTEXT.md as a glossary entry,
+and this addendum documents the policy-aware audit reasoning.
