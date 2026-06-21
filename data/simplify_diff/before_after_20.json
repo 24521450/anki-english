@@ -1,0 +1,5147 @@
+[
+  {
+    "word": "abortion",
+    "orig_count": 3,
+    "surviving_count": 1,
+    "dropped_count": 2,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 1 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": "C1",
+        "text": "the deliberate ending of a pregnancy at an early stage"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "noun",
+        "cefr": "C1",
+        "text": "a medical operation to end a pregnancy at an early stage"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "noun",
+        "cefr": null,
+        "text": "the process of giving birth to a baby before it is fully developed and able to survive"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge",
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1",
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0,
+          0
+        ],
+        "source_def_idx": [
+          0,
+          1
+        ],
+        "text": "the deliberate ending of a pregnancy at an early stage | a medical operation to end a pregnancy at an early stage",
+        "pos": "noun",
+        "semantic_score": 0.575,
+        "beta_decision": "review",
+        "review_needed": true,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 1 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "arguably",
+    "orig_count": 1,
+    "surviving_count": 1,
+    "dropped_count": 0,
+    "rule_label": "Rule 2: single-sense word inherits headword CEFR",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "adverb",
+        "cefr": null,
+        "text": "used (often before a comparative or superlative adjective) when you are stating an opinion that you believe you could give reasons to support"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "inherited_single"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "used (often before a comparative or superlative adjective) when you are stating an opinion that you believe you could give reasons to support",
+        "pos": "adverb",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 2: single-sense word inherits headword CEFR"
+      }
+    ]
+  },
+  {
+    "word": "chaos",
+    "orig_count": 1,
+    "surviving_count": 1,
+    "dropped_count": 0,
+    "rule_label": "Rule 2: single-sense word inherits headword CEFR",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a complete lack of order"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "inherited_single"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "a complete lack of order",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 2: single-sense word inherits headword CEFR"
+      }
+    ]
+  },
+  {
+    "word": "weave",
+    "orig_count": 5,
+    "surviving_count": 4,
+    "dropped_count": 1,
+    "rule_label": "Rule 3: dropped unlisted senses (only no_data primary survived)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": null,
+        "text": "the way in which threads are arranged in a piece of cloth that has been woven; the pattern that the threads make"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "C1",
+        "text": "to make cloth, a carpet, a basket, etc. by crossing threads or narrow pieces of material across, over and under each other by hand or on a machine called a loom"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "C1",
+        "text": "to make something by twisting flowers, pieces of wood, etc. together"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": "C1",
+        "text": "to move along by running and changing direction continuously to avoid things that are in your way"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 3,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to put facts, events, details, etc. together to make a story or a closely connected whole"
+      }
+    ],
+    "after": [
+      {
+        "cefr": null,
+        "cefr_sources": [
+          "unlisted"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "the way in which threads are arranged in a piece of cloth that has been woven; the pattern that the threads make",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 3: dropped unlisted senses (only no_data primary survived)"
+      },
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to make cloth, a carpet, a basket, etc. by crossing threads or narrow pieces of material across, over and under each other by hand or on a machine called a loom",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to make something by twisting flowers, pieces of wood, etc. together",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "to move along by running and changing direction continuously to avoid things that are in your way",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "clinical",
+    "orig_count": 3,
+    "surviving_count": 1,
+    "dropped_count": 2,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "adjective",
+        "cefr": "C1",
+        "text": "relating to the examination and treatment of patients and their illnesses"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "adjective",
+        "cefr": null,
+        "text": "cold and calm and without feeling or sympathy"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "adjective",
+        "cefr": null,
+        "text": "very plain; without decoration"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "relating to the examination and treatment of patients and their illnesses",
+        "pos": "adjective",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "arrange",
+    "orig_count": 3,
+    "surviving_count": 2,
+    "dropped_count": 1,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 1 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to plan or organize something in advance"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to put something in a particular order; to make something neat or attractive"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to change a piece of music so that it is suitable for a particular instrument or voice"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to plan or organize something in advance",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 1 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to put something in a particular order; to make something neat or attractive",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 1 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "saturate",
+    "orig_count": 2,
+    "surviving_count": 2,
+    "dropped_count": 0,
+    "rule_label": "Rule 5: no headword CEFR (no_data)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to make something completely wet"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to fill something/somebody completely with something so that it is impossible or useless to add any more"
+      }
+    ],
+    "after": [
+      {
+        "cefr": null,
+        "cefr_sources": [
+          "no_data"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to make something completely wet",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.04",
+        "rule_label": "Rule 5: no headword CEFR (no_data)"
+      },
+      {
+        "cefr": null,
+        "cefr_sources": [
+          "unlisted"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to fill something/somebody completely with something so that it is impossible or useless to add any more",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.04",
+        "rule_label": "Rule 3: mixed CEFR (original distribution: {'no_data': 1, 'unlisted': 1})"
+      }
+    ]
+  },
+  {
+    "word": "set up",
+    "orig_count": 9,
+    "surviving_count": 4,
+    "dropped_count": 5,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 5 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to provide somebody with the money that they need in order to do something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to make somebody healthier, stronger, more lively, etc."
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to trick somebody, especially by making them appear guilty of something"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 0,
+        "pos": "phrasal verb",
+        "cefr": "B1",
+        "text": "to create something or start it"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 1,
+        "pos": "phrasal verb",
+        "cefr": "B1",
+        "text": "to build something or put something somewhere"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 2,
+        "pos": "phrasal verb",
+        "cefr": "B1",
+        "text": "to make a piece of equipment or a machine ready for use"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 3,
+        "pos": "phrasal verb",
+        "cefr": "B1",
+        "text": "to arrange for something to happen"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 4,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to start a process or a series of events"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 0,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to start running a business"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to create something or start it",
+        "pos": "phrasal verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 5 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to build something or put something somewhere",
+        "pos": "phrasal verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 5 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "to make a piece of equipment or a machine ready for use",
+        "pos": "phrasal verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 5 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "to arrange for something to happen",
+        "pos": "phrasal verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 5 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "go",
+    "orig_count": 38,
+    "surviving_count": 21,
+    "dropped_count": 17,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to move or travel from one place to another"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to move or travel, especially with somebody else, to a particular place or in order to be present at an event"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to move or travel in a particular way or over a particular distance"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 3,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to move in a particular way or while doing something else"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 4,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to leave one place in order to reach another"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 5,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to leave a place and do something different"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 6,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to visit or attend a place for a particular purpose"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 7,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to look at a particular page or website"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 8,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to leave a place or travel to a place in order to take part in an activity or a sport"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 9,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to be sent or passed somewhere"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 10,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "used to talk about how quickly or slowly time seems to pass"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 11,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to stop existing; to be lost or stolen"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 12,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to lead or extend in a particular direction"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 13,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to have as a usual or correct position; to be placed"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 14,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "used to say that something does/did not fit into a particular place or space"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 15,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "used to talk about how well or badly something makes progress or succeeds"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 16,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "used in many expressions to show that somebody/something has reached a particular state/is no longer in a particular state"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 17,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to become different in a particular way, especially a bad way"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 18,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to live or move around in a particular state"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 19,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to spend a period of time in a particular way"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 20,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to not be noticed, reported, etc."
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 21,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to make a particular sound or movement"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 22,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to be sounded as a signal or warning"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 23,
+        "pos": "verb",
+        "cefr": null,
+        "text": "if a number will go into another number, it is contained in that number an exact number of times"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 24,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to combine well with something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 25,
+        "pos": "verb",
+        "cefr": null,
+        "text": "used to talk about what tune or words a song or poem has or what happens in a story"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 26,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to say"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 27,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to start an activity"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 28,
+        "pos": "verb",
+        "cefr": null,
+        "text": "if a machine goes, it works"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 29,
+        "pos": "verb",
+        "cefr": null,
+        "text": "used to talk about wanting to get rid of somebody/something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 30,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to get worse; to become damaged or stop working correctly"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 31,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to die. People say ‘go’ to avoid saying ‘die’."
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 32,
+        "pos": "verb",
+        "cefr": null,
+        "text": "when money goes, it is spent or used for something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 33,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to be sold"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 34,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to be willing to pay a particular amount of money for something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 35,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to help; to play a part in doing something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 36,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to be available"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 37,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to use a toilet"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to move or travel from one place to another",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to move or travel, especially with somebody else, to a particular place or in order to be present at an event",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "to move or travel in a particular way or over a particular distance",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          4
+        ],
+        "text": "to leave one place in order to reach another",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          5
+        ],
+        "text": "to leave a place and do something different",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          6
+        ],
+        "text": "to visit or attend a place for a particular purpose",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          7
+        ],
+        "text": "to look at a particular page or website",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          8
+        ],
+        "text": "to leave a place or travel to a place in order to take part in an activity or a sport",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "to move in a particular way or while doing something else",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(3,13)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          13
+        ],
+        "text": "to have as a usual or correct position; to be placed",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(3,13)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          14
+        ],
+        "text": "used to say that something does/did not fit into a particular place or space",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(3,13)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          18
+        ],
+        "text": "to live or move around in a particular state",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(3,13)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          21
+        ],
+        "text": "to make a particular sound or movement",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(3,13)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          22
+        ],
+        "text": "to be sounded as a signal or warning",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(3,13)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          9
+        ],
+        "text": "to be sent or passed somewhere",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(9,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          10
+        ],
+        "text": "used to talk about how quickly or slowly time seems to pass",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(9,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          11
+        ],
+        "text": "to stop existing; to be lost or stolen",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(9,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          12
+        ],
+        "text": "to lead or extend in a particular direction",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(9,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          15
+        ],
+        "text": "used to talk about how well or badly something makes progress or succeeds",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(9,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          16
+        ],
+        "text": "used in many expressions to show that somebody/something has reached a particular state/is no longer in a particular state",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(9,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          17
+        ],
+        "text": "to become different in a particular way, especially a bad way",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(9,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 17 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "argue",
+    "orig_count": 3,
+    "surviving_count": 2,
+    "dropped_count": 1,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 1 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to speak angrily to somebody because you disagree with them"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to give reasons why you think that something is right/wrong, true/not true, etc., especially to persuade people that you are right"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to show clearly that something exists or is true"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to speak angrily to somebody because you disagree with them",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 1 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to give reasons why you think that something is right/wrong, true/not true, etc., especially to persuade people that you are right",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 1 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "access",
+    "orig_count": 2,
+    "surviving_count": 1,
+    "dropped_count": 1,
+    "rule_label": "Rule 1: all senses originally have own CEFR",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": "B1",
+        "text": "the opportunity or right to use something or to see somebody/something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "noun",
+        "cefr": "B1",
+        "text": "a way of entering or reaching a place"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge",
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1",
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0,
+          0
+        ],
+        "source_def_idx": [
+          0,
+          1
+        ],
+        "text": "the opportunity or right to use something or to see somebody/something | a way of entering or reaching a place",
+        "pos": "noun",
+        "semantic_score": 0.5,
+        "beta_decision": "review",
+        "review_needed": true,
+        "split_reason": null,
+        "rule_label": "Rule 1: all senses originally have own CEFR"
+      }
+    ]
+  },
+  {
+    "word": "accumulate",
+    "orig_count": 2,
+    "surviving_count": 1,
+    "dropped_count": 1,
+    "rule_label": "Rule 1: all senses originally have own CEFR",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "C1",
+        "text": "to gradually get more and more of something over a period of time"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "C1",
+        "text": "to gradually increase in number or quantity over a period of time"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge",
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1",
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0,
+          0
+        ],
+        "source_def_idx": [
+          0,
+          1
+        ],
+        "text": "to gradually get more and more of something over a period of time | to gradually increase in number or quantity over a period of time",
+        "pos": "verb",
+        "semantic_score": 0.5800000000000001,
+        "beta_decision": "review",
+        "review_needed": true,
+        "split_reason": null,
+        "rule_label": "Rule 1: all senses originally have own CEFR"
+      }
+    ]
+  },
+  {
+    "word": "accommodation",
+    "orig_count": 4,
+    "surviving_count": 3,
+    "dropped_count": 1,
+    "rule_label": "Rule 1: all senses originally have own CEFR",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": "B1",
+        "text": "a place to live, work or stay in"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "noun",
+        "cefr": "B1",
+        "text": "somewhere to live or stay, often also providing food or other services"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "noun",
+        "cefr": "C2",
+        "text": "an agreement or arrangement between people or groups with different opinions that is acceptable to everyone; the process of reaching this agreement"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 3,
+        "pos": "noun",
+        "cefr": "C2",
+        "text": "the way in which the lens (= a part of the eye) becomes flatter or thicker in order to create a clear image of the object that you want to look at"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge",
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1",
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0,
+          0
+        ],
+        "source_def_idx": [
+          0,
+          1
+        ],
+        "text": "a place to live, work or stay in | somewhere to live or stay, often also providing food or other services",
+        "pos": "noun",
+        "semantic_score": 0.5363636363636364,
+        "beta_decision": "review",
+        "review_needed": true,
+        "split_reason": null,
+        "rule_label": "Rule 1: all senses originally have own CEFR"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "an agreement or arrangement between people or groups with different opinions that is acceptable to everyone; the process of reaching this agreement",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(2,3)=0.00",
+        "rule_label": "Rule 1: all senses originally have own CEFR"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "the way in which the lens (= a part of the eye) becomes flatter or thicker in order to create a clear image of the object that you want to look at",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(2,3)=0.00",
+        "rule_label": "Rule 1: all senses originally have own CEFR"
+      }
+    ]
+  },
+  {
+    "word": "absorb",
+    "orig_count": 8,
+    "surviving_count": 5,
+    "dropped_count": 3,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to take in a liquid, gas or other substance from the surface or space around"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to take in and keep heat, light, energy, sound, etc. instead of reflecting it"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": "C1",
+        "text": "to reduce the effect of a physical impact or movement"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 3,
+        "pos": "verb",
+        "cefr": "C1",
+        "text": "to take something into the mind and learn or understand it"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 4,
+        "pos": "verb",
+        "cefr": "C1",
+        "text": "to interest somebody very much so that they pay no attention to anything else"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 5,
+        "pos": "verb",
+        "cefr": "C1",
+        "text": "to make something smaller become part of something larger"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 6,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to use up a large supply of something, especially money or time"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 7,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to deal with changes, effects, costs, etc."
+      }
+    ],
+    "after": [
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge",
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2",
+          "B2"
+        ],
+        "source_pdd_idx": [
+          0,
+          0
+        ],
+        "source_def_idx": [
+          0,
+          1
+        ],
+        "text": "to take in a liquid, gas or other substance from the surface or space around | to take in and keep heat, light, energy, sound, etc. instead of reflecting it",
+        "pos": "verb",
+        "semantic_score": 0.5117647058823529,
+        "beta_decision": "review",
+        "review_needed": true,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "to reduce the effect of a physical impact or movement",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(2,3)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "to take something into the mind and learn or understand it",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(2,3)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          4
+        ],
+        "text": "to interest somebody very much so that they pay no attention to anything else",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(2,3)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          5
+        ],
+        "text": "to make something smaller become part of something larger",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(2,3)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "abstract",
+    "orig_count": 7,
+    "surviving_count": 4,
+    "dropped_count": 3,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 3 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "adjective",
+        "cefr": "B2",
+        "text": "based on general ideas and not on any particular real person, thing or situation"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "adjective",
+        "cefr": "B2",
+        "text": "existing in thought or as an idea but not having a physical reality"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "adjective",
+        "cefr": "B2",
+        "text": "not representing people or things in a realistic way, but expressing the artist’s ideas about them"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": "C2",
+        "text": "an abstract work of art"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 1,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a short piece of writing containing the main ideas in a document"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to remove something from somewhere"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to make a written summary of a book, etc."
+      }
+    ],
+    "after": [
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge",
+          "sense_badge",
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2",
+          "B2",
+          "B2"
+        ],
+        "source_pdd_idx": [
+          0,
+          0,
+          0
+        ],
+        "source_def_idx": [
+          0,
+          1,
+          2
+        ],
+        "text": "based on general ideas and not on any particular real person, thing or situation | existing in thought or as an idea but not having a physical reality | not representing people or things in a realistic way, but expressing the artist’s ideas about them",
+        "pos": "adjective",
+        "semantic_score": 0.5,
+        "beta_decision": "review",
+        "review_needed": true,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 3 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "an abstract work of art",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 3 unlisted)"
+      },
+      {
+        "cefr": null,
+        "cefr_sources": [
+          "unlisted"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          2
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to remove something from somewhere",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 3: dropped unlisted senses (only no_data primary survived)"
+      },
+      {
+        "cefr": null,
+        "cefr_sources": [
+          "unlisted"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          2
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to make a written summary of a book, etc.",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 3: dropped unlisted senses (only no_data primary survived)"
+      }
+    ]
+  },
+  {
+    "word": "absent",
+    "orig_count": 5,
+    "surviving_count": 3,
+    "dropped_count": 2,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 3 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "adjective",
+        "cefr": "C1",
+        "text": "not in a place because of illness, etc."
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "adjective",
+        "cefr": "C1",
+        "text": "not present in something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "adjective",
+        "cefr": null,
+        "text": "showing that you are not really looking at or thinking about what is happening around you"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to not go to or be in a place where you are expected to be"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 0,
+        "pos": "preposition",
+        "cefr": null,
+        "text": "without"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge",
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1",
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0,
+          0
+        ],
+        "source_def_idx": [
+          0,
+          1
+        ],
+        "text": "not in a place because of illness, etc. | not present in something",
+        "pos": "adjective",
+        "semantic_score": 0.5,
+        "beta_decision": "review",
+        "review_needed": true,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 3 unlisted)"
+      },
+      {
+        "cefr": null,
+        "cefr_sources": [
+          "unlisted"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to not go to or be in a place where you are expected to be",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 3: dropped unlisted senses (only no_data primary survived)"
+      },
+      {
+        "cefr": null,
+        "cefr_sources": [
+          "unlisted"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          2
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "without",
+        "pos": "preposition",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 3: dropped unlisted senses (only no_data primary survived)"
+      }
+    ]
+  },
+  {
+    "word": "OK",
+    "orig_count": 8,
+    "surviving_count": 7,
+    "dropped_count": 1,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "adjective",
+        "cefr": "A1",
+        "text": "safe and well; in a calm or happy state"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "adjective",
+        "cefr": "A1",
+        "text": "all right; acceptable; in an acceptable way"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": null,
+        "text": "permission"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to officially agree to something or allow it to happen"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 0,
+        "pos": "exclamation",
+        "cefr": "A1",
+        "text": "yes; all right"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 1,
+        "pos": "exclamation",
+        "cefr": "A1",
+        "text": "used to attract somebody’s attention or to introduce a comment"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 2,
+        "pos": "exclamation",
+        "cefr": "A1",
+        "text": "used to check that somebody agrees with you or understands you"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 3,
+        "pos": "exclamation",
+        "cefr": "A1",
+        "text": "used to stop people arguing with you or criticizing you"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge",
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1",
+          "A1"
+        ],
+        "source_pdd_idx": [
+          0,
+          0
+        ],
+        "source_def_idx": [
+          0,
+          1
+        ],
+        "text": "safe and well; in a calm or happy state | all right; acceptable; in an acceptable way",
+        "pos": "adjective",
+        "semantic_score": 0.5,
+        "beta_decision": "review",
+        "review_needed": true,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": null,
+        "cefr_sources": [
+          "unlisted"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "permission",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 3: dropped unlisted senses (only no_data primary survived)"
+      },
+      {
+        "cefr": null,
+        "cefr_sources": [
+          "unlisted"
+        ],
+        "cefr_originals": [
+          null
+        ],
+        "source_pdd_idx": [
+          2
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to officially agree to something or allow it to happen",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 3: dropped unlisted senses (only no_data primary survived)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "yes; all right",
+        "pos": "exclamation",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "used to attract somebody’s attention or to introduce a comment",
+        "pos": "exclamation",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "used to check that somebody agrees with you or understands you",
+        "pos": "exclamation",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "used to stop people arguing with you or criticizing you",
+        "pos": "exclamation",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 2 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "round",
+    "orig_count": 31,
+    "surviving_count": 20,
+    "dropped_count": 11,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "adjective",
+        "cefr": "A2",
+        "text": "having a shape like a circle or a ball"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "adjective",
+        "cefr": "A2",
+        "text": "having a curved shape"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "adjective",
+        "cefr": "B2",
+        "text": "a round figure or amount is one that is given as a whole number, usually one ending in 0"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": "B2",
+        "text": "a stage in a competition or sports event"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 1,
+        "pos": "noun",
+        "cefr": "C2",
+        "text": "a stage in a boxing or wrestling match"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 2,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a complete game of golf; a complete way around the course in some other sports, such as showjumping"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 3,
+        "pos": "noun",
+        "cefr": "B2",
+        "text": "a set of events which form part of a longer process"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 4,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a regular series of activities"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 5,
+        "pos": "noun",
+        "cefr": "B2",
+        "text": "a regular route that somebody takes when delivering or collecting something; a regular series of visits that somebody makes"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 6,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a number of drinks bought by one person for all the others in a group"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 7,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a whole slice of bread; sandwiches made from two whole slices of bread"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 8,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a round object or piece of something"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 9,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a short period during which people show their approval of somebody/something by clapping"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 10,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a single shot from a gun; a bullet for one shot"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 11,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a song for two or more voices in which each sings the same tune but starts at a different time"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "C2",
+        "text": "to go around a corner of a building, a bend in the road, etc."
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to make something into a round shape; to form into a round shape"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to increase or decrease a number to the next highest or lowest whole number"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 0,
+        "pos": "adverb",
+        "cefr": "A2",
+        "text": "moving in a circle"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 1,
+        "pos": "adverb",
+        "cefr": "A2",
+        "text": "measuring or marking the edge or outside of something"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 2,
+        "pos": "adverb",
+        "cefr": "A2",
+        "text": "on all sides of somebody/something"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 3,
+        "pos": "adverb",
+        "cefr": "A2",
+        "text": "at various places in an area"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 4,
+        "pos": "adverb",
+        "cefr": "A2",
+        "text": "in a circle or curve to face another way or the opposite way"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 5,
+        "pos": "adverb",
+        "cefr": "A2",
+        "text": "to the other side of something"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 6,
+        "pos": "adverb",
+        "cefr": "A2",
+        "text": "from one place, person, etc. to another"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 7,
+        "pos": "adverb",
+        "cefr": "A2",
+        "text": "to or at a particular place, especially where somebody lives"
+      },
+      {
+        "pd_idx": 4,
+        "def_idx": 0,
+        "pos": "preposition",
+        "cefr": "A2",
+        "text": "in a circle"
+      },
+      {
+        "pd_idx": 4,
+        "def_idx": 1,
+        "pos": "preposition",
+        "cefr": "A2",
+        "text": "on, to or from the other side of something"
+      },
+      {
+        "pd_idx": 4,
+        "def_idx": 2,
+        "pos": "preposition",
+        "cefr": "A2",
+        "text": "on all sides of somebody/something; surrounding somebody/something"
+      },
+      {
+        "pd_idx": 4,
+        "def_idx": 3,
+        "pos": "preposition",
+        "cefr": "A2",
+        "text": "in or to many parts of something"
+      },
+      {
+        "pd_idx": 4,
+        "def_idx": 4,
+        "pos": "preposition",
+        "cefr": null,
+        "text": "to fit in with particular people, ideas, etc."
+      }
+    ],
+    "after": [
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "having a shape like a circle or a ball",
+        "pos": "adjective",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.07",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "having a curved shape",
+        "pos": "adjective",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.07",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "a round figure or amount is one that is given as a whole number, usually one ending in 0",
+        "pos": "adjective",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "a stage in a competition or sports event",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,3)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "a set of events which form part of a longer process",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,3)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          5
+        ],
+        "text": "a regular route that somebody takes when delivering or collecting something; a regular series of visits that somebody makes",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,3)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "a stage in a boxing or wrestling match",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          2
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to go around a corner of a building, a bend in the road, etc.",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "moving in a circle",
+        "pos": "adverb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "measuring or marking the edge or outside of something",
+        "pos": "adverb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "on all sides of somebody/something",
+        "pos": "adverb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "at various places in an area",
+        "pos": "adverb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          4
+        ],
+        "text": "in a circle or curve to face another way or the opposite way",
+        "pos": "adverb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          5
+        ],
+        "text": "to the other side of something",
+        "pos": "adverb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          6
+        ],
+        "text": "from one place, person, etc. to another",
+        "pos": "adverb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          3
+        ],
+        "source_def_idx": [
+          7
+        ],
+        "text": "to or at a particular place, especially where somebody lives",
+        "pos": "adverb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          4
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "in a circle",
+        "pos": "preposition",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          4
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "on, to or from the other side of something",
+        "pos": "preposition",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          4
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "on all sides of somebody/something; surrounding somebody/something",
+        "pos": "preposition",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          4
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "in or to many parts of something",
+        "pos": "preposition",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 11 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "affect",
+    "orig_count": 5,
+    "surviving_count": 2,
+    "dropped_count": 3,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 3 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to produce a change in somebody/something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to attack somebody or a part of the body; to make somebody become ill"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to make somebody feel very sad, sorry, etc. about somebody/something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 3,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to pretend to be feeling or thinking something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 4,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to use or wear something that is intended to impress other people"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to produce a change in somebody/something",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 3 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to attack somebody or a part of the body; to make somebody become ill",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 3 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "run",
+    "orig_count": 52,
+    "surviving_count": 24,
+    "dropped_count": 28,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": "A2",
+        "text": "an act of running; a period of time spent running or the distance that somebody runs"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "noun",
+        "cefr": "C2",
+        "text": "a trip by car, plane, boat, etc., especially a short one or one that is made regularly"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a period of something good or bad happening; a series of successes or failures"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 3,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a series of performances of a play or film"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 4,
+        "pos": "noun",
+        "cefr": null,
+        "text": "the amount of a product that a company decides to make at one time"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 5,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a situation when many people sell dollars, etc. and the value of the money falls"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 6,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a situation when many people suddenly want to take their money out of a bank"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 7,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a situation when many people suddenly want to buy something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 8,
+        "pos": "noun",
+        "cefr": null,
+        "text": "the way things usually happen; the way things seem to be happening on a particular occasion"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 9,
+        "pos": "noun",
+        "cefr": "C1",
+        "text": "a sloping track used in skiing and some other sports"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 10,
+        "pos": "noun",
+        "cefr": "C2",
+        "text": "a point scored in the game of cricket or baseball"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 11,
+        "pos": "noun",
+        "cefr": null,
+        "text": "an act of trying to get elected to public office"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 12,
+        "pos": "noun",
+        "cefr": "C2",
+        "text": "an area with a fence, walls, etc. in which animals or birds are kept as pets or on a farm"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 13,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a series of notes sung or played quickly up or down the scale"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 14,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a series of cards held by one player"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 15,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a long thin hole in tights or stockings where some threads have broken"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 16,
+        "pos": "noun",
+        "cefr": null,
+        "text": "diarrhoea (= an illness in which waste matter is emptied from the bowels much more frequently than normal, and in liquid form)"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to move using your legs, going faster than when you walk"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to travel a particular distance by running"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to run as a sport"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 3,
+        "pos": "verb",
+        "cefr": "A1",
+        "text": "to take part in a race"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 4,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to make a race take place"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 5,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to hurry from one place to another"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 6,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to be in charge of a business, campaign, etc."
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 7,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to make a service, course of study, etc. available to people"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 8,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to travel on a particular route"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 9,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to make buses, trains, etc. travel on a particular route"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 10,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to operate or function; to make something do this"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 11,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "when a computer program or system runs or somebody runs it, it operates"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 12,
+        "pos": "verb",
+        "cefr": null,
+        "text": "if a recording on a tape runs or somebody runs it, it plays"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 13,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to own and use a vehicle or machine"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 14,
+        "pos": "verb",
+        "cefr": "C2",
+        "text": "to drive somebody to a place in a car"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 15,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to move, especially quickly, in a particular direction"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 16,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to move something in a particular direction"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 17,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to lead or stretch from one place to another; to make something do this"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 18,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to flow"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 19,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to make liquid flow"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 20,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to send out a liquid"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 21,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to be covered with a liquid"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 22,
+        "pos": "verb",
+        "cefr": "C2",
+        "text": "if the colour runs in a piece of clothing, etc. when it gets wet, the colour comes out of the material and spreads into other pieces of clothing, etc. in the same water"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 23,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to melt"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 24,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to become different in a particular way, especially a bad way"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 25,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to be at or near a particular level"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 26,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to continue for a particular period of time without stopping"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 27,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to operate or be legally acceptable for a particular period of time"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 28,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to happen or progress at the time or in the way mentioned"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 29,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to be a candidate in an election for a political position, especially in the US"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 30,
+        "pos": "verb",
+        "cefr": "C2",
+        "text": "to bring or take something into a country illegally and secretly"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 31,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to have particular words, contents, etc."
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 32,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to print and publish an item or a story"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 33,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to do a test, an experiment, etc."
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 34,
+        "pos": "verb",
+        "cefr": null,
+        "text": "if tights or stockings run, a long thin hole appears in them"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "an act of running; a period of time spent running or the distance that somebody runs",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "a trip by car, plane, boat, etc., especially a short one or one that is made regularly",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(1,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          10
+        ],
+        "text": "a point scored in the game of cricket or baseball",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(1,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          12
+        ],
+        "text": "an area with a fence, walls, etc. in which animals or birds are kept as pets or on a farm",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(1,10)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          9
+        ],
+        "text": "a sloping track used in skiing and some other sports",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to move using your legs, going faster than when you walk",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to travel a particular distance by running",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "to run as a sport",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "A1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "to take part in a race",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          6
+        ],
+        "text": "to be in charge of a business, campaign, etc.",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(6,8)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          8
+        ],
+        "text": "to travel on a particular route",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(6,8)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          7
+        ],
+        "text": "to make a service, course of study, etc. available to people",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          10
+        ],
+        "text": "to operate or function; to make something do this",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          11
+        ],
+        "text": "when a computer program or system runs or somebody runs it, it operates",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          15
+        ],
+        "text": "to move, especially quickly, in a particular direction",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          16
+        ],
+        "text": "to move something in a particular direction",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          17
+        ],
+        "text": "to lead or stretch from one place to another; to make something do this",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          18
+        ],
+        "text": "to flow",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          20
+        ],
+        "text": "to send out a liquid",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          24
+        ],
+        "text": "to become different in a particular way, especially a bad way",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          29
+        ],
+        "text": "to be a candidate in an election for a political position, especially in the US",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(7,10)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          14
+        ],
+        "text": "to drive somebody to a place in a car",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(14,22)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          22
+        ],
+        "text": "if the colour runs in a piece of clothing, etc. when it gets wet, the colour comes out of the material and spreads into other pieces of clothing, etc. in the same water",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(14,22)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          30
+        ],
+        "text": "to bring or take something into a country illegally and secretly",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(14,22)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 28 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "set",
+    "orig_count": 26,
+    "surviving_count": 16,
+    "dropped_count": 10,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to prepare or arrange something so that it is ready for use or in position"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to arrange knives, forks, etc. on a table for a meal"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to fix something so that others copy it or try to achieve it"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 3,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to give somebody a piece of work to do or a task or target to achieve"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 4,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to arrange or fix something; to decide on something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 5,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to place the action of a play, novel or film in a particular place, time, etc."
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 6,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to be located in a particular place"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 7,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to put something/somebody in a particular place or position"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 8,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to cause somebody/something to be in a particular state; to start something happening"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 9,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to go down below the horizon"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 10,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to put a precious stone into a piece of jewellery"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 11,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to become solid or hard"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 12,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to fix your face into a determined expression"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 13,
+        "pos": "verb",
+        "cefr": "C2",
+        "text": "to arrange somebody’s hair while it is wet so that it dries in a particular style"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 14,
+        "pos": "verb",
+        "cefr": "C2",
+        "text": "to put a broken bone into a fixed position and hold it there, so that it will join together again and get better; to get better in this way"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 15,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to use a machine or computer to arrange writing and images on pages in order to prepare a book, newspaper, etc. for printing"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 16,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to write music to go with words"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 0,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to provide somebody with the money that they need in order to do something"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 1,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to make somebody healthier, stronger, more lively, etc."
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 2,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to trick somebody, especially by making them appear guilty of something"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 0,
+        "pos": "phrasal verb",
+        "cefr": "B1",
+        "text": "to create something or start it"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 1,
+        "pos": "phrasal verb",
+        "cefr": "B1",
+        "text": "to build something or put something somewhere"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 2,
+        "pos": "phrasal verb",
+        "cefr": "B1",
+        "text": "to make a piece of equipment or a machine ready for use"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 3,
+        "pos": "phrasal verb",
+        "cefr": "B1",
+        "text": "to arrange for something to happen"
+      },
+      {
+        "pd_idx": 2,
+        "def_idx": 4,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to start a process or a series of events"
+      },
+      {
+        "pd_idx": 3,
+        "def_idx": 0,
+        "pos": "phrasal verb",
+        "cefr": null,
+        "text": "to start running a business"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to prepare or arrange something so that it is ready for use or in position",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to arrange knives, forks, etc. on a table for a meal",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "to fix something so that others copy it or try to achieve it",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "to give somebody a piece of work to do or a task or target to achieve",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          4
+        ],
+        "text": "to arrange or fix something; to decide on something",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          5
+        ],
+        "text": "to place the action of a play, novel or film in a particular place, time, etc.",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.02",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          6
+        ],
+        "text": "to be located in a particular place",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(6,7)=0.06",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          7
+        ],
+        "text": "to put something/somebody in a particular place or position",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(6,7)=0.06",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          8
+        ],
+        "text": "to cause somebody/something to be in a particular state; to start something happening",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(6,7)=0.06",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          9
+        ],
+        "text": "to go down below the horizon",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(6,7)=0.06",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          13
+        ],
+        "text": "to arrange somebody’s hair while it is wet so that it dries in a particular style",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(13,14)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          14
+        ],
+        "text": "to put a broken bone into a fixed position and hold it there, so that it will join together again and get better; to get better in this way",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(13,14)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          2
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to create something or start it",
+        "pos": "phrasal verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          2
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to build something or put something somewhere",
+        "pos": "phrasal verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          2
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "to make a piece of equipment or a machine ready for use",
+        "pos": "phrasal verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          2
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "to arrange for something to happen",
+        "pos": "phrasal verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 10 unlisted)"
+      }
+    ]
+  },
+  {
+    "word": "hold",
+    "orig_count": 31,
+    "surviving_count": 17,
+    "dropped_count": 14,
+    "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)",
+    "before": [
+      {
+        "pd_idx": 0,
+        "def_idx": 0,
+        "pos": "noun",
+        "cefr": "B2",
+        "text": "the action of holding somebody/something; the way you are holding somebody/something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 1,
+        "pos": "noun",
+        "cefr": "B2",
+        "text": "a particular way of holding somebody, especially in a fight or in a sport such as wrestling"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 2,
+        "pos": "noun",
+        "cefr": null,
+        "text": "influence, power or control over somebody/something"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 3,
+        "pos": "noun",
+        "cefr": null,
+        "text": "a place where you can put your hands or feet when climbing"
+      },
+      {
+        "pd_idx": 0,
+        "def_idx": 4,
+        "pos": "noun",
+        "cefr": "C1",
+        "text": "the part of a ship or plane where the goods being carried are stored"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 0,
+        "pos": "verb",
+        "cefr": "A2",
+        "text": "to have somebody/something in your hand, arms, etc."
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 1,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to put your hand on part of your body, usually because it hurts"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 2,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to keep somebody/something in a particular position"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 3,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to support the weight of somebody/something"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 4,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to have enough space for something/somebody; to contain something/somebody"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 5,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to have or offer something; to be going to bring something"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 6,
+        "pos": "verb",
+        "cefr": "B1",
+        "text": "to have a meeting, competition, conversation, etc."
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 7,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to have something you have gained or achieved"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 8,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to have a particular job or position"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 9,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to keep somebody and not allow them to leave"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 10,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to keep somebody’s attention or interest"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 11,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to keep something at the same level, rate, speed, etc.; to stay at the same level, rate, etc."
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 12,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to keep something so that it can be used later"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 13,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to wait until you can speak to the person you have phoned"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 14,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to own or have something"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 15,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to defend something against attack; to have control of something"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 16,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to remain strong and safe or in position"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 17,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to remain the same"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 18,
+        "pos": "verb",
+        "cefr": "B2",
+        "text": "to have a belief or an opinion about somebody/something"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 19,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to consider that something is true"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 20,
+        "pos": "verb",
+        "cefr": "C2",
+        "text": "to be in close contact with the road and easy to control, especially when driven fast"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 21,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to continue to move in a particular direction"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 22,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to make a note continue for a particular time"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 23,
+        "pos": "verb",
+        "cefr": null,
+        "text": "be able to drink a reasonable amount of alcohol without becoming drunk"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 24,
+        "pos": "verb",
+        "cefr": null,
+        "text": "to win a game in which you are serving"
+      },
+      {
+        "pd_idx": 1,
+        "def_idx": 25,
+        "pos": "verb",
+        "cefr": null,
+        "text": "used to tell somebody to stop doing something or not to do something"
+      }
+    ],
+    "after": [
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "the action of holding somebody/something; the way you are holding somebody/something",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "a particular way of holding somebody, especially in a fight or in a sport such as wrestling",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(0,1)=0.05",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "C1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C1"
+        ],
+        "source_pdd_idx": [
+          0
+        ],
+        "source_def_idx": [
+          4
+        ],
+        "text": "the part of a ship or plane where the goods being carried are stored",
+        "pos": "noun",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "A2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "A2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          0
+        ],
+        "text": "to have somebody/something in your hand, arms, etc.",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          1
+        ],
+        "text": "to put your hand on part of your body, usually because it hurts",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(1,2)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          2
+        ],
+        "text": "to keep somebody/something in a particular position",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(1,2)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          3
+        ],
+        "text": "to support the weight of somebody/something",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(1,2)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          4
+        ],
+        "text": "to have enough space for something/somebody; to contain something/somebody",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(1,2)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B1",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B1"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          6
+        ],
+        "text": "to have a meeting, competition, conversation, etc.",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(1,2)=0.00",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          5
+        ],
+        "text": "to have or offer something; to be going to bring something",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(5,7)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          7
+        ],
+        "text": "to have something you have gained or achieved",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(5,7)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          8
+        ],
+        "text": "to have a particular job or position",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(5,7)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          9
+        ],
+        "text": "to keep somebody and not allow them to leave",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(5,7)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          10
+        ],
+        "text": "to keep somebody’s attention or interest",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(5,7)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          13
+        ],
+        "text": "to wait until you can speak to the person you have phoned",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(5,7)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "B2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "B2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          18
+        ],
+        "text": "to have a belief or an opinion about somebody/something",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": "split",
+        "review_needed": false,
+        "split_reason": "split: β(5,7)=0.03",
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      },
+      {
+        "cefr": "C2",
+        "cefr_sources": [
+          "sense_badge"
+        ],
+        "cefr_originals": [
+          "C2"
+        ],
+        "source_pdd_idx": [
+          1
+        ],
+        "source_def_idx": [
+          20
+        ],
+        "text": "to be in close contact with the road and easy to control, especially when driven fast",
+        "pos": "verb",
+        "semantic_score": null,
+        "beta_decision": null,
+        "review_needed": false,
+        "split_reason": null,
+        "rule_label": "Rule 1+3: surviving senses all have own CEFR (dropped 14 unlisted)"
+      }
+    ]
+  }
+]

@@ -1,0 +1,823 @@
+{
+  "note": "30-word γ pilot. Read each cluster, emit verdict in strict JSON (see GAMMA_SYSTEM_PROMPT).",
+  "total_clusters": 24,
+  "clusters": [
+    {
+      "cluster_hash": "32d9f8760e03dc21",
+      "word": "abortion",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the deliberate ending of a pregnancy at an early stage",
+          "cefr": "C1",
+          "examples": [
+            "to support/oppose abortion",
+            "a woman’s right to abortion",
+            "the country's strict abortion laws",
+            "Both pro-choice and anti-abortion groups want to ensure their voices are heard."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a medical operation to end a pregnancy at an early stage",
+          "cefr": "C1",
+          "examples": [
+            "She decided to have an abortion.",
+            "Some medical staff wanted the right to refuse to perform abortions."
+          ]
+        }
+      ],
+      "current_score": 0.575,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "5410d88ec50df0b3",
+      "word": "absent",
+      "pos": "adjective",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "not in a place because of illness, etc.",
+          "cefr": "C1",
+          "examples": [
+            "She was absent from work for two weeks.",
+            "Local people were conspicuously absent from the meeting."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "not present in something",
+          "cefr": "C1",
+          "examples": [
+            "Love was totally absent from his childhood.",
+            "She now played with a passion that had been strangely absent from her previous performance."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "8291a0ad6dff780d",
+      "word": "absorb",
+      "pos": "verb",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to take in a liquid, gas or other substance from the surface or space around",
+          "cefr": "B2",
+          "examples": [
+            "Plants absorb carbon dioxide from the air.",
+            "Let the rice cook until it has absorbed all the water.",
+            "The cream is easily absorbed into the skin."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to take in and keep heat, light, energy, sound, etc. instead of reflecting it",
+          "cefr": "B2",
+          "examples": [
+            "Black walls absorb a lot of heat during the day."
+          ]
+        }
+      ],
+      "current_score": 0.5117647058823529,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "381f9f9377991fba",
+      "word": "abstract",
+      "pos": "adjective",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "based on general ideas and not on any particular real person, thing or situation",
+          "cefr": "B2",
+          "examples": [
+            "abstract knowledge/principles",
+            "The research shows that pre-school children are capable of thinking in abstract terms."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "existing in thought or as an idea but not having a physical reality",
+          "cefr": "B2",
+          "examples": [
+            "We may talk of beautiful things but beauty itself is abstract."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "not representing people or things in a realistic way, but expressing the artist’s ideas about them",
+          "cefr": "B2",
+          "examples": [
+            "the work of American abstract expressionists like Mark Rothko"
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "75576d481abb9bbd",
+      "word": "access",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the opportunity or right to use something or to see somebody/something",
+          "cefr": "B1",
+          "examples": [
+            "High-speed internet access has become a necessity.",
+            "You need a password to get access to the computer system.",
+            "access to information/services/resources",
+            "access to healthcare/education",
+            "They are seeking increased access to markets overseas."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a way of entering or reaching a place",
+          "cefr": "B1",
+          "examples": [
+            "The police gained access through a broken window.",
+            "Many paths have become overgrown, blocking access.",
+            "There is easy access by road.",
+            "We welcome disabled visitors and there is wheelchair access to all parts of the park.",
+            "The only access to the farmhouse is across the fields."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "78a1433476b5090f",
+      "word": "accommodation",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a place to live, work or stay in",
+          "cefr": "B1",
+          "examples": [
+            "rented/temporary accommodation",
+            "Hotel accommodation is included in the price of your holiday.",
+            "We may have to provide alternative accommodation for you.",
+            "First-class accommodation is available on all flights.",
+            "It can be difficult to find suitable accommodation for those in need."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "somewhere to live or stay, often also providing food or other services",
+          "cefr": "B1",
+          "examples": [
+            "More and more travelers are looking for bed and breakfast accommodations in private homes.",
+            "The boat provides reasonable overnight accommodations for four adults."
+          ]
+        }
+      ],
+      "current_score": 0.5363636363636364,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "660571d04b75d7fd",
+      "word": "accumulate",
+      "pos": "verb",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to gradually get more and more of something over a period of time",
+          "cefr": "C1",
+          "examples": [
+            "I seem to have accumulated a lot of books.",
+            "By investing wisely she accumulated a fortune.",
+            "We have accumulated a great amount of evidence."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to gradually increase in number or quantity over a period of time",
+          "cefr": "C1",
+          "examples": [
+            "Debts began to accumulate.",
+            "Dust and dirt soon accumulate if a house is not cleaned regularly."
+          ]
+        }
+      ],
+      "current_score": 0.5800000000000001,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "07b2268c1321e791",
+      "word": "strip",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a long narrow piece of paper, metal, cloth, etc.",
+          "cefr": "C1",
+          "examples": [
+            "a strip of material",
+            "Cut the meat into strips."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a long narrow area of land, sea, etc.",
+          "cefr": "C1",
+          "examples": [
+            "the Gaza Strip",
+            "a tiny strip of garden",
+            "The islands are separated by a narrow strip of water."
+          ]
+        }
+      ],
+      "current_score": 0.56,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "b8b1c1b644d4997f",
+      "word": "theoretical",
+      "pos": "adjective",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "connected with the ideas and principles on which a particular subject is based, rather than with practice and experiment",
+          "cefr": "C1",
+          "examples": [
+            "a theoretical approach",
+            "theoretical physics",
+            "The first year provides students with a sound theoretical basis for later study."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "that could possibly exist, happen or be true, although this is unlikely",
+          "cefr": "C1",
+          "examples": [
+            "It's a theoretical possibility."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "dfe9a6104f6420c7",
+      "word": "embarrassing",
+      "pos": "adjective",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "making you feel shy, uncomfortable or ashamed",
+          "cefr": "B1",
+          "examples": [
+            "an embarrassing moment/situation",
+            "an embarrassing mistake/gaffe",
+            "an embarrassing question",
+            "I didn't want to risk making the rest of the evening painfully embarrassing for both of us.",
+            "His terrible acting is just embarrassing to watch."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "causing somebody to look stupid, dishonest, etc.",
+          "cefr": "B1",
+          "examples": [
+            "This EU ruling puts Britain in a very embarrassing position.",
+            "to be potentially/politically embarrassing",
+            "The report is likely to prove highly embarrassing to the government.",
+            "Such action by a NATO ally would be extremely embarrassing for the United States."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "a97420ffce986dd8",
+      "word": "independence",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "freedom from political control by other countries",
+          "cefr": "B2",
+          "examples": [
+            "Argentina gained independence from Spain in 1816."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the time when a country gains freedom from political control by another country",
+          "cefr": "B2",
+          "examples": [
+            "independence celebrations",
+            "the first elections since independence"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "the freedom to organize your own life, make your own decisions, etc. without needing help from other people",
+          "cefr": "B2",
+          "examples": [
+            "He values his independence.",
+            "Financial independence was imprortant to her."
+          ]
+        }
+      ],
+      "current_score": 0.5505263157894738,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "4edcf3f4034c2a2b",
+      "word": "spring",
+      "pos": "verb",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "to move suddenly and with one quick movement in a particular direction",
+          "cefr": "B2",
+          "examples": [
+            "The cat crouched ready to spring.",
+            "He turned off the alarm and sprang out of bed.",
+            "She sprang back in alarm.",
+            "Eric sprang forward and tackled the man to the ground.",
+            "Everyone sprang to their feet (= stood up suddenly) when the principal walked in."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "to move suddenly and violently",
+          "cefr": "B2",
+          "examples": [
+            "The branch sprang back and hit him in the face.",
+            "She turned the key and the lid sprang open."
+          ]
+        }
+      ],
+      "current_score": 0.55,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "7133ab448e325104",
+      "word": "inspect",
+      "pos": "verb",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to look closely at something/somebody, especially to check that everything is as it should be",
+          "cefr": "C1",
+          "examples": [
+            "The teacher walked around inspecting their work.",
+            "Make sure you inspect the goods before signing for them.",
+            "The plants are regularly inspected for disease."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to officially visit a school, factory, etc. in order to check that rules are being obeyed and that standards are acceptable",
+          "cefr": "C1",
+          "examples": [
+            "Public health officials were called in to inspect the premises.",
+            "The Tourist Board inspects all recommended hotels at least once a year."
+          ]
+        }
+      ],
+      "current_score": 0.5117647058823529,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "a510cd3bc7160d31",
+      "word": "station",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a place where trains stop so that passengers can get on and off; the buildings connected with this",
+          "cefr": "A1",
+          "examples": [
+            "the main station",
+            "Euston Station",
+            "a train station",
+            "a railway station",
+            "a tube/an underground station"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a place where buses stop; the buildings connected with this",
+          "cefr": "A1",
+          "examples": [
+            "We waited for him at the bus station.",
+            "a coach station",
+            "Victoria Coach Station"
+          ]
+        }
+      ],
+      "current_score": 0.5888888888888889,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "a439946d39371f2a",
+      "word": "sole",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "the bottom surface of the foot",
+          "cefr": "C1",
+          "examples": [
+            "The hot sand burned the soles of their feet."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "the bottom part of a shoe or sock, not including the heel",
+          "cefr": "C1",
+          "examples": [
+            "leather soles",
+            "I’ve got a hole in the sole of my shoe."
+          ]
+        }
+      ],
+      "current_score": 0.525,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "bf800e4e09e1de88",
+      "word": "missing",
+      "pos": "adjective",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "that cannot be found or that is not in its usual place; that has been removed, lost or destroyed",
+          "cefr": "A2",
+          "examples": [
+            "I never found the missing piece.",
+            "Cases with missing data are excluded from the report.",
+            "My gloves have been missing for ages.",
+            "Two files have gone missing.",
+            "Our cat's gone missing again."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "not at home; not found",
+          "cefr": "A2",
+          "examples": [
+            "a missing four-year-old girl",
+            "They still hoped to find their missing son.",
+            "a woman who went missing three months ago",
+            "Posters of missing persons lined the walls."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "not present after an accident, battle, etc. but not known to have been killed",
+          "cefr": "A2",
+          "examples": [
+            "He was reported missing, presumed dead.",
+            "Many soldiers were listed as missing in action.",
+            "It was six hours before the seamen were discovered missing."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 3,
+          "text": "not included, often when it should have been",
+          "cefr": "A2",
+          "examples": [
+            "Fill in the missing words in this text.",
+            "There were several candidates missing from the list.",
+            "What is missing from the production is any sense of emotional commitment."
+          ]
+        }
+      ],
+      "current_score": 0.5083333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "3967ae0f18452a1d",
+      "word": "structure",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a thing that is made of several parts, especially a building",
+          "cefr": "B2",
+          "examples": [
+            "a stone/brick/wooden structure",
+            "She used sand and rocks to build elaborate structures on the beach."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "the state of being well organized or planned with all the parts linked together; a careful plan",
+          "cefr": "B2",
+          "examples": [
+            "Your essay needs (a) structure."
+          ]
+        }
+      ],
+      "current_score": 0.5133333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "b40b9af0fa787d9e",
+      "word": "fond",
+      "pos": "adjective",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "having warm or loving feelings for somebody, especially somebody you have known for a long time",
+          "cefr": "B2",
+          "examples": [
+            "Over the years, I have grown quite fond of her.",
+            "I’ve always been very fond of your mother."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "finding something pleasant, especially something you have liked or enjoyed for a long time",
+          "cefr": "B2",
+          "examples": [
+            "fond of music/cooking",
+            "We had grown fond of the house and didn't want to leave."
+          ]
+        }
+      ],
+      "current_score": 0.5428571428571428,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "8ffd29e5b87799d6",
+      "word": "parallel",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "a person, a situation, an event, etc. that is very similar to another, especially one in a different place or time",
+          "cefr": "B2",
+          "examples": [
+            "These ideas have parallels in Freud's thought too.",
+            "This tradition has no parallel in our culture.",
+            "This is an achievement without parallel in modern times."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "similar features",
+          "cefr": "B2",
+          "examples": [
+            "There are interesting parallels between the 1960s and the late 1990s.",
+            "It is possible to draw a parallel between (= find similar features in) their experience and ours."
+          ]
+        }
+      ],
+      "current_score": 0.5153846153846153,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "d84a882ab3c09526",
+      "word": "tap",
+      "pos": "verb",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "to hit somebody/something quickly and lightly",
+          "cefr": "B2",
+          "examples": [
+            "Someone tapped at the door.",
+            "He was busy tapping away at his computer.",
+            "Ralph tapped me on the shoulder.",
+            "Tap the icon to open the app."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "if you tap your fingers, feet, etc. or they tap, you hit them gently against a table, the floor, etc., for example to the rhythm of music",
+          "cefr": "B2",
+          "examples": [
+            "He kept tapping his fingers on the table.",
+            "The music set everyone's feet tapping."
+          ]
+        }
+      ],
+      "current_score": 0.5125,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "d1e6575d05af04f6",
+      "word": "epidemic",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "a large number of cases of a particular disease or medical condition happening at the same time in a particular community",
+          "cefr": "C1",
+          "examples": [
+            "the outbreak of a flu epidemic",
+            "An epidemic of measles broke out, and over 200 children died.",
+            "In Victorian times, London endured regular epidemics of smallpox and cholera."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "a sudden rapid increase in how often something bad happens",
+          "cefr": "C1",
+          "examples": [
+            "A recent report describes an epidemic of crime in the inner cities."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "eacc71810ff15eb5",
+      "word": "approval",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the feeling that somebody/something is good or acceptable; a positive opinion of somebody/something",
+          "cefr": "B2",
+          "examples": [
+            "She desperately wanted to win her parents' approval.",
+            "Do the plans meet with your approval?",
+            "Several people nodded in approval.",
+            "The president's approval ratings were slipping."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "agreement to, or permission for something, especially a plan or request",
+          "cefr": "B2",
+          "examples": [
+            "The plan will be submitted to the committee for official approval.",
+            "parliamentary/congressional/government approval",
+            "Senior management have given their seal of approval (= formal approval) to the plans.",
+            "I can't agree to anything without my partner's approval.",
+            "planning approvals"
+          ]
+        }
+      ],
+      "current_score": 0.5166666666666667,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "bfc3bb8fd669a7b4",
+      "word": "swim",
+      "pos": "verb",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "to move through water by moving your arms and legs, without touching the bottom",
+          "cefr": "A1",
+          "examples": [
+            "I can't swim.",
+            "The boys swam across the lake.",
+            "We swam out (= away from land) to the yacht.",
+            "They spent the day swimming and sunbathing.",
+            "I've only just learned to swim."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "to spend time swimming for pleasure",
+          "cefr": "A1",
+          "examples": [
+            "I go swimming twice a week.",
+            "We always went swimming together in our indoor pool."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 2,
+          "text": "to move through or across water",
+          "cefr": "A1",
+          "examples": [
+            "Sharks must swim or die.",
+            "A shoal of fish swam past.",
+            "Ducks were swimming around on the river.",
+            "A beaver swam vigorously upstream."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "bc95ba0f7a6692fb",
+      "word": "death",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the fact of somebody dying or being killed",
+          "cefr": "A2",
+          "examples": [
+            "the anniversary of his wife’s death",
+            "his sudden/untimely/premature death",
+            "the tragic death of a child",
+            "The jury returned a verdict of accidental death.",
+            "It is believed she died a violent death."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the end of life; the state of being dead",
+          "cefr": "A2",
+          "examples": [
+            "Police are trying to establish the cause of death.",
+            "The disease can cause death unless the patient is treated promptly.",
+            "Do you believe in life after death?",
+            "He was sentenced to death (= to be executed).",
+            "Millions of people starved to death (= were killed by lack of food)."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    }
+  ]
+}

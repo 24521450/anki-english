@@ -1,0 +1,1457 @@
+{
+  "generated_by": "simplify_senses v3 (sense_badge / inherited_single / inherited_primary / unlisted / no_data)",
+  "words": [
+    {
+      "word": "abortion",
+      "why": "Rule 3: mixed cefr, sense 3 (null) dropped",
+      "before": {
+        "oxford_badge": "C1",
+        "pos_data": [
+          {
+            "pos": "noun",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": "1",
+                "text": "the deliberate ending of a pregnancy at an early stage",
+                "register_tags": [],
+                "cefr": "C1",
+                "topics": [
+                  {
+                    "name": "Life stages",
+                    "cefr": "C1"
+                  }
+                ],
+                "collocations": {
+                  "adjective": [
+                    "legal",
+                    "legalized",
+                    "elective"
+                  ],
+                  "verb + abortion": [
+                    "have",
+                    "obtain",
+                    "procure"
+                  ],
+                  "abortion + noun": [
+                    "clinic",
+                    "counselling/​counseling",
+                    "pill"
+                  ],
+                  "phrases": [
+                    "abortion on demand"
+                  ]
+                },
+                "examples": [
+                  {
+                    "text": "to support/oppose abortion",
+                    "cf": null
+                  },
+                  {
+                    "text": "a woman’s right to abortion",
+                    "cf": null
+                  },
+                  {
+                    "text": "the country's strict abortion laws",
+                    "cf": null
+                  },
+                  {
+                    "text": "Both pro-choice and anti-abortion groups want to ensure their voices are heard.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": "uncountable",
+                "domain": null
+              },
+              {
+                "n": 2,
+                "sensenum_local": "2",
+                "text": "a medical operation to end a pregnancy at an early stage",
+                "register_tags": [],
+                "cefr": "C1",
+                "topics": [
+                  {
+                    "name": "Healthcare",
+                    "cefr": "C1"
+                  }
+                ],
+                "collocations": {
+                  "adjective": [
+                    "legal",
+                    "legalized",
+                    "elective"
+                  ],
+                  "verb + abortion": [
+                    "have",
+                    "obtain",
+                    "procure"
+                  ],
+                  "abortion + noun": [
+                    "clinic",
+                    "counselling/​counseling",
+                    "pill"
+                  ],
+                  "phrases": [
+                    "abortion on demand"
+                  ]
+                },
+                "examples": [
+                  {
+                    "text": "She decided to have an abortion.",
+                    "cf": null
+                  },
+                  {
+                    "text": "Some medical staff wanted the right to refuse to perform abortions.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": "countable",
+                "domain": null
+              },
+              {
+                "n": 3,
+                "sensenum_local": "3",
+                "text": "the process of giving birth to a baby before it is fully developed and able to survive",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": "uncountable",
+                "domain": "medical"
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "simplified_senses": [
+          {
+            "pos": "noun",
+            "cefr": "C1",
+            "cefr_source": [
+              "sense_badge",
+              "sense_badge"
+            ],
+            "text": "the deliberate ending of a pregnancy at an early stage | a medical operation to end a pregnancy at an early stage",
+            "register_tags": [],
+            "topics": [
+              {
+                "name": "Life stages",
+                "cefr": "C1"
+              },
+              {
+                "name": "Healthcare",
+                "cefr": "C1"
+              }
+            ],
+            "collocations": {
+              "adjective": [
+                "legal",
+                "legalized",
+                "elective"
+              ],
+              "verb + abortion": [
+                "have",
+                "obtain",
+                "procure"
+              ],
+              "abortion + noun": [
+                "clinic",
+                "counselling/​counseling",
+                "pill"
+              ],
+              "phrases": [
+                "abortion on demand"
+              ]
+            },
+            "examples": [
+              {
+                "text": "to support/oppose abortion",
+                "cf": null
+              },
+              {
+                "text": "a woman’s right to abortion",
+                "cf": null
+              }
+            ],
+            "countability": "uncountable",
+            "domain": null,
+            "is_phrase": false,
+            "is_idiom": false,
+            "source_pdd_idx": [
+              0,
+              0
+            ],
+            "source_def_idx": [
+              0,
+              1
+            ],
+            "cefr_originals": [
+              "C1",
+              "C1"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "original_sense_count": 3,
+        "simplified_sense_count": 1,
+        "source_labels": [
+          "sense_badge",
+          "sense_badge"
+        ]
+      }
+    },
+    {
+      "word": "arguably",
+      "why": "Rule 2: inherited_single (1 sense null, badge=C1)",
+      "before": {
+        "oxford_badge": "C1",
+        "pos_data": [
+          {
+            "pos": "adverb",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": null,
+                "text": "used (often before a comparative or superlative adjective) when you are stating an opinion that you believe you could give reasons to support",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [
+                  {
+                    "name": "Opinion and argument",
+                    "cefr": "C1"
+                  }
+                ],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "He is arguably the best actor of his generation.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "simplified_senses": [
+          {
+            "pos": "adverb",
+            "cefr": "C1",
+            "cefr_source": [
+              "inherited_single"
+            ],
+            "text": "used (often before a comparative or superlative adjective) when you are stating an opinion that you believe you could give reasons to support",
+            "register_tags": [],
+            "topics": [
+              {
+                "name": "Opinion and argument",
+                "cefr": "C1"
+              }
+            ],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "He is arguably the best actor of his generation.",
+                "cf": null
+              }
+            ],
+            "countability": null,
+            "domain": null,
+            "is_phrase": false,
+            "is_idiom": false,
+            "source_pdd_idx": [
+              0
+            ],
+            "source_def_idx": [
+              0
+            ],
+            "cefr_originals": [
+              null
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "original_sense_count": 1,
+        "simplified_sense_count": 1,
+        "source_labels": [
+          "inherited_single"
+        ]
+      }
+    },
+    {
+      "word": "chaos",
+      "why": "Rule 2: inherited_single (1 sense null, badge=C1) - simple case",
+      "before": {
+        "oxford_badge": "C1",
+        "pos_data": [
+          {
+            "pos": "noun",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": null,
+                "text": "a complete lack of order",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [
+                  {
+                    "name": "War and conflict",
+                    "cefr": "C1"
+                  }
+                ],
+                "collocations": {
+                  "adjective": [
+                    "absolute",
+                    "complete",
+                    "pure"
+                  ],
+                  "verb + chaos": [
+                    "bring",
+                    "cause",
+                    "create"
+                  ],
+                  "chaos + verb": [
+                    "break out",
+                    "ensue",
+                    "erupt"
+                  ],
+                  "preposition": [
+                    "in chaos"
+                  ],
+                  "phrases": [
+                    "on the brink of chaos",
+                    "to the brink of chaos",
+                    "order out of chaos"
+                  ]
+                },
+                "examples": [
+                  {
+                    "text": "economic/political/domestic chaos",
+                    "cf": null
+                  },
+                  {
+                    "text": "Heavy snow has caused total chaos on the roads.",
+                    "cf": null
+                  },
+                  {
+                    "text": "The house was in chaos after the party.",
+                    "cf": "in chaos"
+                  },
+                  {
+                    "text": "The country was thrown/plunged into chaos by the president's death.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "simplified_senses": [
+          {
+            "pos": "noun",
+            "cefr": "C1",
+            "cefr_source": [
+              "inherited_single"
+            ],
+            "text": "a complete lack of order",
+            "register_tags": [],
+            "topics": [
+              {
+                "name": "War and conflict",
+                "cefr": "C1"
+              }
+            ],
+            "collocations": {
+              "adjective": [
+                "absolute",
+                "complete",
+                "pure"
+              ],
+              "verb + chaos": [
+                "bring",
+                "cause",
+                "create"
+              ],
+              "chaos + verb": [
+                "break out",
+                "ensue",
+                "erupt"
+              ],
+              "preposition": [
+                "in chaos"
+              ],
+              "phrases": [
+                "on the brink of chaos",
+                "to the brink of chaos",
+                "order out of chaos"
+              ]
+            },
+            "examples": [
+              {
+                "text": "economic/political/domestic chaos",
+                "cf": null
+              },
+              {
+                "text": "Heavy snow has caused total chaos on the roads.",
+                "cf": null
+              }
+            ],
+            "countability": null,
+            "domain": null,
+            "is_phrase": false,
+            "is_idiom": false,
+            "source_pdd_idx": [
+              0
+            ],
+            "source_def_idx": [
+              0
+            ],
+            "cefr_originals": [
+              null
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "original_sense_count": 1,
+        "simplified_sense_count": 1,
+        "source_labels": [
+          "inherited_single"
+        ]
+      }
+    },
+    {
+      "word": "weave",
+      "why": "Multi-pos: Rule 3 (unlisted noun) + Rule 1 (sense_badge verb)",
+      "before": {
+        "oxford_badge": "C1",
+        "pos_data": [
+          {
+            "pos": "noun",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": null,
+                "text": "the way in which threads are arranged in a piece of cloth that has been woven; the pattern that the threads make",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "a close/fine/rough weave",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              }
+            ]
+          },
+          {
+            "pos": "verb",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": "1",
+                "text": "to make cloth, a carpet, a basket, etc. by crossing threads or narrow pieces of material across, over and under each other by hand or on a machine called a loom",
+                "register_tags": [],
+                "cefr": "C1",
+                "topics": [],
+                "collocations": {
+                  "adverb": [
+                    "carefully",
+                    "skilfully/​skillfully",
+                    "seamlessly"
+                  ],
+                  "preposition": [
+                    "from",
+                    "into"
+                  ]
+                },
+                "examples": [
+                  {
+                    "text": "The baskets are woven from strips of willow.",
+                    "cf": "weave A from B"
+                  },
+                  {
+                    "text": "The strips of willow are woven into baskets.",
+                    "cf": "weave B into A"
+                  },
+                  {
+                    "text": "threads woven together",
+                    "cf": "weave something together"
+                  },
+                  {
+                    "text": "Most spiders weave webs that are almost invisible.",
+                    "cf": "weave (something)"
+                  },
+                  {
+                    "text": "She is skilled at spinning and weaving.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              },
+              {
+                "n": 2,
+                "sensenum_local": "2",
+                "text": "to make something by twisting flowers, pieces of wood, etc. together",
+                "register_tags": [],
+                "cefr": "C1",
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "She deftly wove the flowers into a garland.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              },
+              {
+                "n": 3,
+                "sensenum_local": "3",
+                "text": "to move along by running and changing direction continuously to avoid things that are in your way",
+                "register_tags": [],
+                "cefr": "C1",
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "She was weaving in and out of the traffic.",
+                    "cf": null
+                  },
+                  {
+                    "text": "He hurried on, weaving through the crowd.",
+                    "cf": null
+                  },
+                  {
+                    "text": "The road weaves through a range of hills.",
+                    "cf": null
+                  },
+                  {
+                    "text": "He had to weave his way through the milling crowds.",
+                    "cf": "weave your way + adv./prep."
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              },
+              {
+                "n": 4,
+                "sensenum_local": "4",
+                "text": "to put facts, events, details, etc. together to make a story or a closely connected whole",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {
+                  "adverb": [
+                    "carefully",
+                    "skilfully/​skillfully",
+                    "seamlessly"
+                  ],
+                  "preposition": [
+                    "from",
+                    "into"
+                  ]
+                },
+                "examples": [
+                  {
+                    "text": "to weave a narrative",
+                    "cf": "weave (something into) something"
+                  },
+                  {
+                    "text": "The biography weaves together the various strands of Einstein's life.",
+                    "cf": "weave something together"
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "simplified_senses": [
+          {
+            "pos": "noun",
+            "cefr": null,
+            "cefr_source": [
+              "unlisted"
+            ],
+            "text": "the way in which threads are arranged in a piece of cloth that has been woven; the pattern that the threads make",
+            "register_tags": [],
+            "topics": [],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "a close/fine/rough weave",
+                "cf": null
+              }
+            ],
+            "countability": null,
+            "domain": null,
+            "is_phrase": false,
+            "is_idiom": false,
+            "source_pdd_idx": [
+              0
+            ],
+            "source_def_idx": [
+              0
+            ],
+            "cefr_originals": [
+              null
+            ]
+          },
+          {
+            "pos": "verb",
+            "cefr": "C1",
+            "cefr_source": [
+              "sense_badge",
+              "sense_badge",
+              "sense_badge"
+            ],
+            "text": "to make cloth, a carpet, a basket, etc. by crossing threads or narrow pieces of material across, over and under each other by hand or on a machine called a loom | to make something by twisting flowers, pieces of wood, etc. together | to move along by running and changing direction continuously to avoid things that are in your way",
+            "register_tags": [],
+            "topics": [],
+            "collocations": {
+              "adverb": [
+                "carefully",
+                "skilfully/​skillfully",
+                "seamlessly"
+              ],
+              "preposition": [
+                "from",
+                "into"
+              ]
+            },
+            "examples": [
+              {
+                "text": "The baskets are woven from strips of willow.",
+                "cf": "weave A from B"
+              },
+              {
+                "text": "The strips of willow are woven into baskets.",
+                "cf": "weave B into A"
+              }
+            ],
+            "countability": null,
+            "domain": null,
+            "is_phrase": false,
+            "is_idiom": false,
+            "source_pdd_idx": [
+              1,
+              1,
+              1
+            ],
+            "source_def_idx": [
+              0,
+              1,
+              2
+            ],
+            "cefr_originals": [
+              "C1",
+              "C1",
+              "C1"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "original_sense_count": 5,
+        "simplified_sense_count": 2,
+        "source_labels": [
+          "unlisted",
+          "sense_badge",
+          "sense_badge",
+          "sense_badge"
+        ]
+      }
+    },
+    {
+      "word": "clinical",
+      "why": "Rule 1: all senses have badge, merged cleanly (3->1)",
+      "before": {
+        "oxford_badge": "C1",
+        "pos_data": [
+          {
+            "pos": "adjective",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": "1",
+                "text": "relating to the examination and treatment of patients and their illnesses",
+                "register_tags": [],
+                "cefr": "C1",
+                "topics": [],
+                "collocations": {
+                  "adverb": [
+                    "purely",
+                    "almost"
+                  ],
+                  "preposition": [
+                    "about"
+                  ]
+                },
+                "examples": [
+                  {
+                    "text": "clinical research (= done on patients, not just considering theory)",
+                    "cf": null
+                  },
+                  {
+                    "text": "clinical training (= the part of a doctor’s training done in a hospital)",
+                    "cf": null
+                  },
+                  {
+                    "text": "She regarded her patients from a purely clinical standpoint.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              },
+              {
+                "n": 2,
+                "sensenum_local": "2",
+                "text": "cold and calm and without feeling or sympathy",
+                "register_tags": [
+                  "disapproving"
+                ],
+                "cefr": null,
+                "topics": [],
+                "collocations": {
+                  "adverb": [
+                    "purely",
+                    "almost"
+                  ],
+                  "preposition": [
+                    "about"
+                  ]
+                },
+                "examples": [
+                  {
+                    "text": "He watched her suffering with clinical detachment.",
+                    "cf": null
+                  },
+                  {
+                    "text": "How can you be so cold and clinical about your son’s accident?",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              },
+              {
+                "n": 3,
+                "sensenum_local": "3",
+                "text": "very plain; without decoration",
+                "register_tags": [
+                  "disapproving"
+                ],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "Everything in the nursery was white and clinical and there were no pictures on the walls.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "simplified_senses": [
+          {
+            "pos": "adjective",
+            "cefr": "C1",
+            "cefr_source": [
+              "sense_badge"
+            ],
+            "text": "relating to the examination and treatment of patients and their illnesses",
+            "register_tags": [],
+            "topics": [],
+            "collocations": {
+              "adverb": [
+                "purely",
+                "almost"
+              ],
+              "preposition": [
+                "about"
+              ]
+            },
+            "examples": [
+              {
+                "text": "clinical research (= done on patients, not just considering theory)",
+                "cf": null
+              },
+              {
+                "text": "clinical training (= the part of a doctor’s training done in a hospital)",
+                "cf": null
+              }
+            ],
+            "countability": null,
+            "domain": null,
+            "is_phrase": false,
+            "is_idiom": false,
+            "source_pdd_idx": [
+              0
+            ],
+            "source_def_idx": [
+              0
+            ],
+            "cefr_originals": [
+              "C1"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "original_sense_count": 3,
+        "simplified_sense_count": 1,
+        "source_labels": [
+          "sense_badge"
+        ]
+      }
+    },
+    {
+      "word": "arrange",
+      "why": "Rule 1: 3 senses all A2, merged into 1",
+      "before": {
+        "oxford_badge": "A2",
+        "pos_data": [
+          {
+            "pos": "verb",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": "1",
+                "text": "to plan or organize something in advance",
+                "register_tags": [],
+                "cefr": "A2",
+                "topics": [],
+                "collocations": {
+                  "adverb": [
+                    "easily",
+                    "hastily",
+                    "quickly"
+                  ],
+                  "verb + arrange": [
+                    "try to",
+                    "be able to",
+                    "can"
+                  ],
+                  "preposition": [
+                    "for"
+                  ]
+                },
+                "examples": [
+                  {
+                    "text": "The party was arranged quickly.",
+                    "cf": "arrange something"
+                  },
+                  {
+                    "text": "Can I arrange an appointment for Monday?",
+                    "cf": null
+                  },
+                  {
+                    "text": "The meeting was provisionally arranged for 9 October.",
+                    "cf": null
+                  },
+                  {
+                    "text": "She arranged a loan with the bank.",
+                    "cf": null
+                  },
+                  {
+                    "text": "We met at six, as arranged.",
+                    "cf": null
+                  },
+                  {
+                    "text": "We've still got to arrange how to get to the airport.",
+                    "cf": "arrange how, where, etc…"
+                  },
+                  {
+                    "text": "Have you arranged to meet him?",
+                    "cf": "arrange to do something"
+                  },
+                  {
+                    "text": "I've arranged that we can borrow their car.",
+                    "cf": "arrange that…"
+                  },
+                  {
+                    "text": "We arranged for a car to collect us from the airport.",
+                    "cf": "arrange for something to do something"
+                  },
+                  {
+                    "text": "The president arranged for a meeting in his office.",
+                    "cf": "arrange for something"
+                  },
+                  {
+                    "text": "I've arranged with the neighbours about feeding the cat while we are away.",
+                    "cf": "arrange with somebody (about something)"
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              },
+              {
+                "n": 2,
+                "sensenum_local": "2",
+                "text": "to put something in a particular order; to make something neat or attractive",
+                "register_tags": [],
+                "cefr": "A2",
+                "topics": [],
+                "collocations": {
+                  "adverb": [
+                    "carefully",
+                    "neatly",
+                    "perfectly"
+                  ],
+                  "preposition": [
+                    "in",
+                    "into",
+                    "according to"
+                  ],
+                  "phrases": [
+                    "arrange something in… order"
+                  ]
+                },
+                "examples": [
+                  {
+                    "text": "The books are arranged alphabetically by author.",
+                    "cf": null
+                  },
+                  {
+                    "text": "The photos are arranged in chronological order.",
+                    "cf": null
+                  },
+                  {
+                    "text": "I arranged the flowers in a vase.",
+                    "cf": null
+                  },
+                  {
+                    "text": "The streets are arranged in a grid pattern.",
+                    "cf": null
+                  },
+                  {
+                    "text": "I must arrange my financial affairs and make a will.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              },
+              {
+                "n": 3,
+                "sensenum_local": "3",
+                "text": "to change a piece of music so that it is suitable for a particular instrument or voice",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "He arranged traditional folk songs for the piano.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "simplified_senses": [
+          {
+            "pos": "verb",
+            "cefr": "A2",
+            "cefr_source": [
+              "sense_badge",
+              "sense_badge"
+            ],
+            "text": "to plan or organize something in advance | to put something in a particular order; to make something neat or attractive",
+            "register_tags": [],
+            "topics": [],
+            "collocations": {
+              "adverb": [
+                "easily",
+                "hastily",
+                "quickly",
+                "carefully",
+                "neatly",
+                "perfectly"
+              ],
+              "verb + arrange": [
+                "try to",
+                "be able to",
+                "can"
+              ],
+              "preposition": [
+                "for",
+                "in",
+                "into",
+                "according to"
+              ],
+              "phrases": [
+                "arrange something in… order"
+              ]
+            },
+            "examples": [
+              {
+                "text": "The party was arranged quickly.",
+                "cf": "arrange something"
+              },
+              {
+                "text": "Can I arrange an appointment for Monday?",
+                "cf": null
+              }
+            ],
+            "countability": null,
+            "domain": null,
+            "is_phrase": false,
+            "is_idiom": false,
+            "source_pdd_idx": [
+              0,
+              0
+            ],
+            "source_def_idx": [
+              0,
+              1
+            ],
+            "cefr_originals": [
+              "A2",
+              "A2"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "original_sense_count": 3,
+        "simplified_sense_count": 1,
+        "source_labels": [
+          "sense_badge",
+          "sense_badge"
+        ]
+      }
+    },
+    {
+      "word": "saturate",
+      "why": "Rule 5: no_data (should be skipped at build)",
+      "before": {
+        "oxford_badge": null,
+        "pos_data": [
+          {
+            "pos": "verb",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": "1",
+                "text": "to make something completely wet",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "The continuous rain had saturated the soil.",
+                    "cf": null
+                  },
+                  {
+                    "text": "Condensation can saturate the insulation, rendering it useless.",
+                    "cf": null
+                  },
+                  {
+                    "text": "The heavy autumn rains saturate the ground.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              },
+              {
+                "n": 2,
+                "sensenum_local": "2",
+                "text": "to fill something/somebody completely with something so that it is impossible or useless to add any more",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "Newspapers were saturated with reports about the royal wedding.",
+                    "cf": "be saturated (with/in something)"
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false,
+                "countability": null,
+                "domain": null
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "simplified_senses": [
+          {
+            "pos": "verb",
+            "cefr": null,
+            "cefr_source": [
+              "no_data",
+              "unlisted"
+            ],
+            "text": "to make something completely wet | to fill something/somebody completely with something so that it is impossible or useless to add any more",
+            "register_tags": [],
+            "topics": [],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "The continuous rain had saturated the soil.",
+                "cf": null
+              },
+              {
+                "text": "Condensation can saturate the insulation, rendering it useless.",
+                "cf": null
+              }
+            ],
+            "countability": null,
+            "domain": null,
+            "is_phrase": false,
+            "is_idiom": false,
+            "source_pdd_idx": [
+              0,
+              0
+            ],
+            "source_def_idx": [
+              0,
+              1
+            ],
+            "cefr_originals": [
+              null,
+              null
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "original_sense_count": 2,
+        "simplified_sense_count": 1,
+        "source_labels": [
+          "no_data",
+          "unlisted"
+        ]
+      }
+    },
+    {
+      "word": "set up",
+      "why": "Phrasal verb: 9 senses merged (Sense Cap issue)",
+      "before": {
+        "oxford_badge": "B1",
+        "pos_data": [
+          {
+            "pos": "phrasal verb",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": "1",
+                "text": "to provide somebody with the money that they need in order to do something",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "A bank loan helped to set him up in business.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false
+              },
+              {
+                "n": 2,
+                "sensenum_local": "2",
+                "text": "to make somebody healthier, stronger, more lively, etc.",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "The break from work really set me up for the new year.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false
+              },
+              {
+                "n": 3,
+                "sensenum_local": "3",
+                "text": "to trick somebody, especially by making them appear guilty of something",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "He denied the charges, saying the police had set him up.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false
+              }
+            ]
+          },
+          {
+            "pos": "phrasal verb",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": "1",
+                "text": "to create something or start it",
+                "register_tags": [],
+                "cefr": "B1",
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "to set up a business",
+                    "cf": null
+                  },
+                  {
+                    "text": "A fund will be set up for the dead men's families.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false
+              },
+              {
+                "n": 2,
+                "sensenum_local": "2",
+                "text": "to build something or put something somewhere",
+                "register_tags": [],
+                "cefr": "B1",
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "The police set up roadblocks on routes out of the city.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false
+              },
+              {
+                "n": 3,
+                "sensenum_local": "3",
+                "text": "to make a piece of equipment or a machine ready for use",
+                "register_tags": [],
+                "cefr": "B1",
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "She set up her guitar and amp in her bedroom.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false
+              },
+              {
+                "n": 4,
+                "sensenum_local": "4",
+                "text": "to arrange for something to happen",
+                "register_tags": [],
+                "cefr": "B1",
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "I've set up a meeting for Friday.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false
+              },
+              {
+                "n": 5,
+                "sensenum_local": "5",
+                "text": "to start a process or a series of events",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "The slump on Wall Street set up a chain reaction in stock markets around the world.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false
+              }
+            ]
+          },
+          {
+            "pos": "phrasal verb",
+            "register_tags": [],
+            "definitions": [
+              {
+                "n": 1,
+                "sensenum_local": null,
+                "text": "to start running a business",
+                "register_tags": [],
+                "cefr": null,
+                "topics": [],
+                "collocations": {},
+                "examples": [
+                  {
+                    "text": "She took out a bank loan and set up on her own.",
+                    "cf": null
+                  },
+                  {
+                    "text": "After leaving college, he set himself up as a freelance photographer.",
+                    "cf": null
+                  }
+                ],
+                "is_phrase": false,
+                "is_idiom": false
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "simplified_senses": [
+          {
+            "pos": "phrasal verb",
+            "cefr": "B1",
+            "cefr_source": [
+              "sense_badge",
+              "sense_badge",
+              "sense_badge",
+              "sense_badge"
+            ],
+            "text": "to create something or start it | to build something or put something somewhere | to make a piece of equipment or a machine ready for use | to arrange for something to happen",
+            "register_tags": [],
+            "topics": [],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "to set up a business",
+                "cf": null
+              },
+              {
+                "text": "A fund will be set up for the dead men's families.",
+                "cf": null
+              }
+            ],
+            "countability": null,
+            "domain": null,
+            "is_phrase": false,
+            "is_idiom": false,
+            "source_pdd_idx": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "source_def_idx": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "cefr_originals": [
+              "B1",
+              "B1",
+              "B1",
+              "B1"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "original_sense_count": 9,
+        "simplified_sense_count": 1,
+        "source_labels": [
+          "sense_badge",
+          "sense_badge",
+          "sense_badge",
+          "sense_badge"
+        ]
+      }
+    }
+  ]
+}

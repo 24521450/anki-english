@@ -1,0 +1,284 @@
+line_no,word,lemma,lemma_in_source,declared_cefr,card_reason,category
+16,resources,resource,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+21,countermeasures,countermeasure,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+26,disconnected,disconnect,yes,UNCLASSIFIED,2/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+28,narrative,narrative,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+30,evolved,evolve,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+35,lineages,lineage,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+40,setbacks,setback,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+45,domesticated,domesticate,yes,UNCLASSIFIED,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+54,concentrations,concentration,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+55,regulations,regulation,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+61,ambition,ambition,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+73,competitive,competitive,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+74,hyperfocus,hyperfocus,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+82,saturating,saturate,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+87,soullessly,soullessly,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+88,invading,invade,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+94,extrapolated,extrapolate,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+103,eliminated,eliminate,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+104,estimates,estimate,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+105,evidence,evidence,yes,A2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+109,harbored,harbor,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+110,harnessing,harness,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+112,monitors,monitor,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+116,teeming,teem,yes,UNCLASSIFIED,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+134,unfiltered,unfiltered,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+145,convenient,convenient,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+149,eternal,eternal,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+152,carrying capacity,carrying capacity,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+155,devour,devour,yes,UNCLASSIFIED,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+158,blink of an eye,blink of an eye,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+159,daunting,daunt,yes,UNCLASSIFIED,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+165,harbor,harbor,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+182,curated,curated,no,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+184,currency,currency,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+196,heightened,heighten,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+198,relay,relay,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+232,logistical,logistical,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+258,contrast,contrast,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+259,proportions,proportion,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+265,lateralized,lateralize,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+279,slouching,slouch,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+284,ligaments,ligament,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+287,promote,promote,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+288,vertebrae,vertebra,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+289,stacked,stack,yes,UNCLASSIFIED,3/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+290,aligned,align,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+311,harvest,harvest,yes,C1,1/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+312,foraging,forage,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+324,inherited,inherit,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+328,byproducts,byproduct,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+331,pathways,pathway,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+353,standards,standard,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+362,autopilot,autopilot,yes,UNCLASSIFIED,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+368,designated,designate,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+372,interwoven,interweave,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+391,bliss,bliss,yes,UNCLASSIFIED,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+393,essence,essence,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+397,gouging,gouge,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+399,identity,identity,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+401,chemistry,chemistry,yes,A2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+402,extends,extend,yes,UNCLASSIFIED,3/3 senses failed: word-not-in-source,word-not-in-source
+404,sync,sync,yes,UNCLASSIFIED,2/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+406,clunkiness,clunkiness,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+407,survival,survival,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+412,shunned,shun,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+415,dabbler,dabbler,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+417,tidy,tidy,yes,A2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+420,meandering,meander,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+421,zigzagging,zigzag,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+427,shortsighted,shortsighted,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+435,cosmetics,cosmetic,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+438,convulsions,convulsion,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+444,billions,billion,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+452,diminishing,diminish,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+455,untethered,untethered,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+456,destabilizing,destabilize,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+465,invent,invent,yes,A2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+466,shifting,shift,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+472,justification,justification,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+475,permission,permission,yes,A2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+479,injustice,injustice,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+493,randomized,randomize,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+500,bullet,bullet,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+517,have the floor,have the floor,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+525,consist,consist,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+527,indeed,indeed,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+528,typically,typically,yes,B1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+541,pace,pace,no,B2,1/1 senses failed: word-not-in-source,word-not-in-source
+543,pension,pension,yes,B2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+553,tale,tale,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+574,goodness,goodness,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+584,jury,jury,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+651,attendance,attendance,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+659,bail,bail,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+661,banner,banner,yes,C1,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+666,behalf,behalf,yes,C1,3/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+676,boundary,boundary,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+688,cease,cease,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+713,contradiction,contradiction,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+725,bass,bass,yes,C1,3/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+738,bow,bow,yes,C1,3/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+747,canvas,canvas,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+756,caution,caution,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+779,fairness,fairness,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+781,fate,fate,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+805,forth,forth,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+814,funeral,funeral,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+821,glance,glance,yes,C1,2/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+827,grave,grave,yes,UNCLASSIFIED,1/1 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+828,grave,grave,yes,UNCLASSIFIED,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+832,grin,grin,yes,C1,1/2 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+842,halt,halt,yes,C1,2/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+859,hook,hook,yes,C1,"2/3 senses failed: cefr-mismatch (deck=C1, source=B2 [per-def], source-badge=C1); sense-text-not-in-source",sense-text-not-in-source
+861,horizon,horizon,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+863,hostage,hostage,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+873,ignorance,ignorance,yes,C1,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+909,insult,insult,yes,C1,1/2 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+918,intent,intent,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+922,interference,interference,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+936,isolation,isolation,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+947,lap,lap,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+964,lesser,less,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+984,loom,loom,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1009,meantime,meantime,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1018,mercy,mercy,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1021,merge,merge,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1025,midst,midst,yes,C1,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1065,noon,noon,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1118,peculiar,peculiar,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1119,persist,persist,yes,C1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1127,pipeline,pipeline,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1132,pledge,pledge,yes,C1,1/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+1137,pond,pond,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1151,prejudice,prejudice,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1155,premium,premium,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1167,prevention,prevention,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1168,prey,prey,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1174,proceedings,proceeding,yes,C1,3/3 senses failed: word-not-in-source,word-not-in-source
+1198,pump,pump,yes,C1,1/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+1203,radar,radar,yes,C1,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1205,rage,rage,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1214,realm,realm,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1219,recount,recount,yes,C1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1282,sake,sake,yes,C1,3/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1284,say,say,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1312,shrink,shrink,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1352,stab,stab,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1356,standing,stand,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1410,sword,sword,yes,C1,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1418,tempt,tempt,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1469,troubled,trouble,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1487,vanish,vanish,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1520,widen,widen,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1537,forbid,forbid,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1545,cue,cue,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1548,differ,differ,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1549,devote,devote,yes,B2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1573,palm,palm,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1575,choir,choir,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1592,criteria,criterion,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+1604,implicate,implicate,yes,UNCLASSIFIED,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1627,statistics,statistic,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+1630,bat,bat,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1642,absence,absence,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1647,abundance,abundance,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1656,accordance,accordance,yes,C1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1665,accused,accuse,yes,C1,1/1 senses failed: word-not-in-source,word-not-in-source
+1709,apology,apology,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1730,balloon,balloon,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1732,bargain,bargain,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1736,beside,beside,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1738,bid,bid,yes,B2,3/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+1752,candle,candle,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1766,cliff,cliff,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1771,collision,collision,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1823,contempt,contempt,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1826,contention,contention,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1829,contrary,contrary,yes,C1,2/2 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+1832,convenience,convenience,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1842,cop,cop,yes,C1,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1857,counter (long flat surface),counter (long flat surface),no,B2,3/3 senses failed: word-not-in-source,word-not-in-source
+1858,counter (argue against),counter (argue against),no,C1,2/2 senses failed: word-not-in-source,word-not-in-source
+1861,courtesy,courtesy,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1876,curiosity,curiosity,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1884,dare,dare,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1887,dawn,dawn,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1898,deed,deed,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1900,default,default,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1917,depart,depart,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1923,deposit,deposit,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1950,dilemma,dilemma,yes,C1,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1952,diminish,diminish,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1968,discretion,discretion,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+1999,dose,dose,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2011,duration,duration,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2015,ease,ease,yes,C1,1/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+2025,ego,ego,yes,C1,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2066,envelope,envelope,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2082,exception,exception,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2107,fame,fame,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2114,fool,fool,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2130,gene,gene,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2141,grave (for dead person),grave (for dead person),no,C1,3/3 senses failed: word-not-in-source,word-not-in-source
+2142,grave (serious),grave (serious),no,C1,1/1 senses failed: word-not-in-source,word-not-in-source
+2153,hence,hence,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2156,highway,highway,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2160,honesty,honesty,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2164,ID,id,yes,B2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2203,lifetime,lifetime,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2216,making,make,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2226,medal,medal,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2236,motion,motion,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2239,naked,naked,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2242,necessity,necessity,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2271,panic,panic,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2281,penalty,penalty,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2284,pity,pity,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2288,precise,precise,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2291,preference,preference,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2304,psychological,psychological,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2316,rat,rat,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2322,recognition,recognition,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2341,ridiculous,ridiculous,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2344,rob,rob,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2380,spill,spill,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2381,spite,spite,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2386,sporting,sport,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2387,starve,starve,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2390,strictly,strictly,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2391,strip (long narrow piece),strip (long narrow piece),no,C1,3/3 senses failed: word-not-in-source,word-not-in-source
+2392,strip (remove clothes/a layer),strip (remove clothes/a layer),no,C1,3/3 senses failed: word-not-in-source,word-not-in-source
+2407,terms,term,yes,B2,2/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2420,thumb,thumb,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2422,tissue,tissue,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2459,weird,weird,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2460,wellbeing,wellbeing,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2461,wheat,wheat,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2470,worm,worm,yes,B2,1/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2471,wrist,wrist,yes,B2,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2482,resources,resource,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2483,disconnected,disconnect,yes,UNCLASSIFIED,3/3 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2490,regulations,regulation,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2492,concentrations,concentration,yes,UNCLASSIFIED,3/3 senses failed: word-not-in-source,word-not-in-source
+2495,invading,invade,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+2498,eliminated,eliminate,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+2499,eliminated,eliminate,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2503,embryo,embryo,yes,UNCLASSIFIED,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2505,monitors,monitor,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+2532,proportions,proportion,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+2533,proportions,proportion,yes,UNCLASSIFIED,3/3 senses failed: word-not-in-source,word-not-in-source
+2541,stacked,stack,yes,UNCLASSIFIED,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2544,pathways,pathway,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2549,standards,standard,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2550,standards,standard,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2551,standards,standard,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+2553,byproducts,byproduct,no,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2557,sync,sync,yes,UNCLASSIFIED,2/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2558,extends,extend,yes,UNCLASSIFIED,3/3 senses failed: word-not-in-source,word-not-in-source
+2559,inherited,inherit,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2562,meandering,meander,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2567,labor,labor,yes,UNCLASSIFIED,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B2 [oxford-badge]); sense-text-not-in-source",sense-text-not-in-source
+2570,billions,billion,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2580,diminishing,diminish,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2582,heel,heel,yes,B2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2588,shifting,shift,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2589,shifting,shift,yes,UNCLASSIFIED,1/1 senses failed: word-not-in-source,word-not-in-source
+2590,shifting,shift,yes,UNCLASSIFIED,2/2 senses failed: word-not-in-source,word-not-in-source
+2616,spare,spare,yes,C1,"3/3 senses failed: cefr-mismatch (deck=C1, source=B2 [oxford-badge]); sense-text-not-in-source",sense-text-not-in-source
+2631,bass,bass,yes,C1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2632,bat,bat,yes,C1,"3/3 senses failed: cefr-mismatch (deck=C1, source=B2 [oxford-badge]); sense-text-not-in-source",sense-text-not-in-source
+2638,bow,bow,yes,C1,1/1 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+2651,grief,grief,yes,C1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2658,hook,hook,yes,C1,"3/3 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); sense-text-not-in-source",sense-text-not-in-source
+2662,interference,interference,yes,C1,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); sense-text-not-in-source",sense-text-not-in-source
+2731,strip,strip,yes,UNCLASSIFIED,"3/3 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [oxford-badge]); no-per-sense-pos-in-deck; flat-matched; sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched",sense-text-not-in-source
+2788,manual,manual,yes,UNCLASSIFIED,1/2 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2815,bid,bid,yes,B2,1/1 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,sense-text-not-in-source
+2826,collision,collision,yes,C1,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); sense-text-not-in-source",sense-text-not-in-source
+2845,counter (long flat surface),counter (long flat surface),no,B2,1/1 senses failed: word-not-in-source,word-not-in-source
+2856,default,default,yes,C1,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+2908,grave (serious),grave (serious),no,C1,1/1 senses failed: word-not-in-source,word-not-in-source
+2976,rail,rail,yes,B2,1/1 senses failed: sense-text-not-in-source,sense-text-not-in-source
+3003,strip (long narrow piece),strip (long narrow piece),no,C1,2/2 senses failed: word-not-in-source,word-not-in-source

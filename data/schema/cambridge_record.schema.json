@@ -1,0 +1,416 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ielts-deck.local/schemas/cambridge_record.v2.json",
+  "title": "Cambridge Dictionary Record (Schema v2)",
+  "description": "Schema for a single word record produced by the ielts-deck Cambridge parser. One record per (word) at the JSONL top level. Multi-POS is nested under pos_data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "word",
+    "homonym_index",
+    "source",
+    "source_url",
+    "source_files",
+    "pos",
+    "register_tags",
+    "oxford_lists",
+    "opal",
+    "awl",
+    "audio",
+    "see_also",
+    "pos_data",
+    "verb_forms",
+    "idioms"
+  ],
+  "properties": {
+    "word": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Headword. Null only on synthetic records."
+    },
+    "homonym_index": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "description": "Oxford homonym index (1, 2, 3...) for words with distinct etymologies sharing the same spelling. Null for non-homonyms. Display as superscript: bass¹. The merge step groups by (word, homonym_index) — bass1 and bass2 are NOT merged."
+    },
+    "source": {
+      "type": "string",
+      "const": "cambridge",
+      "description": "Always 'cambridge'. Two separate schemas ensure this invariant."
+    },
+    "source_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Oxford/Cambridge URL the record was scraped from. Null when generated from cache (caller fills in)."
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of cache filenames that contributed to this record (for traceability)."
+    },
+    "pos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Top-level POS labels declared on the page (usually 1, can be multiple for multi-POS words)."
+    },
+    "register_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Top-level (word-wide) register tags. Always [] in v2 (no source exposes word-level register in the parsed HTML)."
+    },
+    "oxford_lists": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Oxford 3000",
+          "Oxford 5000"
+        ]
+      },
+      "description": "Oxford 3000/5000 list membership. Empty for Cambridge (always [])."
+    },
+    "opal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "OPAL word list designation (e.g. 'OPAL spoken', 'OPAL written'). Oxford-only; not implemented in v2 (cross-ref phase)."
+    },
+    "awl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Academic Word List designation. Oxford-only; not implemented in v2 (cross-ref phase)."
+    },
+    "uk_ipa": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Headword UK IPA, e.g. '/ˈeɪbl/'. Extracted from the first .dipa inside an ancestor with class 'uk' (Cambridge's region marker). Wrapped in slashes already; do not re-wrap."
+    },
+    "us_ipa": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Headword US IPA, e.g. '/ˈeɪbl/'. Extracted from the first .dipa inside an ancestor with class 'us' (Cambridge's region marker). Wrapped in slashes already; do not re-wrap."
+    },
+    "audio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uk",
+        "us"
+      ],
+      "properties": {
+        "uk": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "UK pronunciation audio URL. Oxford: data-src-mp3 on .sound.audio_play_button. Cambridge: <source> child of <audio> with uk_pron in src."
+        },
+        "us": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "US pronunciation audio URL. Same selector logic as uk."
+        }
+      }
+    },
+    "see_also": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Related headwords from SEE ALSO section. Oxford: span.xrefs + span.xh. Cambridge: .xref."
+    },
+    "pos_data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pos",
+          "register_tags",
+          "definitions"
+        ],
+        "properties": {
+          "pos": {
+            "type": "string",
+            "description": "POS label (e.g. 'noun', 'verb', 'adjective,adverb')"
+          },
+          "register_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "POS-level register tags (rare; not implemented in v2)"
+          },
+          "definitions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "n",
+                "sensenum_local",
+                "text",
+                "register_tags",
+                "cefr",
+                "topics",
+                "collocations",
+                "examples",
+                "is_phrase",
+                "is_idiom"
+              ],
+              "properties": {
+                "n": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "1-based counter within pos_data entry"
+                },
+                "sensenum_local": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Oxford's literal sensenum attribute on <li class='sense'>. Nullable for idioms/phrasal."
+                },
+                "text": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Definition text"
+                },
+                "register_tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Sense-level register tags (e.g. ['informal', 'slang'])"
+                },
+                "cefr": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "A1",
+                    "A2",
+                    "B1",
+                    "B2",
+                    "C1",
+                    "C2",
+                    "UNCLASSIFIED",
+                    null
+                  ],
+                  "description": "CEFR level for this sense (nullable)"
+                },
+                "topics": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "name",
+                      "cefr"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "cefr": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "enum": [
+                          "A1",
+                          "A2",
+                          "B1",
+                          "B2",
+                          "C1",
+                          "C2",
+                          "UNCLASSIFIED",
+                          null
+                        ],
+                        "description": "Per-topic CEFR. Nullable: Oxford sometimes tags a topic without a level."
+                      }
+                    }
+                  }
+                },
+                "collocations": {
+                  "type": "object",
+                  "description": "Buckets of collocations keyed by category (adverb / phrases / verb + head / etc.)",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "text",
+                      "cf"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "Example sentence text"
+                      },
+                      "cf": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "Collocation frame (e.g. 'abandon somebody'). Nullable."
+                      }
+                    }
+                  }
+                },
+                "is_phrase": {
+                  "type": "boolean",
+                  "description": "True if phrasal verb. Not implemented in v2 (always false)."
+                },
+                "is_idiom": {
+                  "type": "boolean",
+                  "description": "True if idiom (detected via span.idm-g ancestor walk)"
+                }
+              }
+            }
+          }
+        }
+      },
+      "description": "One entry per POS section. Each contains all senses for that POS."
+    },
+    "verb_forms": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "root": {
+              "type": "string"
+            },
+            "thirdps": {
+              "type": "string"
+            },
+            "past": {
+              "type": "string"
+            },
+            "pastpart": {
+              "type": "string"
+            },
+            "prespart": {
+              "type": "string"
+            },
+            "neg": {
+              "type": "string"
+            },
+            "short": {
+              "type": "string"
+            },
+            "rareshortform": {
+              "type": "string"
+            }
+          },
+          "description": "Oxford only: parsed from <table class='verb_forms_table'>. All keys optional — Oxford exposes whatever forms it has. Core 5 (root, thirdps, past, pastpart, prespart) appear on regular verbs; 3 modal keys (neg, short, rareshortform) appear on modals only."
+        }
+      ]
+    },
+    "idioms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "phrase",
+          "pos",
+          "text",
+          "register_tags",
+          "cefr"
+        ],
+        "properties": {
+          "phrase": {
+            "type": "string",
+            "description": "Idiom phrase as it appears on Oxford page"
+          },
+          "pos": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "POS of the idiom (if derivable)"
+          },
+          "text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Idiom definition (not extracted in v2)"
+          },
+          "register_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cefr": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "A1",
+              "A2",
+              "B1",
+              "B2",
+              "C1",
+              "C2",
+              "UNCLASSIFIED",
+              null
+            ]
+          }
+        }
+      },
+      "description": "Top-level idiom phrases (extracted via span.idm-g for Oxford). Cambridge does not have this section."
+    },
+    "_skip": {
+      "type": "boolean",
+      "description": "Build-layer flag: when true, the Anki builder must skip this record (no extractable senses). Set by merge.py when both pos_data and idioms are empty."
+    },
+    "_skip_reason": {
+      "type": "string",
+      "description": "Human-readable explanation of why _skip was set (e.g. 'phrasal-verb-redirect: no extractable senses')."
+    }
+  }
+}

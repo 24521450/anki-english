@@ -1,0 +1,92 @@
+<div class="anki-card-container">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div id="top-bar-pos-front" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+        {{#PartOfSpeech}}
+        <span class="pos-chip">{{PartOfSpeech}}</span>
+        {{/PartOfSpeech}}
+      </div>
+    </div>
+    <div class="top-bar-right">
+      <span class="top-badge cefr-badge-{{CEFRLevel}}">{{CEFRLevel}}</span>
+    </div>
+  </div>
+  <div class="card-content-front">
+    <div class="front-word-group">
+      <div class="word-front">{{Word}}</div>
+      <div class="sense-count" id="sense-count-front"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden raw data for JS -->
+<div style="display:none;">
+  <div id="raw-pos-front">{{PartOfSpeech}}</div>
+  <div id="raw-tags-front">{{Tags}}</div>
+  <div id="raw-definition-front">{{Definition}}</div>
+</div>
+
+<script>
+(function() {
+  function trim(s) { return s ? s.replace(/^\s+|\s+$/g, '') : ''; }
+  function getRaw(id) { var e = document.getElementById(id); return e ? trim(e.textContent || e.innerText) : ''; }
+
+  // 1. POS chips
+  var rawPos = getRaw('raw-pos-front');
+  var posDiv = document.getElementById('top-bar-pos-front');
+  var topBarLeft = posDiv ? posDiv.parentNode : null;
+  if (posDiv && rawPos) {
+    var parts = rawPos.split(/[,\/]/), clean = [];
+    for (var i = 0; i < parts.length; i++) { var p = trim(parts[i]); if (p) clean.push(p); }
+    if (clean.length > 1) {
+      var h = '';
+      for (var j = 0; j < clean.length; j++)
+        h += '<span class="pos-chip"><span class="pos-chip-num">' + (j+1) + '</span>' + clean[j] + '</span>';
+      posDiv.innerHTML = h;
+    }
+  }
+
+  // 2. Corpus badges + separator
+  var rawTags = getRaw('raw-tags-front');
+  var corpusMap = {
+    'Oxford_3000':['corpus-badge corpus-oxf','Oxford 3000'],
+    'Oxford_5000':['corpus-badge corpus-oxf','Oxford 5000'],
+    'OPAL_W':     ['corpus-badge corpus-opal','OPAL W'],
+    'OPAL_S':     ['corpus-badge corpus-opal','OPAL S'],
+    'AWL':        ['corpus-badge corpus-awl','AWL']
+  };
+  var addedSep = false;
+  if (topBarLeft && rawTags) {
+    var tList = rawTags.split(/\s+/);
+    for (var k = 0; k < tList.length; k++) {
+      var ct = trim(tList[k]);
+      if (corpusMap[ct]) {
+        if (!addedSep) {
+          var sep = document.createElement('span');
+          sep.className = 'top-bar-sep';
+          topBarLeft.appendChild(sep);
+          addedSep = true;
+        }
+        var cs = document.createElement('span');
+        cs.className = corpusMap[ct][0];
+        cs.textContent = corpusMap[ct][1];
+        topBarLeft.appendChild(cs);
+      }
+    }
+  }
+
+  // 3. Sense count dots (only if multi-sense)
+  var rawDef = getRaw('raw-definition-front');
+  var dotsEl = document.getElementById('sense-count-front');
+  if (rawDef && dotsEl) {
+    var parts2 = rawDef.split('|'), count = 0;
+    for (var d = 0; d < parts2.length; d++) { if (trim(parts2[d])) count++; }
+    if (count > 1) {
+      var dots = '';
+      for (var n = 0; n < count; n++) dots += '<span class="sense-count-dot"></span>';
+      dotsEl.innerHTML = dots;
+    }
+  }
+
+})();
+</script>

@@ -1,0 +1,1352 @@
+[
+  {
+    "hash": "726202f0a7f87b1f",
+    "word": "absorb",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "take in",
+    "confidence": 0.96
+  },
+  {
+    "hash": "c80b7c4bec67de97",
+    "word": "abundance",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "plenty",
+    "confidence": 0.96
+  },
+  {
+    "hash": "34091cf746d9d140",
+    "word": "abundant",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "plentiful",
+    "confidence": 0.95
+  },
+  {
+    "hash": "c373bc175d90cb9e",
+    "word": "academy",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "specialized school",
+    "confidence": 0.94
+  },
+  {
+    "hash": "3bc006046a38dd87",
+    "word": "accidentally",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "by chance",
+    "confidence": 0.95
+  },
+  {
+    "hash": "b293e4638dcc0196",
+    "word": "accomplish",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "succeed in",
+    "confidence": 0.95
+  },
+  {
+    "hash": "7ff7c4c172330abe",
+    "word": "accordingly",
+    "pos": "adverb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "appropriately; therefore",
+    "confidence": 0.9
+  },
+  {
+    "hash": "df5a9b1b19b59d73",
+    "word": "accountable",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "responsible, answerable",
+    "confidence": 0.93
+  },
+  {
+    "hash": "53fa5855c6fffb6e",
+    "word": "accountant",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "financial record-keeper",
+    "confidence": 0.93
+  },
+  {
+    "hash": "4201dd06a6c1dc9c",
+    "word": "accumulate",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "build up gradually",
+    "confidence": 0.94
+  },
+  {
+    "hash": "a44593b5a54a6600",
+    "word": "basement",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "below-ground room",
+    "confidence": 0.95
+  },
+  {
+    "hash": "7b4e0673b5541c98",
+    "word": "bass",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "lowest musical tone",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e4ac189c07077195",
+    "word": "bat",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "ball-hitting stick",
+    "confidence": 0.95
+  },
+  {
+    "hash": "8b8aaf7dd2162338",
+    "word": "bat",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "hit with a bat",
+    "confidence": 0.95
+  },
+  {
+    "hash": "24cefedad73d20e8",
+    "word": "battlefield",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "battle site",
+    "confidence": 0.95
+  },
+  {
+    "hash": "514b1a171547b072",
+    "word": "bay",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "curved coastline inlet",
+    "confidence": 0.93
+  },
+  {
+    "hash": "f37dd715b21d1d31",
+    "word": "beam",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "ray of light; support beam",
+    "confidence": 0.88
+  },
+  {
+    "hash": "0b14f88bd9d6986f",
+    "word": "beast",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "large wild animal",
+    "confidence": 0.93
+  },
+  {
+    "hash": "9309d8f52857e6d3",
+    "word": "bench",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "long seat; player seats",
+    "confidence": 0.88
+  },
+  {
+    "hash": "025a30491c4bc163",
+    "word": "benchmark",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "reference standard",
+    "confidence": 0.94
+  },
+  {
+    "hash": "6cc89a08521b3ed4",
+    "word": "beneficial",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "helpful",
+    "confidence": 0.95
+  },
+  {
+    "hash": "8affaa5d34646d8d",
+    "word": "beneficiary",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "one who gains",
+    "confidence": 0.93
+  },
+  {
+    "hash": "37d11e087a3ee479",
+    "word": "beside",
+    "pos": "preposition",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "next to",
+    "confidence": 0.96
+  },
+  {
+    "hash": "7372827999fd3897",
+    "word": "bias",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "unfair preference",
+    "confidence": 0.94
+  },
+  {
+    "hash": "ea12d6dceb6e6a1e",
+    "word": "bind",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "tie together",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e7898bc44fd7f0b6",
+    "word": "biography",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "life story",
+    "confidence": 0.95
+  },
+  {
+    "hash": "3d967988c409684b",
+    "word": "biological",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "relating to life",
+    "confidence": 0.92
+  },
+  {
+    "hash": "98a9d87fc8f924af",
+    "word": "bishop",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "senior church priest",
+    "confidence": 0.94
+  },
+  {
+    "hash": "9091437805d49248",
+    "word": "bizarre",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "very strange",
+    "confidence": 0.96
+  },
+  {
+    "hash": "24ce6b972fe5856b",
+    "word": "blade",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "cutting edge; propeller blade",
+    "confidence": 0.88
+  },
+  {
+    "hash": "db187009f5631f46",
+    "word": "blanket",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "bed cover",
+    "confidence": 0.95
+  },
+  {
+    "hash": "0ba0225ef9cded0c",
+    "word": "bleed",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "lose blood",
+    "confidence": 0.96
+  },
+  {
+    "hash": "4280b14d7f8dffd4",
+    "word": "bless",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "make holy",
+    "confidence": 0.93
+  },
+  {
+    "hash": "c9de1b7f9f15d252",
+    "word": "bliss",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "extreme happiness",
+    "confidence": 0.95
+  },
+  {
+    "hash": "54c48577bf820126",
+    "word": "blow",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "hard hit; sudden damage",
+    "confidence": 0.88
+  },
+  {
+    "hash": "54678f23269d4224",
+    "word": "boast",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "brag; possess",
+    "confidence": 0.88
+  },
+  {
+    "hash": "df4092b0fd70784c",
+    "word": "bolster",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "strengthen",
+    "confidence": 0.94
+  },
+  {
+    "hash": "e91722fe92376328",
+    "word": "bombing",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "bomb attack",
+    "confidence": 0.94
+  },
+  {
+    "hash": "989d0f0fdecc8cb3",
+    "word": "bond",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "connection",
+    "confidence": 0.94
+  },
+  {
+    "hash": "225e8e764e4f7562",
+    "word": "bonus",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "extra reward",
+    "confidence": 0.92
+  },
+  {
+    "hash": "d4aaec17d9c7b81a",
+    "word": "booking",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "advance reservation",
+    "confidence": 0.93
+  },
+  {
+    "hash": "81089cc3a26e1b5e",
+    "word": "bound",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "certain",
+    "confidence": 0.95
+  },
+  {
+    "hash": "4374c0121fa17107",
+    "word": "boundary",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "dividing line",
+    "confidence": 0.94
+  },
+  {
+    "hash": "c414e302275b2875",
+    "word": "boundless",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "without limits",
+    "confidence": 0.94
+  },
+  {
+    "hash": "d4b8681c23d204b0",
+    "word": "breakthrough",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "major advance",
+    "confidence": 0.93
+  },
+  {
+    "hash": "77161cd4683070d7",
+    "word": "brick",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "building block",
+    "confidence": 0.93
+  },
+  {
+    "hash": "62095333555526a5",
+    "word": "briefly",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "for a short time",
+    "confidence": 0.95
+  },
+  {
+    "hash": "46ac5091be7dbf64",
+    "word": "brisket",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "beef chest meat",
+    "confidence": 0.92
+  },
+  {
+    "hash": "072856e900cc798d",
+    "word": "broadband",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "fast internet",
+    "confidence": 0.94
+  },
+  {
+    "hash": "14ea4489869c5a24",
+    "word": "broadcaster",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "TV/radio presenter",
+    "confidence": 0.93
+  },
+  {
+    "hash": "ae2edb65efde3fc2",
+    "word": "broadly",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "generally",
+    "confidence": 0.95
+  },
+  {
+    "hash": "6ed5e15a25aa0d08",
+    "word": "browser",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "web software",
+    "confidence": 0.94
+  },
+  {
+    "hash": "2e69f587fe1dd5ab",
+    "word": "buffer",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "shock absorber",
+    "confidence": 0.93
+  },
+  {
+    "hash": "3ce56f2dbc6afe91",
+    "word": "bullet",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "gun projectile",
+    "confidence": 0.94
+  },
+  {
+    "hash": "543e460cbb79da17",
+    "word": "burden",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "heavy responsibility",
+    "confidence": 0.93
+  },
+  {
+    "hash": "b468fa1a239f42a8",
+    "word": "burial",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "funeral interment",
+    "confidence": 0.91
+  },
+  {
+    "hash": "20e458aa8fd3ffd8",
+    "word": "cabin",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "ship/plane room",
+    "confidence": 0.93
+  },
+  {
+    "hash": "0f5f26bc47bceb54",
+    "word": "cabinet",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "government ministers; storage cupboard",
+    "confidence": 0.88
+  },
+  {
+    "hash": "1c33195f6244fe7e",
+    "word": "calculation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "numerical estimate; planning",
+    "confidence": 0.88
+  },
+  {
+    "hash": "600579e5f35e66b2",
+    "word": "canal",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "boat waterway",
+    "confidence": 0.94
+  },
+  {
+    "hash": "11bca3581be94797",
+    "word": "candle",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "wax light stick",
+    "confidence": 0.93
+  },
+  {
+    "hash": "de43d9b89413e140",
+    "word": "capability",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "ability",
+    "confidence": 0.95
+  },
+  {
+    "hash": "da2a5e7526656ba5",
+    "word": "capitalism",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "private-profit economy",
+    "confidence": 0.93
+  },
+  {
+    "hash": "5e85401e5f373992",
+    "word": "capitalist",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "pro-capitalism",
+    "confidence": 0.93
+  },
+  {
+    "hash": "141404cbf3d8ccb8",
+    "word": "carbon",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "chemical element",
+    "confidence": 0.94
+  },
+  {
+    "hash": "31b1eef6f13f1d78",
+    "word": "cardiovascular",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "relating to heart",
+    "confidence": 0.92
+  },
+  {
+    "hash": "843823189f083ab8",
+    "word": "cargo",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "shipped goods",
+    "confidence": 0.94
+  },
+  {
+    "hash": "984b2c4a6a5b62eb",
+    "word": "carriage",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "train car; horse-drawn vehicle",
+    "confidence": 0.88
+  },
+  {
+    "hash": "1271a82b89b01f61",
+    "word": "cascade",
+    "pos": "noun",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "small waterfall",
+    "confidence": 0.96
+  },
+  {
+    "hash": "0571ef36155e885d",
+    "word": "cascade",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "small waterfall",
+    "confidence": 0.96
+  },
+  {
+    "hash": "b3794871d54b4245",
+    "word": "casino",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "gambling establishment",
+    "confidence": 0.94
+  },
+  {
+    "hash": "2e06a890060dc7c9",
+    "word": "casual",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "informal",
+    "confidence": 0.95
+  },
+  {
+    "hash": "38975fe57dccc751",
+    "word": "catalogue",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "complete item list",
+    "confidence": 0.93
+  },
+  {
+    "hash": "35e7ea9d7b8beade",
+    "word": "categorically",
+    "pos": "adverb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "absolutely",
+    "confidence": 0.94
+  },
+  {
+    "hash": "8caf2b1e60f56dea",
+    "word": "cater",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "provide event food",
+    "confidence": 0.93
+  },
+  {
+    "hash": "948a5c550c09fc04",
+    "word": "cattle",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "farm cows",
+    "confidence": 0.93
+  },
+  {
+    "hash": "686e8f5be2ec95a2",
+    "word": "cautious",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "careful, risk-averse",
+    "confidence": 0.92
+  },
+  {
+    "hash": "d3902d50529217d9",
+    "word": "cave",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "underground hole",
+    "confidence": 0.95
+  },
+  {
+    "hash": "f824d38527280b4c",
+    "word": "cease",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "stop",
+    "confidence": 0.95
+  },
+  {
+    "hash": "422a70205bed7fc6",
+    "word": "cemetery",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "burial ground",
+    "confidence": 0.94
+  },
+  {
+    "hash": "cc6d531e9fffae59",
+    "word": "challenging",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "demanding",
+    "confidence": 0.95
+  },
+  {
+    "hash": "bd43e0a6b830155d",
+    "word": "chamber",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "meeting hall; parliament section",
+    "confidence": 0.88
+  },
+  {
+    "hash": "d0bb1122423dbe0b",
+    "word": "championship",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "title competition",
+    "confidence": 0.92
+  },
+  {
+    "hash": "5b00b536c6f9973c",
+    "word": "chaos",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "complete disorder",
+    "confidence": 0.95
+  },
+  {
+    "hash": "6ee8d1afebc6ac3a",
+    "word": "characterize",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "be typical of; describe",
+    "confidence": 0.88
+  },
+  {
+    "hash": "5616204e45b7f753",
+    "word": "charm",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "attractiveness",
+    "confidence": 0.95
+  },
+  {
+    "hash": "d28afe9041c12abb",
+    "word": "charming",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "delightful",
+    "confidence": 0.95
+  },
+  {
+    "hash": "2d31ff4eaa59ff95",
+    "word": "cheek",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "face side",
+    "confidence": 0.95
+  },
+  {
+    "hash": "e49b5c5a854827a2",
+    "word": "chemistry",
+    "pos": "noun",
+    "cefr": "A2",
+    "decision": "gloss",
+    "gloss": "study of substances",
+    "confidence": 0.94
+  },
+  {
+    "hash": "e0c7781a78776d7f",
+    "word": "choir",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "singing group",
+    "confidence": 0.95
+  },
+  {
+    "hash": "ac7666ea0928bd9d",
+    "word": "chop",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "cut into pieces",
+    "confidence": 0.95
+  },
+  {
+    "hash": "53dbc1292259a736",
+    "word": "chore",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "routine task",
+    "confidence": 0.94
+  },
+  {
+    "hash": "629c2a09712756cd",
+    "word": "chunk",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "thick piece",
+    "confidence": 0.94
+  },
+  {
+    "hash": "fa5c70cfd97fdded",
+    "word": "circuit",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "looping route; electrical loop",
+    "confidence": 0.88
+  },
+  {
+    "hash": "8e4344b35ee47904",
+    "word": "circulate",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "move around; spread",
+    "confidence": 0.88
+  },
+  {
+    "hash": "c4c2239e99d7a180",
+    "word": "circulatory",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "blood-flowing",
+    "confidence": 0.92
+  },
+  {
+    "hash": "ea9768f86b4e16db",
+    "word": "citizenship",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "national membership status",
+    "confidence": 0.92
+  },
+  {
+    "hash": "69391f53c065ae4b",
+    "word": "civic",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "city-related",
+    "confidence": 0.93
+  },
+  {
+    "hash": "91a37125d2a51e0f",
+    "word": "clarify",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "make clear",
+    "confidence": 0.95
+  },
+  {
+    "hash": "a05a334aeb94fbb6",
+    "word": "classification",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "categorization",
+    "confidence": 0.91
+  },
+  {
+    "hash": "293cee79f49f618c",
+    "word": "classify",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "categorize",
+    "confidence": 0.94
+  },
+  {
+    "hash": "1a786b92ba77ed40",
+    "word": "cliff",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "steep rock face",
+    "confidence": 0.95
+  },
+  {
+    "hash": "9ab853eae9713234",
+    "word": "clinical",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "medical",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e110d56e5660204a",
+    "word": "clip",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "film excerpt",
+    "confidence": 0.94
+  },
+  {
+    "hash": "85935eb6b30e7e45",
+    "word": "closure",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "permanent closure; temporary closing",
+    "confidence": 0.88
+  },
+  {
+    "hash": "b5daf6a7bbe3ee5d",
+    "word": "coalition",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "political alliance",
+    "confidence": 0.92
+  },
+  {
+    "hash": "43a305c995c9d98e",
+    "word": "coastal",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "seashore",
+    "confidence": 0.93
+  },
+  {
+    "hash": "64716d0308319f2d",
+    "word": "cognitive",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "mental",
+    "confidence": 0.94
+  },
+  {
+    "hash": "385c3f045ff6c7fb",
+    "word": "coincide",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "happen together",
+    "confidence": 0.94
+  },
+  {
+    "hash": "af6ea53558230dad",
+    "word": "collaborate",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "work together",
+    "confidence": 0.94
+  },
+  {
+    "hash": "243302c6ce5d70a2",
+    "word": "collective",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "group-shared",
+    "confidence": 0.93
+  },
+  {
+    "hash": "cab49f14ac25904d",
+    "word": "collector",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "one who collects",
+    "confidence": 0.93
+  },
+  {
+    "hash": "9715cb46de0f48a7",
+    "word": "collision",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "crash impact",
+    "confidence": 0.93
+  },
+  {
+    "hash": "fc097b2692738d74",
+    "word": "colonial",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "empire-related",
+    "confidence": 0.92
+  },
+  {
+    "hash": "6686685f6d98430e",
+    "word": "colonize",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "conquer and settle",
+    "confidence": 0.93
+  },
+  {
+    "hash": "9d25c93d6b776f88",
+    "word": "colony",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "settled territory",
+    "confidence": 0.93
+  },
+  {
+    "hash": "583ef3173aad83cb",
+    "word": "colourful",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "bright-hued",
+    "confidence": 0.93
+  },
+  {
+    "hash": "d79482ffab33be97",
+    "word": "columnist",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "regular writer",
+    "confidence": 0.92
+  },
+  {
+    "hash": "ad19e3f2399d25e1",
+    "word": "commander",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "military leader",
+    "confidence": 0.93
+  },
+  {
+    "hash": "2824aff97560c566",
+    "word": "commence",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "begin",
+    "confidence": 0.95
+  },
+  {
+    "hash": "f60df1dfcefe3fdf",
+    "word": "commentator",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "live event describer; expert analyst",
+    "confidence": 0.88
+  },
+  {
+    "hash": "c955a19247c68c4e",
+    "word": "commerce",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "trade",
+    "confidence": 0.93
+  },
+  {
+    "hash": "5b0b5a29c1be7d9c",
+    "word": "commissioner",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "official member",
+    "confidence": 0.92
+  },
+  {
+    "hash": "2ed0609f559276c3",
+    "word": "committee",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "decision group",
+    "confidence": 0.93
+  },
+  {
+    "hash": "a4c1dff3fcca2603",
+    "word": "commodify",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "make commercial",
+    "confidence": 0.92
+  },
+  {
+    "hash": "a4df011ead2393e6",
+    "word": "commodity",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "tradeable product",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e20a5ca15369c545",
+    "word": "communist",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "pro-communism",
+    "confidence": 0.92
+  },
+  {
+    "hash": "c15c333aa83a07bc",
+    "word": "companion",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "close associate",
+    "confidence": 0.93
+  },
+  {
+    "hash": "27aeaee2fe8eebf5",
+    "word": "comparable",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "similar enough to compare",
+    "confidence": 0.92
+  },
+  {
+    "hash": "f534404c1371d676",
+    "word": "comparative",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "relating to comparison",
+    "confidence": 0.91
+  },
+  {
+    "hash": "7577cf680bc11524",
+    "word": "compassion",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "deep sympathy",
+    "confidence": 0.93
+  },
+  {
+    "hash": "c942a7b50e8b20c6",
+    "word": "compatible",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "able to work together",
+    "confidence": 0.92
+  },
+  {
+    "hash": "f7970b72b60fd9df",
+    "word": "compatible",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "able to work together",
+    "confidence": 0.92
+  },
+  {
+    "hash": "1d07c1a465e1d53e",
+    "word": "compel",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "force",
+    "confidence": 0.95
+  },
+  {
+    "hash": "04b7552ebbdd40e2",
+    "word": "compensate",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "make up for; pay back",
+    "confidence": 0.88
+  },
+  {
+    "hash": "46a2aebae1b39b8b",
+    "word": "competent",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "skilled enough",
+    "confidence": 0.92
+  },
+  {
+    "hash": "43faa3b56c5a61e6",
+    "word": "competitive",
+    "pos": "adjective",
+    "cefr": "B1",
+    "decision": "gloss",
+    "gloss": "rivalry-driven; ambitious",
+    "confidence": 0.88
+  },
+  {
+    "hash": "d4c40e0b3c28c7d0",
+    "word": "compile",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "assemble into list",
+    "confidence": 0.92
+  },
+  {
+    "hash": "3bf6737099f83b56",
+    "word": "complement",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "enhance",
+    "confidence": 0.94
+  },
+  {
+    "hash": "5d3ad092bee0a188",
+    "word": "completion",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "finishing",
+    "confidence": 0.93
+  },
+  {
+    "hash": "0d3b08caca6304a3",
+    "word": "compliance",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "obedience to rules",
+    "confidence": 0.92
+  },
+  {
+    "hash": "daf3596e3ea39494",
+    "word": "complication",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "added difficulty",
+    "confidence": 0.92
+  },
+  {
+    "hash": "348e2f6f53ba8efd",
+    "word": "comply",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "obey",
+    "confidence": 0.95
+  },
+  {
+    "hash": "429a647e13977c30",
+    "word": "component",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "part",
+    "confidence": 0.95
+  },
+  {
+    "hash": "28c700c46b06e8fb",
+    "word": "comport",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "behave",
+    "confidence": 0.94
+  },
+  {
+    "hash": "8d4a991365a4a42a",
+    "word": "compose",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "write music",
+    "confidence": 0.95
+  },
+  {
+    "hash": "e43a3ffac13aade7",
+    "word": "composer",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "music writer",
+    "confidence": 0.95
+  },
+  {
+    "hash": "033fb954dd3eb352",
+    "word": "comprehensive",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "all-inclusive",
+    "confidence": 0.93
+  },
+  {
+    "hash": "bd0da99d8adb6495",
+    "word": "comprise",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "consist of; make up",
+    "confidence": 0.88
+  },
+  {
+    "hash": "d6c7cf95bfda6e99",
+    "word": "compulsory",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "legally required",
+    "confidence": 0.94
+  }
+]

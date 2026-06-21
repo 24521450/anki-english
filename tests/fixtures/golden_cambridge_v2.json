@@ -1,0 +1,566 @@
+[
+  {
+    "word": "outbreak",
+    "homonym_index": null,
+    "source": "cambridge",
+    "source_url": null,
+    "source_files": [
+      "cambridge_outbreak.html"
+    ],
+    "pos": [
+      "noun"
+    ],
+    "register_tags": [],
+    "oxford_lists": [],
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "ˈaʊt.breɪk",
+    "us_ipa": "ˈaʊt.breɪk",
+    "audio": {
+      "uk": "/media/english/uk_pron/u/uko/ukoug/ukough_017.mp3",
+      "us": "/media/english/us_pron/e/eus/eus75/eus75331.mp3"
+    },
+    "see_also": [],
+    "pos_data": [
+      {
+        "pos": "noun",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": null,
+            "text": "a time when something suddenly begins, especially a disease or something else dangerous or unpleasant:",
+            "register_tags": [],
+            "cefr": "C2",
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "an outbreak of cholera/food poisoning/rioting/war",
+                "cf": null
+              },
+              {
+                "text": "Last weekend saw further thundery outbreaks.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 2,
+            "sensenum_local": null,
+            "text": "a sudden appearance of something, esp. of a disease or something else dangerous or unpleasant:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "an outbreak of cholera",
+                "cf": null
+              },
+              {
+                "text": "the outbreak of war",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": null,
+    "idioms": [],
+    "file": "cambridge_outbreak.html"
+  },
+  {
+    "word": "necessarily",
+    "homonym_index": null,
+    "source": "cambridge",
+    "source_url": null,
+    "source_files": [
+      "cambridge_necessarily.html"
+    ],
+    "pos": [
+      "adverb"
+    ],
+    "register_tags": [],
+    "oxford_lists": [],
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "nes.əˈser.əl.i",
+    "us_ipa": "nes.əˈser.əl.i",
+    "audio": {
+      "uk": "/media/english/uk_pron/u/ukn/ukneb/uknebbo009.mp3",
+      "us": "/media/english/us_pron/n/nec/neces/necessarily.mp3"
+    },
+    "see_also": [],
+    "pos_data": [
+      {
+        "pos": "adverb",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": null,
+            "text": "used in negatives to mean \"in every case\" or \"therefore\":",
+            "register_tags": [],
+            "cefr": "B2",
+            "topics": [],
+            "collocations": {
+              "collocations": [
+                "not necessarily"
+              ]
+            },
+            "examples": [
+              {
+                "text": "The fact that something is cheap doesn't necessarily mean it's of low quality.",
+                "cf": null
+              },
+              {
+                "text": "You can love someone without necessarily wanting to marry them.",
+                "cf": null
+              },
+              {
+                "text": "That's not necessarily true.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 2,
+            "sensenum_local": null,
+            "text": "(esp. in negatives) in all cases; as an expected result:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "Money doesn’t necessarily buy happiness.",
+                "cf": null
+              },
+              {
+                "text": "\"These cheap glasses will break easily.\" \"Not necessarily.\"",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": null,
+    "idioms": [],
+    "file": "cambridge_necessarily.html"
+  },
+  {
+    "word": "engineering",
+    "homonym_index": null,
+    "source": "cambridge",
+    "source_url": null,
+    "source_files": [
+      "cambridge_engineering.html"
+    ],
+    "pos": [
+      "noun"
+    ],
+    "register_tags": [],
+    "oxford_lists": [],
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "ˌen.dʒɪˈnɪə.rɪŋ",
+    "us_ipa": "ˌen.dʒɪˈnɪr.ɪŋ",
+    "audio": {
+      "uk": "/media/english/uk_pron/u/uke/ukeng/ukengin001.mp3",
+      "us": "/media/english/us_pron/e/eng/engin/engineering.mp3"
+    },
+    "see_also": [
+      "geoengineering"
+    ],
+    "pos_data": [
+      {
+        "pos": "noun",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": null,
+            "text": "the work of an engineer (= a person who designs or builds machines, engines, electrical systems, or large structures such as roads or bridges using scientific principles), or the study of this work:",
+            "register_tags": [],
+            "cefr": "B1",
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "The Eiffel Tower is a remarkable feat of engineering.",
+                "cf": null
+              },
+              {
+                "text": "Richard studied engineering at MIT.",
+                "cf": null
+              },
+              {
+                "text": "German/American engineering",
+                "cf": null
+              },
+              {
+                "text": "aeronautic/offshore engineering",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 2,
+            "sensenum_local": null,
+            "text": "the study of using scientific principles to design and build machines, structures, and other things, including bridges, roads, vehicles, and buildings:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "civil/electrical/mechanical engineering",
+                "cf": null
+              },
+              {
+                "text": "an engineering firm/degree",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 3,
+            "sensenum_local": null,
+            "text": "the work of an engineer, for example, designing or building machines, electrical equipment, roads, etc. using scientific principles:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": [
+                "engineering work/company/project"
+              ]
+            },
+            "examples": [
+              {
+                "text": "She wants to encourage more women into engineering.",
+                "cf": null
+              },
+              {
+                "text": "engineering work/company/project",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 4,
+            "sensenum_local": null,
+            "text": "the way that something has been designed and built:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "Despite some very clever engineering, the products failed to attract customers.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": null,
+    "idioms": [],
+    "file": "cambridge_engineering.html"
+  },
+  {
+    "word": "transparent",
+    "homonym_index": null,
+    "source": "cambridge",
+    "source_url": null,
+    "source_files": [
+      "cambridge_transparent.html"
+    ],
+    "pos": [
+      "adjective"
+    ],
+    "register_tags": [],
+    "oxford_lists": [],
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "trænˈspær.ənt",
+    "us_ipa": "trænˈsper.ənt",
+    "audio": {
+      "uk": "/media/english/uk_pron/u/ukt/uktra/uktrans113.mp3",
+      "us": "/media/english/us_pron/t/tra/trans/transparent.mp3"
+    },
+    "see_also": [
+      "opaque",
+      "translucent"
+    ],
+    "pos_data": [
+      {
+        "pos": "adjective",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": null,
+            "text": "If a substance or object is transparent, you can see through it very clearly:",
+            "register_tags": [
+              "approving"
+            ],
+            "cefr": "B2",
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "Grow the bulbs in a transparent plastic box, so the children can see the roots growing.",
+                "cf": null
+              },
+              {
+                "text": "Her blouse was practically transparent!",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 2,
+            "sensenum_local": null,
+            "text": "clear and easy to understand or recognize:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "I think we should try to make the instructions more transparent.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 3,
+            "sensenum_local": null,
+            "text": "open and honest, without secrets:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "We are committed to being totally transparent about our charges.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 4,
+            "sensenum_local": null,
+            "text": "(of a substance) allowing light through so that objects can be clearly seen through it:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": []
+            },
+            "examples": [
+              {
+                "text": "Those transparent plastic boxes are called jewel boxes.",
+                "cf": null
+              },
+              {
+                "text": "The real reason for her leaving was so transparent, no one believed it.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 5,
+            "sensenum_local": null,
+            "text": "transparent business and financial activities are done in an open way without secrets, so that people can trust that they are fair and honest:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": [
+                "transparent about sth",
+                "open/efficient/fair and transparent",
+                "transparent and open",
+                "transparent market",
+                "transparent system/process/environment",
+                "more transparent"
+              ]
+            },
+            "examples": [
+              {
+                "text": "The charter aims to make the national health service a more transparent and open public corporation.",
+                "cf": null
+              },
+              {
+                "text": "Companies need to be transparent about their goals and policies.",
+                "cf": null
+              },
+              {
+                "text": "Our aim is to create a transparent market that rewards genuine innovation and risk.",
+                "cf": null
+              },
+              {
+                "text": "a transparent system/process/environment",
+                "cf": null
+              },
+              {
+                "text": "An OFT senior executive said he wanted the banks to make current accounts more transparent.",
+                "cf": null
+              },
+              {
+                "text": "Her appointment was based on an open and transparent selection process.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": null,
+    "idioms": [],
+    "file": "cambridge_transparent.html"
+  },
+  {
+    "word": "donation",
+    "homonym_index": null,
+    "source": "cambridge",
+    "source_url": null,
+    "source_files": [
+      "cambridge_donation.html"
+    ],
+    "pos": [
+      "noun"
+    ],
+    "register_tags": [],
+    "oxford_lists": [],
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "dəʊˈneɪ.ʃən",
+    "us_ipa": "doʊˈneɪ.ʃən",
+    "audio": {
+      "uk": "/media/english/uk_pron/u/ukd/ukdol/ukdolph027.mp3",
+      "us": "/media/english/us_pron/d/don/donat/donation.mp3"
+    },
+    "see_also": [],
+    "pos_data": [
+      {
+        "pos": "noun",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": null,
+            "text": "money or goods that are given to help a person or organization, or the act of giving them:",
+            "register_tags": [],
+            "cefr": "B2",
+            "topics": [],
+            "collocations": {
+              "collocations": [
+                "make a donation"
+              ]
+            },
+            "examples": [
+              {
+                "text": "donations of food and money",
+                "cf": null
+              },
+              {
+                "text": "I'd like to make a small donation in my mother's name.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 2,
+            "sensenum_local": null,
+            "text": "something of value such as money or goods that is given to help a person or organization such as a charity, or the act of giving this money, etc.:",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "collocations": [
+                "make a donation",
+                "donations to",
+                "donation from",
+                "charitable donations"
+              ]
+            },
+            "examples": [
+              {
+                "text": "It is possible to make a donation with conditions attached, for example requiring the funds to be used for a specific purpose.",
+                "cf": null
+              },
+              {
+                "text": "The CEO defended the conglomerate's donations to political candidates.",
+                "cf": null
+              },
+              {
+                "text": "The museum has received a $5 million donation from the Bradley Foundation.",
+                "cf": null
+              },
+              {
+                "text": "Some charitable donations are tax-deductible.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": null,
+    "idioms": [],
+    "file": "cambridge_donation.html"
+  }
+]

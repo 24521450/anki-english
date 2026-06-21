@@ -1,0 +1,902 @@
+[
+  {
+    "hash": "915a94c3d376fd7d",
+    "word": "majority",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "largest part",
+    "confidence": 0.94
+  },
+  {
+    "hash": "c40c511697f3969b",
+    "word": "marker",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "sign; marker",
+    "confidence": 0.88
+  },
+  {
+    "hash": "9939666799d8751d",
+    "word": "mill",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "grain grinder",
+    "confidence": 0.93
+  },
+  {
+    "hash": "bd5eb1a99635f44b",
+    "word": "misery",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "suffering",
+    "confidence": 0.95
+  },
+  {
+    "hash": "f13a24116aed811a",
+    "word": "mobilize",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "organize for action",
+    "confidence": 0.93
+  },
+  {
+    "hash": "4db005c27fdf1d19",
+    "word": "monopoly",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "market control",
+    "confidence": 0.93
+  },
+  {
+    "hash": "38460cca3aea8cba",
+    "word": "morph",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "transform",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e67f0c73db417039",
+    "word": "mortality",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "death rate",
+    "confidence": 0.93
+  },
+  {
+    "hash": "c514a613ee419aeb",
+    "word": "myth",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "ancient story",
+    "confidence": 0.94
+  },
+  {
+    "hash": "6fa69c79f7a3609a",
+    "word": "nasty",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "unpleasant",
+    "confidence": 0.93
+  },
+  {
+    "hash": "5eca463236a1b909",
+    "word": "necessity",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "necessity",
+    "confidence": 0.94
+  },
+  {
+    "hash": "1a0ef18f7057691b",
+    "word": "net",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "after deductions",
+    "confidence": 0.93
+  },
+  {
+    "hash": "91efaf8858acc80c",
+    "word": "neutral",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "impartial",
+    "confidence": 0.94
+  },
+  {
+    "hash": "44d2afdc517ec59c",
+    "word": "nod",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "nod",
+    "confidence": 0.95
+  },
+  {
+    "hash": "224a8ff4fab2bccc",
+    "word": "oblivion",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "forgetfulness",
+    "confidence": 0.94
+  },
+  {
+    "hash": "8ab7389a32ad9409",
+    "word": "odds",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "probability",
+    "confidence": 0.93
+  },
+  {
+    "hash": "bc19999a1b8a8ec7",
+    "word": "opacity",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "opaqueness",
+    "confidence": 0.93
+  },
+  {
+    "hash": "bf1093ea61f12cd8",
+    "word": "operator",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "user",
+    "confidence": 0.93
+  },
+  {
+    "hash": "506cf13245c1bc7e",
+    "word": "organizational",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "company-related",
+    "confidence": 0.93
+  },
+  {
+    "hash": "1dbf702d9dfac22f",
+    "word": "orient",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "direct",
+    "confidence": 0.93
+  },
+  {
+    "hash": "ae1e745900393d6e",
+    "word": "orientation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "direction",
+    "confidence": 0.93
+  },
+  {
+    "hash": "ceeebb17a0b24595",
+    "word": "outlook",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "attitude",
+    "confidence": 0.93
+  },
+  {
+    "hash": "eb44a329e5dadca1",
+    "word": "overlook",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "miss",
+    "confidence": 0.94
+  },
+  {
+    "hash": "abb6ccf52cf96bde",
+    "word": "overwhelm",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "overcome",
+    "confidence": 0.94
+  },
+  {
+    "hash": "ef6b740a2b6c1031",
+    "word": "packet",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "small package",
+    "confidence": 0.95
+  },
+  {
+    "hash": "207ae0c6a9203eb7",
+    "word": "partnership",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "business alliance",
+    "confidence": 0.93
+  },
+  {
+    "hash": "d697ee328491055d",
+    "word": "passing",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "time passage",
+    "confidence": 0.93
+  },
+  {
+    "hash": "14250b1ab8128e60",
+    "word": "patch",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "small area",
+    "confidence": 0.93
+  },
+  {
+    "hash": "faadd8100d30bb8a",
+    "word": "peak",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "highest point",
+    "confidence": 0.93
+  },
+  {
+    "hash": "613576f4d9c4f23f",
+    "word": "philosophy",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "study of knowledge",
+    "confidence": 0.93
+  },
+  {
+    "hash": "2f869aa1aa93c9c2",
+    "word": "pirate",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "sea robber",
+    "confidence": 0.94
+  },
+  {
+    "hash": "cab53e612d4c94eb",
+    "word": "plead",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "beg urgently",
+    "confidence": 0.93
+  },
+  {
+    "hash": "90a4e9901c7217a9",
+    "word": "poll",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "survey",
+    "confidence": 0.94
+  },
+  {
+    "hash": "dee3ff479659fb40",
+    "word": "pop",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "burst",
+    "confidence": 0.93
+  },
+  {
+    "hash": "ede1ba523fcec929",
+    "word": "portfolio",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "document case",
+    "confidence": 0.93
+  },
+  {
+    "hash": "9ca62cf28f742952",
+    "word": "portray",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "depict",
+    "confidence": 0.94
+  },
+  {
+    "hash": "0ab5c6f5f47203dd",
+    "word": "preach",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "give sermon",
+    "confidence": 0.93
+  },
+  {
+    "hash": "b64133137983134a",
+    "word": "precious",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "valuable; dear",
+    "confidence": 0.88
+  },
+  {
+    "hash": "602017fadcf1b649",
+    "word": "precisely",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "exactly",
+    "confidence": 0.95
+  },
+  {
+    "hash": "6d38d34d1c06e5c2",
+    "word": "presently",
+    "pos": "adverb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "now; soon",
+    "confidence": 0.88
+  },
+  {
+    "hash": "19a049da102915c9",
+    "word": "pride",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "self-respect",
+    "confidence": 0.94
+  },
+  {
+    "hash": "ddf1fbeef73a5307",
+    "word": "prior",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "earlier",
+    "confidence": 0.95
+  },
+  {
+    "hash": "e132e45aab5ff79e",
+    "word": "privilege",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "special right",
+    "confidence": 0.94
+  },
+  {
+    "hash": "2c11b3c06f5e17da",
+    "word": "probability",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "likelihood",
+    "confidence": 0.94
+  },
+  {
+    "hash": "54369f45a71181df",
+    "word": "problematic",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "troublesome",
+    "confidence": 0.93
+  },
+  {
+    "hash": "3534cd075664e355",
+    "word": "proceed",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "continue",
+    "confidence": 0.94
+  },
+  {
+    "hash": "4d2963bba9d93085",
+    "word": "profound",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "deep",
+    "confidence": 0.94
+  },
+  {
+    "hash": "de5f43db69f9b692",
+    "word": "promote",
+    "pos": "verb",
+    "cefr": "B1",
+    "decision": "gloss",
+    "gloss": "advertise; advance",
+    "confidence": 0.88
+  },
+  {
+    "hash": "2cb0201538bc3d4b",
+    "word": "proposition",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "proposal",
+    "confidence": 0.93
+  },
+  {
+    "hash": "bd5a0a2ef5dff45e",
+    "word": "prosecution",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "legal charging",
+    "confidence": 0.93
+  },
+  {
+    "hash": "859d4328f6e7efa7",
+    "word": "protocol",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "formal rules",
+    "confidence": 0.93
+  },
+  {
+    "hash": "3abba47faf9c0e73",
+    "word": "provision",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "preparation",
+    "confidence": 0.93
+  },
+  {
+    "hash": "4ee351f23e8b7b8d",
+    "word": "publicity",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "public attention",
+    "confidence": 0.93
+  },
+  {
+    "hash": "3479d30cc42ae825",
+    "word": "racism",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "racial prejudice",
+    "confidence": 0.94
+  },
+  {
+    "hash": "06b0114b3bdb6d9a",
+    "word": "radical",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "fundamental",
+    "confidence": 0.94
+  },
+  {
+    "hash": "20389d279c962a37",
+    "word": "rail",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "metal bar",
+    "confidence": 0.93
+  },
+  {
+    "hash": "2e0209a5529c6c82",
+    "word": "reasonably",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "fairly",
+    "confidence": 0.94
+  },
+  {
+    "hash": "a4f51f3b2c83e71c",
+    "word": "rebel",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "insurgent",
+    "confidence": 0.95
+  },
+  {
+    "hash": "35e4a302ac0f2a38",
+    "word": "rebellion",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "uprising",
+    "confidence": 0.95
+  },
+  {
+    "hash": "a663f8b5816e1f41",
+    "word": "recess",
+    "pos": "noun",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "break period",
+    "confidence": 0.93
+  },
+  {
+    "hash": "cc04f646110d03bc",
+    "word": "recess",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "break period",
+    "confidence": 0.93
+  },
+  {
+    "hash": "a7e47c270fae69d6",
+    "word": "reconstruction",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "rebuilding",
+    "confidence": 0.93
+  },
+  {
+    "hash": "05b5c659401c3b6b",
+    "word": "reflection",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "mirrored image; thought",
+    "confidence": 0.88
+  },
+  {
+    "hash": "25a9717279d57ac5",
+    "word": "refuge",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "shelter",
+    "confidence": 0.95
+  },
+  {
+    "hash": "9c901aab5871f7c4",
+    "word": "rejection",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "refusal",
+    "confidence": 0.94
+  },
+  {
+    "hash": "76f7ad63fd32c657",
+    "word": "reliability",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "dependability",
+    "confidence": 0.93
+  },
+  {
+    "hash": "9b80776e7af4d5d8",
+    "word": "remains",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "ruins",
+    "confidence": 0.93
+  },
+  {
+    "hash": "8626135e25691d76",
+    "word": "renew",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "extend; restart",
+    "confidence": 0.88
+  },
+  {
+    "hash": "57efa48538636c73",
+    "word": "rental",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "rental fee",
+    "confidence": 0.95
+  },
+  {
+    "hash": "9b278a34c6cb908c",
+    "word": "replacement",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "substitute",
+    "confidence": 0.94
+  },
+  {
+    "hash": "0e5ba24e3ff58b91",
+    "word": "representation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "depiction",
+    "confidence": 0.93
+  },
+  {
+    "hash": "a1e0fd3916d10777",
+    "word": "reproduce",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "copy",
+    "confidence": 0.95
+  },
+  {
+    "hash": "acd60bbe6ad1f32b",
+    "word": "reproduction",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "copying",
+    "confidence": 0.93
+  },
+  {
+    "hash": "75de0a900d1d0206",
+    "word": "residential",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "housing-related",
+    "confidence": 0.93
+  },
+  {
+    "hash": "85f9860c19aa5725",
+    "word": "resignation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "quitting letter",
+    "confidence": 0.93
+  },
+  {
+    "hash": "84b96ea9be7bd9ba",
+    "word": "resistance",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "opposition",
+    "confidence": 0.93
+  },
+  {
+    "hash": "d5e0d5fcacdf8748",
+    "word": "restore",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "reestablish",
+    "confidence": 0.93
+  },
+  {
+    "hash": "cb97ee3a5bb9f29c",
+    "word": "restrain",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "hold back",
+    "confidence": 0.94
+  },
+  {
+    "hash": "3c2168784120d2ce",
+    "word": "restraint",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "limitation",
+    "confidence": 0.94
+  },
+  {
+    "hash": "aaff396846a4201c",
+    "word": "restrict",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "limit",
+    "confidence": 0.95
+  },
+  {
+    "hash": "085a20010ccaeb39",
+    "word": "retention",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "keeping",
+    "confidence": 0.95
+  },
+  {
+    "hash": "e56ff1f802c5eae4",
+    "word": "revision",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "revised version",
+    "confidence": 0.93
+  },
+  {
+    "hash": "324f8a72edf42708",
+    "word": "robust",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "sturdy",
+    "confidence": 0.94
+  },
+  {
+    "hash": "43704385174f118d",
+    "word": "rock",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "shake",
+    "confidence": 0.93
+  },
+  {
+    "hash": "65d343b7dbdb642a",
+    "word": "romance",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "love story",
+    "confidence": 0.93
+  },
+  {
+    "hash": "45b5d80f873f7451",
+    "word": "rotate",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "turn",
+    "confidence": 0.95
+  },
+  {
+    "hash": "01b93127b2a45fc6",
+    "word": "rotation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "circular motion",
+    "confidence": 0.93
+  },
+  {
+    "hash": "f0ee6dbfa9c9d334",
+    "word": "sedentary",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "inactive",
+    "confidence": 0.93
+  },
+  {
+    "hash": "dd9f6442588efc98",
+    "word": "seize",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "grab",
+    "confidence": 0.93
+  },
+  {
+    "hash": "d6cfba6ffd0c9b52",
+    "word": "sensation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "physical feeling",
+    "confidence": 0.93
+  },
+  {
+    "hash": "b4fd69e08e63bc87",
+    "word": "sensitivity",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "delicacy",
+    "confidence": 0.93
+  },
+  {
+    "hash": "c684a0be7dd91c10",
+    "word": "separation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "separation",
+    "confidence": 0.93
+  },
+  {
+    "hash": "4904272036c04d37",
+    "word": "settlement",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "agreement",
+    "confidence": 0.93
+  },
+  {
+    "hash": "cc1d0a4de95e6824",
+    "word": "shatter",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "shatter",
+    "confidence": 0.93
+  },
+  {
+    "hash": "947c893c474cb811",
+    "word": "shoot",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "new plant growth",
+    "confidence": 0.93
+  },
+  {
+    "hash": "47b8ffb6d07fe5ac",
+    "word": "shortly",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "soon",
+    "confidence": 0.95
+  },
+  {
+    "hash": "1867f0c245cb446e",
+    "word": "shrink",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "contract",
+    "confidence": 0.93
+  },
+  {
+    "hash": "ee583c81a94b4c5d",
+    "word": "skip",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "jump over",
+    "confidence": 0.93
+  },
+  {
+    "hash": "a872712621a27f72",
+    "word": "smash",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "smash",
+    "confidence": 0.93
+  },
+  {
+    "hash": "b4a7134c09bb2573",
+    "word": "snap",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "break sharply",
+    "confidence": 0.93
+  }
+]

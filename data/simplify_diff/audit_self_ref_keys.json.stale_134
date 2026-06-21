@@ -1,0 +1,940 @@
+[
+  {
+    "word": "bat",
+    "pos": "verb",
+    "cefr": "C1",
+    "gloss": "hit with a bat",
+    "rule_applied": ""
+  },
+  {
+    "word": "blade",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "cutting edge; propeller blade",
+    "rule_applied": ""
+  },
+  {
+    "word": "closure",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "permanent closure; temporary closing",
+    "rule_applied": ""
+  },
+  {
+    "word": "hook",
+    "pos": "verb",
+    "cefr": "B2",
+    "gloss": "fasten with hook",
+    "rule_applied": ""
+  },
+  {
+    "word": "minimal",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "minimal",
+    "rule_applied": ""
+  },
+  {
+    "word": "moderate",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "moderate",
+    "rule_applied": ""
+  },
+  {
+    "word": "mundane",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "mundane",
+    "rule_applied": ""
+  },
+  {
+    "word": "nominee",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "nominee",
+    "rule_applied": ""
+  },
+  {
+    "word": "non-profit",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "non-profit",
+    "rule_applied": ""
+  },
+  {
+    "word": "notable",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "notable",
+    "rule_applied": ""
+  },
+  {
+    "word": "nutritious",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "nutritious",
+    "rule_applied": ""
+  },
+  {
+    "word": "reportedly",
+    "pos": "adverb",
+    "cefr": "C1",
+    "gloss": "reportedly",
+    "rule_applied": ""
+  },
+  {
+    "word": "reporting",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "news reporting",
+    "rule_applied": ""
+  },
+  {
+    "word": "retaliate",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "retaliate",
+    "rule_applied": ""
+  },
+  {
+    "word": "risky",
+    "pos": "adjective",
+    "cefr": "B2",
+    "gloss": "risky",
+    "rule_applied": ""
+  },
+  {
+    "word": "shrug",
+    "pos": "verb",
+    "cefr": "C1",
+    "gloss": "shrug",
+    "rule_applied": ""
+  },
+  {
+    "word": "slam",
+    "pos": "verb",
+    "cefr": "C1",
+    "gloss": "slam shut",
+    "rule_applied": ""
+  },
+  {
+    "word": "contractor",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "contractor",
+    "rule_applied": ""
+  },
+  {
+    "word": "counter",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "service counter",
+    "rule_applied": ""
+  },
+  {
+    "word": "creativity",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "creativity",
+    "rule_applied": ""
+  },
+  {
+    "word": "delegation",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "delegation",
+    "rule_applied": ""
+  },
+  {
+    "word": "exhausted",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "exhausted",
+    "rule_applied": ""
+  },
+  {
+    "word": "firework",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "explosive firework",
+    "rule_applied": ""
+  },
+  {
+    "word": "investigator",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "investigator",
+    "rule_applied": ""
+  },
+  {
+    "word": "jet",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "jet plane",
+    "rule_applied": ""
+  },
+  {
+    "word": "long-time",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "long-time",
+    "rule_applied": ""
+  },
+  {
+    "word": "meantime",
+    "pos": "adverb",
+    "cefr": "C1",
+    "gloss": "in the meantime",
+    "rule_applied": ""
+  },
+  {
+    "word": "mediocre",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "mediocre",
+    "rule_applied": ""
+  },
+  {
+    "word": "perception",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "perception",
+    "rule_applied": ""
+  },
+  {
+    "word": "philosopher",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "philosopher",
+    "rule_applied": ""
+  },
+  {
+    "word": "productive",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "productive",
+    "rule_applied": ""
+  },
+  {
+    "word": "punk",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "punk rocker",
+    "rule_applied": ""
+  },
+  {
+    "word": "radar",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "radar system",
+    "rule_applied": ""
+  },
+  {
+    "word": "rebuild",
+    "pos": "verb",
+    "cefr": "B2",
+    "gloss": "rebuild",
+    "rule_applied": ""
+  },
+  {
+    "word": "slouch",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "slouch",
+    "rule_applied": ""
+  },
+  {
+    "word": "specialized",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "specialized",
+    "rule_applied": ""
+  },
+  {
+    "word": "stall",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "market stall",
+    "rule_applied": ""
+  },
+  {
+    "word": "structural",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "structural",
+    "rule_applied": ""
+  },
+  {
+    "word": "stunning",
+    "pos": "adjective",
+    "cefr": "B2",
+    "gloss": "stunning",
+    "rule_applied": ""
+  },
+  {
+    "word": "subtle",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "subtle",
+    "rule_applied": ""
+  },
+  {
+    "word": "successive",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "successive",
+    "rule_applied": ""
+  },
+  {
+    "word": "super",
+    "pos": "adjective",
+    "cefr": "B2",
+    "gloss": "super",
+    "rule_applied": ""
+  },
+  {
+    "word": "symbolic",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "symbolic",
+    "rule_applied": ""
+  },
+  {
+    "word": "tackle",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "football tackle",
+    "rule_applied": ""
+  },
+  {
+    "word": "tactical",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "tactical",
+    "rule_applied": ""
+  },
+  {
+    "word": "terrain",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "terrain",
+    "rule_applied": ""
+  },
+  {
+    "word": "terrify",
+    "pos": "verb",
+    "cefr": "B2",
+    "gloss": "terrify",
+    "rule_applied": ""
+  },
+  {
+    "word": "theatrical",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "theatrical",
+    "rule_applied": ""
+  },
+  {
+    "word": "theoretical",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "theoretical",
+    "rule_applied": ""
+  },
+  {
+    "word": "therapist",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "therapist",
+    "rule_applied": ""
+  },
+  {
+    "word": "nod",
+    "pos": "verb",
+    "cefr": "C1",
+    "gloss": "nod",
+    "rule_applied": ""
+  },
+  {
+    "word": "ironic",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "ironic",
+    "rule_applied": ""
+  },
+  {
+    "word": "irony",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "irony",
+    "rule_applied": ""
+  },
+  {
+    "word": "magical",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "magical",
+    "rule_applied": ""
+  },
+  {
+    "word": "storage",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "storage",
+    "rule_applied": ""
+  },
+  {
+    "word": "typical",
+    "pos": "adjective",
+    "cefr": "A2",
+    "gloss": "typical",
+    "rule_applied": ""
+  },
+  {
+    "word": "coordination",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "coordination",
+    "rule_applied": ""
+  },
+  {
+    "word": "deployment",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "military deployment",
+    "rule_applied": ""
+  },
+  {
+    "word": "deprivation",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "deprivation",
+    "rule_applied": ""
+  },
+  {
+    "word": "diagnosis",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "diagnosis",
+    "rule_applied": ""
+  },
+  {
+    "word": "disposal",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "disposal",
+    "rule_applied": ""
+  },
+  {
+    "word": "dominance",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "dominance",
+    "rule_applied": ""
+  },
+  {
+    "word": "effectiveness",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "effectiveness",
+    "rule_applied": ""
+  },
+  {
+    "word": "enforcement",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "enforcement",
+    "rule_applied": ""
+  },
+  {
+    "word": "excellence",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "excellence",
+    "rule_applied": ""
+  },
+  {
+    "word": "exclusion",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "exclusion",
+    "rule_applied": ""
+  },
+  {
+    "word": "fame",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "fame",
+    "rule_applied": ""
+  },
+  {
+    "word": "fermentation",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "fermentation",
+    "rule_applied": ""
+  },
+  {
+    "word": "formation",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "formation",
+    "rule_applied": ""
+  },
+  {
+    "word": "frustration",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "frustration",
+    "rule_applied": ""
+  },
+  {
+    "word": "gender",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "gender identity",
+    "rule_applied": ""
+  },
+  {
+    "word": "goodness",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "goodness",
+    "rule_applied": ""
+  },
+  {
+    "word": "harassment",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "harassment",
+    "rule_applied": ""
+  },
+  {
+    "word": "honesty",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "honesty",
+    "rule_applied": ""
+  },
+  {
+    "word": "hunger",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "hunger",
+    "rule_applied": ""
+  },
+  {
+    "word": "implementation",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "implementation",
+    "rule_applied": ""
+  },
+  {
+    "word": "imprisonment",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "imprisonment",
+    "rule_applied": ""
+  },
+  {
+    "word": "inability",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "inability",
+    "rule_applied": ""
+  },
+  {
+    "word": "insertion",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "insertion",
+    "rule_applied": ""
+  },
+  {
+    "word": "interaction",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "interaction",
+    "rule_applied": ""
+  },
+  {
+    "word": "interference",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "interference",
+    "rule_applied": ""
+  },
+  {
+    "word": "invasion",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "invasion",
+    "rule_applied": ""
+  },
+  {
+    "word": "membership",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "membership",
+    "rule_applied": ""
+  },
+  {
+    "word": "merger",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "merger",
+    "rule_applied": ""
+  },
+  {
+    "word": "merit",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "merit",
+    "rule_applied": ""
+  },
+  {
+    "word": "mining",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "mining",
+    "rule_applied": ""
+  },
+  {
+    "word": "momentum",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "momentum",
+    "rule_applied": ""
+  },
+  {
+    "word": "nomination",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "nomination",
+    "rule_applied": ""
+  },
+  {
+    "word": "outsourcing",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "outsourcing",
+    "rule_applied": ""
+  },
+  {
+    "word": "ownership",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "ownership",
+    "rule_applied": ""
+  },
+  {
+    "word": "participation",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "participation",
+    "rule_applied": ""
+  },
+  {
+    "word": "patience",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "patience",
+    "rule_applied": ""
+  },
+  {
+    "word": "permission",
+    "pos": "noun",
+    "cefr": "A2",
+    "gloss": "permission",
+    "rule_applied": ""
+  },
+  {
+    "word": "precision",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "precision",
+    "rule_applied": ""
+  },
+  {
+    "word": "pregnancy",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "pregnancy",
+    "rule_applied": ""
+  },
+  {
+    "word": "presence",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "presence",
+    "rule_applied": ""
+  },
+  {
+    "word": "preservation",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "preservation",
+    "rule_applied": ""
+  },
+  {
+    "word": "prevalence",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "prevalence",
+    "rule_applied": ""
+  },
+  {
+    "word": "prevention",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "prevention",
+    "rule_applied": ""
+  },
+  {
+    "word": "privatization",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "privatization",
+    "rule_applied": ""
+  },
+  {
+    "word": "programming",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "programming",
+    "rule_applied": ""
+  },
+  {
+    "word": "prosperity",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "prosperity",
+    "rule_applied": ""
+  },
+  {
+    "word": "publication",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "publication",
+    "rule_applied": ""
+  },
+  {
+    "word": "pursuit",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "pursuit",
+    "rule_applied": ""
+  },
+  {
+    "word": "recognition",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "recognition",
+    "rule_applied": ""
+  },
+  {
+    "word": "recovery",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "recovery",
+    "rule_applied": ""
+  },
+  {
+    "word": "redistribution",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "redistribution",
+    "rule_applied": ""
+  },
+  {
+    "word": "registration",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "registration",
+    "rule_applied": ""
+  },
+  {
+    "word": "rehabilitation",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "rehabilitation",
+    "rule_applied": ""
+  },
+  {
+    "word": "reluctance",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "reluctance",
+    "rule_applied": ""
+  },
+  {
+    "word": "removal",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "removal",
+    "rule_applied": ""
+  },
+  {
+    "word": "retirement",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "retirement",
+    "rule_applied": ""
+  },
+  {
+    "word": "sabotage",
+    "pos": "noun",
+    "cefr": "C2",
+    "gloss": "sabotage",
+    "rule_applied": ""
+  },
+  {
+    "word": "sabotage",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "sabotage",
+    "rule_applied": ""
+  },
+  {
+    "word": "sanity",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "sanity",
+    "rule_applied": ""
+  },
+  {
+    "word": "screening",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "screening",
+    "rule_applied": ""
+  },
+  {
+    "word": "self-preservation",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "self-preservation",
+    "rule_applied": ""
+  },
+  {
+    "word": "solitude",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "solitude",
+    "rule_applied": ""
+  },
+  {
+    "word": "speculation",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "speculation",
+    "rule_applied": ""
+  },
+  {
+    "word": "surveillance",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "surveillance",
+    "rule_applied": ""
+  },
+  {
+    "word": "survival",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "survival",
+    "rule_applied": ""
+  },
+  {
+    "word": "toxicity",
+    "pos": "noun",
+    "cefr": "C2",
+    "gloss": "toxicity",
+    "rule_applied": ""
+  },
+  {
+    "word": "toxicity",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "toxicity",
+    "rule_applied": ""
+  },
+  {
+    "word": "transparency",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "transparency",
+    "rule_applied": ""
+  },
+  {
+    "word": "uncertainty",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "uncertainty",
+    "rule_applied": ""
+  },
+  {
+    "word": "unfairness",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "unfairness",
+    "rule_applied": ""
+  },
+  {
+    "word": "unity",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "unity",
+    "rule_applied": ""
+  },
+  {
+    "word": "validity",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "validity",
+    "rule_applied": ""
+  },
+  {
+    "word": "voting",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "voting",
+    "rule_applied": ""
+  },
+  {
+    "word": "vulnerability",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "vulnerability",
+    "rule_applied": ""
+  },
+  {
+    "word": "warming",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "warming",
+    "rule_applied": ""
+  },
+  {
+    "word": "willingness",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "willingness",
+    "rule_applied": ""
+  },
+  {
+    "word": "wisdom",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "wisdom",
+    "rule_applied": ""
+  },
+  {
+    "word": "pace",
+    "pos": "unknown, unknown",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "PACE act",
+    "rule_applied": ""
+  }
+]

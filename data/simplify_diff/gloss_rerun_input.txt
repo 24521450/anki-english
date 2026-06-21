@@ -1,0 +1,776 @@
+258 multi-sense-3+ jobs:
+============================================================
+
+[  1] accent|noun|B2
+     def: a way of pronouncing the words of a language that shows which country, area or social class a person comes from; how well somebody pronounces a particular language|the emphasis that you should give to part of a word when saying it|a mark on a letter to show that it should be pronounced in a particular way
+
+[  2] acceptance|noun|C1
+     def: the act of accepting a gift, an invitation, an offer, etc.|the act of agreeing with something and approving of it|the process of allowing somebody to join something or be a member of a group
+
+[  3] accessible|adjective|C1
+     def: that can be reached, entered, used, seen, etc.|that can be reached, entered, used, etc. by somebody who has problems walking|easy to understand
+
+[  4] accomplishment|noun|C1
+     def: an impressive thing that is done or achieved after a lot of work|a skill or special ability|the successful completing of something
+
+[  5] accurately|adverb|B2
+     def: in a way that is correct and true in every detail|in an exact way|hitting or reaching the thing that was aimed at
+
+[  6] acute|adjective|C1
+     def: very serious or severe|an acute illness is one that has quickly become severe and dangerous|very sensitive and well developed
+
+[  7] adapt|verb|B2
+     def: to change your behaviour in order to deal more successfully with a new situation|to change something in order to make it suitable for a new use or situation|to change a book or play so that it can be made into a play, film, television drama, etc.
+
+[  8] administer|verb|C1
+     def: to manage and organize the affairs of a company, an organization, a country, etc.|to make sure that something is done fairly and in the correct way|to give or to provide something, especially in a formal way
+
+[  9] admission|noun|C1
+     def: the act of accepting somebody into an institution, organization, etc.; the right to enter a place or to join an institution or organization|a statement in which somebody admits that something is true, especially something wrong or bad that they have done|the amount of money that you pay to go into a building or to an event
+
+[ 10] agile|adjective|C2
+     def: able to think quickly and in an intelligent way|used to describe a way of managing projects in which work is divided into a series of short tasks, with regular breaks to review the work and adapt the plans|used to describe a way of working in which the time and place of work, and the roles that people carry out, can all be changed according to need, and the focus is on the goals to be achieved, rather than the exact methods used
+
+[ 11] agile|adjective|UNCLASSIFIED
+     def: able to think quickly and in an intelligent way|used to describe a way of managing projects in which work is divided into a series of short tasks, with regular breaks to review the work and adapt the plans|used to describe a way of working in which the time and place of work, and the roles that people carry out, can all be changed according to need, and the focus is on the goals to be achieved, rather than the exact methods used
+
+[ 12] allowance|noun|C1
+     def: an amount of money that is given to somebody regularly or for a particular purpose|the amount of something that is allowed in a particular situation|a small amount of money that parents give their children, usually every week or every month
+
+[ 13] ally|noun|C1
+     def: a country that has agreed to help and support another country, especially in case of a war|a person who helps and supports somebody who is in a difficult situation, especially a politician|the group of countries including the UK and the US that fought together in the First and Second World Wars
+
+[ 14] altogether|adverb|B2
+     def: (used to emphasize something) completely; in every way|used to give a total number or amount|used to introduce a summary when you have mentioned a number of different things
+
+[ 15] anchor|noun|C1
+     def: a heavy metal object that is attached to a rope or chain and dropped over the side of a ship or boat to keep it in one place|a person or thing that gives somebody a feeling of safety|a person who presents a live radio or television programme and introduces reports by other people; an anchorman or anchorwoman
+
+[ 16] angel|noun|C1
+     def: a spirit who is believed to be a servant of God, and is sent by God to deliver a message or perform a task. Angels are often shown dressed in white, with wings.|a person who is very good and kind; a child who behaves well|used when you are talking to somebody and you are grateful to them
+
+[ 17] anticipate|verb|B2
+     def: to expect something|to see what might happen in the future and take action to prepare for it|to think with pleasure and excitement about something that is going to happen
+
+[ 18] anxiety|noun|B2
+     def: the state of feeling nervous or worried that something bad is going to happen|a mental illness that causes somebody to worry so much that it has a very negative effect on their daily life|a worry or fear about something
+
+[ 19] appreciation|noun|C1
+     def: pleasure that you have when you recognize and enjoy the good qualities of somebody/something|a full understanding of something, such as a situation or a problem, and of what it involves|the feeling of being grateful for something
+
+[ 20] assembly|noun|C1
+     def: a group of people who have been elected to meet together regularly and make decisions or laws for a particular region or country|the meeting together of a group of people for a particular purpose; a group of people who meet together for a particular purpose|a meeting of the teachers and students in a school, usually at the start of the day, to give information, discuss school events or say prayers together
+
+[ 21] assert|verb|C1
+     def: to state clearly and definitely that something is true|to behave in a confident and determined way so that other people pay attention to your opinions|to make other people recognize your right or authority to do something, by behaving in a determined and confident way
+
+[ 22] attribution|noun|UNCLASSIFIED
+     def: the act of saying or believing that something is the result of a particular thing|the act of saying or believing that somebody is responsible for doing something, especially for saying, writing or painting something|the act of regarding a quality or feature as belonging to somebody/something
+
+[ 23] awkward|adjective|B2
+     def: making you feel embarrassed|difficult to deal with|not convenient
+
+[ 24] ballot|noun|C1
+     def: the system of voting in writing and usually in secret; an occasion on which a vote is held|the piece of paper on which somebody marks who they are voting for|the total number of votes in an election
+
+[ 25] bare|adjective|C1
+     def: not covered by any clothes|not covered with leaves; without plants or trees|not covered with or protected by anything
+
+[ 26] barrier|noun|B2
+     def: an object like a fence that prevents people from moving forward from one place to another|a problem, rule or situation that prevents somebody from doing something, or that makes something impossible|something that exists between one thing or person and another and keeps them separate
+
+[ 27] basket|noun|B2
+     def: a container for holding or carrying things. Baskets are made of long thin pieces of material that bends and twists easily, for example plastic, wire or wicker.|the amount contained in a basket|a facility on a website that records the items that you select to buy
+
+[ 28] betray|verb|C1
+     def: to give information about somebody/something to an enemy|to hurt somebody who trusts you, especially by lying to or about them or telling their secrets to other people|to ignore your principles or beliefs in order to achieve something or gain an advantage for yourself
+
+[ 29] blessing|noun|C1
+     def: God’s help and protection, or a prayer asking for this|approval of or permission for something|something that is good or helpful
+
+[ 30] bounce|verb|C1
+     def: if something bounces or you bounce it, it moves quickly away from a surface it has just hit or you make it do this|to jump up and down on something|to move a child up and down while they are sitting on your knee in order to entertain them
+
+[ 31] breakdown|noun|C1
+     def: an occasion when a vehicle or machine stops working|a failure of a relationship, discussion or system|detailed information that you get by studying a set of figures
+
+[ 32] buddy|noun|C1
+     def: a friend|used to speak to a man you do not know|a partner who does an activity with you so that you can help each other
+
+[ 33] bug|noun|B2
+     def: any small insect|an illness that is usually fairly mild but spreads easily from person to person|a fault in a machine, especially in a computer system or program
+
+[ 34] bulk|noun|C1
+     def: the main part of something; most of something|the (large) size or quantity of something|the weight or shape of somebody/something large
+
+[ 35] burst|verb|C1
+     def: to break open or apart, especially because of pressure from inside; to make something break in this way|to go or move somewhere suddenly with great force; to come from somewhere suddenly|to be very full of something; to be very full and almost breaking open
+
+[ 36] carve|verb|C1
+     def: to make objects, patterns, etc. by cutting away material from a piece of wood or stone, or another hard material|to write something on a surface by cutting into it|to cut a large piece of cooked meat into smaller pieces for eating
+
+[ 37] casualty|noun|C1
+     def: a person who is killed or injured in war or in an accident|a person who suffers or a thing that is destroyed when something else takes place|the part of a hospital where people who need immediate treatment are taken
+
+[ 38] chapel|noun|C2
+     def: a small building or room where Christians go to pray, attend religious services, etc. in a school, prison, large private house, etc.|a separate part of a church or cathedral, with its own altar, used for some services and private prayer|the word for a church used in some Christian denominations, for example by Nonconformists in the UK
+
+[ 39] chapel|noun|UNCLASSIFIED
+     def: a small building or room where Christians go to pray, attend religious services, etc. in a school, prison, large private house, etc.|a separate part of a church or cathedral, with its own altar, used for some services and private prayer|the word for a church used in some Christian denominations, for example by Nonconformists in the UK
+
+[ 40] charter|noun|C1
+     def: a written statement describing the rights that a particular group of people should have|a written statement of the principles and aims of an organization|an official document stating that a government or political leader allows a new organization, town or university to be established and gives it particular rights
+
+[ 41] chronic|adjective|C1
+     def: lasting for a long time; difficult to cure|having had a disease for a long time|lasting a long time; difficult to solve
+
+[ 42] circulation|noun|C1
+     def: the movement of blood around the body|the passing or spreading of something from one person or place to another|the usual number of copies of a newspaper or magazine that are sold each day, week, etc.
+
+[ 43] civilization|noun|B2
+     def: a state of human society that is very developed and organized|a society, its culture and its way of life during a particular period of time or in a particular part of the world|all the people in the world and the societies they live in, considered as a whole
+
+[ 44] clash|noun|C1
+     def: a short fight between two groups of people|an argument between two people or groups of people who have different beliefs and ideas|the difference that exists between two things that are opposed to each other
+
+[ 45] clerk|noun|B2
+     def: a person whose job is to serve customers in a shop|a person whose job is dealing with people arriving at or leaving a hotel|a person whose job is to keep the records or accounts and do other routine duties in an office, shop, etc.
+
+[ 46] cling|verb|C1
+     def: to hold on tightly to somebody/something|to stick to something|to stay close to somebody, especially because you need them emotionally
+
+[ 47] cluster|noun|C1
+     def: a group of things of the same type that grow or appear close together|a group of people, animals or things close together|a group of consonants that come together in a word or phrase, for example /str/ at the beginning of string
+
+[ 48] cocktail|noun|C1
+     def: a drink usually made from a mixture of one or more spirits (= strong alcoholic drinks) and fruit juice. It can also be made without alcohol.|a dish of small pieces of food, usually served cold|a mixture of different substances or elements, often ones that do not mix together well
+
+[ 49] collaboration|noun|C1
+     def: the act of working with another person or group of people to create or produce something|a piece of work produced by two or more people or groups of people working together|the act of helping the enemy during a war when they have taken control of your country
+
+[ 50] commentary|noun|C1
+     def: a spoken description of an event that is given while it is happening, especially on the radio or television|a written explanation or discussion of something such as a book or a play|a criticism or discussion of something
+
+[ 51] compelling|adjective|C1
+     def: that makes you pay attention to it because it is so interesting and exciting|so strong that you cannot resist it|that makes you think it is true
+
+[ 52] compensation|noun|C1
+     def: something, especially money, that somebody gives you because they have hurt you, or damaged something that you own; the act of giving this to somebody|money that an employee receives for doing their job|a thing or things that make a bad situation better
+
+[ 53] compound|noun|B2
+     def: a thing consisting of two or more separate things combined together|a substance formed by a chemical reaction of two or more elements in fixed amounts relative to each other|a noun, an adjective or a verb made of two or more words or parts of words, written as one or more words, or joined by a hyphen. Travel agent, dark-haired and bathroom are all compounds.
+
+[ 54] conceive|verb|C1
+     def: to form an idea, a plan, etc. in your mind|to imagine something|when a woman conceives or conceives a child, she becomes pregnant
+
+[ 55] conception|noun|C1
+     def: an understanding or a belief of what something/somebody is or what something/somebody should be|the process of forming an idea or a plan|the process of an egg being fertilized inside a woman’s body so that she becomes pregnant
+
+[ 56] confront|verb|C1
+     def: to appear and need to be dealt with by somebody|to deal with a problem or difficult situation|to face somebody so that they cannot avoid seeing and hearing you, especially in an unfriendly or dangerous situation
+
+[ 57] conquer|verb|C1
+     def: to take control of a country or city and its people by force|to defeat somebody, especially in a competition, race, etc.|to succeed in dealing with or controlling something
+
+[ 58] consciousness|noun|C1
+     def: the state of being able to use your senses and mental powers to understand what is happening|the state of being aware of something|the ideas and opinions of a person or group
+
+[ 59] consistently|adverb|B2
+     def: always the same|in a way that does not change and continues for a period of time|in a way that has different parts that all agree with each other
+
+[ 60] consult|verb|B2
+     def: to go to somebody for information or advice|to discuss something with somebody to get their permission for something, or to help you make a decision|to look in or at something to get information
+
+[ 61] consultation|noun|C1
+     def: the act of discussing something with somebody or with a group of people before making a decision about it|a formal meeting to discuss something|a meeting with an expert, especially a doctor, to get advice or treatment
+
+[ 62] contemplate|verb|C1
+     def: to think about whether you should do something, or how you should do something|to think carefully about and accept the possibility of something happening|to think deeply about something for a long time
+
+[ 63] conventional|adjective|B2
+     def: tending to follow what is done or considered acceptable by society in general; normal and ordinary, and perhaps not very interesting|following what is traditional or the way something has been done for a long time|using the usual scientific methods of Western medicine such as artificial drugs and operations
+
+[ 64] conviction|noun|C1
+     def: the act of finding somebody guilty of a crime in court; the fact of having been found guilty|a strong opinion or belief|the quality of showing that you believe strongly in what you are saying
+
+[ 65] cooperative|adjective|C1
+     def: involving doing something together or working together with others towards a shared aim|helpful by doing what you are asked to do|owned and run by the people involved, with the profits shared by them
+
+[ 66] correspond|verb|C1
+     def: to be the same as or match something|to be similar to or the same as something else|to write letters or emails, etc. to somebody and receive letters or emails, etc. from them
+
+[ 67] correspondence|noun|C1
+     def: the letters, emails, etc. a person sends and receives|the activity of writing letters|a connection between two things; the fact of two things being similar
+
+[ 68] critical|adjective|B2
+     def: saying what you think is bad about somebody/something|extremely important because a future situation will be affected by it|serious, uncertain and possibly dangerous
+
+[ 69] critically|adverb|B2
+     def: in a way that says what you think is bad about somebody/something|in a way that is extremely important because a future situation will be affected by it|in a way that is serious, uncertain and possibly dangerous
+
+[ 70] crown|noun|C1
+     def: an object in the shape of a circle, usually made of gold and precious stones, that a king or queen wears on his or her head on official occasions|the government of a country, thought of as being represented by a king or queen|the position or power of a king or queen
+
+[ 71] crush|verb|C1
+     def: to press something so hard that it is damaged or loses its shape; to press somebody so hard that they are injured|to break something into small pieces or into a powder by pressing hard|to push or press somebody/something into a small space
+
+[ 72] curse|noun|UNCLASSIFIED
+     def: a rude or offensive word or phrase that some people use when they are very angry|a word or phrase that has a magic power to make something bad happen|something that causes harm or evil
+
+[ 73] defensive|adjective|C1
+     def: protecting somebody/something against attack|behaving in a way that shows that you feel that people are criticizing you|connected with trying to prevent the other team or player from scoring points or goals
+
+[ 74] defy|verb|C1
+     def: to refuse to obey or show respect for somebody in authority, a law, a rule, etc.|to be impossible or almost impossible to believe, explain, describe, etc.|to successfully resist something to a very unusual degree
+
+[ 75] democratic|adjective|B2
+     def: controlled by representatives who are elected by the people of a country; connected with this system|based on the principle that all members have an equal right to be involved in running an organization, etc.|based on the principle that all members of society are equal rather than divided by money or social class
+
+[ 76] deposit|noun|C1
+     def: a sum of money that is paid into a bank account|a layer of a substance that has formed naturally underground|a layer of a substance that has been left somewhere, especially by a river, flood, etc., or is found at the bottom of a liquid
+
+[ 77] desperately|adverb|B2
+     def: in a way that shows you have little hope and are ready to do anything without worrying about danger to yourself or others|extremely, especially when talking about bad situations|very much, especially when talking about difficult or bad situations
+
+[ 78] detach|verb|UNCLASSIFIED
+     def: to remove something from something larger; to become separated from something|to leave or separate yourself from somebody/something|to send a group of soldiers, etc. away from the main group, especially to do special duties
+
+[ 79] dictate|verb|C1
+     def: to tell somebody what to do, especially in an annoying way|to control or influence how something happens|to say words for somebody else to write down or to be recorded
+
+[ 80] differentiate|verb|C1
+     def: to recognize or show that two things are not the same|to be the particular thing that shows that things or people are not the same|to treat people or things in a different way, especially in an unfair way
+
+[ 81] dimension|noun|C1
+     def: a measurement in space, for example how high, wide or long something is|the size and extent of a situation|an aspect, or way of looking at or thinking about something
+
+[ 82] disconnect|verb|C1
+     def: to remove a piece of equipment from a supply of gas, water or electricity|to officially stop the supply of phone lines, water, electricity or gas to a building|to break the contact between two people who are talking on the phone
+
+[ 83] distinct|adjective|B2
+     def: easily or clearly heard, seen, felt, etc.|clearly different or of a different kind|used to emphasize that you think an idea or situation definitely exists and is important
+
+[ 84] distinction|noun|C1
+     def: a clear difference or contrast especially between people or things that are similar or related|the act of separating people or things into different groups|the quality of being something that is special
+
+[ 85] distribution|noun|B2
+     def: the way that something is spread or exists over a particular area or among a particular group of people|the act of giving or sharing something out among a number of people|the system of transporting and delivering a product
+
+[ 86] diversity|noun|B2
+     def: a range of many people or things that are very different from each other|the quality or fact of including a range of many people or things|the practice or quality of including or involving people from a range of different social and ethnic backgrounds and of different genders, religions, etc.
+
+[ 87] divert|verb|C1
+     def: to make somebody/something change direction|to use money, materials, etc. for a different purpose from their original purpose|to take somebody’s thoughts or attention away from something
+
+[ 88] domestic|adjective|B2
+     def: of or inside a particular country; not foreign or international|used in the home; connected with the home or family|kept on farms or as pets; not wild
+
+[ 89] drain|verb|C1
+     def: to make something empty or dry by removing the liquid from it; to become empty or dry in this way|to make liquid flow away from something; to flow away|to empty a cup or glass by drinking everything in it
+
+[ 90] dramatic|adjective|B2
+     def: sudden, very great and often surprising|exciting and impressive|connected with the theatre or plays
+
+[ 91] dramatically|adverb|B2
+     def: very suddenly and to a very great and often surprising degree|in a way that is exciting and impressive|in a way that is connected with the theatre or plays
+
+[ 92] drift|verb|C1
+     def: to move along smoothly and slowly in water or air|to move or go somewhere slowly|to be blown into large piles by the wind
+
+[ 93] engagement|noun|C1
+     def: an agreement to marry somebody; the period during which two people are engaged|an arrangement to do something at a particular time, especially something official or something connected with your job|being involved with somebody/something in an attempt to understand them/it
+
+[ 94] enterprise|noun|C1
+     def: a company or business|a large project, especially one that is difficult|the development of businesses by the people of a country rather than by the government
+
+[ 95] equation|noun|C1
+     def: a statement showing that two amounts or values are equal, for example 2x + y = 54|the act of making something equal or considering something as equal (= of equating them)|a problem or situation in which several things must be considered and dealt with
+
+[ 96] establishment|noun|C1
+     def: an organization, a large institution or a hotel|the people in a society or a profession who have influence and power and who usually do not support change|the act of starting or creating something that is meant to last for a long time
+
+[ 97] exclusive|adjective|C1
+     def: only to be used by one particular person or group; only given to one particular person or group|not very willing to allow new people to become members, especially if they are from a lower social class|of a high quality and expensive and therefore not often bought or used by most people
+
+[ 98] exploitation|noun|C1
+     def: a situation in which somebody treats somebody else in an unfair way, especially in order to make money from their work|the use of land, oil, minerals, etc.|the fact of using a situation in order to get an advantage for yourself
+
+[ 99] expose|verb|B2
+     def: to show something that is usually hidden|to tell the true facts about a person or a situation, and show them/it to be dishonest, illegal, etc.|to put somebody/something in a place or situation where they are not protected from something harmful or unpleasant
+
+[100] extend|verb|B2
+     def: to make something longer or larger|to make something last longer|to make a business, an idea, an influence, etc. cover more areas or operate in more places
+
+[101] fantasy|noun|B2
+     def: a pleasant situation that you imagine but that is unlikely to happen|a product of your imagination|the act of imagining things; a person’s imagination
+
+[102] favourable|adjective|C1
+     def: making people have a good opinion of somebody/something|positive and showing your good opinion of somebody/something|expressing your agreement; giving permission
+
+[103] fibre|noun|C1
+     def: the part of food that helps to keep a person healthy by keeping the bowels working and moving other food quickly through the body|a material such as cloth or rope that is made from a mass of natural or artificial threads|one of the many thin threads that form body tissue, such as muscle, and natural materials, such as wood and cotton
+
+[104] fierce|adjective|C1
+     def: angry and aggressive in a way that is frightening|showing strong feelings or a lot of activity, often in a way that is violent|very strong in a way that could cause damage
+
+[105] fit|noun|C1
+     def: a sudden attack of an illness, such as epilepsy, in which somebody becomes unconscious and their body may make violent movements|a sudden short period of coughing (= forcing air through the throat noisily) or of laughing, that you cannot control|a short period of very strong feeling
+
+[106] flesh|noun|C1
+     def: the soft substance between the skin and bones of animal or human bodies|the skin of the human body|the soft part of fruit and vegetables, especially when it is eaten
+
+[107] formula|noun|C1
+     def: a series of letters, numbers or symbols that represent a rule or law|letters and symbols that show the parts of a chemical compound, etc.|a particular method of doing or achieving something
+
+[108] foundation|noun|B2
+     def: a principle, an idea or a fact that something is based on and that it grows from|an organization that is established to provide money for a particular purpose, for example for scientific research or charity|the act of starting a new institution or organization
+
+[109] framework|noun|B2
+     def: the parts of a building or an object that support its weight and give it shape|a set of beliefs, ideas or rules that is used as the basis for making judgements, decisions, etc.|the structure of a particular system
+
+[110] freely|adverb|B2
+     def: without anyone trying to prevent or control something|without anything stopping the movement or flow of something|in an honest way without worrying about what people will say or do
+
+[111] fulfil|verb|B2
+     def: to do or achieve what was hoped for or expected|to do or have what is required or necessary|to have a particular role or purpose
+
+[112] functional|adjective|C1
+     def: practical and useful; with little or no decoration|having a special purpose; making it possible for somebody to do something or for something to happen|working; able to work
+
+[113] fundamentally|adverb|B2
+     def: in every way that is important; completely|used when you are introducing a topic and stating something important about it|used when you are saying what is the most important thing about somebody/something
+
+[114] gear|noun|C1
+     def: equipment in a vehicle that changes the relation between engine speed (or pedal speed on a bicycle) and the speed of the wheels moving forwards or backwards|a particular position of the gears in a vehicle that gives a particular range of speed and power|the equipment or clothing needed for a particular activity
+
+[115] glorious|adjective|C1
+     def: deserving or bringing great success and making somebody/something famous|very beautiful and impressive|hot, with the sun shining
+
+[116] glory|noun|C1
+     def: great success that brings somebody praise and honour and makes them famous|praise and worship of God|great beauty
+
+[117] golden|adjective|B2
+     def: made of gold|bright yellow in colour like gold|special; wonderful
+
+[118] grid|noun|C1
+     def: a pattern of straight lines, usually crossing each other to form squares|a pattern of squares on a map that are marked with letters or numbers to help you find the exact position of a place|a system of electric wires or pipes carrying gas, for sending power over a large area
+
+[119] gross|adjective|C1
+     def: being the total amount of something before anything is taken away|very obvious and unacceptable|very unpleasant
+
+[120] guilt|noun|C1
+     def: the unhappy feelings caused by knowing or thinking that you have done something wrong|the fact that somebody has done something illegal|blame or responsibility for doing something wrong or for something bad that has happened
+
+[121] gut|noun|C1
+     def: the tube in the body through which food passes when it leaves the stomach|the organs in and around the stomach, especially in an animal|a person’s stomach, especially when it is large
+
+[122] hardware|noun|C1
+     def: the machines and electronic parts in a computer or other electronic system|tools and equipment that are used in the house and garden|the equipment, machines and vehicles used to do something
+
+[123] harmony|noun|C1
+     def: a state of peaceful existence and agreement|the way in which different notes that are played or sung together combine to make a pleasant sound|an attractive combination of related things
+
+[124] harsh|adjective|C1
+     def: cruel, severe and unkind|very difficult and unpleasant to live in|too strong and bright; ugly or unpleasant to look at
+
+[125] haunt|verb|C1
+     def: if the ghost of a dead person haunts a place, people say that they have seen it there|if something unpleasant haunts you, it keeps coming to your mind so that you cannot forget it|to continue to cause problems for somebody for a long time
+
+[126] heal|verb|B2
+     def: to become healthy again; to make something healthy again|to cure somebody who is ill; to make somebody feel happy again|to put an end to something or make something easier to bear; to end or become easier to bear
+
+[127] hostile|adjective|C1
+     def: aggressive or unfriendly and ready to argue or fight|strongly rejecting something|belonging to a military enemy
+
+[128] hostility|noun|C1
+     def: aggressive or unfriendly feelings or behaviour|strong and angry opposition towards an idea, a plan or a situation|acts of fighting in a war
+
+[129] humanity|noun|C1
+     def: people in general|the state of being a person rather than a god, an animal or a machine|the quality of being kind to people and animals by making sure that they do not suffer more than is necessary; the quality of being humane
+
+[130] humble|adjective|C1
+     def: showing you do not think that you are as important as other people|used to suggest that you are not as important as other people, but in a way that is not sincere or not very serious|having a low rank or social position
+
+[131] identification|noun|C1
+     def: the process of showing, proving or recognizing who or what somebody/something is|the process of recognizing that something exists, or is important|official papers or a document that can prove who you are
+
+[132] ignorant|adjective|UNCLASSIFIED
+     def: not having or showing much knowledge or information about things; not educated|not having any knowledge or information about a particular thing|with very bad manners
+
+[133] impulse|noun|UNCLASSIFIED
+     def: a sudden strong wish or need to do something, without stopping to think about the results|a force or movement of energy that causes something else to react|something that causes somebody/something to do something or to develop and make progress
+
+[134] inclined|adjective|C1
+     def: wanting to do something|tending to do something; likely to do something|used when you are expressing an opinion but do not want to express it very strongly
+
+[135] infect|verb|C1
+     def: to make a disease or an illness spread to a person, an animal or a plant|to make a substance contain harmful bacteria that can spread disease|to make a computer virus spread to another computer or program
+
+[136] institutional|adjective|C1
+     def: connected with a large important organization, for example a university or bank|in or like a place where people are sent to live and be cared for, for example a hospital, prison or special school|established as part of the normal systems, practices, etc. of an organization, society or culture
+
+[137] intervention|noun|C1
+     def: action taken to improve or help a situation|action by a country to become involved in the affairs of another country when they have not been asked to do so|action taken to improve a medical condition or illness
+
+[138] kit|noun|B2
+     def: a set of tools or equipment that you use for a particular purpose|a set of parts ready to be made into something|a set of clothes and equipment that you use for a particular activity
+
+[139] lane|noun|B2
+     def: a narrow road in the country|a city street|a section of a wide road, that is marked by painted white lines, to keep lines of traffic separate
+
+[140] lens|noun|B2
+     def: a curved piece of glass or plastic that makes things look larger, smaller or clearer when you look through it|a piece of equipment that is part of a camera, containing one or more lenses|a contact lens (= a small round piece of thin plastic that you put on your eye to help you see better)
+
+[141] limitation|noun|B2
+     def: the act or process of limiting or controlling somebody/something|a rule, fact or condition that limits something|a limit on what somebody/something can do or how good they or it can be
+
+[142] logic|noun|C1
+     def: a way of thinking or explaining something|sensible reasons for doing something|the science of thinking about or explaining the reason for something using formal methods
+
+[143] majority|noun|B2
+     def: the largest part of a group of people or things|the number of votes by which one political party wins an election; the number of votes by which one side in a discussion, etc. wins|the difference between the number of votes given to the candidate who wins the election and the total number of votes of all the other candidates
+
+[144] marker|noun|B2
+     def: an object or a sign that shows the position of something|a sign that something exists or that shows what it is like|a person who marks students’ work or exam papers
+
+[145] misery|noun|C1
+     def: great physical or mental pain|very poor living conditions|something that causes great physical or mental pain
+
+[146] mortality|noun|UNCLASSIFIED
+     def: the state of being human and not living forever|the number of deaths in a particular situation or period of time|a death
+
+[147] net|adjective|C1
+     def: a net amount of money is the amount that remains when nothing more is to be taken away|the net weight of something is the weight without its container or the material it is wrapped in|final, after all the important facts have been included
+
+[148] neutral|adjective|B2
+     def: not supporting or helping either side in a disagreement, competition, etc.|not belonging to any of the countries that are involved in a war; not supporting any of the countries involved in a war|deliberately not expressing any strong feeling
+
+[149] oblivion|noun|UNCLASSIFIED
+     def: a state in which you are not aware of what is happening around you, usually because you are unconscious or asleep|the state in which somebody/something has been forgotten and is no longer famous or important|a state in which something has been completely destroyed
+
+[150] operator|noun|B2
+     def: a person who operates equipment or a machine|a person or company that runs a particular business|a person who works on the phone switchboard of a large company or organization, especially at a telephone exchange
+
+[151] orient|verb|UNCLASSIFIED
+     def: to direct somebody/something towards something; to make or adapt somebody/something for a particular purpose|to find your position in relation to everything that is around or near you|to make yourself familiar with a new situation
+
+[152] orientation|noun|C1
+     def: a person’s basic beliefs or feelings about a particular subject|the type of aims or interests that a person or an organization has; the act of directing your aims towards a particular thing|training or information that you are given before starting a new job, course, etc.
+
+[153] overlook|verb|C1
+     def: to fail to see or notice something|to see something wrong or bad but decide to ignore it|if a building, etc. overlooks a place, you can see that place from the building
+
+[154] overwhelm|verb|C1
+     def: to have such a strong emotional effect on somebody that it is difficult for them to resist or know how to react|to defeat somebody completely|to be so bad or so great that a person cannot deal with it; to give too much of a thing to a person
+
+[155] passing|noun|C1
+     def: the process of time going by|the fact of something ending or of somebody dying|the act of making something become a law
+
+[156] patch|noun|C1
+     def: a small area of something, especially one which is different from the area around it|a small piece of material that is used to cover a hole in something or to make a weak area stronger, or as decoration|a small piece of land, especially one used for growing vegetables or fruit
+
+[157] philosophy|noun|B2
+     def: the study of the nature and meaning of the universe and of human life|a particular set or system of beliefs resulting from the search for knowledge about life and the universe|a set of beliefs or an attitude to life that guides somebody’s behaviour
+
+[158] pirate|noun|C1
+     def: (especially in the past) a person on a ship who attacks other ships at sea in order to steal from them|a person who makes illegal copies of books, computer programs, etc., in order to sell them|a person or an organization that broadcasts illegally
+
+[159] plead|verb|C1
+     def: to ask somebody for something in a very strong and serious way|to state in court that you are guilty or not guilty of a crime|to argue in support of somebody/something
+
+[160] pop|verb|C1
+     def: to make a short explosive sound; to cause something to make this sound|to burst, or make something burst (= break apart or open), with a short explosive sound|to go somewhere quickly, suddenly or for a short time
+
+[161] portfolio|noun|C1
+     def: a thin flat case used for carrying documents, drawings, etc.|a collection of photographs, drawings, etc. that you use as an example of your work, especially when applying for a job|a set of shares owned by a particular person or organization
+
+[162] portray|verb|C1
+     def: to show somebody/something in a picture; to describe somebody/something in a piece of writing|to describe or show somebody/something in a particular way, especially when this does not give a complete or accurate impression of what they are like|to act a particular role in a film or play
+
+[163] preach|verb|C1
+     def: to give a religious talk in a public place, especially in a church during a service|to tell people about a particular religion, way of life, system, etc. in order to persuade them to accept it|to give somebody advice on moral standards, behaviour, etc., especially in a way that they find annoying or boring
+
+[164] precisely|adverb|B2
+     def: exactly|accurately; carefully|used to emphasize that something is very true or obvious
+
+[165] presently|adverb|C1
+     def: at the time you are speaking or writing; now|used to show that something happened after a short time|used to show that something will happen soon
+
+[166] pride|noun|B2
+     def: a feeling of being pleased or satisfied that you get when you or people who are connected with you have done something well or own something that other people admire|the feeling of respect that you have for yourself|the feeling that you are better or more important than other people
+
+[167] prior|adjective|B2
+     def: happening or existing before something else or before a particular time|already existing and therefore more important|before something
+
+[168] privilege|noun|C1
+     def: a special right or advantage that a particular person or group of people has|the rights and advantages that rich and powerful people in a society have|something that you are proud and lucky to have the opportunity to do
+
+[169] probability|noun|B2
+     def: how likely something is to happen|a thing that is likely to happen|a ratio showing the chances that a particular thing will happen
+
+[170] profound|adjective|C1
+     def: very great; felt or experienced very strongly|showing great knowledge or understanding|needing a lot of study or thought
+
+[171] promote|verb|B1
+     def: to help sell a product, service, etc. or make it more popular by advertising it or offering it at a special price|to help something to happen or develop|to move somebody to a higher rank or more senior job
+
+[172] proposition|noun|C1
+     def: an idea or a plan of action that is suggested, especially in business|a thing that you intend to do; a problem, task or person to be dealt with|(in the US) a suggested change to the law that people can vote on
+
+[173] provision|noun|C1
+     def: the act of supplying somebody with something that they need or want; something that is supplied|preparations that you make for something that might or will happen in the future|supplies of food and drink, especially for a long journey
+
+[174] radical|adjective|C1
+     def: relating to the most basic and important parts of something; complete and detailed|new, different and likely to have a great effect|in favour of extreme and complete political or social change
+
+[175] rail|noun|B2
+     def: a wooden or metal bar placed around something as a barrier or to provide support|a bar fixed to the wall for hanging things on|each of the two metal bars that form the track that trains run on
+
+[176] reasonably|adverb|B2
+     def: to a degree that is fairly good but not very good|in a logical and sensible way|in a fair way
+
+[177] rebellion|noun|C1
+     def: an attempt by some of the people in a country to change their government, using violence|opposition to authority within an organization, a political party, etc.|opposition to authority; being unwilling to obey rules or accept normal standards of behaviour, dress, etc.
+
+[178] recess|noun|C2
+     def: a period of time during the year when the members of a parliament, committee, etc. do not meet|a short break in a trial in court|a period of time between lessons at school
+
+[179] recess|noun|UNCLASSIFIED
+     def: a period of time during the year when the members of a parliament, committee, etc. do not meet|a short break in a trial in court|a period of time between lessons at school
+
+[180] reflection|noun|C1
+     def: an image in a mirror, on a shiny surface, on water, etc.|a sign that shows the state or nature of something|careful thought about something, sometimes over a long period of time
+
+[181] refuge|noun|C1
+     def: shelter or protection from danger, trouble, etc.|a place, person or thing that provides shelter or protection for somebody/something|a building that provides a temporary home for people in need of shelter or protection from somebody/something
+
+[182] rejection|noun|C1
+     def: the act of refusing to accept or consider something|the act of refusing to accept somebody for a job, position, etc.|the decision not to use, sell, publish, etc. something because its quality is not good enough
+
+[183] reliability|noun|C1
+     def: the quality of being able to be trusted to do what somebody wants or needs|the quality of being likely to be correct or true|the quality of being able to work or operate for long periods without breaking down or needing attention
+
+[184] renew|verb|C1
+     def: to begin something again after it stopped or was interrupted|to make something legally acceptable for a further period of time|to emphasize something by saying or stating it again
+
+[185] rental|noun|C1
+     def: the amount of money that you pay to use something for a particular period of time|the act of renting something or an arrangement to rent something|a house, car or piece of equipment that you can rent
+
+[186] replacement|noun|C1
+     def: the act of replacing one thing with another, especially something that is newer or better|a thing that replaces something, especially because the first thing is old, broken, etc.|a person who replaces another person in an organization, especially in their job
+
+[187] reproduce|verb|C1
+     def: to make a copy of a picture, piece of text, etc.|to produce something very similar to something else in a different medium or context; to make something happen again in the same way|if people, plants, animals, etc. reproduce or reproduce themselves, they produce young
+
+[188] reproduction|noun|C1
+     def: the act or process of producing babies, young animals or plants|the act or process of producing copies of a document, book, picture, etc.|the quality of recorded sound
+
+[189] resignation|noun|C1
+     def: the act of giving up your job or position; the occasion when you do this|a letter, for example to your employers, to say that you are giving up your job or position|the quality of being willing to accept a difficult or unpleasant situation that you cannot change
+
+[190] resistance|noun|C1
+     def: dislike of or opposition to a plan, an idea, etc.; the act of refusing to obey|the act of using force to oppose somebody/something|the power not to be affected by something
+
+[191] restore|verb|B2
+     def: to bring back a situation or feeling that existed before|to bring somebody/something back to a former condition, place or position|to repair a building, work of art, piece of furniture, etc. so that it looks as good as it did originally
+
+[192] restrain|verb|UNCLASSIFIED
+     def: to stop somebody/something from doing something, especially by using physical force|to stop yourself from feeling an emotion or doing something that you would like to do|to stop something that is growing or increasing from becoming too large
+
+[193] restraint|noun|C1
+     def: a rule, a fact, an idea, etc. that limits or controls what people can do|the act of controlling or limiting something because it is necessary or sensible to do so|the quality of behaving calmly and with control
+
+[194] restrict|verb|B2
+     def: to limit the size, amount or range of something|to stop somebody/something from moving or acting freely|to control something with rules or laws
+
+[195] retention|noun|UNCLASSIFIED
+     def: the action of keeping something rather than losing it or stopping it|the action of keeping liquid, heat, etc. inside something rather than letting it escape|the ability to remember things
+
+[196] revision|noun|B2
+     def: a change or set of changes to something|the act of changing something, or of examining something with the intention of changing it|the process of learning work for an exam
+
+[197] robust|adjective|C1
+     def: strong and healthy|strong; able to survive being used a lot and not likely to break|strong and not likely to fail or become weak
+
+[198] romance|noun|B2
+     def: an exciting, usually short, relationship between two people who are in love with each other|love or the feeling of being in love|a story about a love affair
+
+[199] rotation|noun|C1
+     def: the action of an object moving in a circle around a central fixed point|one complete movement in a circle around a fixed point|the act of regularly changing the thing that is being used in a particular situation, or of changing the person who does a particular job
+
+[200] sedentary|adjective|UNCLASSIFIED
+     def: in which you spend a lot of time sitting down|spending a lot of time sitting down and not moving|that stay and live in the same place or area
+
+[201] seize|verb|C1
+     def: to take somebody/something in your hand suddenly and using force|to take control of a place or situation, often suddenly and violently|to arrest or capture somebody
+
+[202] sensation|noun|C1
+     def: a feeling that you get when something affects your body|the ability to feel through your sense of touch|a general feeling or impression that is difficult to explain; an experience or a memory
+
+[203] separation|noun|C1
+     def: the act of separating people or things; the state of being separate|a period of time that people spend apart from each other|a decision that a husband and wife make to live apart while they are still legally married
+
+[204] settlement|noun|C1
+     def: an official agreement that ends an argument between two people or groups|the action of reaching an agreement|a place where people have come to live and make their homes, especially where few or no people lived before
+
+[205] skip|verb|C1
+     def: to move forwards lightly and quickly making a little jump with each step|to not do something that you usually do or should do|to leave out something that would normally be the next thing that you would do, read, etc.
+
+[206] smash|verb|C1
+     def: to break something, or to be broken, violently and noisily into many pieces|to move with a lot of force against something solid; to make something do this|to hit something very hard and break it, in order to get through it
+
+[207] soar|verb|C1
+     def: if the value, amount or level of something soars, it rises very quickly|to rise quickly and smoothly up into the air|to fly very high in the air or remain high in the air
+
+[208] sound|adjective|C1
+     def: sensible; that you can rely on and that will probably give good results|good, detailed and complete|in good condition; not damaged, hurt, etc.
+
+[209] spare|adjective|B2
+     def: available to do what you want with rather than work|that is not being used or is not needed at the present time|kept in case you need to replace the one you usually use; extra
+
+[210] spare|verb|C1
+     def: to make something such as time or money available to somebody or for something, especially when it requires an effort for you to do this|to save somebody/yourself from having to go through an unpleasant experience|to allow somebody/something to escape harm, damage or death, especially when others do not escape it
+
+[211] specimen|noun|C1
+     def: a small amount of something that shows what the rest of it is like|a single example of something, especially an animal or a plant|a small quantity of blood, urine, etc. that is taken from somebody and tested by a doctor
+
+[212] spectacle|noun|C1
+     def: two lenses in a frame that rests on the nose and ears. People wear spectacles in order to be able to see better or to protect their eyes from bright light.|a performance or an event that is very impressive and exciting to look at|a sight or view that is very impressive to look at
+
+[213] spectrum|noun|C1
+     def: a band of coloured lights in order of their wavelengths, as seen in a rainbow and into which light may be separated|a range of sound waves or several other types of wave|a complete or wide range of related qualities, ideas, etc.
+
+[214] spell|noun|C1
+     def: a short period of time during which something lasts|a period of time doing something or working somewhere|words that are thought to have magic power or to make a piece of magic work; a piece of magic that happens when somebody says these magic words
+
+[215] spotlight|noun|C1
+     def: a light with a single, very bright beam that can be directed at a particular place or person, especially a performer on the stage|the area of light that is made by a spotlight|attention from newspapers, television and the public
+
+[216] squad|noun|C1
+     def: a section of a police force that deals with a particular type of crime|a group of players, runners, etc. from which a team is chosen for a particular game or match|a small group of soldiers working or being trained together
+
+[217] squeeze|verb|C1
+     def: to press something, especially with your fingers|to get liquid out of something by pressing or twisting it hard|to force somebody/something/yourself into or through a small space
+
+[218] statistic|noun|B1
+     def: a collection of information shown in numbers|the science of collecting and analysing statistics|a piece of information shown in numbers
+
+[219] steady|adjective|B2
+     def: developing, growing, etc. gradually and in an even and regular way|not changing and not interrupted|fixed in a place or position, supported or balanced; controlled and not shaking or likely to fall down
+
+[220] steer|verb|C1
+     def: to control the direction in which a boat, car, etc. moves|to move in a particular direction|to take control of a situation and influence the way in which it develops
+
+[221] sterile|adjective|UNCLASSIFIED
+     def: not able to produce children or young animals|completely clean and free from bacteria|not producing any useful result
+
+[222] strain|noun|C1
+     def: pressure on a system or relationship because great demands are being placed on it|mental pressure or worry felt by somebody because they have too much to do or manage; something that causes this pressure|the pressure that is put on something when a physical force stretches, pushes, or pulls it
+
+[223] strengthen|verb|B2
+     def: to become more powerful or effective; to make somebody/something more powerful or effective|to become physically stronger|to make a feeling, an opinion or a relationship stronger; to become stronger
+
+[224] strip|verb|C1
+     def: to take off all or most of your clothes or another person’s clothes|to remove a layer from something, especially so that it is completely exposed|to remove all the things from a place and leave it empty
+
+[225] strip|verb|UNCLASSIFIED
+     def: to take off all or most of your clothes or another person’s clothes|to remove a layer from something, especially so that it is completely exposed|to remove all the things from a place and leave it empty
+
+[226] subscriber|noun|C1
+     def: a person who pays money, usually once a year, to receive regular copies of a magazine or newspaper or have access to it online|a person who pays to receive a service|a person who gives money regularly to help the work of an organization such as a charity
+
+[227] superficially|adverb|UNCLASSIFIED
+     def: in a way that appears to be true, real or important until you look at it more carefully|not carefully or completely; in a way that only considers what is obvious|not seriously or to a great degree; in a way that only affects the surface
+
+[228] suppress|verb|C1
+     def: to put an end, often by force, to a group or an activity that is believed to threaten authority|to prevent something from being published or made known|to prevent yourself from having or expressing a feeling or an emotion
+
+[229] susceptible|adjective|UNCLASSIFIED
+     def: very likely to be influenced, harmed or affected by something|easily influenced by feelings and emotions|allowing something; capable of something
+
+[230] suspicious|adjective|C1
+     def: feeling that somebody has done something wrong, illegal or dishonest, without having any proof|making you feel that something is wrong, illegal or dishonest|not willing or able to trust somebody/something
+
+[231] synthesis|noun|C1
+     def: the act of combining separate ideas, beliefs, styles, etc.; a mixture or combination of ideas, beliefs, styles, etc.|the natural chemical production of a substance in animals and plants|the artificial production of a substance that is present naturally in animals and plants
+
+[232] temporal|adjective|UNCLASSIFIED
+     def: connected with the real physical world, not spiritual matters|connected with or limited by time|near the temple(s) at the side of the head
+
+[233] tender|adjective|C1
+     def: kind, gentle and loving|easy to bite through and cut|painful when you touch it
+
+[234] tension|noun|B2
+     def: a situation in which people do not trust each other, or feel unfriendly towards each other, and that may cause them to attack each other|a situation in which the fact that there are different needs or interests causes difficulties|a feeling of worry and stress that makes it impossible to relax
+
+[235] terminal|adjective|C1
+     def: that cannot be cured and will lead to death, often slowly|suffering from an illness that cannot be cured and will lead to death|certain to get worse and come to an end
+
+[236] territory|noun|B2
+     def: land that is under the control of a particular country or political leader|an area that one person, group, animal, etc. considers as their own and defends against others who try to enter it|an area of activity, especially one that is familiar/unfamiliar or somebody's particular responsibility
+
+[237] thoughtful|adjective|C1
+     def: quiet, because you are thinking|showing that you think about and care for other people|showing signs of careful thought
+
+[238] thread|noun|C1
+     def: a thin string of cotton, wool, silk, etc. used for sewing or making cloth|an idea or a feature that is part of something greater; an idea that connects the different parts of something|a series of connected messages on email, social media, etc. that have been sent by different people
+
+[239] threshold|noun|C1
+     def: the floor or ground at the bottom of a doorway, considered as the entrance to a building or room|the level at which something starts to happen or have an effect|the point just before a new situation, period of life, etc. begins
+
+[240] tide|noun|C1
+     def: a regular rise and fall in the level of the sea, caused by the pull of the moon and sun; the flow of water that happens as the sea rises and falls|the direction in which the opinion of a large number of people seems to be moving|a large amount of something unpleasant that is increasing and is difficult to control
+
+[241] tighten|verb|C1
+     def: to hold or fix something more securely in position; to make something or become more difficult to move, open or separate|to make something become stricter|to become stretched so that it cannot stretch much further; to stretch or pull something in this way
+
+[242] tolerate|verb|C1
+     def: to allow somebody to do something that you do not agree with or like|to accept somebody/something that is annoying, unpleasant, etc. without complaining|to be able to be affected by a drug, difficult conditions, etc. without being harmed
+
+[243] top|verb|C1
+     def: to be higher than a particular amount|to be in the highest position on a list because you are the most successful, important, etc.|to put something on the top of something else
+
+[244] trailer|noun|C1
+     def: a truck, or a container with wheels, that is pulled by another vehicle|a vehicle without an engine, that can be pulled by a car or truck or used as a home or an office when it is parked|a small building for people to live in that is made in a factory and moved to a permanent place
+
+[245] transcribe|verb|UNCLASSIFIED
+     def: to record thoughts, speech or data in a written form, or in a different written form from the original|to show the sounds of speech using a special phonetic alphabet|to write a piece of music in a different form so that it can be played by a different musical instrument or sung by a different voice
+
+[246] transit|noun|C1
+     def: the process of being moved or carried from one place to another|the act of going through a place on the way to somewhere else|the system of buses, trains, etc. that people use to travel from one place to another
+
+[247] transmission|noun|C1
+     def: the act or process of passing something from one person, place or thing to another|the act or process of sending out an electronic signal or message or of broadcasting a radio or television programme|a radio or television message or broadcast
+
+[248] transportation|noun|B2
+     def: a system for carrying people or goods from one place to another using vehicles, roads, etc.|a vehicle or method of travel|the activity or business of carrying goods from one place to another using trucks, trains, etc.
+
+[249] triumph|noun|C1
+     def: a great success, achievement or victory|the feeling of great pleasure or joy that you get from a great success or victory|an excellent example of how successful something can be
+
+[250] valid|adjective|B2
+     def: that is legally or officially acceptable|based on what is logical or true|that is accepted by the system
+
+[251] voluntary|adjective|B2
+     def: done willingly, not because you are forced|done by people who choose to do it without being paid|doing a job without wanting to be paid for it
+
+[252] weaken|verb|C1
+     def: to make somebody/something less strong or powerful; to become less strong or powerful|to make something less physically strong; to become less physically strong|to become or make somebody become less determined or certain about something
+
+[253] weave|verb|C1
+     def: to make cloth, a carpet, a basket, etc. by crossing threads or narrow pieces of material across, over and under each other by hand or on a machine called a loom|to make something by twisting flowers, pieces of wood, etc. together|to move along by running and changing direction continuously to avoid things that are in your way
+
+[254] welfare|noun|B2
+     def: the general health, happiness and safety of a person, an animal or a group|practical or financial help that is provided, often by the government, for people or animals that need it|money that the government pays regularly to people who are poor, unemployed, sick, etc.
+
+[255] whilst|conjunction|C1
+     def: during the time that something is happening; at the same time as something else is happening|used to contrast two things|although; despite the fact that…
+
+[256] whip|verb|C1
+     def: to hit a person or an animal hard with a whip, as a punishment or to make them go faster or work harder|to move, or make something move, quickly and suddenly or violently in a particular direction|to remove or pull something quickly and suddenly
+
+[257] withdrawal|noun|C1
+     def: the act of taking an amount of money out of your bank account|the act of moving or taking something away or back|the act of no longer taking part in something or being a member of an organization
+
+[258] worthy|adjective|C1
+     def: having the qualities that deserve somebody/something|having qualities that deserve your respect or attention|having good qualities but not very interesting or exciting

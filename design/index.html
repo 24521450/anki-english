@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EAVM Design System — IELTS Anki Deck</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PAGE CSS — preview-only, NOT in vùng 2, NOT synced to .apkg
+       ═══════════════════════════════════════════════════════════ -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: #0a0a0c;
+      color: #cbd5e1;
+      font-family: 'Hanken Grotesk', -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+    .page-header { margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid #1f1d22; }
+    .page-title { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #94a3b8; margin: 0 0 8px; }
+    .page-subtitle { font-size: 13px; color: #64748b; margin: 0; }
+    .page-nav { display: flex; gap: 6px; flex-wrap: wrap; margin: 24px 0 0; padding: 0; list-style: none; }
+    .page-nav a {
+      display: inline-block; padding: 6px 14px; border-radius: 9999px;
+      background: #18181b; border: 1px solid #27272a; color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      text-decoration: none; letter-spacing: 0.04em;
+    }
+    .page-nav a:hover { border-color: #3f3f46; color: #e4e4e7; }
+
+    .region { margin: 56px 0; padding: 28px 0; border-top: 1px solid #1f1d22; }
+    .region:first-of-type { border-top: none; }
+    .region-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+    .region-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #52525b; letter-spacing: 0.1em; }
+    .region-title { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: #e4e4e7; margin: 0; letter-spacing: -0.01em; }
+    .region-desc { font-size: 13px; color: #71717a; margin: 4px 0 0; }
+
+    /* Token swatches */
+    .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+    .swatch { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #111113; border: 1px solid #1f1d22; border-radius: 10px; }
+    .swatch-color { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.08); }
+    .swatch-info { min-width: 0; }
+    .swatch-name { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: #e4e4e7; }
+    .swatch-hex { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #71717a; }
+    .swatch-group { margin-bottom: 20px; }
+    .swatch-group-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #52525b; margin: 0 0 10px; }
+
+    /* Typography demo */
+    .typo-row { display: flex; align-items: baseline; gap: 16px; padding: 12px 0; border-bottom: 1px solid #1a1a1d; }
+    .typo-row:last-child { border-bottom: none; }
+    .typo-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #52525b; width: 160px; flex-shrink: 0; }
+    .typo-sample.hanken { font-family: 'Hanken Grotesk', sans-serif; color: #e4e4e7; }
+    .typo-sample.mono { font-family: 'JetBrains Mono', monospace; color: #e4e4e7; }
+    .typo-sample.ipa { font-family: 'Charis SIL', 'Doulos SIL', 'Segoe UI', 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif; color: #94a3b8; font-size: 24px; }
+    .typo-sample.ipa-mini { font-family: 'Charis SIL', 'Doulos SIL', 'Segoe UI', sans-serif; color: #94a3b8; font-size: 14px; }
+
+    /* Component demo */
+    .demo-block { padding: 16px; background: #111113; border: 1px solid #1f1d22; border-radius: 12px; margin-bottom: 14px; }
+    .demo-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #52525b; margin: 0 0 12px; }
+    .demo-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .demo-pill { display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 11px; }
+
+    /* Card preview layout */
+    .card-preview-stage { display: flex; flex-direction: column; gap: 20px; align-items: center; padding: 24px; background: #111113; border: 1px solid #1f1d22; border-radius: 14px; }
+    .card-preview-row { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; width: 100%; }
+    .card-frame { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+    .card-frame-name { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #52525b; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    .cefr-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+    .divider-row { display: flex; flex-direction: column; gap: 8px; }
+
+    .code-link { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #71717a; padding: 4px 8px; background: #18181b; border-radius: 6px; display: inline-block; }
+
+    /* Taxonomy */
+    .tax-group { margin-bottom: 24px; padding: 16px; background: #111113; border: 1px solid #1f1d22; border-radius: 12px; }
+    .tax-group-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .tax-group-name { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .tax-group-count { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #71717a; }
+
+    /* Card section dividers in body */
+    .region-meta { font-size: 12px; color: #52525b; padding: 10px 12px; background: #111113; border-left: 2px solid #27272a; border-radius: 0 6px 6px 0; margin-bottom: 16px; }
+
+    /* In-body card preview — override fixed width from .anki-card-container for side-by-side */
+    .card-stage .anki-card-container { width: 440px; max-width: 100%; }
+    .card-stage.dual .anki-card-container { width: 380px; }
+    .card-stage.triple .anki-card-container { width: 320px; }
+    .card-stage.quad .anki-card-container { width: 280px; }
+  </style>
+
+  <!-- ╔════════════════════════════════════════════════════════════╗ -->
+  <!-- ║  ANKI CARD STYLES — must match EAVM/styling.txt exactly   ║ -->
+  <!-- ╚════════════════════════════════════════════════════════════╝ -->
+  <style>
+/* ANKI CARD STYLES — must match EAVM/styling.txt exactly */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  font-family: 'Hanken Grotesk', -apple-system, sans-serif;
+  background-color: #141313;
+  color: #e5e2e1;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+}
+
+/* @preview-only — preview tile is fixed 800px; production uses 100% (fluid in max 800px) */
+.anki-card-container {
+  background: #141313;
+  border-radius: 20px;
+  max-width: 800px;
+  width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid #2a2929;
+  
+  animation: fadeSlideIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.55),
+    0 1px 0 rgba(255,255,255,0.03) inset;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid #242323;
+  gap: 8px;
+}
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.top-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.cefr-badge-A1         { color: #5eead4; border: 1px solid #0f766e; background: #0f766e20; }
+.cefr-badge-A2         { color: #67e8f9; border: 1px solid #0e7490; background: #0e749020; }
+.cefr-badge-B1         { color: #93c5fd; border: 1px solid #1d4ed8; background: #1d4ed820; }
+.cefr-badge-B2         { color: #c4b5fd; border: 1px solid #6d28d9; background: #6d28d920; }
+.cefr-badge-C1         { color: #fcd34d; border: 1px solid #b45309; background: #b4530920; }
+.cefr-badge-C2         { color: #fda4af; border: 1px solid #9f1239; background: #9f123920; }
+.cefr-badge-UNCLASSIFIED { color: #c4c7c7; border: 1px solid #444748; background: #2b2a2a20; }
+
+.pos-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #c4c7c7;
+  background: #222121;
+  border: 1px solid #3c3b3b;
+  padding: 3px 12px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pos-chip-num {
+  font-size: 9px;
+  font-weight: 700;
+  color: #a78bfa;
+  letter-spacing: 0;
+  background: #2d2850;
+  border-radius: 3px;
+  padding: 0 4px;
+  line-height: 1.6;
+}
+
+/* @preview-only — preview min-height 220px; production uses 240px */
+.card-content-front {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 40px;
+}
+
+.word-front {
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #f1f5f9;
+  text-align: center;
+}
+
+.front-word-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.sense-count {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.sense-count-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #2e2d2d;
+  border: 1px solid #3a3939;
+}
+
+.card-content-back {
+  padding: 28px 20px; 
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+}
+.word-header-back {
+  text-align: center;
+  margin-bottom: 0;
+}
+.word-back {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #f1f5f9;
+}
+.meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.ipa-text {
+  
+  font-family: 'Charis SIL', 'Doulos SIL', 'Segoe UI', 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif;
+  font-size: 24px;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+  background: #1b1a1a;
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid #272626;
+}
+
+.divider { border: none; border-top: 1px solid #2e2d2d; margin: 12px 0; }
+.divider-A1          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #5eead4, transparent); margin:12px 0; }
+.divider-A2          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #67e8f9, transparent); margin:12px 0; }
+.divider-B1          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #93c5fd, transparent); margin:12px 0; }
+.divider-B2          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #c4b5fd, transparent); margin:12px 0; }
+.divider-C1          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #fcd34d, transparent); margin:12px 0; }
+.divider-C2          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #fda4af, transparent); margin:12px 0; }
+.divider-UNCLASSIFIED{ border:none; height:1.5px; background:linear-gradient(90deg, transparent, #c4c7c7, transparent); margin:12px 0; }
+
+.audio-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 0;
+}
+.audio-btn-wrapper {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+  background: #181717;
+  border: 1px solid #333232;
+  border-radius: 9999px;  padding: 4px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  user-select: none;
+}
+.audio-btn-wrapper:hover {
+  background: #232222;
+  color: #e5e2e1;
+}
+.audio-btn-wrapper:active {
+  transform: scale(0.96);
+}
+
+.audio-btn-uk {
+  border-color: #1e3a5f;
+}
+.audio-btn-uk:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #1d4ed840;
+}
+.audio-btn-us {
+  border-color: #450a0a;
+}
+.audio-btn-us:hover {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px #9f123840;
+}
+.audio-btn-wrapper i {
+  font-size: 10px;
+}
+
+.section-box {
+  background: #181717;
+  border: 1px solid #252424;
+  border-radius: 14px;
+  padding: 14px 18px;
+  text-align: left;
+}
+
+.section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #4b5563;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-title i {
+  font-size: 13px;
+  color: #374151;
+}
+
+.word-highlight {
+  color: #f1f5f9;
+  font-weight: 700;
+  font-style: normal;
+  text-decoration: underline;
+  text-decoration-color: rgba(167, 139, 250, 0.45);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.collocations-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.collocation-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #94a3b8;
+  background: #1e1d1d;
+  border: 1px solid #333232;
+  padding: 4px 11px;
+  border-radius: 9999px;
+  transition: border-color 0.15s, color 0.15s;
+  cursor: default;
+}
+.collocation-chip:hover {
+  border-color: #4b5563;
+  color: #cbd5e1;
+}
+
+.word-family-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.wf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid #3b2f6b;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+.wf-chip-word {
+  background: #1c1a2e;
+  color: #c4b5fd;
+  padding: 4px 10px 4px 12px;
+  font-weight: 500;
+}
+.wf-chip-pos {
+  padding: 4px 9px 4px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wf-pos-n    { background: #0f2e2e; color: #5eead4; border-left: 1px solid #0f766e; }  
+.wf-pos-v    { background: #0c1f40; color: #93c5fd; border-left: 1px solid #1d4ed8; }  
+.wf-pos-adj  { background: #1c1a2e; color: #a78bfa; border-left: 1px solid #6d28d9; }  
+.wf-pos-adv  { background: #2d1a00; color: #fbbf24; border-left: 1px solid #78350f; }  
+.wf-pos-phr  { background: #1c0e00; color: #fb923c; border-left: 1px solid #7c2d12; }  
+.wf-pos-prep { background: #0a1a0a; color: #86efac; border-left: 1px solid #166534; }  
+
+.word-family-box {
+  background: #131226;
+  border-color: #2d2460;
+}
+.word-family-box .section-title {
+  color: #6d28d9;
+}
+.word-family-box .section-title i {
+  color: #6d28d9;
+}
+
+.corpus-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+.corpus-opal  { color: #e0f2fe; background: #0c4a6e; border: 1px solid #0369a1; }
+.corpus-oxf   { color: #d1fae5; background: #022c22; border: 1px solid #065f46; }
+.corpus-awl   { color: #fef3c7; background: #1c1200; border: 1px solid #78350f; }
+
+.register-tag {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  font-style: italic;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+  vertical-align: middle;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+.rt-amber   { color: #fb923c; background: #431407; border: 1px solid #7c2d12; }
+.rt-warm    { color: #fbbf24; background: #2d1a00; border: 1px solid #78350f; }
+.rt-red     { color: #fca5a5; background: #450a0a; border: 1px solid #7f1d1d; }
+.rt-subject { color: #c4b5fd; background: #1e1b4b; border: 1px solid #4338ca; }
+.rt-idiom   { color: #86efac; background: #031a0e; border: 1px solid #166534; }
+
+.top-bar-sep {
+  width: 1px;
+  height: 14px;
+  background: #2a2929;
+  flex-shrink: 0;
+  align-self: center;
+  margin: 0 2px;
+}
+
+.usage-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  border: 1px solid #1e293b;
+  background: #0f172a;
+  padding: 2px 9px;
+  border-radius: 9999px;
+}
+
+.feature-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 0;
+}
+.feature-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #86efac;
+  border: 1px solid #166534;
+  background: #031a0e;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+  transition: background 0.15s, border-color 0.15s;
+}
+.feature-tag:hover {
+  background: #052e16;
+  border-color: #22c55e;
+}
+.feature-tag i {
+  font-size: 12px;
+}
+
+.senses-box {
+  padding: 0;
+  overflow: hidden;
+}
+.sense-row {
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+  align-items: start;
+  padding: 14px 18px;
+}
+.sense-row + .sense-row {
+  border-top: 1px solid #1e1d1d;
+}
+
+.no-audio {
+  opacity: 0.28;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.sense-def {
+  font-size: 15.5px;
+  line-height: 1.8;
+  color: #e2e8f0;
+  padding-right: 14px;
+  hyphens: auto;
+}
+
+.sense-ex:empty {
+  border-left: none;
+}
+.sense-ex {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #94a3b8;
+  font-style: italic;
+  border-left: 1px solid #1e1d1d;
+  padding-left: 14px;
+}
+.sense-num {
+  display: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #a78bfa;
+  background: #2d2850;
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-right: 6px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+.idiom-box {
+  background: #1a1810;
+  border-color: #3a2a08;
+}
+.idiom-box .section-title {
+  color: #fbbf24;
+}
+.idiom-box .section-title i {
+  color: #fbbf24;
+}
+.idiom-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.idiom-row {
+  border-left: 2px solid #fbbf24;
+  padding-left: 12px;
+}
+.idiom-phrase {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fbbf24;
+  letter-spacing: 0.01em;
+}
+.idiom-explanation {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+.idiom-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+.idiom-example {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #94a3b8;
+  font-style: italic;
+  padding-left: 10px;
+  border-left: 1px solid #2a2929;
+}
+
+/* END ANKI CARD STYLES */
+  </style>
+  <!-- END ANKI CARD STYLES -->
+
+</head>
+<body>
+<div class="page-wrap">
+
+  <header class="page-header">
+    <h1 class="page-title">EAVM Design System</h1>
+    <p class="page-subtitle">IELTS / Academic English Anki deck — visual reference for designers &amp; contributors. This page is the <strong style="color:#e4e4e7">source of truth</strong> for the Anki card CSS. Auto-baked into <code style="color:#fbbf24">.apkg</code> via the vùng 2 region (see below).</p>
+    <nav class="page-nav">
+      <a href="#vung-1">Vùng 1 · Tokens</a>
+      <a href="#vung-2">Vùng 2 · Card CSS</a>
+      <a href="#vung-3">Vùng 3 · Components</a>
+      <a href="#vung-4">Vùng 4 · Sample Cards</a>
+      <a href="#vung-5">Vùng 5 · Reference Data</a>
+    </nav>
+  </header>
+
+  <!-- ════════════════════════════════════════════════════════════
+       VÙNG 1 — Design Tokens (preview-only, not synced)
+       ════════════════════════════════════════════════════════════ -->
+  <section class="region" id="vung-1">
+    <div class="region-header">
+      <span class="region-num">V1</span>
+      <h2 class="region-title">Design Tokens</h2>
+    </div>
+    <p class="region-desc">Color, typography, spacing. The atomic values that compose every component. Preview-only — these swatches are not in the Anki card; they're the palette the card pulls from.</p>
+
+    <h3 class="swatch-group-label">Surface &amp; text</h3>
+    <div class="swatch-grid">
+      <div class="swatch"><span class="swatch-color" style="background:#141313"></span><div class="swatch-info"><div class="swatch-name">bg-card</div><div class="swatch-hex">#141313</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#181717"></span><div class="swatch-info"><div class="swatch-name">bg-section</div><div class="swatch-hex">#181717</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#1e1d1d"></span><div class="swatch-info"><div class="swatch-name">bg-elevated</div><div class="swatch-hex">#1e1d1d</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#131226"></span><div class="swatch-info"><div class="swatch-name">bg-word-family</div><div class="swatch-hex">#131226</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#2a2929;border-color:#555"></span><div class="swatch-info"><div class="swatch-name">border-default</div><div class="swatch-hex">#2a2929</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#252424"></span><div class="swatch-info"><div class="swatch-name">border-subtle</div><div class="swatch-hex">#252424</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#2d2460"></span><div class="swatch-info"><div class="swatch-name">border-word-family</div><div class="swatch-hex">#2d2460</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#f1f5f9"></span><div class="swatch-info"><div class="swatch-name">text-primary</div><div class="swatch-hex">#f1f5f9</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#e2e8f0"></span><div class="swatch-info"><div class="swatch-name">text-def</div><div class="swatch-hex">#e2e8f0</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#c4c7c7"></span><div class="swatch-info"><div class="swatch-name">text-secondary</div><div class="swatch-hex">#c4c7c7</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#94a3b8"></span><div class="swatch-info"><div class="swatch-name">text-meta</div><div class="swatch-hex">#94a3b8</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#64748b"></span><div class="swatch-info"><div class="swatch-name">text-muted</div><div class="swatch-hex">#64748b</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#4b5563"></span><div class="swatch-info"><div class="swatch-name">text-section-title</div><div class="swatch-hex">#4b5563</div></div></div>
+    </div>
+
+    <h3 class="swatch-group-label" style="margin-top:24px">Accent colors</h3>
+    <div class="swatch-grid">
+      <div class="swatch"><span class="swatch-color" style="background:#a78bfa"></span><div class="swatch-info"><div class="swatch-name">accent-purple</div><div class="swatch-hex">#a78bfa · sense-num</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#fb923c"></span><div class="swatch-info"><div class="swatch-name">accent-amber</div><div class="swatch-hex">#fb923c · rt-amber</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#fbbf24"></span><div class="swatch-info"><div class="swatch-name">accent-warm</div><div class="swatch-hex">#fbbf24 · rt-warm</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#fca5a5"></span><div class="swatch-info"><div class="swatch-name">accent-red</div><div class="swatch-hex">#fca5a5 · rt-red</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#c4b5fd"></span><div class="swatch-info"><div class="swatch-name">accent-subject</div><div class="swatch-hex">#c4b5fd · rt-subject</div></div></div>
+    </div>
+
+    <h3 class="swatch-group-label" style="margin-top:24px">CEFR levels</h3>
+    <div class="swatch-grid">
+      <div class="swatch"><span class="swatch-color" style="background:#5eead4"></span><div class="swatch-info"><div class="swatch-name">cefr-A1</div><div class="swatch-hex">#5eead4</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#67e8f9"></span><div class="swatch-info"><div class="swatch-name">cefr-A2</div><div class="swatch-hex">#67e8f9</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#93c5fd"></span><div class="swatch-info"><div class="swatch-name">cefr-B1</div><div class="swatch-hex">#93c5fd</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#c4b5fd"></span><div class="swatch-info"><div class="swatch-name">cefr-B2</div><div class="swatch-hex">#c4b5fd</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#fcd34d"></span><div class="swatch-info"><div class="swatch-name">cefr-C1</div><div class="swatch-hex">#fcd34d</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#fda4af"></span><div class="swatch-info"><div class="swatch-name">cefr-C2</div><div class="swatch-hex">#fda4af</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#c4c7c7"></span><div class="swatch-info"><div class="swatch-name">cefr-UNCLASSIFIED</div><div class="swatch-hex">#c4c7c7</div></div></div>
+    </div>
+
+    <h3 class="swatch-group-label" style="margin-top:24px">Word-family POS chips</h3>
+    <div class="swatch-grid">
+      <div class="swatch"><span class="swatch-color" style="background:#5eead4"></span><div class="swatch-info"><div class="swatch-name">wf-pos-n</div><div class="swatch-hex">#5eead4 · teal</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#93c5fd"></span><div class="swatch-info"><div class="swatch-name">wf-pos-v</div><div class="swatch-hex">#93c5fd · blue</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#a78bfa"></span><div class="swatch-info"><div class="swatch-name">wf-pos-adj</div><div class="swatch-hex">#a78bfa · purple</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#fbbf24"></span><div class="swatch-info"><div class="swatch-name">wf-pos-adv</div><div class="swatch-hex">#fbbf24 · amber</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#fb923c"></span><div class="swatch-info"><div class="swatch-name">wf-pos-phr</div><div class="swatch-hex">#fb923c · orange</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#86efac"></span><div class="swatch-info"><div class="swatch-name">wf-pos-prep</div><div class="swatch-hex">#86efac · green</div></div></div>
+    </div>
+
+    <h3 class="swatch-group-label" style="margin-top:32px">Typography</h3>
+    <div class="demo-block">
+      <div class="typo-row"><div class="typo-label">Sans · Hanken Grotesk</div><div class="typo-sample hanken" style="font-size:24px;font-weight:700">abandon rigorous</div></div>
+      <div class="typo-row"><div class="typo-label">Sans · body</div><div class="typo-sample hanken">"the work failed to meet their rigorous standards"</div></div>
+      <div class="typo-row"><div class="typo-label">Mono · JetBrains</div><div class="typo-sample mono" style="font-size:13px">POS · CEFR · CORPUS · C1</div></div>
+      <div class="typo-row"><div class="typo-label">IPA · Charis SIL</div><div class="typo-sample ipa">rɪɡərəs</div></div>
+      <div class="typo-row"><div class="typo-label">IPA · glyphs</div><div class="typo-sample ipa-mini">ɪ ʃ ŋ θ ð æ ɛ ʊ ʌ ɑ ɒ ɔ ə ɜ ɒ ɨ ʉ ɸ β χ ʁ ʕ ħ ʔ</div></div>
+    </div>
+
+    <h3 class="swatch-group-label" style="margin-top:24px">Spacing &amp; radius</h3>
+    <div class="demo-block">
+      <div class="typo-row"><div class="typo-label">Card padding (back)</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#94a3b8">28px × 20px</div></div>
+      <div class="typo-row"><div class="typo-label">Card padding (front)</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#94a3b8">40px</div></div>
+      <div class="typo-row"><div class="typo-label">Section gap (back)</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#94a3b8">20px</div></div>
+      <div class="typo-row"><div class="typo-label">Radius scale</div><div style="display:flex;gap:8px;align-items:center"><span style="display:inline-block;width:32px;height:32px;background:#1e1d1d;border:1px solid #3c3b3b;border-radius:3px"></span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#52525b">3px</span><span style="display:inline-block;width:32px;height:32px;background:#1e1d1d;border:1px solid #3c3b3b;border-radius:6px"></span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#52525b">6px</span><span style="display:inline-block;width:32px;height:32px;background:#1e1d1d;border:1px solid #3c3b3b;border-radius:14px"></span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#52525b">14px</span><span style="display:inline-block;width:32px;height:32px;background:#1e1d1d;border:1px solid #3c3b3b;border-radius:20px"></span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#52525b">20px</span><span style="display:inline-block;width:32px;height:32px;background:#1e1d1d;border:1px solid #3c3b3b;border-radius:9999px"></span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#52525b">9999px</span></div></div>
+      <div class="typo-row"><div class="typo-label">Card width (preview)</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#94a3b8">800px fixed <span style="color:#52525b">· <code>@preview-only</code></span></div></div>
+      <div class="typo-row"><div class="typo-label">Card width (Anki)</div><div style="font-family:'JetBrains Grotesk',sans-serif;font-size:11px;color:#94a3b8">100% fluid (max 800px)</div></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       VÙNG 2 — Card CSS (boundary marker; see <style> in <head>)
+       ════════════════════════════════════════════════════════════ -->
+  <section class="region" id="vung-2">
+    <div class="region-header">
+      <span class="region-num">V2</span>
+      <h2 class="region-title">Anki Card CSS — <code style="color:#fbbf24">vùng 2</code></h2>
+    </div>
+    <p class="region-desc">The CSS between the <code style="color:#fbbf24">ANKI CARD STYLES</code> markers in <code>&lt;head&gt;</code> above. This block is the contract: it must be 1:1 with <code>design/EAVM/styling.txt</code>, modulo rules marked with the preview-only marker comment. Drift enforced by <code>python -m tools.check_design_sync</code>.</p>
+    <div class="region-meta">
+      <strong style="color:#cbd5e1">Sync rules:</strong><br>
+      • All selectors &amp; properties between the two markers must match <code>EAVM/styling.txt</code> exactly.<br>
+      • Rules marked with the preview-only marker (see <code>_design_sync.py</code> for exact token) are skipped on both sides (excluded from drift check, not baked into <code>.apkg</code>).<br>
+      • @-rules (@import, @keyframes, @media) are ignored by the parser — they live in styling.txt but don't count toward drift.<br>
+      • Selector names are immutable contracts — renaming breaks every template that references them.
+    </div>
+    <div class="demo-block">
+      <div class="demo-label">What lives in vùng 2 (and therefore gets baked into the .apkg)</div>
+      <ul style="margin:0;padding-left:18px;font-size:13px;color:#94a3b8;line-height:1.8">
+        <li><code style="color:#fbbf24">.card</code> — base font, bg, text-align</li>
+        <li><code style="color:#fbbf24">.anki-card-container</code> — the card frame (preview-only width)</li>
+        <li><code style="color:#fbbf24">.top-bar</code> + <code style="color:#fbbf24">.top-bar-left/right</code> + <code style="color:#fbbf24">.top-bar-sep</code></li>
+        <li><code style="color:#fbbf24">.cefr-badge-A1</code> … <code style="color:#fbbf24">.cefr-badge-C2</code>, <code style="color:#fbbf24">.cefr-badge-UNCLASSIFIED</code></li>
+        <li><code style="color:#fbbf24">.pos-chip</code> + <code style="color:#fbbf24">.pos-chip-num</code> + <code style="color:#fbbf24">.top-badge</code></li>
+        <li><code style="color:#fbbf24">.card-content-front</code> + <code style="color:#fbbf24">.word-front</code> + <code style="color:#fbbf24">.sense-count</code> + <code style="color:#fbbf24">.sense-count-dot</code></li>
+        <li><code style="color:#fbbf24">.card-content-back</code> + <code style="color:#fbbf24">.word-back</code> + <code style="color:#fbbf24">.word-header-back</code> + <code style="color:#fbbf24">.meta-row</code> + <code style="color:#fbbf24">.ipa-text</code></li>
+        <li><code style="color:#fbbf24">.divider</code> + <code style="color:#fbbf24">.divider-A1</code> … <code style="color:#fbbf24">.divider-UNCLASSIFIED</code></li>
+        <li><code style="color:#fbbf24">.audio-row</code> + <code style="color:#fbbf24">.audio-btn-wrapper</code> + <code style="color:#fbbf24">.audio-btn-uk</code> + <code style="color:#fbbf24">.audio-btn-us</code> + <code style="color:#fbbf24">.no-audio</code></li>
+        <li><code style="color:#fbbf24">.section-box</code> + <code style="color:#fbbf24">.section-title</code></li>
+        <li><code style="color:#fbbf24">.word-highlight</code> (used in examples)</li>
+        <li><code style="color:#fbbf24">.collocations-list</code> + <code style="color:#fbbf24">.collocation-chip</code></li>
+        <li><code style="color:#fbbf24">.word-family-content</code> + <code style="color:#fbbf24">.wf-chip</code> + <code style="color:#fbbf24">.wf-chip-word</code> + <code style="color:#fbbf24">.wf-chip-pos</code> + <code style="color:#fbbf24">.wf-pos-n/v/adj/adv/phr/prep</code> + <code style="color:#fbbf24">.word-family-box</code></li>
+        <li><code style="color:#fbbf24">.corpus-badge</code> + <code style="color:#fbbf24">.corpus-opal</code> + <code style="color:#fbbf24">.corpus-oxf</code> + <code style="color:#fbbf24">.corpus-awl</code></li>
+        <li><code style="color:#fbbf24">.register-tag</code> + <code style="color:#fbbf24">.rt-amber</code> + <code style="color:#fbbf24">.rt-warm</code> + <code style="color:#fbbf24">.rt-red</code> + <code style="color:#fbbf24">.rt-subject</code> + <code style="color:#fbbf24">.rt-idiom</code></li>
+        <li><code style="color:#fbbf24">.usage-tag</code> + <code style="color:#fbbf24">.feature-row</code> + <code style="color:#fbbf24">.feature-tag</code></li>
+        <li><code style="color:#fbbf24">.senses-box</code> + <code style="color:#fbbf24">.sense-row</code> + <code style="color:#fbbf24">.sense-def</code> + <code style="color:#fbbf24">.sense-ex</code> + <code style="color:#fbbf24">.sense-num</code></li>
+        <li><code style="color:#fbbf24">.idiom-box</code> + <code style="color:#fbbf24">.idiom-list</code> + <code style="color:#fbbf24">.idiom-row</code> + <code style="color:#fbbf24">.idiom-phrase</code> + <code style="color:#fbbf24">.idiom-explanation</code> + <code style="color:#fbbf24">.idiom-examples</code> + <code style="color:#fbbf24">.idiom-example</code></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       VÙNG 3 — Components (preview-only, not synced)
+       ════════════════════════════════════════════════════════════ -->
+  <section class="region" id="vung-3">
+    <div class="region-header">
+      <span class="region-num">V3</span>
+      <h2 class="region-title">Components</h2>
+    </div>
+    <p class="region-desc">Every UI element used in the Anki card, rendered in isolation. Each block shows the actual HTML/CSS the templates produce — pre-rendered (no JS needed) so you can QA design without Anki.</p>
+
+    <div class="demo-block">
+      <div class="demo-label">POS chips (single &amp; multi-POS)</div>
+      <div class="demo-row">
+        <span class="pos-chip">verb</span>
+        <span class="pos-chip">noun</span>
+        <span class="pos-chip">adjective</span>
+        <span class="pos-chip" style="margin-left:8px"><span class="pos-chip-num">1</span>adjective</span>
+        <span class="pos-chip"><span class="pos-chip-num">2</span>verb</span>
+        <span class="pos-chip"><span class="pos-chip-num">3</span>preposition</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">CEFR badges — all 7 levels</div>
+      <div class="cefr-grid">
+        <span class="top-badge cefr-badge-A1">A1</span>
+        <span class="top-badge cefr-badge-A2">A2</span>
+        <span class="top-badge cefr-badge-B1">B1</span>
+        <span class="top-badge cefr-badge-B2">B2</span>
+        <span class="top-badge cefr-badge-C1">C1</span>
+        <span class="top-badge cefr-badge-C2">C2</span>
+        <span class="top-badge cefr-badge-UNCLASSIFIED">UNCLASSIFIED</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Corpus badges (top-bar, after POS │ separator)</div>
+      <div class="demo-row">
+        <span class="top-bar-sep" style="margin-right:6px"></span>
+        <span class="corpus-badge corpus-oxf">Oxford 3000</span>
+        <span class="corpus-badge corpus-oxf">Oxford 5000</span>
+        <span class="corpus-badge corpus-opal">OPAL W</span>
+        <span class="corpus-badge corpus-opal">OPAL S</span>
+        <span class="corpus-badge corpus-awl">AWL</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Register tags (inline in definition) — 12 register labels</div>
+      <div class="demo-row">
+        <span class="register-tag rt-amber">informal</span>
+        <span class="register-tag rt-amber">formal</span>
+        <span class="register-tag rt-amber">literary</span>
+        <span class="register-tag rt-amber">humorous</span>
+        <span class="register-tag rt-amber">ironic</span>
+        <span class="register-tag rt-amber">figurative</span>
+        <span class="register-tag rt-amber">approving</span>
+        <span class="register-tag rt-amber">disapproving</span>
+        <span class="register-tag rt-warm">slang</span>
+        <span class="register-tag rt-warm">specialist</span>
+        <span class="register-tag rt-red">offensive</span>
+        <span class="register-tag rt-red">taboo</span>
+      </div>
+      <div class="demo-label" style="margin-top:14px">Subject labels (academic, OLDAE only)</div>
+      <div class="demo-row">
+        <span class="register-tag rt-subject">biology</span>
+        <span class="register-tag rt-subject">computing</span>
+        <span class="register-tag rt-subject">economics</span>
+        <span class="register-tag rt-subject">law</span>
+        <span class="register-tag rt-subject">linguistics</span>
+        <span class="register-tag rt-subject">mathematics</span>
+        <span class="register-tag rt-subject">medical</span>
+        <span class="register-tag rt-subject">physics</span>
+        <span class="register-tag rt-subject">psychology</span>
+        <span class="register-tag rt-subject">chemistry</span>
+        <span class="register-tag rt-subject">finance</span>
+        <span class="register-tag rt-subject">philosophy</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Usage restriction tags (meta-row, next to IPA)</div>
+      <div class="demo-row">
+        <span class="usage-tag">old-fashioned</span>
+        <span class="usage-tag">old use</span>
+        <span class="usage-tag">dialect</span>
+        <span class="usage-tag">saying</span>
+        <span class="usage-tag">™ trademark</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">IPA pill</div>
+      <div class="demo-row">
+        <span class="ipa-text">/rɪɡərəs/</span>
+        <span class="ipa-text">/əˈbændən/</span>
+        <span class="ipa-text">/ˈpærədaɪm/</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Audio buttons (UK · US)</div>
+      <div class="demo-row">
+        <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
+        <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+        <span class="audio-btn-wrapper audio-btn-uk no-audio"><i class="ti ti-volume"></i> UK ∅</span>
+        <span class="audio-btn-wrapper audio-btn-us no-audio"><i class="ti ti-volume"></i> US ∅</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Word divider (per-CEFR color gradient)</div>
+      <div class="divider-row">
+        <hr class="divider-A1"><hr class="divider-A2"><hr class="divider-B1"><hr class="divider-B2"><hr class="divider-C1"><hr class="divider-C2"><hr class="divider-UNCLASSIFIED">
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Sense row (L3 grid: def │ ex) — single &amp; multi-sense</div>
+      <div class="section-box senses-box">
+        <div class="sense-row">
+          <div class="sense-def">a feeling or opinion about something or someone</div>
+          <div class="sense-ex">"she had a positive attitude toward work"</div>
+        </div>
+        <div class="sense-row">
+          <div class="sense-def">a way of thinking or behaving that reflects this</div>
+          <div class="sense-ex">"the company has changed its <span class="word-highlight">attitude</span> to diversity"</div>
+        </div>
+      </div>
+      <div class="demo-label" style="margin-top:14px">Sense number badge (multi-sense only)</div>
+      <div class="demo-row" style="font-size:14px;color:#e2e8f0">
+        <span class="sense-num" style="display:inline-flex">①</span> first
+        <span class="sense-num" style="display:inline-flex">②</span> second
+        <span class="sense-num" style="display:inline-flex">③</span> third
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Collocation chips</div>
+      <div class="collocations-list">
+        <span class="collocation-chip">make a decision</span>
+        <span class="collocation-chip">take action</span>
+        <span class="collocation-chip">reach a consensus</span>
+        <span class="collocation-chip">carry out research</span>
+        <span class="collocation-chip">draw a conclusion</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Word family chips (all 6 POS variants)</div>
+      <div class="word-family-content">
+        <span class="wf-chip"><span class="wf-chip-word">rigor</span><span class="wf-chip-pos wf-pos-n">n</span></span>
+        <span class="wf-chip"><span class="wf-chip-word">rigorous</span><span class="wf-chip-pos wf-pos-adj">adj</span></span>
+        <span class="wf-chip"><span class="wf-chip-word">rigorously</span><span class="wf-chip-pos wf-pos-adv">adv</span></span>
+        <span class="wf-chip"><span class="wf-chip-word">to rigor</span><span class="wf-chip-pos wf-pos-v">v</span></span>
+        <span class="wf-chip"><span class="wf-chip-word">absent-minded</span><span class="wf-chip-pos wf-pos-phr">phr</span></span>
+        <span class="wf-chip"><span class="wf-chip-word">absent from</span><span class="wf-chip-pos wf-pos-prep">prep</span></span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Feature tag (idioms / phrasal verbs — bottom of card)</div>
+      <div class="feature-row">
+        <span class="feature-tag"><i class="ti ti-bookmarks"></i> idioms</span>
+        <span class="feature-tag"><i class="ti ti-bookmarks"></i> phrasal verbs</span>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Idiom box (phrase + explanation + examples)</div>
+      <div class="section-box idiom-box">
+        <div class="section-title"><i class="ti ti-bookmarks"></i> Idioms</div>
+        <div class="idiom-list">
+          <div class="idiom-row">
+            <div class="idiom-phrase">in the abstract</div>
+            <div class="idiom-explanation">in a general way, without referring to a particular real person, thing or situation</div>
+            <div class="idiom-examples">
+              <div class="idiom-example">"Legal questions rarely exist in the abstract; they are based on real cases."</div>
+              <div class="idiom-example">"I'm just talking in the abstract now."</div>
+            </div>
+          </div>
+          <div class="idiom-row">
+            <div class="idiom-phrase">absence makes the heart grow fonder</div>
+            <div class="idiom-explanation">used to say that when you are away from somebody that you love, you love them even more</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Section title (with icon, all variants)</div>
+      <div class="demo-grid">
+        <div class="section-box"><div class="section-title"><i class="ti ti-link"></i> Collocations</div></div>
+        <div class="section-box word-family-box"><div class="section-title"><i class="ti ti-git-branch"></i> Word Family</div></div>
+        <div class="section-box idiom-box"><div class="section-title"><i class="ti ti-bookmarks"></i> Idioms</div></div>
+        <div class="section-box" style="background:#181717"><div class="section-title"><i class="ti ti-list"></i> Senses</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       VÙNG 4 — Sample Cards (preview-only, not synced)
+       ════════════════════════════════════════════════════════════ -->
+  <section class="region" id="vung-4">
+    <div class="region-header">
+      <span class="region-num">V4</span>
+      <h2 class="region-title">Sample Cards — Real Data</h2>
+    </div>
+    <p class="region-desc">8 words from <code>data/notes.json</code> exercising different cases. Front + back rendered statically. These are the exact components that appear in the .apkg — if a chip overflows here, it overflows in Anki.</p>
+
+    <div style="background:#131226;border:1px solid #2d2460;border-left:3px solid #6d28d9;border-radius:10px;padding:14px 18px;margin:0 0 24px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#a78bfa;margin-bottom:10px">Card design rules (enforced at build stage)</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:13px;color:#cbd5e1;line-height:1.6">
+        <div style="color:#fbbf24;font-weight:700">① Sense Cap</div>
+        <div>Max <strong>3 defs/card</strong>. Nếu raw note có &gt; 3 senses, giữ 3 phổ biến nhất (priority: <code>sensenum_local</code> asc → <code>example count</code> desc). Raw notes giữ nguyên — filter ở build, không phải scrape. Helper: <code>tools/_filter_top3_defs.py</code>.</div>
+        <div style="color:#fbbf24;font-weight:700">② Card Identity</div>
+        <div><strong>1 CEFR = 1 card</strong>. Multi-POS (vd <code>absent</code> = adj/verb/prep) → 1 card với POS chips list tất cả. Cùng word khác CEFR → 2 cards riêng. CEFR trống → <code>cefr-badge-UNCLASSIFIED</code>.</div>
+      </div>
+    </div>
+
+    <!-- ── Card 1: abolish (bare minimum) ── -->
+    <div class="card-stage" style="display:flex;flex-direction:column;gap:14px;align-items:center">
+      <div class="card-frame-name">① bare minimum · C1 · 1 sense · Oxford 5000</div>
+      <div class="card-frame">
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip">verb</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 5000</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-C1">C1</span></div>
+          </div>
+          <div class="card-content-front">
+            <div class="front-word-group">
+              <div class="word-front">abolish</div>
+            </div>
+          </div>
+        </div>
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip">verb</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 5000</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-C1">C1</span></div>
+          </div>
+          <div class="card-content-back">
+            <div class="word-header-back">
+              <div class="word-back">abolish</div>
+              <hr class="divider divider-C1">
+            </div>
+            <div class="audio-row">
+              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
+              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            </div>
+            <div class="section-box senses-box">
+              <div class="sense-row">
+                <div class="sense-def">to officially end a law, a system or an institution</div>
+                <div class="sense-ex">"This tax should be abolished."</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 2: absent (multi-POS) ── -->
+    <div class="card-stage" style="margin-top:36px;display:flex;flex-direction:column;gap:14px;align-items:center">
+      <div class="card-frame-name">② multi-POS · C1 · 3 POS · 5 senses · OPAL written</div>
+      <div class="card-frame">
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip"><span class="pos-chip-num">1</span>adjective</span>
+                <span class="pos-chip"><span class="pos-chip-num">2</span>verb</span>
+                <span class="pos-chip"><span class="pos-chip-num">3</span>preposition</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 5000</span>
+                <span class="corpus-badge corpus-opal">OPAL W</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-C1">C1</span></div>
+          </div>
+          <div class="card-content-front">
+            <div class="front-word-group">
+              <div class="word-front">absent</div>
+              <div class="sense-count">
+                <span class="sense-count-dot"></span>
+                <span class="sense-count-dot"></span>
+                <span class="sense-count-dot"></span>
+                <span class="sense-count-dot"></span>
+                <span class="sense-count-dot"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip"><span class="pos-chip-num">1</span>adjective</span>
+                <span class="pos-chip"><span class="pos-chip-num">2</span>verb</span>
+                <span class="pos-chip"><span class="pos-chip-num">3</span>preposition</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 5000</span>
+                <span class="corpus-badge corpus-opal">OPAL W</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-C1">C1</span></div>
+          </div>
+          <div class="card-content-back">
+            <div class="word-header-back">
+              <div class="word-back">absent</div>
+              <hr class="divider divider-C1">
+            </div>
+            <div class="audio-row">
+              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
+              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            </div>
+            <div class="section-box senses-box">
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> not in a place because of illness, etc.</div>
+                <div class="sense-ex">"She was <span class="word-highlight">absent</span> from work for two weeks."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span> not present in something</div>
+                <div class="sense-ex">"Love was totally <span class="word-highlight">absent</span> from his childhood."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">③</span> showing that you are not really looking at or thinking about what is happening around you</div>
+                <div class="sense-ex">"an <span class="word-highlight">absent</span> expression"</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">④</span> to not go to or be in a place where you are expected to be</div>
+                <div class="sense-ex">"He had <span class="word-highlight">absented</span> himself from the office for the day."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑤</span> without</div>
+                <div class="sense-ex">"<span class="word-highlight">Absent</span> further evidence, the police had no choice but to release him without charge."</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 3: absence (idioms + saying) ── -->
+    <div class="card-stage" style="margin-top:36px;display:flex;flex-direction:column;gap:14px;align-items:center">
+      <div class="card-frame-name">③ idioms + saying tag · C1 · 2 senses · 2 idioms</div>
+      <div class="card-frame">
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip">noun</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 5000</span>
+                <span class="corpus-badge corpus-opal">OPAL W</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-C1">C1</span></div>
+          </div>
+          <div class="card-content-back">
+            <div class="word-header-back">
+              <div class="word-back">absence</div>
+              <hr class="divider divider-C1">
+              <div class="meta-row">
+                <span class="usage-tag">saying</span>
+              </div>
+            </div>
+            <div class="audio-row">
+              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
+              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            </div>
+            <div class="section-box senses-box">
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> the fact of somebody being away from a place where they are usually expected to be; the occasion or period of time when somebody is away</div>
+                <div class="sense-ex">"The decision was made in my <span class="word-highlight">absence</span> (= while I was not there)."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span> the fact of somebody/something not existing or not being available; a lack of something</div>
+                <div class="sense-ex">"I was surprised by the <span class="word-highlight">absence</span> of any women on the board of directors."</div>
+              </div>
+            </div>
+            <div class="section-box idiom-box">
+              <div class="section-title"><i class="ti ti-bookmarks"></i> Idioms</div>
+              <div class="idiom-list">
+                <div class="idiom-row">
+                  <div class="idiom-phrase">absence makes the heart grow fonder</div>
+                  <div class="idiom-explanation">used to say that when you are away from somebody that you love, you love them even more</div>
+                </div>
+                <div class="idiom-row">
+                  <div class="idiom-phrase">conspicuous by your absence</div>
+                  <div class="idiom-explanation">not present in a situation or place, when it is obvious that you should be there</div>
+                  <div class="idiom-examples">
+                    <div class="idiom-example">"The meeting went well but Nigel was conspicuous by his absence."</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="feature-row">
+              <span class="feature-tag"><i class="ti ti-bookmarks"></i> idioms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 4: aggregate (C2 + register + subject + AWL) ── -->
+    <div class="card-stage" style="margin-top:36px;display:flex;flex-direction:column;gap:14px;align-items:center">
+      <div class="card-frame-name">④ C2 stress · specialist+formal · 4 senses · AWL · Money subject</div>
+      <div class="card-frame">
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip">noun</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 5000</span>
+                <span class="corpus-badge corpus-awl">AWL</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-C2">C2</span></div>
+          </div>
+          <div class="card-content-back">
+            <div class="word-header-back">
+              <div class="word-back">aggregate</div>
+              <hr class="divider divider-C2">
+            </div>
+            <div class="audio-row">
+              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
+              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            </div>
+            <div class="section-box senses-box">
+              <div class="sense-row">
+                <div class="sense-def"><span class="register-tag rt-warm">specialist</span> a total number or amount made up of smaller amounts that are collected together</div>
+                <div class="sense-ex">"a record <span class="word-highlight">aggregate</span> of 285 points"</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="register-tag rt-warm">specialist</span> sand or broken stone that is used to make concrete or for building roads, etc.</div>
+                <div class="sense-ex"></div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="register-tag rt-amber">formal</span><span class="register-tag rt-subject">Money</span> added together as a total or single amount</div>
+                <div class="sense-ex">"Businesses are, in the <span class="word-highlight">aggregate</span>, deeper in debt than ever before."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="register-tag rt-warm">specialist</span> when the scores of a number of games are added together</div>
+                <div class="sense-ex">"They won 4–2 on <span class="word-highlight">aggregate</span>."</div>
+              </div>
+            </div>
+            <div class="section-box word-family-box">
+              <div class="section-title"><i class="ti ti-git-branch"></i> Word Family</div>
+              <div class="word-family-content">
+                <span class="wf-chip"><span class="wf-chip-word">aggregate</span><span class="wf-chip-pos wf-pos-n">n</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">aggregate</span><span class="wf-chip-pos wf-pos-v">v</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">aggregate</span><span class="wf-chip-pos wf-pos-adj">adj</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">aggregation</span><span class="wf-chip-pos wf-pos-n">n</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">aggregated</span><span class="wf-chip-pos wf-pos-adj">adj</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">aggregator</span><span class="wf-chip-pos wf-pos-n">n</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 5: paradigm (UNCLASSIFIED + AWL + specialist+grammar) ── -->
+    <div class="card-stage" style="margin-top:36px;display:flex;flex-direction:column;gap:14px;align-items:center">
+      <div class="card-frame-name">⑤ UNCLASSIFIED · AWL · specialist/formal · grammar subject</div>
+      <div class="card-frame">
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip">noun</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-awl">AWL</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-UNCLASSIFIED">UNCLASSIFIED</span></div>
+          </div>
+          <div class="card-content-front">
+            <div class="front-word-group">
+              <div class="word-front">paradigm</div>
+              <div class="sense-count">
+                <span class="sense-count-dot"></span>
+                <span class="sense-count-dot"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip">noun</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-awl">AWL</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-UNCLASSIFIED">UNCLASSIFIED</span></div>
+          </div>
+          <div class="card-content-back">
+            <div class="word-header-back">
+              <div class="word-back">paradigm</div>
+              <hr class="divider divider-UNCLASSIFIED">
+            </div>
+            <div class="audio-row">
+              <span class="audio-btn-wrapper audio-btn-uk no-audio"><i class="ti ti-volume"></i> UK ∅</span>
+              <span class="audio-btn-wrapper audio-btn-us no-audio"><i class="ti ti-volume"></i> US ∅</span>
+            </div>
+            <div class="section-box senses-box">
+              <div class="sense-row">
+                <div class="sense-def"><span class="register-tag rt-warm">specialist</span><span class="register-tag rt-amber">formal</span> a typical example or pattern of something</div>
+                <div class="sense-ex">"a <span class="word-highlight">paradigm</span> for students to copy"</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="register-tag rt-subject">grammar</span> a set of all the different forms of a word</div>
+                <div class="sense-ex">"verb <span class="word-highlight">paradigms</span>"</div>
+              </div>
+            </div>
+            <div class="section-box word-family-box">
+              <div class="section-title"><i class="ti ti-git-branch"></i> Word Family</div>
+              <div class="word-family-content">
+                <span class="wf-chip"><span class="wf-chip-word">paradigm</span><span class="wf-chip-pos wf-pos-n">n</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">paradigmatic</span><span class="wf-chip-pos wf-pos-adj">adj</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">paradigmatically</span><span class="wf-chip-pos wf-pos-adv">adv</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 6: sick (A1 kitchen sink — multi-register, 16 senses) ── -->
+    <div class="card-stage" style="margin-top:36px;display:flex;flex-direction:column;gap:14px;align-items:center">
+      <div class="card-frame-name">⑥ A1 kitchen sink · slang+humorous+informal+figurative · 16 senses</div>
+      <div class="card-frame">
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip">adjective</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 3000</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-A1">A1</span></div>
+          </div>
+          <div class="card-content-front">
+            <div class="front-word-group">
+              <div class="word-front">sick</div>
+              <div class="sense-count">
+                <span class="sense-count-dot"></span><span class="sense-count-dot"></span><span class="sense-count-dot"></span><span class="sense-count-dot"></span><span class="sense-count-dot"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip">adjective</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 3000</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-A1">A1</span></div>
+          </div>
+          <div class="card-content-back">
+            <div class="word-header-back">
+              <div class="word-back">sick</div>
+              <hr class="divider divider-A1">
+            </div>
+            <div class="audio-row">
+              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
+              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            </div>
+            <div class="section-box senses-box">
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> physically or mentally ill</div>
+                <div class="sense-ex">"a <span class="word-highlight">sick</span> child"</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span> feeling that you want to vomit</div>
+                <div class="sense-ex">"Mum, I feel <span class="word-highlight">sick</span>!"</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">③</span><span class="register-tag rt-amber">figurative</span> feeling <span class="word-highlight">sick</span> as a result of travelling on a ship, plane, etc.</div>
+                <div class="sense-ex">"seasick · airsick · carsick"</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">④</span><span class="register-tag rt-amber">informal</span> bored with or annoyed about something that has been happening for a long time</div>
+                <div class="sense-ex">"I'm <span class="word-highlight">sick</span> of the way you've treated me."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑤</span><span class="register-tag rt-amber">humorous</span> dealing with physical or mental pain, disease or death in a cruel way</div>
+                <div class="sense-ex">"a <span class="word-highlight">sick</span> joke"</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑥</span><span class="register-tag rt-red">offensive</span> getting pleasure from doing strange or cruel things</div>
+                <div class="sense-ex">"a <span class="word-highlight">sick</span> mind"</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑦</span><span class="register-tag rt-warm">slang</span> very good, a lot of fun, etc.</div>
+                <div class="sense-ex">"I love that song — it's <span class="word-highlight">sick</span>!"</div>
+              </div>
+            </div>
+            <div class="section-box word-family-box">
+              <div class="section-title"><i class="ti ti-git-branch"></i> Word Family</div>
+              <div class="word-family-content">
+                <span class="wf-chip"><span class="wf-chip-word">sick</span><span class="wf-chip-pos wf-pos-adj">adj</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">sick</span><span class="wf-chip-pos wf-pos-n">n</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">sicken</span><span class="wf-chip-pos wf-pos-v">v</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">sickening</span><span class="wf-chip-pos wf-pos-adj">adj</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">sickly</span><span class="wf-chip-pos wf-pos-adj">adj</span></span>
+                <span class="wf-chip"><span class="wf-chip-word">sickness</span><span class="wf-chip-pos wf-pos-n">n</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 7: abandon (literary register) ── -->
+    <div class="card-stage" style="margin-top:36px;display:flex;flex-direction:column;gap:14px;align-items:center">
+      <div class="card-frame-name">⑦ literary register · B2 · 5 senses · Oxford 3000 + AWL</div>
+      <div class="card-frame">
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip">verb</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 3000</span>
+                <span class="corpus-badge corpus-awl">AWL</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-B2">B2</span></div>
+          </div>
+          <div class="card-content-back">
+            <div class="word-header-back">
+              <div class="word-back">abandon</div>
+              <hr class="divider divider-B2">
+            </div>
+            <div class="audio-row">
+              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
+              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            </div>
+            <div class="section-box senses-box">
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> to leave somebody, especially somebody you are responsible for, with no intention of returning</div>
+                <div class="sense-ex">"The baby had been <span class="word-highlight">abandoned</span> by its mother."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span> to leave a thing or place, especially because it is impossible or dangerous to stay</div>
+                <div class="sense-ex">"Snow forced many drivers to <span class="word-highlight">abandon</span> their vehicles."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">③</span> to stop doing something, especially before it is finished; to stop having something</div>
+                <div class="sense-ex">"They <span class="word-highlight">abandoned</span> the match because of rain."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">④</span> to stop supporting or helping somebody; to stop believing in something</div>
+                <div class="sense-ex">"The country <span class="word-highlight">abandoned</span> its political leaders after the war."</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑤</span><span class="register-tag rt-amber">literary</span> to feel an emotion so strongly that you can feel nothing else</div>
+                <div class="sense-ex">"He <span class="word-highlight">abandoned</span> himself to despair."</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Card 8: acid (slang + multi-POS) ── -->
+    <div class="card-stage" style="margin-top:36px;display:flex;flex-direction:column;gap:14px;align-items:center">
+      <div class="card-frame-name">⑧ slang + multi-POS · B2 · noun+adjective</div>
+      <div class="card-frame">
+        <div class="anki-card-container">
+          <div class="top-bar">
+            <div class="top-bar-left">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <span class="pos-chip"><span class="pos-chip-num">1</span>noun</span>
+                <span class="pos-chip"><span class="pos-chip-num">2</span>adjective</span>
+                <span class="top-bar-sep"></span>
+                <span class="corpus-badge corpus-oxf">Oxford 5000</span>
+              </div>
+            </div>
+            <div class="top-bar-right"><span class="top-badge cefr-badge-B2">B2</span></div>
+          </div>
+          <div class="card-content-back">
+            <div class="word-header-back">
+              <div class="word-back">acid</div>
+              <hr class="divider divider-B2">
+            </div>
+            <div class="audio-row">
+              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
+              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            </div>
+            <div class="section-box senses-box">
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> a chemical, often a liquid, that can burn or dissolve other substances</div>
+                <div class="sense-ex">"vinegar is a weak <span class="word-highlight">acid</span>"</div>
+              </div>
+              <div class="sense-row">
+                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span><span class="register-tag rt-warm">slang</span> the drug LSD</div>
+                <div class="sense-ex"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       VÙNG 5 — Reference Data (inline Oxford taxonomy, preview-only)
+       ════════════════════════════════════════════════════════════ -->
+  <section class="region" id="vung-5">
+    <div class="region-header">
+      <span class="region-num">V5</span>
+      <h2 class="region-title">Reference Data — Oxford Labels Taxonomy</h2>
+    </div>
+    <p class="region-desc">The full taxonomy from <code>data/oxford_labels.json</code>, rendered inline. Source: <code>https://www.oxfordlearnersdictionaries.com/about/english/labels</code>. This section is the canonical reference for which tags map to which register category — used to decide styling and placement rules in the Anki card.</p>
+
+    <div class="tax-group">
+      <div class="tax-group-header">
+        <div class="tax-group-name" style="color:#fb923c">Group 1 — Attitude / Register</div>
+        <div class="tax-group-count">12 labels</div>
+        <div class="tax-group-count" style="margin-left:auto;font-style:italic">thái độ &amp; văn phong</div>
+      </div>
+      <div class="demo-row">
+        <span class="register-tag rt-amber">approving</span>
+        <span class="register-tag rt-amber">disapproving</span>
+        <span class="register-tag rt-amber">figurative</span>
+        <span class="register-tag rt-amber">formal</span>
+        <span class="register-tag rt-amber">humorous</span>
+        <span class="register-tag rt-amber">informal</span>
+        <span class="register-tag rt-amber">ironic</span>
+        <span class="register-tag rt-amber">literary</span>
+        <span class="register-tag rt-warm">slang</span>
+        <span class="register-tag rt-warm">specialist</span>
+        <span class="register-tag rt-red">offensive</span>
+        <span class="register-tag rt-red">taboo</span>
+      </div>
+      <div style="font-size:11px;color:#71717a;margin-top:10px;font-style:italic">→ Placed inline in definition box, immediately before definition text. Italic style matches Oxford's display.</div>
+    </div>
+
+    <div class="tax-group">
+      <div class="tax-group-header">
+        <div class="tax-group-name" style="color:#94a3b8">Group 2 — Usage Restriction</div>
+        <div class="tax-group-count">5 labels</div>
+        <div class="tax-group-count" style="margin-left:auto;font-style:italic">giới hạn cách dùng</div>
+      </div>
+      <div class="demo-row">
+        <span class="usage-tag">old-fashioned</span>
+        <span class="usage-tag">old use</span>
+        <span class="usage-tag">dialect</span>
+        <span class="usage-tag">saying</span>
+        <span class="usage-tag">™ trademark</span>
+      </div>
+      <div style="font-size:11px;color:#71717a;margin-top:10px;font-style:italic">→ Placed in meta-row (under word, next to IPA) — word-level constraint.</div>
+    </div>
+
+    <div class="tax-group">
+      <div class="tax-group-header">
+        <div class="tax-group-name" style="color:#38bdf8">Symbols — Corpus &amp; Word Lists</div>
+        <div class="tax-group-count">5 symbols</div>
+        <div class="tax-group-count" style="margin-left:auto;font-style:italic">không phải "label" nhưng xuất hiện trong entry</div>
+      </div>
+      <div class="demo-row">
+        <span class="corpus-badge corpus-opal">OPAL W</span>
+        <span class="corpus-badge corpus-opal">OPAL S</span>
+        <span class="corpus-badge corpus-oxf">Oxford 3000</span>
+        <span class="corpus-badge corpus-oxf">Oxford 5000</span>
+        <span class="corpus-badge corpus-awl">AWL</span>
+        <span class="top-badge cefr-badge-C1">CEFR</span>
+      </div>
+      <div style="font-size:11px;color:#71717a;margin-top:10px;font-style:italic">→ Placed in top-bar (separated from POS by <code>.top-bar-sep</code>). Word-level information, not sense-level.</div>
+    </div>
+
+    <div class="tax-group">
+      <div class="tax-group-header">
+        <div class="tax-group-name" style="color:#c4b5fd">Subject Labels (OLDAE only)</div>
+        <div class="tax-group-count">23 labels</div>
+        <div class="tax-group-count" style="margin-left:auto;font-style:italic">chỉ xuất hiện trong Academic dictionary</div>
+      </div>
+      <div class="demo-row">
+        <span class="register-tag rt-subject">anatomy</span>
+        <span class="register-tag rt-subject">biochemistry</span>
+        <span class="register-tag rt-subject">biology</span>
+        <span class="register-tag rt-subject">business</span>
+        <span class="register-tag rt-subject">chemistry</span>
+        <span class="register-tag rt-subject">computing</span>
+        <span class="register-tag rt-subject">earth science</span>
+        <span class="register-tag rt-subject">ecology</span>
+        <span class="register-tag rt-subject">economics</span>
+        <span class="register-tag rt-subject">engineering</span>
+        <span class="register-tag rt-subject">finance</span>
+        <span class="register-tag rt-subject">geometry</span>
+        <span class="register-tag rt-subject">grammar</span>
+        <span class="register-tag rt-subject">law</span>
+        <span class="register-tag rt-subject">linguistics</span>
+        <span class="register-tag rt-subject">mathematics</span>
+        <span class="register-tag rt-subject">medical</span>
+        <span class="register-tag rt-subject">philosophy</span>
+        <span class="register-tag rt-subject">phonetics</span>
+        <span class="register-tag rt-subject">physics</span>
+        <span class="register-tag rt-subject">politics</span>
+        <span class="register-tag rt-subject">psychology</span>
+        <span class="register-tag rt-subject">statistics</span>
+      </div>
+      <div style="font-size:11px;color:#71717a;margin-top:10px;font-style:italic">→ Inline in definition box, next to register tag. Rare in general vocab, common in technical/academic.</div>
+    </div>
+
+    <div style="margin-top:24px;padding:14px 18px;background:#111113;border:1px solid #1f1d22;border-radius:12px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#52525b;margin-bottom:10px">Anki card mapping summary</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:12px;color:#94a3b8;line-height:1.7">
+        <div><span style="color:#fb923c;font-weight:500">Amber italic</span> — 8 register (informal/formal/...)</div>
+        <div><span style="color:#fbbf24;font-weight:500">Warm amber</span> — 2 register (slang/specialist)</div>
+        <div><span style="color:#fca5a5;font-weight:500">Red italic</span> — 2 register (offensive/taboo)</div>
+        <div><span style="color:#c4b5fd;font-weight:500">Purple italic</span> — 23 subject labels</div>
+        <div><span style="color:#94a3b8;font-weight:500">Gray pill</span> — 5 usage restrictions (meta-row)</div>
+        <div><span style="color:#38bdf8;font-weight:500">Blue/green/gold</span> — 5 corpus symbols (top-bar)</div>
+      </div>
+    </div>
+
+    <div class="region-meta" style="margin-top:24px">
+      <strong style="color:#cbd5e1">Source:</strong> <code>data/oxford_labels.json</code> · fetched <code>2026-06-07T10:09:10+00:00</code> from <code>oxfordlearnersdictionaries.com/about/english/labels</code>.<br>
+      <strong style="color:#cbd5e1">Note:</strong> This section replaces the standalone <code>design/oxford_labels_full_taxonomy.html</code> that <code>README.md</code> previously referenced. All taxonomy info lives here now — no separate file needed.
+    </div>
+  </section>
+
+  <footer style="margin-top:64px;padding:24px 0;border-top:1px solid #1f1d22;font-size:11px;color:#52525b;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em">
+    <div>design/index.html · source of truth for EAVM card CSS</div>
+    <div style="margin-top:4px">Sync to <code>design/EAVM/styling.txt</code> enforced by <code>python -m tools.check_design_sync</code></div>
+  </footer>
+
+</div>
+</body>
+</html>

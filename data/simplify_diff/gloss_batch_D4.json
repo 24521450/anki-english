@@ -1,0 +1,122 @@
+[
+  {
+    "word": "ID",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "identification",
+    "separator": "none",
+    "count": 1,
+    "rule_applied": "concrete_1sense",
+    "decision": "gloss",
+    "category": "concrete",
+    "reasoning": "1 sense, 1 concept (abbreviation)"
+  },
+  {
+    "word": "strip (long narrow piece)",
+    "pos": "noun",
+    "cefr": "C1",
+    "gloss": "narrow strip",
+    "separator": "none",
+    "count": 1,
+    "rule_applied": "concrete_1sense",
+    "decision": "gloss",
+    "category": "concrete",
+    "reasoning": "POS has disambiguator (long narrow piece); gloss = narrow strip"
+  },
+  {
+    "word": "strip (remove clothes/a layer)",
+    "pos": "verb",
+    "cefr": "C1",
+    "gloss": "remove",
+    "separator": "none",
+    "count": 1,
+    "rule_applied": "concrete_1sense",
+    "decision": "gloss",
+    "category": "concrete",
+    "reasoning": "POS has disambiguator (remove clothes/a layer); gloss = remove"
+  },
+  {
+    "word": "wellbeing",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "health and happiness",
+    "separator": "none",
+    "count": 1,
+    "rule_applied": "concrete_1sense",
+    "decision": "gloss",
+    "category": "abstract",
+    "reasoning": "1 sense, 1 concept"
+  },
+  {
+    "word": "subjective",
+    "pos": "noun",
+    "cefr": "B2",
+    "gloss": "personal opinion",
+    "separator": "none",
+    "count": 1,
+    "rule_applied": "concrete_1sense",
+    "decision": "gloss",
+    "category": "abstract",
+    "reasoning": "POS MISMATCH (def is adj); gloss matches word meaning"
+  },
+  {
+    "word": "hallucination",
+    "pos": "noun",
+    "cefr": "C2",
+    "gloss": "perceiving what is not there",
+    "separator": "none",
+    "count": 1,
+    "rule_applied": "concrete_1sense",
+    "decision": "gloss",
+    "category": "concrete",
+    "reasoning": "medical meaning (C2 card); AI sense excluded"
+  },
+  {
+    "word": "invading",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "entering by force",
+    "separator": "none",
+    "count": 1,
+    "rule_applied": "concrete_1sense",
+    "decision": "gloss",
+    "category": "concrete",
+    "reasoning": "present participle, 1 concept"
+  },
+  {
+    "word": "eliminated",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "removed | defeated",
+    "separator": "|",
+    "count": 2,
+    "rule_applied": "2sense_distinct",
+    "decision": "gloss",
+    "category": "concrete",
+    "reasoning": "2 distinct senses (remove from consideration | defeat in competition); different domains"
+  },
+  {
+    "word": "byproducts",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "gloss": "side effects",
+    "separator": "none",
+    "count": 1,
+    "rule_applied": "concrete_1sense",
+    "decision": "gloss",
+    "category": "abstract",
+    "reasoning": "1 sense, 1 concept (result of something else)"
+  },
+  {
+    "word": "grave (serious)",
+    "pos": "adjective",
+    "cefr": "C1",
+    "gloss": "serious",
+    "separator": "none",
+    "count": 1,
+    "rule_applied": "concrete_1sense",
+    "decision": "gloss",
+    "category": "abstract",
+    "reasoning": "POS has disambiguator (serious); gloss = serious"
+  }
+]

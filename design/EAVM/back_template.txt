@@ -1,0 +1,285 @@
+<div class="anki-card-container">
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div id="top-bar-pos-back" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+        {{#PartOfSpeech}}
+        <span class="pos-chip">{{PartOfSpeech}}</span>
+        {{/PartOfSpeech}}
+      </div>
+    </div>
+    <div class="top-bar-right">
+      <span class="top-badge cefr-badge-{{CEFRLevel}}">{{CEFRLevel}}</span>
+    </div>
+  </div>
+
+  <!-- Content Back -->
+  <div class="card-content-back">
+    <div class="word-header-back">
+      <div class="word-back">{{Word}}</div>
+      <hr class="divider divider-{{CEFRLevel}}">
+      <div class="meta-row">
+        {{#IPA}}<span class="ipa-text">{{IPA}}</span>{{/IPA}}
+        <span id="usage-tags-container"></span>
+      </div>
+    </div>
+
+    <!-- Audio row -->
+    <div class="audio-row" id="audio-row-container">
+      {{#AudioUK}}
+      <span class="audio-btn-wrapper audio-btn-uk" id="audio-uk-wrapper"><i class="ti ti-volume"></i> UK {{AudioUK}}</span>
+      {{/AudioUK}}
+      {{#AudioUS}}
+      <span class="audio-btn-wrapper audio-btn-us" id="audio-us-wrapper"><i class="ti ti-volume"></i> US {{AudioUS}}</span>
+      {{/AudioUS}}
+    </div>
+
+    <!-- Senses: L3 grid (def left / ex right), built by JS -->
+    <div class="section-box senses-box" id="senses-container"></div>
+
+    <!-- Word Family (before Collocations) -->
+    {{#WordFamily}}
+    <div class="section-box word-family-box" id="word-family-section">
+      <div class="section-title"><i class="ti ti-git-branch"></i> Word Family</div>
+      <div class="word-family-content" id="word-family-container">{{WordFamily}}</div>
+    </div>
+    {{/WordFamily}}
+
+    <!-- Collocations -->
+    {{#Collocations}}
+    <div class="section-box" id="collocations-section">
+      <div class="section-title"><i class="ti ti-link"></i> Collocations</div>
+      <div class="collocations-list" id="collocations-container">{{Collocations}}</div>
+    </div>
+    {{/Collocations}}
+
+    <!-- Idioms -->
+    {{#Idioms}}
+    <div class="section-box idiom-box" id="idioms-section">
+      <div class="section-title"><i class="ti ti-bookmarks"></i> Idioms</div>
+      <div class="idiom-list" id="idioms-container"></div>
+    </div>
+    {{/Idioms}}
+
+    <!-- Feature tags (idioms / phrasal verbs) — injected by JS -->
+    <div class="feature-row" id="feature-row-container" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- Hidden raw data for JS -->
+<div style="display:none;">
+  <div id="raw-pos-back">{{PartOfSpeech}}</div>
+  <div id="raw-definition-back">{{Definition}}</div>
+  <div id="raw-example-back">{{Example}}</div>
+  <div id="raw-collocations-back">{{Collocations}}</div>
+  <div id="raw-word-family-back">{{WordFamily}}</div>
+  <div id="raw-tags-back">{{Tags}}</div>
+  <div id="raw-word-back">{{Word}}</div>
+  <div id="raw-idioms-back">{{Idioms}}</div>
+</div>
+
+<script>
+(function() {
+  function trim(s) { return s ? s.replace(/^\s+|\s+$/g, '') : ''; }
+  function getRaw(id) { var e = document.getElementById(id); return e ? trim(e.textContent || e.innerText) : ''; }
+
+  var registers = {
+    'informal':'rt-amber','formal':'rt-amber','literary':'rt-amber',
+    'humorous':'rt-amber','ironic':'rt-amber','figurative':'rt-amber',
+    'approving':'rt-amber','disapproving':'rt-amber',
+    'slang':'rt-warm','specialist':'rt-warm',
+    'offensive':'rt-red','taboo':'rt-red'
+  };
+  var subjects = {
+    'biology':1,'computing':1,'economics':1,'law':1,'linguistics':1,
+    'mathematics':1,'medical':1,'physics':1,'psychology':1,
+    'architecture':1,'art':1,'business':1,'chemistry':1,'finance':1,
+    'history':1,'literature':1,'military':1,'music':1,'politics':1,
+    'religion':1,'science':1,'sociology':1
+  };
+
+  function parseDef(text) {
+    var m = text.match(/^\[([^\]]+)\]/);
+    if (!m) return text;
+    var tags = m[1].split(','), html = '', ok = true;
+    for (var i = 0; i < tags.length; i++) {
+      var t = trim(tags[i]);
+      if (registers[t])     html += '<span class="register-tag ' + registers[t] + '">' + t + '</span>';
+      else if (subjects[t]) html += '<span class="register-tag rt-subject">' + t + '</span>';
+      else { ok = false; break; }
+    }
+    return (ok && html) ? html + ' ' + trim(text.substring(m[0].length)) : text;
+  }
+
+  // 1. POS chips
+  var rawPos = getRaw('raw-pos-back');
+  var posDiv = document.getElementById('top-bar-pos-back');
+  var topBarLeft = posDiv ? posDiv.parentNode : null;
+  if (posDiv && rawPos) {
+    var parts = rawPos.split(/[,\/]/), clean = [];
+    for (var i = 0; i < parts.length; i++) { var p = trim(parts[i]); if (p) clean.push(p); }
+    if (clean.length > 1) {
+      var h = '';
+      for (var j = 0; j < clean.length; j++)
+        h += '<span class="pos-chip"><span class="pos-chip-num">' + (j+1) + '</span>' + clean[j] + '</span>';
+      posDiv.innerHTML = h;
+    }
+  }
+
+  // 2. Corpus badges + separator between POS and corpus
+  var rawTags = getRaw('raw-tags-back');
+  var corpusMap = {
+    'Oxford_3000':['corpus-badge corpus-oxf','Oxford 3000'],
+    'Oxford_5000':['corpus-badge corpus-oxf','Oxford 5000'],
+    'OPAL_W':     ['corpus-badge corpus-opal','OPAL W'],
+    'OPAL_S':     ['corpus-badge corpus-opal','OPAL S'],
+    'AWL':        ['corpus-badge corpus-awl','AWL']
+  };
+  var addedSep = false;
+  if (topBarLeft && rawTags) {
+    var tList = rawTags.split(/\s+/);
+    for (var k = 0; k < tList.length; k++) {
+      var ct = trim(tList[k]);
+      if (corpusMap[ct]) {
+        if (!addedSep) {
+          var sep = document.createElement('span');
+          sep.className = 'top-bar-sep';
+          topBarLeft.appendChild(sep);
+          addedSep = true;
+        }
+        var cs = document.createElement('span');
+        cs.className = corpusMap[ct][0];
+        cs.textContent = corpusMap[ct][1];
+        topBarLeft.appendChild(cs);
+      }
+    }
+  }
+
+  // 3. Usage restriction tags → meta-row
+  var usageContainer = document.getElementById('usage-tags-container');
+  var usageMap = {
+    'old_fashioned':'old-fashioned','old_use':'old use',
+    'dialect':'dialect','saying':'saying','trademark':'\u2122 trademark'
+  };
+  if (usageContainer && rawTags) {
+    var uHtml = '';
+    var uList = rawTags.split(/\s+/);
+    for (var u = 0; u < uList.length; u++) {
+      var ut = trim(uList[u]);
+      if (usageMap[ut]) uHtml += '<span class="usage-tag">' + usageMap[ut] + '</span>';
+    }
+    usageContainer.innerHTML = uHtml;
+  }
+
+  // 4. L3 Senses grid
+  var rawDef  = getRaw('raw-definition-back');
+  var rawEx   = getRaw('raw-example-back');
+  var rawWord = getRaw('raw-word-back');
+  var sensesEl = document.getElementById('senses-container');
+
+  if (sensesEl && rawDef) {
+    var defParts = rawDef.split('|'), exParts = rawEx ? rawEx.split('|') : [];
+    var defs = [];
+    for (var d = 0; d < defParts.length; d++) { if (trim(defParts[d])) defs.push({i:d, t:trim(defParts[d])}); }
+
+    var wordRe = rawWord ? new RegExp(rawWord.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi') : null;
+    var badges = ['\u2460','\u2461','\u2462'];
+    var multi = defs.length > 1;
+    var sHtml = '';
+
+    for (var di = 0; di < defs.length; di++) {
+      var idx = defs[di].i;
+      var def = defs[di].t;
+      var ex  = (idx < exParts.length) ? trim(exParts[idx]) : '';
+      if (ex && wordRe) ex = ex.replace(wordRe, function(m) { return '<span class="word-highlight">' + m + '</span>'; });
+      var badge = multi ? '<span class="sense-num">' + badges[di] + '</span>' : '';
+      sHtml += '<div class="sense-row">'
+             + '<div class="sense-def">' + badge + parseDef(def) + '</div>'
+             + '<div class="sense-ex">'  + (ex ? '\u201c' + ex + '\u201d' : '') + '</div>'
+             + '</div>';
+    }
+    sensesEl.innerHTML = sHtml;
+  }
+
+  // 5. Word family chips
+  var wf = getRaw('raw-word-family-back');
+  var wfEl = document.getElementById('word-family-container');
+  if (wf && wfEl) {
+    var posMap = {'n':'wf-pos-n','v':'wf-pos-v','adj':'wf-pos-adj','adv':'wf-pos-adv','phr':'wf-pos-phr','prep':'wf-pos-prep'};
+    var lines = wf.split(/\\\\n|\\n|\n/);
+    var wHtml = '';
+    for (var r = 0; r < lines.length; r++) {
+      var line = trim(lines[r]);
+      if (!line) continue;
+      var wm = line.match(/^(.+?)\s*\(([^)]+)\)$/);
+      if (wm) {
+        var wd = trim(wm[1]), ps = trim(wm[2]).toLowerCase();
+        var pc = posMap[ps] || 'wf-pos-n';
+        wHtml += '<span class="wf-chip"><span class="wf-chip-word">' + wd + '</span><span class="wf-chip-pos ' + pc + '">' + ps + '</span></span>';
+      } else {
+        wHtml += '<span class="wf-chip"><span class="wf-chip-word">' + line + '</span></span>';
+      }
+    }
+    wfEl.innerHTML = wHtml;
+  }
+
+  // 6. Collocations chips
+  var rawCol = getRaw('raw-collocations-back');
+  var colEl  = document.getElementById('collocations-container');
+  if (rawCol && colEl && rawCol.indexOf('|') !== -1) {
+    var colParts = rawCol.split('|'), cHtml = '';
+    for (var q = 0; q < colParts.length; q++) {
+      var cv = trim(colParts[q]);
+      if (cv) cHtml += '<span class="collocation-chip">' + cv + '</span>';
+    }
+    colEl.innerHTML = cHtml;
+  }
+
+  // 7. Feature tags → feature-row
+  var featureEl = document.getElementById('feature-row-container');
+  if (featureEl && rawTags) {
+    var fHtml = '';
+    var fList = rawTags.split(/\s+/);
+    for (var f = 0; f < fList.length; f++) {
+      var ft = trim(fList[f]);
+      if (ft === 'idioms')         fHtml += '<span class="feature-tag"><i class="ti ti-bookmarks"></i> idioms</span>';
+      else if (ft === 'phrasal_verbs') fHtml += '<span class="feature-tag"><i class="ti ti-bookmarks"></i> phrasal verbs</span>';
+    }
+    if (fHtml) { featureEl.innerHTML = fHtml; featureEl.style.display = 'flex'; }
+  }
+
+  // 8. Idioms parser
+  // Format: phrase :: text :: ex1 | ex2 $$ phrase2 :: text2 :: ex1
+  // Rendered with .idiom-box > .idiom-list > .idiom-row > (.idiom-phrase,
+  // .idiom-explanation, .idiom-examples > .idiom-example).
+  var rawIdioms = getRaw('raw-idioms-back');
+  var idiomsEl = document.getElementById('idioms-container');
+  if (rawIdioms && idiomsEl) {
+    var entries = rawIdioms.split('$$');
+    var iHtml = '';
+    for (var i = 0; i < entries.length; i++) {
+      var parts = entries[i].split('::');
+      var phrase = trim(parts[0] || '');
+      var def    = trim(parts[1] || '');
+      var exs    = trim(parts[2] || '');
+      if (!phrase) continue;
+      iHtml += '<div class="idiom-row">'
+             + '<div class="idiom-phrase">' + phrase + '</div>'
+             + (def ? '<div class="idiom-explanation">' + def + '</div>' : '')
+             + (exs ? '<div class="idiom-examples">'
+             + (function() {
+                 var eParts = exs.split('|'), ex = '';
+                 for (var e = 0; e < eParts.length; e++) {
+                   var t = trim(eParts[e]);
+                   if (t) ex += '<div class="idiom-example">\u201c' + t + '\u201d</div>';
+                 }
+                 return ex;
+               })()
+             + '</div>' : '')
+             + '</div>';
+    }
+    idiomsEl.innerHTML = iHtml;
+  }
+
+})();
+</script>

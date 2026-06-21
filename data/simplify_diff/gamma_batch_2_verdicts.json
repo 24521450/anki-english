@@ -1,0 +1,905 @@
+{
+  "note": "γ verdicts from MiniMax-M3 (this session), 2026-06-16. Batch 2 (100 clusters).",
+  "verdicts": [
+    {
+      "word": "crisis",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Both senses are 'a time of great difficulty when problems must be solved' — sense 1 is general, sense 2 emphasizes the worst point. Same concept.",
+      "examples_substitutable_pct": 90,
+      "merged_text": "a time of great danger, difficulty, or doubt, especially when a problem or illness is at its worst point",
+      "cluster_hash": "b83267c87bb45759"
+    },
+    {
+      "word": "belief",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 2 (religious belief) is a distinct context from senses 0+1 (general feeling/opinion). 3 senses, conservative split.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "0487a63f8d541980"
+    },
+    {
+      "word": "depressed",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is the everyday feeling, sense 2 is the medical condition. Both = 'in a state of depression'.",
+      "examples_substitutable_pct": 95,
+      "merged_text": "very sad and without hope, whether as a passing feeling or as a medical condition",
+      "cluster_hash": "a3373c8761ece4e7"
+    },
+    {
+      "word": "guess",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 2 is an exclamation usage ('Guess what!') which is distinct from the verb senses 0+1 (estimating or finding).",
+      "examples_substitutable_pct": 60,
+      "merged_text": null,
+      "cluster_hash": "e063109e28df29a2"
+    },
+    {
+      "word": "radio",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Four senses — broadcasting activity, receiver device, transmission process, ship/plane radio. Each is a distinct facet.",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "d9951e43fc0ce4b9"
+    },
+    {
+      "word": "tread",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 2 (walk somewhere) is broader/different from senses 0+1 which are about foot pressure/pressing.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "ef7c92471f203506"
+    },
+    {
+      "word": "rescue",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Both senses are 'the saving of someone from a dangerous situation' — sense 1 is the abstract act/fact, sense 2 is a specific instance.",
+      "examples_substitutable_pct": 95,
+      "merged_text": "the act or occasion of saving someone from a dangerous or difficult situation",
+      "cluster_hash": "9f72150efa2ea638"
+    },
+    {
+      "word": "linger",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is about a thing (smell, war) persisting. Sense 2 is about a person staying somewhere (lingering over breakfast). Different subjects.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "5ec7b6820ed6f7b7"
+    },
+    {
+      "word": "action",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is the process/act of doing, sense 2 is a specific thing that is done. Process vs result.",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "9856ee706f900893"
+    },
+    {
+      "word": "shadow",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is the silhouette of an object blocking light, sense 2 is darkness in a place. Different (object vs condition).",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "3a92fd60e63c7390"
+    },
+    {
+      "word": "loyalty",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'the quality of being loyal/supportive' — sense 1 is the abstract quality, sense 2 is the specific feeling.",
+      "examples_substitutable_pct": 95,
+      "merged_text": "the quality or feeling of being constant and supportive in your allegiance to someone or something",
+      "cluster_hash": "99a2f0bd97aaf0ff"
+    },
+    {
+      "word": "presence",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'the fact of being present in a place' — sense 1 is human, sense 2 is in something (a substance, a market). Same concept.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "the fact of being present in a particular place or thing",
+      "cluster_hash": "de6789e6a470dad2"
+    },
+    {
+      "word": "operational",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is descriptive (operational costs, activities), sense 2 is a state of readiness (fully operational). Different uses.",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "8d64fa32432d42b6"
+    },
+    {
+      "word": "coffee",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "3 senses: raw form, prepared drink, individual cup. Each has different contexts.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "e6cfeabbc549f895"
+    },
+    {
+      "word": "professional",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'relating to a paid occupation' — sense 1 is the person, sense 2 is the activity. Same adjective.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "doing something as a paid job rather than as a hobby, or relating to such work",
+      "cluster_hash": "1ce0c2388d9de3cc"
+    },
+    {
+      "word": "costume",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is for cultural/historical clothing, sense 2 is for theatrical/disguise clothing. Different uses.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "b710f4f18b78e520"
+    },
+    {
+      "word": "region",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is informal (mountainous regions), sense 2 is formal/administrative (autonomous regions). Different precision.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "c103a610c087a9ec"
+    },
+    {
+      "word": "duty",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'tasks or work that are part of your job' — sense 1 emphasizes the job itself, sense 2 emphasizes the tasks.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "the work or tasks that are part of your job",
+      "cluster_hash": "3eb1d89e43335537"
+    },
+    {
+      "word": "nod",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Three senses: agreement (head nod), greeting (nod to crowd), and pointing direction (nod towards kitchen). Each distinct.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "c29863d40515dd1e"
+    },
+    {
+      "word": "rate",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is speed (rate of inflation), sense 2 is frequency over time (crime rate). Different (rate per unit vs events per period).",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "b730d31ddd6e320e"
+    },
+    {
+      "word": "lend",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Both senses are 'give something temporarily with the expectation of return' — sense 1 is anything, sense 2 is money with interest.",
+      "examples_substitutable_pct": 95,
+      "merged_text": "to give something to someone who must return it later, including money that must be repaid with interest",
+      "cluster_hash": "44d1ecdb4ce4ed76"
+    },
+    {
+      "word": "relationship",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is general (working, customer), sense 2 is specifically romantic/sexual. Distinct.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "ddef008ec2f60d1a"
+    },
+    {
+      "word": "right",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is 'correct', sense 2 is 'in normal/good condition'. Different semantics.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "0d5f8f3986f8f6f7"
+    },
+    {
+      "word": "invitation",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is the act of inviting, sense 2 is the physical card. Both = 'a request to come to something'.",
+      "examples_substitutable_pct": 90,
+      "merged_text": "the act of inviting someone, or a card that asks someone to come to an event",
+      "cluster_hash": "ecc3f6b51ee68e57"
+    },
+    {
+      "word": "climate",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is the abstract weather pattern, sense 2 is a specific area/region. Different (pattern vs place).",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "52d8c49f3706d9fc"
+    },
+    {
+      "word": "powerful",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Three senses: mechanical/force, mental/physical effect, and physical strength. Each is distinct.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "3e8262c43a865be9"
+    },
+    {
+      "word": "interview",
+      "decision": "split",
+      "confidence": 0.8,
+      "reasoning": "Three distinct uses: job application, journalistic questioning, and private Q&A meeting.",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "d9fd2144cd89d661"
+    },
+    {
+      "word": "emotional",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Three distinct senses: relating to feelings, evoking feelings, and expressing feelings strongly.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "1787da8b96a72da2"
+    },
+    {
+      "word": "analogy",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is the result (a similar feature), sense 2 is the process (the act of comparing).",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "0e9ac4cb154f31f2"
+    },
+    {
+      "word": "best",
+      "decision": "split",
+      "confidence": 0.8,
+      "reasoning": "Three distinct senses: highest quality, happiest moment, most suitable. Different evaluation criteria.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "a23c189c4d38cdce"
+    },
+    {
+      "word": "shower",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is the physical equipment/room, sense 2 is the activity. Different (thing vs action).",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "7e87ee4a7cc13329"
+    },
+    {
+      "word": "competitive",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is about a situation/environment, sense 2 is about a person's character. Different.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "fe81966a2dcb0dbc"
+    },
+    {
+      "word": "soft",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is hardness/softness (soft cheese), sense 2 is texture/touch (soft skin). Different.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "7ba70a22e042090e"
+    },
+    {
+      "word": "moon",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is the actual moon, sense 2 is how it appears. Same celestial object.",
+      "examples_substitutable_pct": 90,
+      "merged_text": "the round object that orbits the earth, or its appearance in the sky at a particular time",
+      "cluster_hash": "796ea7a991c9bf2e"
+    },
+    {
+      "word": "political",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is broader (state, government), sense 2 is specifically about political parties/competition. Different focus.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "5a1249a2f3b96681"
+    },
+    {
+      "word": "quantity",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are about 'how much of something there is' — sense 1 is the amount, sense 2 is the measurement.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "an amount or number of something, or the measurement of how much of it there is",
+      "cluster_hash": "f621a7b61d1b884e"
+    },
+    {
+      "word": "forget",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is involuntary (can't remember), sense 2 is deliberate (choose to stop thinking). Very different psychological processes.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "c54900bcd9844f4b"
+    },
+    {
+      "word": "stock",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'a supply of something available' — sense 1 is commercial (goods in a shop), sense 2 is general (food stocks).",
+      "examples_substitutable_pct": 100,
+      "merged_text": "a supply of something that is available for use or sale",
+      "cluster_hash": "da2dfa76d122fc2c"
+    },
+    {
+      "word": "investigation",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is criminal/legal (police investigation), sense 2 is scientific/academic. Different domains.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "1fdd9bbd115dd830"
+    },
+    {
+      "word": "instrument",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is general (surgical, scientific tool), sense 2 is specifically a vehicle/machine measuring device.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "e4dbfb04ca96dd3e"
+    },
+    {
+      "word": "guideline",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Both senses are 'something that guides a decision or action' — sense 1 is official rules, sense 2 is a general reference.",
+      "examples_substitutable_pct": 90,
+      "merged_text": "a rule, instruction, or reference that helps you make a decision or do something",
+      "cluster_hash": "b31d0493544663c7"
+    },
+    {
+      "word": "racism",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is the action (discrimination), sense 2 is the belief system. Different (behavior vs ideology).",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "272c6bdd4cd14d80"
+    },
+    {
+      "word": "interactive",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is technical (computer), sense 2 is social (people). Different domains.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "ec404192c130b3a1"
+    },
+    {
+      "word": "cynical",
+      "decision": "merge",
+      "confidence": 0.85,
+      "reasoning": "Both senses are 'distrustful of others' — sense 1 is about human motives, sense 2 is about outcomes/hope.",
+      "examples_substitutable_pct": 85,
+      "merged_text": "believing that people act mainly in self-interest, or that something is unlikely to succeed or be valuable",
+      "cluster_hash": "b4fb81c733cdd3b0"
+    },
+    {
+      "word": "prison",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is the physical building, sense 2 is the prison system. Different (place vs institution).",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "88aedba8c1ca359b"
+    },
+    {
+      "word": "paint",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is about applying paint to a surface, sense 2 is about creating art. Different activities.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "a8f0e21db2640187"
+    },
+    {
+      "word": "meditation",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is a practice/activity, sense 2 is a written/spoken reflection. Different forms.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "920c7a05fce1115c"
+    },
+    {
+      "word": "survive",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'continue to live or exist' — sense 1 is general, sense 2 emphasizes surviving a dangerous event.",
+      "examples_substitutable_pct": 95,
+      "merged_text": "to continue to live or exist, especially after a dangerous event or time",
+      "cluster_hash": "49c2c83c52210853"
+    },
+    {
+      "word": "pollution",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is the process/condition, sense 2 is the actual pollutants. Different (action vs substance).",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "30b550d4f0b969f6"
+    },
+    {
+      "word": "consent",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is permission from authority, sense 2 is general agreement. Different (hierarchical vs mutual).",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "56e2ef5765966e3b"
+    },
+    {
+      "word": "informal",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Three senses: relaxed atmosphere, casual speech, casual clothing. Each distinct context.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "0e9279a3324b7006"
+    },
+    {
+      "word": "precedent",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is a binding example (legal precedent), sense 2 is any past event (no precedent for this disaster).",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "cb488e78bdf83bd6"
+    },
+    {
+      "word": "apartment",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is a regular dwelling, sense 2 is specifically holiday accommodation. Different contexts.",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "d74fa4a540d414de"
+    },
+    {
+      "word": "occurrence",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'something that happens' — sense 1 is the event itself, sense 2 is the fact of it happening.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "something that happens or exists, or the fact of something happening",
+      "cluster_hash": "263ee1630dc53486"
+    },
+    {
+      "word": "aggressive",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is hostile/threatening, sense 2 is determined/forceful (aggressive marketing). Very different connotations.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "63050d285c802932"
+    },
+    {
+      "word": "personal",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is individual/private (personal effects), sense 2 is interpersonal (personal relationships). Different.",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "22571417a796b534"
+    },
+    {
+      "word": "lonely",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Three senses: lacking friends, emotional solitude, and physically isolated (lonely beach). Each distinct.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "2d503e38f39ce13b"
+    },
+    {
+      "word": "charity",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Both senses are about charitable organizations — sense 1 is a specific org, sense 2 is the collective concept.",
+      "examples_substitutable_pct": 95,
+      "merged_text": "an organization for helping people in need, or such organizations considered as a group",
+      "cluster_hash": "2241e117d308fd98"
+    },
+    {
+      "word": "implicate",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is about people (implicated in crime), sense 2 is about things (hygiene implicated in outbreak).",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "91ab8f5410c819fc"
+    },
+    {
+      "word": "rebuild",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'build or make complete again' — sense 1 is physical, sense 2 is emotional/abstract.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "to build or make something complete and strong again, whether physically or figuratively",
+      "cluster_hash": "cd76b433067f633c"
+    },
+    {
+      "word": "question",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is any sentence asking info, sense 2 is specifically a test/exam question. Different uses.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "8e839c1891a9873c"
+    },
+    {
+      "word": "recruit",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Both senses are 'a new member of an organization' — sense 1 is military/police, sense 2 is general.",
+      "examples_substitutable_pct": 95,
+      "merged_text": "a person who has recently joined an organization, especially the armed forces, police, or a profession",
+      "cluster_hash": "5d0bdfc655edfe51"
+    },
+    {
+      "word": "mobilize",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Three senses: organize for political/social action, gather resources, prepare military. Each distinct.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "c5a7ef6e34c961a6"
+    },
+    {
+      "word": "conservative",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is general (traditional views), sense 2 is specifically the British Conservative Party. Different.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "081a2c59f32c7652"
+    },
+    {
+      "word": "regret",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Both senses are 'feel sorry about something' — sense 1 is personal, sense 2 is formal/polite expression.",
+      "examples_substitutable_pct": 90,
+      "merged_text": "to feel sorry about something you have done, or to express sorrow formally about a situation",
+      "cluster_hash": "9fe4b89e651fee61"
+    },
+    {
+      "word": "centre",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is the middle of any shape/space, sense 2 is specifically a town center. Different.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "b7ab1451c4326bf6"
+    },
+    {
+      "word": "monster",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is physical (size/ugliness), sense 2 is moral (cruelty). Different (appearance vs character).",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "92f10d6b110c4991"
+    },
+    {
+      "word": "bubble",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is any gas ball in liquid/solid, sense 2 is specifically soap bubbles. Different (gas pocket vs soap film).",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "8acdb223a0db9328"
+    },
+    {
+      "word": "suspicion",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Three senses: of wrongdoing, of truth, and general distrust. Each has different objects.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "817f14ac52416356"
+    },
+    {
+      "word": "liberty",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Both senses are 'freedom' — sense 1 is general civil liberty, sense 2 is freedom from imprisonment.",
+      "examples_substitutable_pct": 95,
+      "merged_text": "the freedom to live as you choose without excessive limits from authority, or the state of not being imprisoned",
+      "cluster_hash": "8187ec7dae26b37b"
+    },
+    {
+      "word": "glance",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'look at something quickly' — sense 1 is at a thing/person, sense 2 is at text.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "to look at something quickly, whether a person, place, or written material",
+      "cluster_hash": "050797b7c9d3b503"
+    },
+    {
+      "word": "bar",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'a place that serves drinks/food' — sense 1 is general, sense 2 is specialized (sushi bar).",
+      "examples_substitutable_pct": 100,
+      "merged_text": "a place that serves alcoholic drinks or specializes in a particular type of food or drink",
+      "cluster_hash": "bc9eb16176b1eed6"
+    },
+    {
+      "word": "silence",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is absence of noise, sense 2 is absence of speech. Different (sound vs speech).",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "f94932f98ef7bb6f"
+    },
+    {
+      "word": "shine",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is light being produced/reflected (sun shines), sense 2 is actively aiming a light (shine a flashlight).",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "9032e1e44553398e"
+    },
+    {
+      "word": "handle",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'a part of an object that you hold or use to operate it' — sense 1 is door/window, sense 2 is tool/cup.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "the part of an object that you use to hold, carry, or open it",
+      "cluster_hash": "e95d88e20dcb4be2"
+    },
+    {
+      "word": "imagination",
+      "decision": "split",
+      "confidence": 0.8,
+      "reasoning": "Three senses: mental ability to picture things, an imagined thing, and creative new ideas. Each distinct.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "2dceda20f295b1d9"
+    },
+    {
+      "word": "reader",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'a person who reads' — sense 1 is general (with manner like fast/slow), sense 2 is a specific publication's reader.",
+      "examples_substitutable_pct": 95,
+      "merged_text": "a person who reads, especially a regular reader of a particular publication",
+      "cluster_hash": "0adec3a3e4609f2c"
+    },
+    {
+      "word": "competent",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is 'having enough skill', sense 2 is 'good but not excellent'. Different levels of proficiency.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "358908415739526a"
+    },
+    {
+      "word": "candidate",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is for jobs/elections, sense 2 is for exams. Different contexts.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "947dff5567dc702b"
+    },
+    {
+      "word": "dissolve",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is intransitive (substance dissolves), sense 2 is transitive (you dissolve it). Different grammatical uses, but learners may need both.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "0dc3c61fb7dcbebf"
+    },
+    {
+      "word": "translate",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'change from one language to another' — sense 1 is active (you translate), sense 2 is passive (it translates).",
+      "examples_substitutable_pct": 100,
+      "merged_text": "to express the meaning of speech or writing in a different language, or to be changed from one language to another",
+      "cluster_hash": "d1beb8f3d915f01b"
+    },
+    {
+      "word": "float",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is moving (floating by), sense 2 is staying (wood floats). Different (motion vs buoyancy).",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "3004b073cf0ff726"
+    },
+    {
+      "word": "religious",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is descriptive (religious beliefs), sense 2 is personal (a religious person). Different (adjective of thing vs adjective of person).",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "70ded8af8576ce77"
+    },
+    {
+      "word": "domain",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is a field of knowledge/responsibility, sense 2 is a website group (.com, .org). Completely different.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "69a6645ca388f157"
+    },
+    {
+      "word": "exclude",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Three senses: deliberate omission, physical prevention, and ruling out possibility. Each distinct.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "e2d379fd68482a60"
+    },
+    {
+      "word": "corrupt",
+      "decision": "merge",
+      "confidence": 0.9,
+      "reasoning": "Both senses are 'dishonest' — sense 1 emphasizes using power for money, sense 2 is general dishonesty.",
+      "examples_substitutable_pct": 90,
+      "merged_text": "dishonest or immoral, especially in the use of power or position for personal gain",
+      "cluster_hash": "84b0d2fb8626e45a"
+    },
+    {
+      "word": "manipulate",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 has a negative connotation (manipulate people), sense 2 is neutral/skillful (manipulate gears). Different valences.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "7512b067449bc615"
+    },
+    {
+      "word": "dispute",
+      "decision": "merge",
+      "confidence": 0.85,
+      "reasoning": "Both senses are 'argue or question' — sense 1 is about facts/legality, sense 2 is interpersonal disagreement.",
+      "examples_substitutable_pct": 90,
+      "merged_text": "to argue or disagree with someone about something, or to question whether something is true or valid",
+      "cluster_hash": "a9281eae43e1c1e8"
+    },
+    {
+      "word": "girl",
+      "decision": "split",
+      "confidence": 0.8,
+      "reasoning": "Three senses: female child, daughter (any age), and young woman. Different.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "7c8fada03a1957cc"
+    },
+    {
+      "word": "apparatus",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is physical equipment, sense 2 is a system/organization. Different (things vs structure).",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "4f55a1fdbe8bfa7c"
+    },
+    {
+      "word": "conference",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'a meeting for discussion' — sense 1 is a large official one, sense 2 is any formal meeting.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "a meeting, often formal or official, at which people discuss topics of common interest",
+      "cluster_hash": "93175e5174d3103f"
+    },
+    {
+      "word": "explicit",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'clear and openly stated' — sense 1 is generally clear, sense 2 emphasizes saying it openly.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "said or stated clearly, openly, and in detail, leaving no doubt about the meaning",
+      "cluster_hash": "94b6d930332a1939"
+    },
+    {
+      "word": "insist",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is demanding action (insist on going), sense 2 is asserting truth (insist on innocence). Different.",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "01ed05d7d4fed5c9"
+    },
+    {
+      "word": "indicate",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'show or suggest something' — sense 1 is direct evidence, sense 2 is a sign/indicator.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "to show that something is true, exists, or is likely; to be a sign of something",
+      "cluster_hash": "c66eb82abb2c36e5"
+    },
+    {
+      "word": "friendship",
+      "decision": "merge",
+      "confidence": 0.95,
+      "reasoning": "Both senses are 'the state or relationship of being friends' — sense 1 is the relationship, sense 2 is the feeling.",
+      "examples_substitutable_pct": 100,
+      "merged_text": "the relationship, feeling, or state of being friends with someone",
+      "cluster_hash": "91083ff0918d3a39"
+    },
+    {
+      "word": "impose",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is introducing authority (impose a tax), sense 2 is forcing a burden (impose restrictions). Different (action vs consequence).",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "6ee27ac6a3ed4d1c"
+    },
+    {
+      "word": "hunger",
+      "decision": "split",
+      "confidence": 0.95,
+      "reasoning": "Sense 1 is a serious state (starvation), sense 2 is the everyday feeling of needing food. Different.",
+      "examples_substitutable_pct": 20,
+      "merged_text": null,
+      "cluster_hash": "a45ac33a32f46bb4"
+    },
+    {
+      "word": "authority",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is about commanding people (position of authority), sense 2 is about having the right/power to act.",
+      "examples_substitutable_pct": 50,
+      "merged_text": null,
+      "cluster_hash": "1fdc20361ce1c43a"
+    },
+    {
+      "word": "lock",
+      "decision": "split",
+      "confidence": 0.9,
+      "reasoning": "Sense 1 is for door/window/box, sense 2 is for vehicle/machine safety. Different (building vs machine).",
+      "examples_substitutable_pct": 30,
+      "merged_text": null,
+      "cluster_hash": "8327263ac842ba0e"
+    },
+    {
+      "word": "analysis",
+      "decision": "split",
+      "confidence": 0.85,
+      "reasoning": "Sense 1 is a general study (statistical, data), sense 2 is specifically a chemical/laboratory examination. Different.",
+      "examples_substitutable_pct": 40,
+      "merged_text": null,
+      "cluster_hash": "429695e756218cfc"
+    }
+  ]
+}

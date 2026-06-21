@@ -1,0 +1,33 @@
+# Python/cache artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+*.log
+
+# Local editor/agent state
+.idea/
+.codex/
+.agents/
+brain/
+scratch/
+/__*.py
+
+# Scraper/build caches and generated package outputs
+data/.cache_html/
+*.apkg
+
+# Local backups
+*.bak
+*.bak*
+*.backup
+*_backup/
+data/**/*_backup/
+
+# Local secrets/env files
+.env
+.env.*

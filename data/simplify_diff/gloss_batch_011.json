@@ -1,0 +1,1253 @@
+[
+  {
+    "hash": "94b0519a3bac70f6",
+    "word": "tidy",
+    "pos": "adjective",
+    "cefr": "A2",
+    "decision": "gloss",
+    "gloss": "neat, ordered",
+    "confidence": 0.94
+  },
+  {
+    "hash": "f1088dce6ef24972",
+    "word": "timber",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "building wood",
+    "confidence": 0.94
+  },
+  {
+    "hash": "707802af4deb2fc9",
+    "word": "timeline",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "event sequence",
+    "confidence": 0.92
+  },
+  {
+    "hash": "82cb75100e222afd",
+    "word": "timeline",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "event sequence",
+    "confidence": 0.92
+  },
+  {
+    "hash": "4f098f20e38248bd",
+    "word": "timely",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "well-timed",
+    "confidence": 0.94
+  },
+  {
+    "hash": "d486cf5f547b8e72",
+    "word": "tissue",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "soft paper",
+    "confidence": 0.95
+  },
+  {
+    "hash": "cafc148b7c66f656",
+    "word": "tobacco",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "smoking plant",
+    "confidence": 0.94
+  },
+  {
+    "hash": "0864c7b6602360b7",
+    "word": "toll",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "road fee; death count",
+    "confidence": 0.88
+  },
+  {
+    "hash": "b1229cb8c644d038",
+    "word": "ton",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "weight unit",
+    "confidence": 0.95
+  },
+  {
+    "hash": "2bfa347777d13ec1",
+    "word": "tonne",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "metric ton",
+    "confidence": 0.95
+  },
+  {
+    "hash": "d99a1f9815fb74eb",
+    "word": "toss",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "throw lightly",
+    "confidence": 0.93
+  },
+  {
+    "hash": "3ce199f4d7311640",
+    "word": "total",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "add up",
+    "confidence": 0.94
+  },
+  {
+    "hash": "02462654f3483f5f",
+    "word": "total",
+    "pos": "verb",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "wreck",
+    "confidence": 0.94
+  },
+  {
+    "hash": "cfbf3803f636fd87",
+    "word": "tournament",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "elimination contest",
+    "confidence": 0.93
+  },
+  {
+    "hash": "06b926951a70d44a",
+    "word": "toxic",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "poisonous",
+    "confidence": 0.95
+  },
+  {
+    "hash": "5056a464cce67900",
+    "word": "trace",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "evidence; small amount",
+    "confidence": 0.88
+  },
+  {
+    "hash": "19585fed860af1a6",
+    "word": "trace",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "track down",
+    "confidence": 0.93
+  },
+  {
+    "hash": "ecd5176fd5342707",
+    "word": "trademark",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "brand name",
+    "confidence": 0.93
+  },
+  {
+    "hash": "9e0040ff476078d1",
+    "word": "trading",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "commerce",
+    "confidence": 0.95
+  },
+  {
+    "hash": "7a8b5d092adbef2f",
+    "word": "tragic",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "deeply sad",
+    "confidence": 0.95
+  },
+  {
+    "hash": "4a4482c3dcc8abe5",
+    "word": "trait",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "characteristic",
+    "confidence": 0.95
+  },
+  {
+    "hash": "3261a5a010cb034c",
+    "word": "trample",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "step heavily on",
+    "confidence": 0.92
+  },
+  {
+    "hash": "b49f502e2c4f27f5",
+    "word": "transaction",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "business deal",
+    "confidence": 0.93
+  },
+  {
+    "hash": "379bbdbbc2b70241",
+    "word": "transcript",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "written copy",
+    "confidence": 0.95
+  },
+  {
+    "hash": "df9d87721cf1812a",
+    "word": "transformation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "complete change",
+    "confidence": 0.94
+  },
+  {
+    "hash": "e418ab080119a3a4",
+    "word": "transmit",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "send signal",
+    "confidence": 0.94
+  },
+  {
+    "hash": "04097d13a0458263",
+    "word": "transparent",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "see-through",
+    "confidence": 0.95
+  },
+  {
+    "hash": "86dd0fd36514237c",
+    "word": "trauma",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "psychological injury",
+    "confidence": 0.92
+  },
+  {
+    "hash": "aaf2050fc9067c84",
+    "word": "traverse",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "cross",
+    "confidence": 0.95
+  },
+  {
+    "hash": "cb7253e3dc6d37ab",
+    "word": "treasure",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "valuables",
+    "confidence": 0.93
+  },
+  {
+    "hash": "15c9783acef33e62",
+    "word": "treaty",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "formal agreement",
+    "confidence": 0.95
+  },
+  {
+    "hash": "106e2995ce0909f2",
+    "word": "tremendous",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "huge",
+    "confidence": 0.95
+  },
+  {
+    "hash": "3964d2333c82db7c",
+    "word": "tribal",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "tribe-related",
+    "confidence": 0.95
+  },
+  {
+    "hash": "1053ac38f39f3b3e",
+    "word": "tribe",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "social group",
+    "confidence": 0.94
+  },
+  {
+    "hash": "26b30a1e51679210",
+    "word": "tribunal",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "special court",
+    "confidence": 0.94
+  },
+  {
+    "hash": "5f82ad292df1588d",
+    "word": "tribute",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "honor expression",
+    "confidence": 0.92
+  },
+  {
+    "hash": "7879df184c033880",
+    "word": "trigger",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "gun part; cause",
+    "confidence": 0.88
+  },
+  {
+    "hash": "f4bf6ff68be84e12",
+    "word": "trigger",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "cause",
+    "confidence": 0.94
+  },
+  {
+    "hash": "f308dfb4d2a512d8",
+    "word": "trigger",
+    "pos": "verb",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "traumatize",
+    "confidence": 0.92
+  },
+  {
+    "hash": "fd7033fb1239a092",
+    "word": "trio",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "group of three",
+    "confidence": 0.95
+  },
+  {
+    "hash": "8239af204d03ce52",
+    "word": "trivial",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "insignificant",
+    "confidence": 0.95
+  },
+  {
+    "hash": "875e3c38d6c4e043",
+    "word": "troop",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "soldier group",
+    "confidence": 0.95
+  },
+  {
+    "hash": "e39c755d3968e269",
+    "word": "trophy",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "prize cup",
+    "confidence": 0.95
+  },
+  {
+    "hash": "89657a7528b2b4a0",
+    "word": "troubled",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "distressed",
+    "confidence": 0.93
+  },
+  {
+    "hash": "c29508d08d0d1e86",
+    "word": "trustee",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "asset manager",
+    "confidence": 0.92
+  },
+  {
+    "hash": "99bd3b3bab570089",
+    "word": "trustworthy",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "reliable",
+    "confidence": 0.95
+  },
+  {
+    "hash": "18fae72ea2c7c889",
+    "word": "tsunami",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "giant wave",
+    "confidence": 0.95
+  },
+  {
+    "hash": "64e196338cc3a526",
+    "word": "turnout",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "attendance",
+    "confidence": 0.94
+  },
+  {
+    "hash": "d4e364077c6b8f5a",
+    "word": "turnover",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "sales volume",
+    "confidence": 0.92
+  },
+  {
+    "hash": "f0b0b24bd92fd4ac",
+    "word": "ultimately",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "eventually",
+    "confidence": 0.95
+  },
+  {
+    "hash": "c199904a0524fca5",
+    "word": "unacceptable",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "intolerable",
+    "confidence": 0.94
+  },
+  {
+    "hash": "b20f6ab9e6296007",
+    "word": "unavoidable",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "inevitable",
+    "confidence": 0.95
+  },
+  {
+    "hash": "9f8660adf4ce94af",
+    "word": "uncertain",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "unsure",
+    "confidence": 0.95
+  },
+  {
+    "hash": "3bc27007c522d513",
+    "word": "unconstitutional",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "legally invalid",
+    "confidence": 0.93
+  },
+  {
+    "hash": "df7cfa1c99ad8b95",
+    "word": "undergo",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "experience",
+    "confidence": 0.95
+  },
+  {
+    "hash": "d6701cfb71228a8d",
+    "word": "undergraduate",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "first-degree student",
+    "confidence": 0.93
+  },
+  {
+    "hash": "90da0f33693a7785",
+    "word": "underlie",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "be basis of",
+    "confidence": 0.92
+  },
+  {
+    "hash": "ae80dd915d15d8a5",
+    "word": "underlying",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "fundamental",
+    "confidence": 0.94
+  },
+  {
+    "hash": "673aaa6ebc242f3e",
+    "word": "undermine",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "weaken gradually",
+    "confidence": 0.93
+  },
+  {
+    "hash": "82adb9cb50e442f3",
+    "word": "undertake",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "take on",
+    "confidence": 0.95
+  },
+  {
+    "hash": "da3064bc9d54047c",
+    "word": "undetectable",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "invisible",
+    "confidence": 0.95
+  },
+  {
+    "hash": "8b6679e2ce128d4a",
+    "word": "undoubtedly",
+    "pos": "adverb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "certainly",
+    "confidence": 0.95
+  },
+  {
+    "hash": "bd58a7e5c97047f3",
+    "word": "unequivocal",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "unambiguous",
+    "confidence": 0.94
+  },
+  {
+    "hash": "1f634d65d9a16401",
+    "word": "unfathomable",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "incomprehensible",
+    "confidence": 0.93
+  },
+  {
+    "hash": "3f92d7371312ddb1",
+    "word": "unfold",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "open up",
+    "confidence": 0.95
+  },
+  {
+    "hash": "f6daaf4e22fa6713",
+    "word": "unfounded",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "baseless",
+    "confidence": 0.95
+  },
+  {
+    "hash": "48f8a25a6b220542",
+    "word": "unify",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "unite",
+    "confidence": 0.95
+  },
+  {
+    "hash": "2f4f93c25b240067",
+    "word": "uninhabitable",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "unlivable",
+    "confidence": 0.95
+  },
+  {
+    "hash": "287b870a470b0303",
+    "word": "universal",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "worldwide",
+    "confidence": 0.93
+  },
+  {
+    "hash": "5ace772febdba3a7",
+    "word": "unprecedented",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "unparalleled",
+    "confidence": 0.94
+  },
+  {
+    "hash": "d93698cc2727a3c0",
+    "word": "unsettling",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "disturbing",
+    "confidence": 0.94
+  },
+  {
+    "hash": "c09c83fbbb58e422",
+    "word": "unveil",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "reveal publicly",
+    "confidence": 0.92
+  },
+  {
+    "hash": "acd87675326c755b",
+    "word": "upcoming",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "forthcoming",
+    "confidence": 0.95
+  },
+  {
+    "hash": "3ddfd89591eda264",
+    "word": "uphold",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "support",
+    "confidence": 0.93
+  },
+  {
+    "hash": "bba997bdfbef9bcb",
+    "word": "urge",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "strongly advise",
+    "confidence": 0.93
+  },
+  {
+    "hash": "d821f22208b1167c",
+    "word": "urgent",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "pressing",
+    "confidence": 0.95
+  },
+  {
+    "hash": "293dd16abc5600a2",
+    "word": "utility",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "public service",
+    "confidence": 0.94
+  },
+  {
+    "hash": "0bf6868ca1fb4796",
+    "word": "utilize",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "make use of",
+    "confidence": 0.93
+  },
+  {
+    "hash": "dc0658db3c2e7019",
+    "word": "utmost",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "greatest",
+    "confidence": 0.95
+  },
+  {
+    "hash": "694d1305e192b071",
+    "word": "utterly",
+    "pos": "adverb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "completely",
+    "confidence": 0.95
+  },
+  {
+    "hash": "95b626e2a45d0b1c",
+    "word": "vacuum",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "empty space",
+    "confidence": 0.93
+  },
+  {
+    "hash": "ce4136b7bcaeb35a",
+    "word": "vague",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "unclear",
+    "confidence": 0.93
+  },
+  {
+    "hash": "79d71f77fa08b956",
+    "word": "validate",
+    "pos": "verb",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "officially approve",
+    "confidence": 0.93
+  },
+  {
+    "hash": "94920487d29685f8",
+    "word": "validate",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "officially approve",
+    "confidence": 0.93
+  },
+  {
+    "hash": "cdeac5bd47a0d9de",
+    "word": "vanish",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "disappear",
+    "confidence": 0.93
+  },
+  {
+    "hash": "fc6a84275a414745",
+    "word": "variation",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "change; variant",
+    "confidence": 0.88
+  },
+  {
+    "hash": "f49d8c850492ec69",
+    "word": "varied",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "diverse",
+    "confidence": 0.93
+  },
+  {
+    "hash": "4768350a194b0280",
+    "word": "vast",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "huge",
+    "confidence": 0.95
+  },
+  {
+    "hash": "37ac2ef92ca92941",
+    "word": "vein",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "blood vessel",
+    "confidence": 0.95
+  },
+  {
+    "hash": "55b2754393796b26",
+    "word": "verbal",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "spoken",
+    "confidence": 0.93
+  },
+  {
+    "hash": "d020a712480f8caf",
+    "word": "verdict",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "court decision",
+    "confidence": 0.93
+  },
+  {
+    "hash": "4ab333a20b8ed577",
+    "word": "verify",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "confirm",
+    "confidence": 0.93
+  },
+  {
+    "hash": "f6cb2249b029fc23",
+    "word": "verse",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "poetry line",
+    "confidence": 0.93
+  },
+  {
+    "hash": "546e362adb3e7722",
+    "word": "versus",
+    "pos": "preposition",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "against",
+    "confidence": 0.95
+  },
+  {
+    "hash": "eb5c17be936afb10",
+    "word": "vertical",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "upright",
+    "confidence": 0.95
+  },
+  {
+    "hash": "8fdadd164ecdcb3f",
+    "word": "vessel",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "container; ship",
+    "confidence": 0.88
+  },
+  {
+    "hash": "c28551b0e74b153e",
+    "word": "veteran",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "experienced person",
+    "confidence": 0.93
+  },
+  {
+    "hash": "bf43de1cc6998c7e",
+    "word": "viable",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "workable",
+    "confidence": 0.94
+  },
+  {
+    "hash": "e463953a8f5663b2",
+    "word": "vibrant",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "lively",
+    "confidence": 0.93
+  },
+  {
+    "hash": "f7420d68114bc69b",
+    "word": "vicious",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "savage",
+    "confidence": 0.93
+  },
+  {
+    "hash": "30eafad56c1c71bd",
+    "word": "viewpoint",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "perspective",
+    "confidence": 0.95
+  },
+  {
+    "hash": "5ef69c1fef59d543",
+    "word": "villager",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "village resident",
+    "confidence": 0.95
+  },
+  {
+    "hash": "7249d3a156461e15",
+    "word": "violate",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "break",
+    "confidence": 0.93
+  },
+  {
+    "hash": "777f9dd91a22cf5e",
+    "word": "visa",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "entry permit",
+    "confidence": 0.95
+  },
+  {
+    "hash": "0f196af6e63a25f4",
+    "word": "visible",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "seeable",
+    "confidence": 0.93
+  },
+  {
+    "hash": "39a2658a8c60751f",
+    "word": "visual",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "sight-related",
+    "confidence": 0.94
+  },
+  {
+    "hash": "06fd080b16e403b6",
+    "word": "vital",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "essential",
+    "confidence": 0.95
+  },
+  {
+    "hash": "69d71f6affcf7469",
+    "word": "vocal",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "outspoken",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e72fd55a3b243ac3",
+    "word": "vow",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "solemnly promise",
+    "confidence": 0.94
+  },
+  {
+    "hash": "53e1eb9704bfafda",
+    "word": "vulnerable",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "exposed",
+    "confidence": 0.94
+  },
+  {
+    "hash": "104a761a3dfa5d01",
+    "word": "wander",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "roam",
+    "confidence": 0.93
+  },
+  {
+    "hash": "1d31d51b47174178",
+    "word": "ward",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "hospital room",
+    "confidence": 0.95
+  },
+  {
+    "hash": "b5494b36a882a022",
+    "word": "warehouse",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "storage building",
+    "confidence": 0.95
+  },
+  {
+    "hash": "a884309633f91948",
+    "word": "warfare",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "armed conflict",
+    "confidence": 0.92
+  },
+  {
+    "hash": "00580b9dd358b773",
+    "word": "warrior",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "fighter",
+    "confidence": 0.95
+  },
+  {
+    "hash": "5a72aa01491e1a6c",
+    "word": "weed",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "unwanted plant",
+    "confidence": 0.93
+  },
+  {
+    "hash": "81db453fca31e4ea",
+    "word": "weekly",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "per week",
+    "confidence": 0.95
+  },
+  {
+    "hash": "42999970df816d0b",
+    "word": "weird",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "bizarre",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e8ff91c79978627e",
+    "word": "well",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "water hole",
+    "confidence": 0.95
+  },
+  {
+    "hash": "7cb962ddfc61a1a6",
+    "word": "well-being",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "health and happiness",
+    "confidence": 0.95
+  },
+  {
+    "hash": "a91b3f6546fd79bd",
+    "word": "whatsoever",
+    "pos": "adverb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "at all",
+    "confidence": 0.95
+  },
+  {
+    "hash": "790f68fcb08bc119",
+    "word": "wheat",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "grain plant",
+    "confidence": 0.95
+  },
+  {
+    "hash": "f40f19b4358e71ce",
+    "word": "whereby",
+    "pos": "adverb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "by which",
+    "confidence": 0.93
+  },
+  {
+    "hash": "c3e53e89d68dd5f2",
+    "word": "wholly",
+    "pos": "adverb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "entirely",
+    "confidence": 0.95
+  },
+  {
+    "hash": "87fefdbea00c9c18",
+    "word": "widespread",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "extensive",
+    "confidence": 0.95
+  },
+  {
+    "hash": "7a7aca3f9d6b5d8d",
+    "word": "widow",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "bereaved wife",
+    "confidence": 0.94
+  },
+  {
+    "hash": "31fbd1e6c893143c",
+    "word": "withdraw",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "take out",
+    "confidence": 0.95
+  },
+  {
+    "hash": "2da0254fdd69c6f6",
+    "word": "wither",
+    "pos": "verb",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "dry up",
+    "confidence": 0.95
+  },
+  {
+    "hash": "6b2f16b6b564aefe",
+    "word": "wither",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "dry up",
+    "confidence": 0.95
+  },
+  {
+    "hash": "b08129bc9e1f23db",
+    "word": "workforce",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "workers",
+    "confidence": 0.94
+  },
+  {
+    "hash": "ce5507419a3b8c33",
+    "word": "workout",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "exercise session",
+    "confidence": 0.95
+  },
+  {
+    "hash": "568cd4e130ef687a",
+    "word": "workplace",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "work location",
+    "confidence": 0.95
+  },
+  {
+    "hash": "a809a761fe9a7130",
+    "word": "workshop",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "training session",
+    "confidence": 0.94
+  },
+  {
+    "hash": "d901a052a7c8f3a9",
+    "word": "worm",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "soft-bodied crawler",
+    "confidence": 0.93
+  },
+  {
+    "hash": "29f3cf267eba574b",
+    "word": "worthwhile",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "valuable",
+    "confidence": 0.94
+  },
+  {
+    "hash": "2026de39f17c7ead",
+    "word": "wreak",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "inflict",
+    "confidence": 0.93
+  },
+  {
+    "hash": "49b52dad61b4ad9b",
+    "word": "wrist",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "hand joint",
+    "confidence": 0.95
+  },
+  {
+    "hash": "53dda5033bd740b3",
+    "word": "yell",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "shout",
+    "confidence": 0.95
+  },
+  {
+    "hash": "c59db38c5ca9424e",
+    "word": "youngster",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "young person",
+    "confidence": 0.95
+  }
+]

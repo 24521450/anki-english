@@ -1,0 +1,755 @@
+[
+  {
+    "word": "linger",
+    "homonym_index": null,
+    "source": "oxford",
+    "source_url": null,
+    "source_files": [
+      "oxford_linger_(verb).html"
+    ],
+    "pos": [
+      "verb"
+    ],
+    "register_tags": [],
+    "oxford_lists": [
+      "Oxford 5000"
+    ],
+    "oxford_badge": "C1",
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "/ˈlɪŋɡə(r)/",
+    "us_ipa": "/ˈlɪŋɡər/",
+    "audio": {
+      "uk": "https://www.oxfordlearnersdictionaries.com/media/english/uk_pron/l/lin/linge/linger__gb_1.mp3",
+      "us": "https://www.oxfordlearnersdictionaries.com/media/english/us_pron/l/lin/linge/linger__us_1.mp3"
+    },
+    "see_also": [],
+    "pos_data": [
+      {
+        "pos": "verb",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": "1",
+            "text": "to continue to exist for longer than expected",
+            "register_tags": [],
+            "cefr": "C1",
+            "topics": [],
+            "collocations": {
+              "adverb": [
+                "long",
+                "still",
+                "forever"
+              ],
+              "preposition": [
+                "on",
+                "over"
+              ]
+            },
+            "examples": [
+              {
+                "text": "The faint smell of her perfume lingered in the room.",
+                "cf": null
+              },
+              {
+                "text": "The civil war lingered on well into the 1930s.",
+                "cf": "linger on"
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 2,
+            "sensenum_local": "2",
+            "text": "to stay somewhere for longer because you do not want to leave; to spend a long time doing something",
+            "register_tags": [],
+            "cefr": "C1",
+            "topics": [],
+            "collocations": {
+              "adverb": [
+                "long",
+                "still",
+                "forever"
+              ],
+              "preposition": [
+                "on",
+                "over"
+              ]
+            },
+            "examples": [
+              {
+                "text": "She lingered for a few minutes to talk to Nick.",
+                "cf": null
+              },
+              {
+                "text": "We lingered over breakfast on the terrace.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 3,
+            "sensenum_local": "3",
+            "text": "to continue to look at somebody/something or think about something for longer than usual",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "adverb": [
+                "long",
+                "still",
+                "forever"
+              ],
+              "preposition": [
+                "on",
+                "over"
+              ]
+            },
+            "examples": [
+              {
+                "text": "His eyes lingered on the diamond ring on her finger.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 4,
+            "sensenum_local": "4",
+            "text": "to stay alive but become weaker",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "adverb": [
+                "long",
+                "still",
+                "forever"
+              ],
+              "preposition": [
+                "on",
+                "over"
+              ]
+            },
+            "examples": [
+              {
+                "text": "He lingered on for several months after the heart attack.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": {
+      "root": "present simple I / you / we / they linger",
+      "thirdps": "he / she / it lingers",
+      "past": "past simple lingered",
+      "pastpart": "past participle lingered",
+      "prespart": "-ing form lingering"
+    },
+    "idioms": [],
+    "file": "oxford_linger_(verb).html",
+    "polymorphic_form": "pos_suffix"
+  },
+  {
+    "word": "kilometre",
+    "homonym_index": null,
+    "source": "oxford",
+    "source_url": null,
+    "source_files": [
+      "oxford_kilometre_(noun).html"
+    ],
+    "pos": [
+      "noun"
+    ],
+    "register_tags": [],
+    "oxford_lists": [
+      "Oxford 3000"
+    ],
+    "oxford_badge": "A1",
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "/kɪˈlɒmɪtə(r)/",
+    "us_ipa": "/kɪˈlɑːmɪtər/",
+    "audio": {
+      "uk": "https://www.oxfordlearnersdictionaries.com/media/english/uk_pron/k/kil/kilom/kilometre__gb_2.mp3",
+      "us": "https://www.oxfordlearnersdictionaries.com/media/english/us_pron/k/kil/kilom/kilometre__us_3_rr.mp3"
+    },
+    "see_also": [],
+    "pos_data": [
+      {
+        "pos": "noun",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": null,
+            "text": "a unit for measuring distance; 1 000 metres",
+            "register_tags": [],
+            "cefr": "A1",
+            "topics": [
+              {
+                "name": "Maths and measurement",
+                "cefr": "A1"
+              }
+            ],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "The industrial estate is 6 kilometres from the city centre.",
+                "cf": null
+              },
+              {
+                "text": "She had been driving at 110 kilometres per hour.",
+                "cf": null
+              },
+              {
+                "text": "Monaco is only two square kilometres in size.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": null,
+    "idioms": [],
+    "file": "oxford_kilometre_(noun).html",
+    "polymorphic_form": "pos_suffix"
+  },
+  {
+    "word": "dispose",
+    "homonym_index": null,
+    "source": "oxford",
+    "source_url": null,
+    "source_files": [
+      "oxford_dispose_(verb).html"
+    ],
+    "pos": [
+      "verb"
+    ],
+    "register_tags": [],
+    "oxford_lists": [
+      "Oxford 5000"
+    ],
+    "oxford_badge": "C1",
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "/dɪˈspəʊz/",
+    "us_ipa": "/dɪˈspəʊz/",
+    "audio": {
+      "uk": "https://www.oxfordlearnersdictionaries.com/media/english/uk_pron/d/dis/dispo/dispose__gb_1.mp3",
+      "us": "https://www.oxfordlearnersdictionaries.com/media/english/us_pron/d/dis/dispo/dispose__us_1.mp3"
+    },
+    "see_also": [],
+    "pos_data": [
+      {
+        "pos": "verb",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": "1",
+            "text": "to arrange things or people in a particular way or position",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "The visitors disposed themselves in a circle round the statue.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 2,
+            "sensenum_local": "2",
+            "text": "to make somebody want to behave in a particular way",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "a drug that disposes the patient towards sleep",
+                "cf": "dispose somebody to/toward(s) something"
+              },
+              {
+                "text": "a drug that disposes the patient to sleep",
+                "cf": "dispose somebody to do something"
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": {
+      "root": "present simple I / you / we / they dispose",
+      "thirdps": "he / she / it disposes",
+      "past": "past simple disposed",
+      "pastpart": "past participle disposed",
+      "prespart": "-ing form disposing"
+    },
+    "idioms": [],
+    "file": "oxford_dispose_(verb).html",
+    "polymorphic_form": "pos_suffix"
+  },
+  {
+    "word": "remote",
+    "homonym_index": null,
+    "source": "oxford",
+    "source_url": null,
+    "source_files": [
+      "oxford_remote_(adj).html"
+    ],
+    "pos": [
+      "adjective",
+      "noun"
+    ],
+    "register_tags": [],
+    "oxford_lists": [
+      "Oxford 3000"
+    ],
+    "oxford_badge": "B1",
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "/rɪˈməʊt/",
+    "us_ipa": "/rɪˈməʊt/",
+    "audio": {
+      "uk": "https://www.oxfordlearnersdictionaries.com/media/english/uk_pron/r/rem/remot/remote__gb_3.mp3",
+      "us": "https://www.oxfordlearnersdictionaries.com/media/english/us_pron/r/rem/remot/remote__us_1.mp3"
+    },
+    "see_also": [
+      "remote learning"
+    ],
+    "pos_data": [
+      {
+        "pos": "adjective",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": "1",
+            "text": "far away from places where other people live",
+            "register_tags": [],
+            "cefr": "B1",
+            "topics": [],
+            "collocations": {
+              "verbs": [
+                "appear",
+                "be",
+                "feel"
+              ],
+              "adverb": [
+                "extremely",
+                "fairly",
+                "very"
+              ],
+              "preposition": [
+                "from"
+              ]
+            },
+            "examples": [
+              {
+                "text": "a remote village/island/location/region",
+                "cf": null
+              },
+              {
+                "text": "a remote community",
+                "cf": null
+              },
+              {
+                "text": "a remote part of the country",
+                "cf": null
+              },
+              {
+                "text": "a remote beach",
+                "cf": null
+              },
+              {
+                "text": "one of the remotest areas of the world",
+                "cf": null
+              },
+              {
+                "text": "The area is remote, mountainous, and roadless.",
+                "cf": null
+              },
+              {
+                "text": "The site is remote from major population centres.",
+                "cf": "remote from something"
+              },
+              {
+                "text": "The farmhouse is remote from any other buildings.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 2,
+            "sensenum_local": "2",
+            "text": "far away in time",
+            "register_tags": [],
+            "cefr": "B2",
+            "topics": [],
+            "collocations": {
+              "verbs": [
+                "appear",
+                "be",
+                "feel"
+              ],
+              "adverb": [
+                "extremely",
+                "fairly",
+                "very"
+              ],
+              "preposition": [
+                "from"
+              ]
+            },
+            "examples": [
+              {
+                "text": "in the remote past/future",
+                "cf": null
+              },
+              {
+                "text": "a remote ancestor (= who lived a long time ago)",
+                "cf": null
+              },
+              {
+                "text": "There are many facts about the remote past and the remote future that we cannot know.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 3,
+            "sensenum_local": "3",
+            "text": "not closely related",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "a remote cousin",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 4,
+            "sensenum_local": "4",
+            "text": "used to describe working away from a usual place, using communications technology",
+            "register_tags": [],
+            "cefr": "B2",
+            "topics": [
+              {
+                "name": "Working life",
+                "cefr": "B2"
+              }
+            ],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "Remote working has become the norm for many organizations.",
+                "cf": null
+              },
+              {
+                "text": "Many people are working in remote or hybrid environments.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 5,
+            "sensenum_local": "5",
+            "text": "that you can connect to from far away, using an electronic link",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "a remote terminal/database/server",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 6,
+            "sensenum_local": "6",
+            "text": "very different from something",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "verbs": [
+                "appear",
+                "be",
+                "feel"
+              ],
+              "adverb": [
+                "extremely",
+                "fairly",
+                "very"
+              ],
+              "preposition": [
+                "from"
+              ]
+            },
+            "examples": [
+              {
+                "text": "His theories are somewhat remote from reality.",
+                "cf": null
+              },
+              {
+                "text": "A novel should not be too remote from the experiences of its readers.",
+                "cf": null
+              },
+              {
+                "text": "Jane felt remote from what was going on around her.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 7,
+            "sensenum_local": "7",
+            "text": "not very friendly or interested in other people",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {},
+            "examples": [
+              {
+                "text": "When he spoke, his voice was cold and remote.",
+                "cf": null
+              },
+              {
+                "text": "He somehow remains a remote figure.",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 8,
+            "sensenum_local": "8",
+            "text": "not very great",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "verbs": [
+                "appear",
+                "be",
+                "feel"
+              ],
+              "adverb": [
+                "extremely",
+                "fairly",
+                "very"
+              ],
+              "preposition": [
+                "from"
+              ]
+            },
+            "examples": [
+              {
+                "text": "There is still a remote chance that they will find her alive.",
+                "cf": null
+              },
+              {
+                "text": "I don't have the remotest idea what you're talking about.",
+                "cf": null
+              },
+              {
+                "text": "At that time, a new school building was just a remote dream.",
+                "cf": null
+              },
+              {
+                "text": "a fairly remote possibility",
+                "cf": null
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": null,
+    "idioms": [],
+    "file": "oxford_remote_(adj).html",
+    "polymorphic_form": "pos_suffix"
+  },
+  {
+    "word": "delight",
+    "homonym_index": null,
+    "source": "oxford",
+    "source_url": null,
+    "source_files": [
+      "oxford_delight_(noun).html"
+    ],
+    "pos": [
+      "noun",
+      "verb"
+    ],
+    "register_tags": [],
+    "oxford_lists": [
+      "Oxford 3000"
+    ],
+    "oxford_badge": "B2",
+    "opal": null,
+    "awl": null,
+    "uk_ipa": "/dɪˈlaɪt/",
+    "us_ipa": "/dɪˈlaɪt/",
+    "audio": {
+      "uk": "https://www.oxfordlearnersdictionaries.com/media/english/uk_pron/d/del/delig/delight__gb_1.mp3",
+      "us": "https://www.oxfordlearnersdictionaries.com/media/english/us_pron/d/del/delig/delight__us_1.mp3"
+    },
+    "see_also": [
+      "Turkish delight"
+    ],
+    "pos_data": [
+      {
+        "pos": "noun",
+        "register_tags": [],
+        "definitions": [
+          {
+            "n": 1,
+            "sensenum_local": "1",
+            "text": "a feeling of great pleasure",
+            "register_tags": [],
+            "cefr": "B2",
+            "topics": [],
+            "collocations": {
+              "adjective": [
+                "great",
+                "absolute",
+                "utter"
+              ],
+              "verb + delight": [
+                "express",
+                "find",
+                "take"
+              ],
+              "preposition": [
+                "in delight",
+                "with delight",
+                "of delight"
+              ],
+              "phrases": [
+                "a cry, gasp, squeal, etc. of delight",
+                "much to somebody’s delight"
+              ]
+            },
+            "examples": [
+              {
+                "text": "a feeling of sheer/pure delight",
+                "cf": null
+              },
+              {
+                "text": "The children squealed with delight when they saw the puppy.",
+                "cf": "with delight"
+              },
+              {
+                "text": "She won the game easily, to the delight of all her fans.",
+                "cf": "to the delight of somebody"
+              },
+              {
+                "text": "He takes (great) delight in (= enjoys) proving others wrong.",
+                "cf": "delight in doing something"
+              },
+              {
+                "text": "She took a simple delight in joys that we could all share.",
+                "cf": "delight in something"
+              },
+              {
+                "text": "She couldn't hide her delight at the news.",
+                "cf": "delight at something"
+              },
+              {
+                "text": "He expressed his delight at seeing us all again.",
+                "cf": "delight at doing something"
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          },
+          {
+            "n": 2,
+            "sensenum_local": "2",
+            "text": "something that gives you great pleasure",
+            "register_tags": [],
+            "cefr": null,
+            "topics": [],
+            "collocations": {
+              "adjective": [
+                "real",
+                "constant",
+                "unexpected"
+              ],
+              "verb + delight": [
+                "explore",
+                "sample",
+                "enjoy"
+              ],
+              "preposition": [
+                "delight to"
+              ]
+            },
+            "examples": [
+              {
+                "text": "This guitar is a delight to play.",
+                "cf": null
+              },
+              {
+                "text": "Sample the culinary delights of Morocco.",
+                "cf": null
+              },
+              {
+                "text": "the delights of living in the country",
+                "cf": "delight of doing something"
+              }
+            ],
+            "is_phrase": false,
+            "is_idiom": false
+          }
+        ]
+      }
+    ],
+    "verb_forms": null,
+    "idioms": [],
+    "file": "oxford_delight_(noun).html",
+    "polymorphic_form": "pos_suffix"
+  }
+]

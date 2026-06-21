@@ -1,0 +1,1352 @@
+[
+  {
+    "hash": "ca2a6b1aa32cf5f9",
+    "word": "intervene",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "step in",
+    "confidence": 0.95
+  },
+  {
+    "hash": "15e00503afce67ec",
+    "word": "intimate",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "close; private",
+    "confidence": 0.88
+  },
+  {
+    "hash": "ee913e02b8c5e8fb",
+    "word": "intriguing",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "fascinating",
+    "confidence": 0.94
+  },
+  {
+    "hash": "1e1adcd33dc92a5e",
+    "word": "intrinsic",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "inherent",
+    "confidence": 0.94
+  },
+  {
+    "hash": "956c00abcfdd86fe",
+    "word": "introspection",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "self-examination",
+    "confidence": 0.93
+  },
+  {
+    "hash": "f293ff753c95bcac",
+    "word": "invade",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "attack",
+    "confidence": 0.95
+  },
+  {
+    "hash": "c1140193679b8e69",
+    "word": "invent",
+    "pos": "verb",
+    "cefr": "A2",
+    "decision": "gloss",
+    "gloss": "create new",
+    "confidence": 0.95
+  },
+  {
+    "hash": "c871405f76930e8d",
+    "word": "investigator",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "investigator",
+    "confidence": 0.95
+  },
+  {
+    "hash": "1aecbd86d05b31f3",
+    "word": "investor",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "funding party",
+    "confidence": 0.95
+  },
+  {
+    "hash": "5ca03441e40315b1",
+    "word": "invisible",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "unseeable",
+    "confidence": 0.95
+  },
+  {
+    "hash": "028a3a4ba78db30c",
+    "word": "invoke",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "cite; call upon",
+    "confidence": 0.88
+  },
+  {
+    "hash": "9779f092466246ba",
+    "word": "irrational",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "illogical",
+    "confidence": 0.94
+  },
+  {
+    "hash": "ece3b93be52e6e51",
+    "word": "irrelevant",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "unrelated",
+    "confidence": 0.95
+  },
+  {
+    "hash": "a3c892b819cc8395",
+    "word": "irreversible",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "permanent",
+    "confidence": 0.94
+  },
+  {
+    "hash": "2d03a11cfdfa3d44",
+    "word": "irreversibly",
+    "pos": "adverb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "permanently",
+    "confidence": 0.94
+  },
+  {
+    "hash": "eac0fbaf3451d082",
+    "word": "isolate",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "separate",
+    "confidence": 0.95
+  },
+  {
+    "hash": "83aaed2b4f14866d",
+    "word": "isolated",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "remote",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e5f6f09ddd5d4e0d",
+    "word": "jet",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "jet plane",
+    "confidence": 0.95
+  },
+  {
+    "hash": "0e3eea54ba6e760d",
+    "word": "journalism",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "news writing",
+    "confidence": 0.94
+  },
+  {
+    "hash": "fa14fdc960f93956",
+    "word": "judicial",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "court-related",
+    "confidence": 0.95
+  },
+  {
+    "hash": "fa5230f89700bca9",
+    "word": "junction",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "intersection",
+    "confidence": 0.95
+  },
+  {
+    "hash": "48ec39038b1ed257",
+    "word": "jurisdiction",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "legal authority",
+    "confidence": 0.94
+  },
+  {
+    "hash": "2a66b91fe5a07389",
+    "word": "jury",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "court panel",
+    "confidence": 0.95
+  },
+  {
+    "hash": "666116d2a3de9dc2",
+    "word": "just",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "fair; appropriate",
+    "confidence": 0.88
+  },
+  {
+    "hash": "d3f115e8dabda6a9",
+    "word": "justification",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "rationale",
+    "confidence": 0.95
+  },
+  {
+    "hash": "9c1c83fa15768f22",
+    "word": "kidnap",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "abduct",
+    "confidence": 0.95
+  },
+  {
+    "hash": "8310b065bb29a139",
+    "word": "kidney",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "organ of blood filter",
+    "confidence": 0.92
+  },
+  {
+    "hash": "9467ef37ecacb424",
+    "word": "kingdom",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "royal realm",
+    "confidence": 0.95
+  },
+  {
+    "hash": "7fea536459dea3b1",
+    "word": "labor",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "work; workers",
+    "confidence": 0.88
+  },
+  {
+    "hash": "a01b3bf0108f7c46",
+    "word": "labor",
+    "pos": "noun",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "childbirth",
+    "confidence": 0.95
+  },
+  {
+    "hash": "fe8b9bd440c7220a",
+    "word": "labor",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "work",
+    "confidence": 0.95
+  },
+  {
+    "hash": "74525a980d3c6108",
+    "word": "lad",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "young man",
+    "confidence": 0.95
+  },
+  {
+    "hash": "88edb75be8b976d3",
+    "word": "ladder",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "climbing frame",
+    "confidence": 0.95
+  },
+  {
+    "hash": "93d52cf6a91c6ff0",
+    "word": "landing",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "aircraft touchdown",
+    "confidence": 0.95
+  },
+  {
+    "hash": "647577e25ca91ada",
+    "word": "landlord",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "property owner",
+    "confidence": 0.93
+  },
+  {
+    "hash": "3b9ab3916b319cfe",
+    "word": "landmark",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "familiar marker",
+    "confidence": 0.93
+  },
+  {
+    "hash": "738232f9969daaf5",
+    "word": "lap",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "thighs top",
+    "confidence": 0.94
+  },
+  {
+    "hash": "ecc4e2df411337fb",
+    "word": "large-scale",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "massive",
+    "confidence": 0.94
+  },
+  {
+    "hash": "331886e59b12df92",
+    "word": "laser",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "focused light device",
+    "confidence": 0.92
+  },
+  {
+    "hash": "d4f45d97734cae27",
+    "word": "lately",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "recently",
+    "confidence": 0.95
+  },
+  {
+    "hash": "9320875ab07600f0",
+    "word": "lawn",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "grass area",
+    "confidence": 0.95
+  },
+  {
+    "hash": "cb199e267cb532b9",
+    "word": "lawsuit",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "court case",
+    "confidence": 0.95
+  },
+  {
+    "hash": "82e4afadb222a9b5",
+    "word": "layout",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "arrangement",
+    "confidence": 0.94
+  },
+  {
+    "hash": "bf340f113eb2dec4",
+    "word": "leaflet",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "printed flyer",
+    "confidence": 0.95
+  },
+  {
+    "hash": "e6ca9f0d9647b55b",
+    "word": "legacy",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "inheritance",
+    "confidence": 0.93
+  },
+  {
+    "hash": "78cb0795cca0cec9",
+    "word": "legend",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "traditional story",
+    "confidence": 0.93
+  },
+  {
+    "hash": "6e74cebf2aba7fad",
+    "word": "legendary",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "famous",
+    "confidence": 0.93
+  },
+  {
+    "hash": "b5f748b62a5dcdcb",
+    "word": "legislate",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "make law",
+    "confidence": 0.95
+  },
+  {
+    "hash": "1dd526b23bc11ca0",
+    "word": "legislation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "laws",
+    "confidence": 0.95
+  },
+  {
+    "hash": "f878fc926a919b1d",
+    "word": "legislative",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "law-making",
+    "confidence": 0.94
+  },
+  {
+    "hash": "a96d03dc2404676d",
+    "word": "legislature",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "law-making body",
+    "confidence": 0.95
+  },
+  {
+    "hash": "615d1fbee780a81a",
+    "word": "legitimate",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "lawful; justified",
+    "confidence": 0.88
+  },
+  {
+    "hash": "ff0989ab38de5612",
+    "word": "lengthy",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "very long",
+    "confidence": 0.94
+  },
+  {
+    "hash": "98f42763efcd733c",
+    "word": "lesbian",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "homosexual",
+    "confidence": 0.94
+  },
+  {
+    "hash": "7cdee38cefc63bc4",
+    "word": "lesser",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "smaller",
+    "confidence": 0.95
+  },
+  {
+    "hash": "ffb4b345af0d30c6",
+    "word": "lethal",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "deadly",
+    "confidence": 0.94
+  },
+  {
+    "hash": "028c7e321b062fec",
+    "word": "leverage",
+    "pos": "verb",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "borrow to invest",
+    "confidence": 0.93
+  },
+  {
+    "hash": "9eea4850495db47e",
+    "word": "leverage",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "borrow to invest",
+    "confidence": 0.93
+  },
+  {
+    "hash": "a62d1f5f2938d83e",
+    "word": "levity",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "inappropriate humor",
+    "confidence": 0.93
+  },
+  {
+    "hash": "4ca11e246fd5e91f",
+    "word": "liable",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "responsible; likely",
+    "confidence": 0.88
+  },
+  {
+    "hash": "03e614fcfda75d1c",
+    "word": "liberation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "freeing",
+    "confidence": 0.93
+  },
+  {
+    "hash": "f0fecafd6fe2aa69",
+    "word": "liberty",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "freedom",
+    "confidence": 0.95
+  },
+  {
+    "hash": "c321bbe57f92a9f8",
+    "word": "license",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "authorize",
+    "confidence": 0.94
+  },
+  {
+    "hash": "689cc0af3ebfd47b",
+    "word": "lifelong",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "all-life",
+    "confidence": 0.95
+  },
+  {
+    "hash": "5e8885e5f222236c",
+    "word": "lifetime",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "life duration",
+    "confidence": 0.95
+  },
+  {
+    "hash": "c55b9278bc80342c",
+    "word": "lighting",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "illumination",
+    "confidence": 0.93
+  },
+  {
+    "hash": "c9289aef8fdab921",
+    "word": "likelihood",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "probability",
+    "confidence": 0.94
+  },
+  {
+    "hash": "2f0a79b50e31c482",
+    "word": "likewise",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "similarly",
+    "confidence": 0.95
+  },
+  {
+    "hash": "8a67afd40df0bc43",
+    "word": "limb",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "arm or leg",
+    "confidence": 0.95
+  },
+  {
+    "hash": "72940f5e8bcd8a83",
+    "word": "line-up",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "participant list",
+    "confidence": 0.93
+  },
+  {
+    "hash": "3e9ffe72d4ff9d06",
+    "word": "lineage",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "ancestry",
+    "confidence": 0.94
+  },
+  {
+    "hash": "3a13d33561cee365",
+    "word": "linear",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "straight-line",
+    "confidence": 0.93
+  },
+  {
+    "hash": "b6b4f00741a5571d",
+    "word": "listing",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "official list",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e5a6628ee1c8b0c5",
+    "word": "literally",
+    "pos": "adverb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "exactly",
+    "confidence": 0.95
+  },
+  {
+    "hash": "7c531a1e7d4515cd",
+    "word": "literary",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "literature-related",
+    "confidence": 0.95
+  },
+  {
+    "hash": "de81b569f3d8d2ff",
+    "word": "litre",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "volume unit",
+    "confidence": 0.95
+  },
+  {
+    "hash": "f0cdc9bb63fed480",
+    "word": "litter",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "scattered trash",
+    "confidence": 0.95
+  },
+  {
+    "hash": "17bcd48c2db568bf",
+    "word": "liver",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "blood-filtering organ",
+    "confidence": 0.92
+  },
+  {
+    "hash": "22a26d5c91ea3d2a",
+    "word": "logo",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "company symbol",
+    "confidence": 0.95
+  },
+  {
+    "hash": "3fc6b343516f32cb",
+    "word": "long-standing",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "long-lasting",
+    "confidence": 0.95
+  },
+  {
+    "hash": "e2afa74391375fdc",
+    "word": "long-time",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "long-time",
+    "confidence": 0.95
+  },
+  {
+    "hash": "36ee28908ddd5ba7",
+    "word": "longevity",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "long life",
+    "confidence": 0.94
+  },
+  {
+    "hash": "230081edc2e93f24",
+    "word": "loom",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "impend",
+    "confidence": 0.93
+  },
+  {
+    "hash": "d46e3a3282832f22",
+    "word": "loop",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "circular shape",
+    "confidence": 0.94
+  },
+  {
+    "hash": "a39f1a72950e7f7a",
+    "word": "lottery",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "random drawing",
+    "confidence": 0.94
+  },
+  {
+    "hash": "224a18bce61e58c5",
+    "word": "loyal",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "devoted",
+    "confidence": 0.95
+  },
+  {
+    "hash": "b981983f5a8a4991",
+    "word": "loyalty",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "devotion",
+    "confidence": 0.95
+  },
+  {
+    "hash": "ec70672438351def",
+    "word": "lush",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "luxuriant",
+    "confidence": 0.94
+  },
+  {
+    "hash": "1b776680e8f0709a",
+    "word": "lush",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "luxuriant",
+    "confidence": 0.94
+  },
+  {
+    "hash": "560490abf4ab4832",
+    "word": "lyric",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "song words",
+    "confidence": 0.95
+  },
+  {
+    "hash": "1920d09a7d8a78da",
+    "word": "machinery",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "machines collectively",
+    "confidence": 0.93
+  },
+  {
+    "hash": "6e78de3ca36779e9",
+    "word": "magistrate",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "low court judge",
+    "confidence": 0.94
+  },
+  {
+    "hash": "6cd08dc9968504f4",
+    "word": "magnificent",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "splendid",
+    "confidence": 0.95
+  },
+  {
+    "hash": "5dd6ce9a0b4855ac",
+    "word": "magnitude",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "greatness",
+    "confidence": 0.94
+  },
+  {
+    "hash": "3939995a4d606ed0",
+    "word": "mainland",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "mainland-based",
+    "confidence": 0.95
+  },
+  {
+    "hash": "5d5995f3ca85938b",
+    "word": "majestic",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "grand",
+    "confidence": 0.95
+  },
+  {
+    "hash": "c6b784f147eddd62",
+    "word": "make-up",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "cosmetics",
+    "confidence": 0.95
+  },
+  {
+    "hash": "2c3d6ac290625c8f",
+    "word": "making",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "production",
+    "confidence": 0.94
+  },
+  {
+    "hash": "1bc47026def036b2",
+    "word": "manageable",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "controllable",
+    "confidence": 0.95
+  },
+  {
+    "hash": "b450c04fa3c2d9cd",
+    "word": "mandate",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "authority",
+    "confidence": 0.93
+  },
+  {
+    "hash": "e73e26df4cd9f199",
+    "word": "mandatory",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "required",
+    "confidence": 0.95
+  },
+  {
+    "hash": "3f09ae5b0dce3c01",
+    "word": "manifest",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "show clearly",
+    "confidence": 0.93
+  },
+  {
+    "hash": "d9ca1c7c6815e80a",
+    "word": "manipulate",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "control unfairly",
+    "confidence": 0.93
+  },
+  {
+    "hash": "d37b0637357a6413",
+    "word": "manipulation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "unfair control",
+    "confidence": 0.93
+  },
+  {
+    "hash": "00d0a93820c7fca8",
+    "word": "manual",
+    "pos": "noun",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "stick-shift car",
+    "confidence": 0.93
+  },
+  {
+    "hash": "23d4b1e903812a84",
+    "word": "manual",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "stick-shift car",
+    "confidence": 0.93
+  },
+  {
+    "hash": "426558ebcea2b540",
+    "word": "manufacture",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "mass-produce",
+    "confidence": 0.95
+  },
+  {
+    "hash": "7ac3d93f35b5f44c",
+    "word": "manufacturing",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "factory production",
+    "confidence": 0.95
+  },
+  {
+    "hash": "1a0c77d4d9c0e36a",
+    "word": "manuscript",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "handwritten draft",
+    "confidence": 0.93
+  },
+  {
+    "hash": "8987928368294f87",
+    "word": "marathon",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "26-mile run",
+    "confidence": 0.95
+  },
+  {
+    "hash": "f80fa64455802537",
+    "word": "margin",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "page edge",
+    "confidence": 0.95
+  },
+  {
+    "hash": "f42ff547aa5373c6",
+    "word": "marginal",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "minor",
+    "confidence": 0.93
+  },
+  {
+    "hash": "fef2820f7c9aa81b",
+    "word": "marine",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "sea-related",
+    "confidence": 0.93
+  },
+  {
+    "hash": "36b177131e23c3db",
+    "word": "marketplace",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "commercial arena",
+    "confidence": 0.93
+  },
+  {
+    "hash": "f8b10512c6fa6cfa",
+    "word": "martial",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "military",
+    "confidence": 0.95
+  },
+  {
+    "hash": "4f92f70b085aabf6",
+    "word": "mask",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "face covering",
+    "confidence": 0.93
+  },
+  {
+    "hash": "4f9805ac42e10da5",
+    "word": "massacre",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "mass killing",
+    "confidence": 0.94
+  },
+  {
+    "hash": "e6c24abf364f5e8b",
+    "word": "mathematical",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "math-related",
+    "confidence": 0.95
+  },
+  {
+    "hash": "34a27f6e5714c2b8",
+    "word": "maximize",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "maximize",
+    "confidence": 0.94
+  },
+  {
+    "hash": "49abed2a43892628",
+    "word": "mayor",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "city leader",
+    "confidence": 0.94
+  },
+  {
+    "hash": "6cfaf6cb7cdefe1b",
+    "word": "meander",
+    "pos": "verb",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "wander",
+    "confidence": 0.93
+  },
+  {
+    "hash": "90ed5aedf833ee91",
+    "word": "meaningful",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "significant",
+    "confidence": 0.94
+  },
+  {
+    "hash": "886fa766abec3d18",
+    "word": "meantime",
+    "pos": "adverb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "in the meantime",
+    "confidence": 0.95
+  },
+  {
+    "hash": "816833df7c273538",
+    "word": "mechanic",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "machine repairer",
+    "confidence": 0.95
+  },
+  {
+    "hash": "155ba43426acb6e6",
+    "word": "mechanical",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "machine-operated",
+    "confidence": 0.93
+  },
+  {
+    "hash": "11f46c6c593ddb05",
+    "word": "mechanism",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "working parts",
+    "confidence": 0.95
+  },
+  {
+    "hash": "6290691daad20358",
+    "word": "medal",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "prize disc",
+    "confidence": 0.95
+  },
+  {
+    "hash": "4dc45045c5f8d784",
+    "word": "mediate",
+    "pos": "verb",
+    "cefr": "C2",
+    "decision": "gloss",
+    "gloss": "negotiate",
+    "confidence": 0.94
+  },
+  {
+    "hash": "d7c0fa0d0bc6ef84",
+    "word": "mediate",
+    "pos": "verb",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "negotiate",
+    "confidence": 0.94
+  },
+  {
+    "hash": "a937aa6061332e09",
+    "word": "medication",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "medicine",
+    "confidence": 0.95
+  },
+  {
+    "hash": "4bc41e3b0ff0109b",
+    "word": "medieval",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "Middle-Ages",
+    "confidence": 0.95
+  },
+  {
+    "hash": "59e23b73212b0716",
+    "word": "mediocre",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "mediocre",
+    "confidence": 0.94
+  },
+  {
+    "hash": "e0e0963eeca41747",
+    "word": "meditation",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "mindful contemplation",
+    "confidence": 0.92
+  },
+  {
+    "hash": "4919f0dcce6da034",
+    "word": "melody",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "musical tune",
+    "confidence": 0.95
+  },
+  {
+    "hash": "00259dcfccd5dcfd",
+    "word": "memo",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "note",
+    "confidence": 0.95
+  },
+  {
+    "hash": "6c91be9b2b10d1f0",
+    "word": "memoir",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "autobiography",
+    "confidence": 0.93
+  },
+  {
+    "hash": "84de304c5932afeb",
+    "word": "memorable",
+    "pos": "adjective",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "notable",
+    "confidence": 0.95
+  },
+  {
+    "hash": "2996c19cf6f7a23b",
+    "word": "memorial",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "remembrance",
+    "confidence": 0.95
+  },
+  {
+    "hash": "30a121e21019089d",
+    "word": "mentor",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "advisor",
+    "confidence": 0.95
+  },
+  {
+    "hash": "93de08d266718a04",
+    "word": "merchant",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "trader",
+    "confidence": 0.95
+  },
+  {
+    "hash": "e34ee8977378efc6",
+    "word": "mercy",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "compassion",
+    "confidence": 0.95
+  },
+  {
+    "hash": "b309438ef0954ba5",
+    "word": "mere",
+    "pos": "adjective",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "mere",
+    "confidence": 0.93
+  },
+  {
+    "hash": "41d4682852273d15",
+    "word": "merely",
+    "pos": "adverb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "only",
+    "confidence": 0.95
+  },
+  {
+    "hash": "962b8d918ce87c12",
+    "word": "merge",
+    "pos": "verb",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "combine",
+    "confidence": 0.94
+  },
+  {
+    "hash": "87f719cefe41d587",
+    "word": "metabolism",
+    "pos": "noun",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "body energy process",
+    "confidence": 0.92
+  },
+  {
+    "hash": "5cd76f2a5cb92877",
+    "word": "metaphor",
+    "pos": "noun",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "figure of speech",
+    "confidence": 0.94
+  },
+  {
+    "hash": "ce7ebcd786eaf181",
+    "word": "methodology",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "method system",
+    "confidence": 0.93
+  },
+  {
+    "hash": "c5ce7f47c907731c",
+    "word": "microscopic",
+    "pos": "adjective",
+    "cefr": "UNCLASSIFIED",
+    "decision": "gloss",
+    "gloss": "tiny; microscope-based",
+    "confidence": 0.88
+  },
+  {
+    "hash": "5d34e51a651e8f65",
+    "word": "midst",
+    "pos": "noun",
+    "cefr": "C1",
+    "decision": "gloss",
+    "gloss": "middle",
+    "confidence": 0.95
+  },
+  {
+    "hash": "c3e6339ba7284b04",
+    "word": "migrate",
+    "pos": "verb",
+    "cefr": "B2",
+    "decision": "gloss",
+    "gloss": "seasonal relocate",
+    "confidence": 0.91
+  }
+]

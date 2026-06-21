@@ -1,0 +1,67 @@
+attr_type,attr_name,count,sample_text,oxford_py_mapping
+class,unx,324,The recording deal is not necessarily exclusive. The band ca | These products ar,NOT MAPPED
+class,x,305,"Firstly, it's expensive, and secondly, it's too slow. | First of all, there's no",examples[].text (the example sentence)
+class,unbox,261,verbs | adverb | preposition,"collocations category label (adverb, phrases, etc.)"
+class,eb,143,formulate/​advance | build/​construct/​create/​develop | develop/​establish/​pro,NOT MAPPED
+class,xref,120,censorship | correspondent | coverage,NOT MAPPED
+class,box_title,101,Wordfinder | Extra Examples | Oxford Collocations Dictionary,collocations box title
+class,sensetop,97,,NOT MAPPED
+class,def,97,used to introduce the second of a list of points you want to | doing something f,text (the definition sentence)
+class,(li.sense attr=hclass),97,sense | sense | sense,NOT MAPPED
+class,cl,93,mutually exclusive | have | contact,NOT MAPPED
+class,(li.sense attr=sensenum),85,1 | 2 | 3,NOT MAPPED
+class,labels,67,(usually disapproving) | (informal) | (informal),register_tags (currently unmapped → returns 0)
+class,body,66,,NOT MAPPED
+class,cf,66,exclusive of somebody/something | forage (for something) | forage (for something,examples[].cf (collocation frame)
+class,xr-g,62,,NOT MAPPED
+class,xh,60,inclusive | rummage | originate,see_also inner headword
+class,(li.sense attr=cefr),55,c1 | c1 | c1,NOT MAPPED
+class,prefix,52,Topics | opposite | synonym,NOT MAPPED
+class,xref_to_full_entry,45,See | See | See,NOT MAPPED
+class,sep,45,", | , | ,",NOT MAPPED
+class,grammar,40,[usually before noun] | [usually before noun] | [intransitive],countability / grammar (currently unmapped)
+class,topic,36,,topics[].name (subject domain)
+class,topic_name,36,Buildings | Houses and homes | Life stages,NOT MAPPED
+class,topic_cefr,36,c1 | c1 | c1,topics[].cefr (per-topic CEFR)
+class,ei,35,tensio(n-) | tendere | praedictio(n-),NOT MAPPED
+class,(li.sense attr=ox3000),29,y | y | y,NOT MAPPED
+class,topic-g,28,,topic-g wrapper (group of topics)
+class,xrefs,25,,see_also (related word headwords)
+class,gloss,23,(= groups of seven or eleven) | (= eleven years old) | (= at eleven o'clock),NOT MAPPED
+class,wrap,22,( | ) | (,NOT MAPPED
+class,(li.sense attr=ox5000),17,y | y | y,NOT MAPPED
+class,ox5ksym_c1,14,,NOT MAPPED
+class,ox3ksym_b1,12,,NOT MAPPED
+class,defpara,11,,NOT MAPPED
+class,p,10,mid 16th cent. (as a medical term denoting a condition or fe | mid 16th cent.: f,NOT MAPPED
+class,ndv,9,cricket | abortion | contact lens,NOT MAPPED
+class,dis-g,7,,NOT MAPPED
+class,dtxt,7,"of a group, society, etc. | of a person or an animal | of a person",NOT MAPPED
+class,closed,7,Onomatopoeic words | Scientific research | expect,NOT MAPPED
+class,ox3ksym_a2,7,,NOT MAPPED
+class,bulletsep,7,▪ | ▪ | ▪,NOT MAPPED
+class,v-g,6,,NOT MAPPED
+class,v,6,amateurish | someway | someways,NOT MAPPED
+class,ox3ksym_a1,6,,NOT MAPPED
+class,ox3ksym_b2,4,,NOT MAPPED
+class,un,4,A,NOT MAPPED
+class,deflist,4,,NOT MAPPED
+class,xs,3,,NOT MAPPED
+class,ox5ksym_b2,3,,NOT MAPPED
+class,wx,3,heart/​kidney/​liver illness | mental disease | a long/​short disease,NOT MAPPED
+class,pos,2,number | noun,NOT MAPPED
+class,subj,2,computing | business,NOT MAPPED
+class,xw,2,co-education | re-education,NOT MAPPED
+class,h4,2,disease or illness? | report or account?,NOT MAPPED
+class,patterns,2,Patterns | Patterns,NOT MAPPED
+class,dh,1,burst,NOT MAPPED
+class,use,1,,NOT MAPPED
+class,ox-enlarge-label,1,enlarge image,NOT MAPPED
+hclass,sensetop,97,,NOT MAPPED
+hclass,def,97,used to introduce the second of a list of points you want to | doing something f,text (the definition sentence)
+hclass,labels,67,(usually disapproving) | (informal) | (informal),register_tags (currently unmapped → returns 0)
+hclass,cf,66,exclusive of somebody/something | forage (for something) | forage (for something,examples[].cf (collocation frame)
+hclass,grammar,40,[usually before noun] | [usually before noun] | [intransitive],countability / grammar (currently unmapped)
+hclass,xrefs,25,,see_also (related word headwords)
+hclass,gloss,23,(= groups of seven or eleven) | (= eleven years old) | (= at eleven o'clock),NOT MAPPED
+hclass,pos,2,number | noun,NOT MAPPED

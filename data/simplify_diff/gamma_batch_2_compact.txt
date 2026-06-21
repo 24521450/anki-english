@@ -1,0 +1,976 @@
+===   1 | crisis | noun | β=0.512 | 2 senses ===
+  def 0: a time of great danger, difficulty or doubt when problems must be solved or important decisions must be made
+    ex: an economic/a financial crisis
+    ex: The government is attempting to solve the debt crisis through spending cuts.
+    ex: The government is facing a political crisis.
+  def 1: a time when a problem, a bad situation or an illness is at its worst point
+    ex: Their marriage has reached crisis point.
+    ex: The fever has passed its crisis.
+    ex: The team's dismal season has reached crisis point.
+
+===   2 | belief | noun | β=0.528 | 3 senses ===
+  def 0: a strong feeling that something/somebody exists or is true; confidence that something/somebody is good or right
+    ex: I admire his passionate belief in what he is doing.
+    ex: belief in God/democracy
+    ex: The incident has shaken my belief (= made me have less confidence) in the police.
+  def 1: an opinion about something; something that you think is true
+    ex: There is a general belief that things will soon get better.
+    ex: There is a widespread belief that multinationals have too much power.
+    ex: a widely/commonly held belief
+  def 2: something that you believe, especially as part of your religion
+    ex: religious/political beliefs
+    ex: A society should be judged on its beliefs and values.
+    ex: Some people hold beliefs about the world that are not supported by science.
+
+===   3 | depressed | adjective | β=0.500 | 2 senses ===
+  def 0: very sad and without hope
+    ex: You mustn't let yourself get depressed.
+    ex: She felt very depressed about the future.
+    ex: He was really depressed at the thought of going into the office.
+  def 1: affected by the medical condition of depression
+    ex: She became severely depressed.
+    ex: There is medical evidence to show that he is clinically depressed.
+    ex: She suffers from sleep disturbance and depressed mood.
+
+===   4 | guess | verb | β=0.525 | 3 senses ===
+  def 0: to try and give an answer or make a judgement about something without being sure of all the facts
+    ex: I don't really know. I'm just guessing.
+    ex: We can only guess at her reasons for leaving.
+    ex: He guessed right/wrong.
+  def 1: to find the right answer to a question or the truth without knowing all the facts
+    ex: She guessed the answer straight away.
+    ex: You'll never guess what she told me.
+    ex: You would never guess (that) she had problems. She’s always so cheerful.
+  def 2: used to show that you are going to say something surprising or exciting
+    ex: Guess what! He's asked me out!
+    ex: Guess who I've just seen!
+
+===   5 | radio | noun | β=0.520 | 4 senses ===
+  def 0: the activity of broadcasting programmes for people to listen to; the programmes that are broadcast
+    ex: The play was written specially for radio.
+    ex: I listen to the radio on the way to work.
+    ex: The interview was broadcast on radio and television.
+  def 1: a piece of equipment used for listening to programmes that are broadcast to the public
+    ex: to turn the radio on/off
+    ex: to have the radio on
+    ex: a car radio
+  def 2: the process of sending and receiving messages through the air using electromagnetic waves
+    ex: He was unable to contact Blake by radio.
+    ex: to keep in radio contact
+    ex: radio frequencies/signals/communications
+  def 3: a piece of equipment, for example on ships or planes, for sending and receiving radio signals
+    ex: They heard the gale warning over the ship’s radio.
+    ex: The airline company failed to reach the plane on its radio.
+    ex: There were calls for cab radios to link train drivers and signal boxes.
+
+===   6 | tread | verb | β=0.500 | 3 senses ===
+  def 0: to put your foot down while you are stepping or walking
+    ex: Ouch! You trod on my toe!
+    ex: Careful you don't tread in that puddle.
+  def 1: to move, push or press something with your feet
+    ex: Don't tread ash into the carpet!
+    ex: The wine is still made by treading grapes in the traditional way.
+    ex: She planted the seeds and trod the earth down.
+  def 2: to walk somewhere
+    ex: Few people had trod this path before.
+    ex: He was treading quietly and cautiously.
+
+===   7 | rescue | noun | β=0.627 | 2 senses ===
+  def 0: the act of saving somebody/something from a dangerous or difficult situation; the fact of being saved
+    ex: We had given up hope of rescue.
+    ex: A wealthy benefactor came to their rescue with a generous donation.
+    ex: a rescue operation/mission
+  def 1: an occasion when somebody/something is saved from a dangerous or difficult situation
+    ex: Ten fishermen were saved in a daring sea rescue.
+    ex: Her own boat capsized after she attempted a rescue.
+
+===   8 | linger | verb | β=0.513 | 2 senses ===
+  def 0: to continue to exist for longer than expected
+    ex: The faint smell of her perfume lingered in the room.
+    ex: The civil war lingered on well into the 1930s.
+  def 1: to stay somewhere for longer because you do not want to leave; to spend a long time doing something
+    ex: She lingered for a few minutes to talk to Nick.
+    ex: We lingered over breakfast on the terrace.
+
+===   9 | action | noun | β=0.500 | 2 senses ===
+  def 0: the process of doing something in order to make something happen or to deal with a situation
+    ex: The time has come for action if these beautiful animals are to survive.
+    ex: to threaten/demand/call for action
+    ex: Firefighters took action immediately to stop the blaze spreading.
+  def 1: a thing that somebody does
+    ex: Each of us must take responsibility for our own actions.
+    ex: They sought to justify their actions.
+
+===  10 | shadow | noun | β=0.511 | 2 senses ===
+  def 0: the dark shape that somebody/something’s form makes on a surface, for example on the ground, when they are between the light and the surface
+    ex: The children were having fun, chasing each other's shadows.
+    ex: As the curtains moved in the breeze, the shadows on the floor seemed to dance.
+    ex: The ship's sail cast a shadow on the water.
+  def 1: darkness in a place or on something, especially so that you cannot easily see who or what is there
+    ex: I thought I saw a figure standing in the shadows.
+    ex: His face was deep in shadow, turned away from her.
+    ex: A man in black emerged from the shadows.
+
+===  11 | loyalty | noun | β=0.567 | 2 senses ===
+  def 0: the quality of being constant in your support of somebody/something
+    ex: Can I count on your loyalty?
+    ex: They swore their loyalty to the king.
+  def 1: a strong feeling that you want to support and be loyal to somebody/something
+    ex: a case of divided loyalties (= with strong feelings of support for two different causes, people, etc.)
+
+===  12 | presence | noun | β=0.650 | 2 senses ===
+  def 0: the fact of being in a particular place
+    ex: He hardly seemed to notice my presence.
+    ex: Her presence during the crisis had a calming effect.
+    ex: Your presence is requested at the meeting.
+  def 1: the fact of being in a particular place or thing
+    ex: The test can identify the presence of abnormalities in the unborn child.
+    ex: One of the first things I note when I walk into a client's home is the presence or absence of pictures around the room.
+    ex: The company now has a strong presence in Germany.
+
+===  13 | operational | adjective | β=0.500 | 2 senses ===
+  def 0: connected with the way in which a business, machine, system, etc. works
+    ex: operational activities/costs/difficulties
+  def 1: ready or available to be used
+    ex: The new airport is now fully operational.
+
+===  14 | coffee | noun | β=0.530 | 3 senses ===
+  def 0: the roasted seeds (called coffee beans) of a tropical bush; a powder made from them
+    ex: ground/real/instant coffee
+    ex: decaffeinated coffee
+    ex: a jar of coffee
+  def 1: a hot drink made from coffee powder and boiling water. It may be drunk with milk and/or sugar added.
+    ex: to drink/sip coffee
+    ex: Do you want to have coffee with me sometime?
+    ex: black/white coffee (= without/with milk)
+  def 2: a cup of coffee
+    ex: Do you want to go and get a coffee?
+    ex: Two strong black coffees, please.
+
+===  15 | professional | adjective | β=0.625 | 2 senses ===
+  def 0: doing something as a paid job rather than as a hobby
+    ex: professional athletes/players
+    ex: a professional golfer
+    ex: She began her professional career as a dancer 20 years ago.
+  def 1: done as a paid job rather than as a hobby
+    ex: In professional sport winning is everything.
+    ex: the world of professional football
+
+===  16 | costume | noun | β=0.522 | 2 senses ===
+  def 0: the clothes worn by people from a particular place or during a particular historical period
+    ex: an exhibition of Victorian costumes
+    ex: She wore a traditional costume of bright pink silk.
+    ex: a painting of a woman in Welsh costume
+  def 1: the clothes worn by actors in a play or film, or worn by somebody to make them look like somebody/something else
+    ex: The former dancer has also designed the costumes.
+    ex: The costumes for this production were gorgeous.
+    ex: They are already planning their costumes for Halloween.
+
+===  17 | region | noun | β=0.500 | 2 senses ===
+  def 0: a large area of land, usually without exact limits or borders
+    ex: mountainous/coastal regions
+    ex: the northern/southern/central, etc. region
+    ex: This is one of the most densely populated regions of North America.
+  def 1: one of the areas that a country is divided into, that has its own customs and/or its own government
+    ex: Bilbao is the largest city in the Basque region in northern Spain.
+    ex: The country is divided into 17 autonomous regions.
+
+===  18 | duty | noun | β=0.550 | 2 senses ===
+  def 1: the work that is your job
+    ex: Report for duty at 8 a.m.
+    ex: He was the duty manager that day.
+  def 2: tasks that are part of your job
+    ex: I spend a lot of time on administrative duties.
+    ex: The princess has taken on her mother's official duties.
+    ex: to perform/fulfil/discharge your duties
+
+===  19 | nod | verb | β=0.544 | 3 senses ===
+  def 0: if you nod, nod your head or your head nods, you move your head up and down to show agreement, understanding, etc.
+    ex: I asked him if he would help me and he nodded.
+    ex: ‘Ready?’ She nodded at me and we set off.
+    ex: Her head nodded in agreement.
+  def 1: to move your head down and up once to say hello or goodbye to somebody or to give them a sign to do something
+    ex: The president nodded to the crowd as he passed in the motorcade.
+    ex: She nodded at him to begin speaking
+    ex: to nod a greeting
+  def 2: to move your head in the direction of somebody/something to show that you are talking about them/it
+    ex: I asked where Steve was and she nodded in the direction of the kitchen.
+    ex: She nodded towards his suitcase. ‘Going somewhere?’ she asked.
+
+===  20 | rate | noun | β=0.567 | 2 senses ===
+  def 0: a measurement of the speed at which something happens
+    ex: Figures published today show another fall in the rate of inflation.
+    ex: Most people walk at an average rate of five kilometres an hour.
+    ex: The number of reported crimes is increasing at an alarming rate.
+  def 1: a measurement of the number of times something happens or something does something during a particular period
+    ex: We have seen a reduction in the crime rate over the last 12 months.
+    ex: a high success/failure rate
+    ex: the youth unemployment rate
+
+===  21 | lend | verb | β=0.525 | 2 senses ===
+  def 0: to give something to somebody or allow them to use something that belongs to you, which they have to return to you later
+    ex: They will lend equipment free of charge.
+    ex: I've lent the car to a friend.
+    ex: The gallery has been willing to lend out works of art in the past.
+  def 1: to give money to somebody on condition that they pay it back over a period of time and pay interest on it
+    ex: The bank lends money at very cheap rates.
+    ex: They refused to lend us the money.
+    ex: The bank refused to lend the money to us.
+
+===  22 | relationship | noun | β=0.529 | 2 senses ===
+  def 0: the way in which two people, groups or countries behave towards each other or deal with each other
+    ex: a personal/working relationship
+    ex: a master-servant relationship
+    ex: This is an opportunity to build positive customer relationships.
+  def 1: a loving and/or sexual friendship between two people
+    ex: Their affair did not develop into a long-term relationship.
+    ex: It was his first sexual relationship.
+    ex: Money problems have put a strain on their relationship.
+
+===  23 | right | adjective | β=0.500 | 2 senses ===
+  def 2: correct for a particular situation or thing, or for a particular person
+    ex: Have you got the right money (= the exact amount) for the bus fare?
+    ex: What's the right way to do this?
+    ex: You're not holding it the right way up.
+  def 4: in a normal or good enough condition
+    ex: I don't feel quite right today (= I feel ill).
+    ex: Things aren't right between her parents.
+    ex: If only I could have helped put matters right.
+
+===  24 | invitation | noun | β=0.520 | 2 senses ===
+  def 1: the act of inviting somebody or of being invited
+    ex: He produced an official letter of invitation.
+    ex: Admission is by invitation only.
+    ex: A concert was held at the invitation of the mayor.
+  def 2: a card or piece of paper that you use to invite somebody to something
+    ex: We've already sent out the invitations.
+    ex: Have you ordered the wedding invitations yet?
+
+===  25 | climate | noun | β=0.586 | 2 senses ===
+  def 0: the regular pattern of weather conditions of a particular place
+    ex: a tropical/warm/mild/temperate/cold climate
+    ex: the harsh climate of the Arctic regions
+  def 1: an area with particular weather conditions
+    ex: They wanted to move to a warmer climate.
+    ex: Little grows in such a dry climate.
+
+===  26 | powerful | adjective | β=0.523 | 3 senses ===
+  def 1: having great power or force; very effective
+    ex: a powerful engine
+    ex: a powerful voice
+    ex: a powerful telescope
+  def 2: having a strong effect on your thoughts, feelings or body
+    ex: a powerful image/symbol/speech
+    ex: He was prescribed a more powerful painkiller.
+    ex: Fear is a powerful emotion.
+  def 3: physically strong
+    ex: a powerful body
+    ex: a powerful athlete
+    ex: When she trots she covers ground like a powerful horse rather than a pony.
+
+===  27 | interview | noun | β=0.525 | 3 senses ===
+  def 0: a formal meeting at which somebody is asked questions to see if they are suitable for a particular job, or for a course of study at a college, university, etc.
+    ex: a job interview
+    ex: She's been called for (an) interview.
+    ex: He has an interview next week for the manager's job.
+  def 1: a meeting (often a public one) at which a journalist asks somebody questions in order to find out their opinions
+    ex: a television/TV/radio/newspaper interview
+    ex: to do/give an interview (= to agree to answer questions)
+    ex: to conduct an interview (= to ask somebody questions in public)
+  def 2: a private meeting between people when questions are asked and answered
+    ex: a telephone/phone interview
+    ex: She's had an interview with the careers adviser.
+    ex: He gave a very full account in long interviews with experienced police officers.
+
+===  28 | emotional | adjective | β=0.556 | 3 senses ===
+  def 0: connected with people’s feelings (= with the emotions)
+    ex: emotional problems/stress
+    ex: The emotional impact of the film is powerful and lasting.
+    ex: He clearly feels an emotional connection to the place.
+  def 1: causing people to feel strong emotions
+    ex: emotional language
+    ex: abortion and other emotional issues
+    ex: The anniversary of the accident was very emotional for him.
+  def 2: showing strong emotions, sometimes in a way that other people think is unnecessary
+    ex: an emotional response/reaction
+    ex: She was in a very emotional state.
+    ex: He tends to get emotional on these occasions.
+
+===  29 | analogy | noun | β=0.591 | 2 senses ===
+  def 0: a comparison of one thing with another thing that has similar features; a feature that is similar
+    ex: The teacher drew an analogy between the human heart and a pump.
+    ex: There are no analogies with any previous legal cases.
+  def 1: the process of comparing one thing with another thing that has similar features in order to explain it
+    ex: learning by analogy
+    ex: We can understand this theory by analogy with human beings.
+
+===  30 | best | adjective | β=0.531 | 3 senses ===
+  def 0: of the most excellent type or quality
+    ex: That's the best movie I've ever seen!
+    ex: He wrote his best songs before he was 25.
+    ex: She was one of the best tennis players of her generation.
+  def 1: giving most pleasure; happiest
+    ex: Those were the best years of my life.
+  def 2: most suitable or appropriate
+    ex: What's the best way to cook steak?
+    ex: Which is the best tool for this job?
+    ex: The best thing to do would be to apologize.
+
+===  31 | shower | noun | β=0.525 | 2 senses ===
+  def 0: a piece of equipment producing a flow of water that you stand under to wash yourself; the small room or part of a room that contains a shower
+    ex: He's in the shower.
+    ex: I've just got out of the shower.
+    ex: an en-suite shower room
+  def 1: the act of washing yourself with a shower
+    ex: a hot/cold shower
+    ex: to have a shower
+    ex: to take a shower
+
+===  32 | competitive | adjective | β=0.500 | 2 senses ===
+  def 0: used to describe a situation in which people or organizations compete against each other
+    ex: competitive games/sports
+    ex: Graduates have to fight for jobs in an increasingly competitive market.
+    ex: Those businesses are operating in an extremely competitive environment.
+  def 1: trying very hard to be better than others
+    ex: You have to be highly competitive to do well in sport these days.
+
+===  33 | soft | adjective | β=0.500 | 2 senses ===
+  def 1: less hard than average
+    ex: soft rocks such as limestone
+    ex: soft corals
+    ex: soft cheeses
+  def 2: smooth and pleasant to touch
+    ex: soft skin
+    ex: a dress made from the finest, softest silk
+    ex: The fabric has a beautifully soft texture.
+
+===  34 | moon | noun | β=0.500 | 2 senses ===
+  def 0: the round object that moves around the earth once every 27½ days and shines at night by light reflected from the sun
+    ex: the surface of the moon
+    ex: the first man to walk on the moon
+    ex: a moon landing
+  def 1: the moon as it appears in the sky at a particular time
+    ex: a crescent moon
+    ex: There's no moon tonight (= no moon can be seen).
+    ex: By the light of the moon I could just make out shapes and outlines.
+
+===  35 | political | adjective | β=0.515 | 2 senses ===
+  def 0: connected with the state, government or public affairs
+    ex: a monarch without political power
+    ex: He was a political prisoner (= one who was put in prison for holding opinions that the government thought dangerous).
+    ex: a period of political stability
+  def 1: connected with the different groups working in politics, especially their policies and the competition between them
+    ex: a political party/leader/opponent
+    ex: What are your political sympathies?
+    ex: Peace organizations are being used as fronts for political agendas.
+
+===  36 | quantity | noun | β=0.529 | 2 senses ===
+  def 0: an amount or a number of something
+    ex: a large/small quantity of something
+    ex: vast/huge quantities of food
+    ex: enormous/massive/considerable/substantial quantities of something
+  def 1: the measurement of something by saying how much of it there is
+    ex: The data is limited in terms of both quality and quantity.
+
+===  37 | forget | verb | β=0.517 | 2 senses ===
+  def 1: to be unable to remember something that has happened in the past or information that you knew in the past
+    ex: Oh, I almost forgot—there was a call for you.
+    ex: I'd completely forgotten about the money he owed me.
+    ex: I never forget a face.
+  def 2: to deliberately stop thinking about somebody/something
+    ex: Try to forget about what happened.
+    ex: Could you possibly forget about work for five minutes?
+    ex: Forget him!
+
+===  38 | stock | noun | β=0.557 | 2 senses ===
+  def 0: a supply of goods that is available for sale in a shop
+    ex: We have a fast turnover of stock.
+    ex: That particular model is not currently in stock.
+    ex: I'm afraid we're temporarily out of stock.
+  def 1: a supply of something that is available for use
+    ex: Food stocks are running low.
+    ex: declining fish stocks in the oceans
+    ex: a country’s housing stock (= all the houses available for living in)
+
+===  39 | investigation | noun | β=0.536 | 2 senses ===
+  def 0: an official examination of the facts about a situation, crime, etc.
+    ex: a criminal/murder/police investigation
+    ex: an accident investigation team
+    ex: The president has promised a full investigation.
+  def 1: a scientific or academic examination of the facts of a subject or problem
+    ex: Further investigation revealed a flaw in this theory.
+    ex: Refer patients with these symptoms for further investigation.
+    ex: the results of a preliminary investigation into stress at work
+
+===  40 | instrument | noun | β=0.525 | 2 senses ===
+  def 1: a tool or device used for a particular task, especially for specialist or scientific work
+    ex: surgical/optical/scientific instruments
+    ex: Scientists then began using powerful instruments to peer through the planet's dense atmosphere.
+    ex: syringes, needles or other sharp instruments
+  def 2: a device used for measuring speed, distance, temperature, etc. in a vehicle or on a machine
+    ex: data gathered by instruments aboard the satellite
+    ex: the flight instruments
+    ex: There was a warning light flashing on the instrument panel.
+
+===  41 | guideline | noun | β=0.512 | 2 senses ===
+  def 0: a set of rules or instructions that are given by an official organization telling you how to do something, especially something difficult
+    ex: The government has drawn up guidelines for schools during a pandemic.
+  def 1: something that can be used to help you make a decision or form an opinion
+    ex: The figures are a useful guideline when buying a house.
+
+===  42 | racism | noun | β=0.525 | 2 senses ===
+  def 0: the unfair treatment of people who belong to a different race; violent behaviour towards them
+    ex: a victim of racism
+    ex: ugly outbreaks of racism
+    ex: the urgent need to address institutional racism within the organization
+  def 1: the belief that there are different races of people with different characteristics and abilities, and that some races are better than others; a general belief about a whole group of people based only on their race
+    ex: irrational racism
+    ex: Many 19th-century scientific theories were underpinned by racism.
+
+===  43 | interactive | adjective | β=0.511 | 2 senses ===
+  def 0: that allows information to be passed continuously and in both directions between a computer or other device and the person who uses it
+    ex: interactive displays/video
+    ex: using ICT to create an interactive learning experience
+    ex: an interactive online map that helps people find bicycle routes through the city
+  def 1: that involves people working together and having an influence on each other
+    ex: The school believes in interactive teaching methods.
+
+===  44 | cynical | adjective | β=0.529 | 2 senses ===
+  def 0: believing that people only do things to help themselves rather than for good or honest reasons
+    ex: a cynical view/smile
+    ex: Do you have to be so cynical about everything?
+  def 1: not believing that something good will happen or that something is important
+    ex: I'm a bit cynical about the benefits of the plan.
+    ex: Her experiences with men have made her thoroughly cynical about love.
+    ex: I'm a little cynical about her motives.
+
+===  45 | prison | noun | β=0.517 | 2 senses ===
+  def 0: a building where people are kept as a punishment for a crime they have committed, or while they are waiting for trial
+    ex: She went to prison for tax evasion.
+    ex: He was sent to prison for five years.
+    ex: She is in prison, awaiting trial.
+  def 1: the system of keeping people in prisons
+    ex: the prison service/system
+    ex: The government insists that ‘prison works’ and plans to introduce a tougher sentencing policy for people convicted of vi
+
+===  46 | paint | verb | β=0.500 | 2 senses ===
+  def 0: to cover a surface or object with paint
+    ex: Paint the shed with weather-resistant paint.
+    ex: a brightly painted barge
+    ex: a freshly painted fence
+  def 1: to make a picture or design using paints
+    ex: to paint portraits/pictures
+    ex: A friend painted the children for me (= painted a picture of the children).
+    ex: Slogans had been painted on the walls.
+
+===  47 | meditation | noun | β=0.500 | 2 senses ===
+  def 0: the practice of focusing your mind in silence, especially for religious reasons or in order to make your mind calm
+    ex: She found peace through yoga and meditation.
+  def 2: serious thoughts on a particular subject that somebody writes down or speaks
+    ex: his meditations on life and art
+
+===  48 | survive | verb | β=0.586 | 2 senses ===
+  def 0: to continue to live or exist
+    ex: She was the last surviving member of the family.
+    ex: Of the six people injured in the crash, only two survived.
+    ex: Many of these teachers are struggling to survive financially.
+  def 1: to continue to live or exist despite a dangerous event or time
+    ex: Her 5-year-old son miraculously survived the crash.
+    ex: He only survived the attack because he was wearing body armour.
+    ex: Many birds didn't survive the severe winter.
+
+===  49 | pollution | noun | β=0.600 | 2 senses ===
+  def 0: the process of making air, water, soil, etc. dirty; the state of being dirty
+    ex: air/water pollution
+    ex: to reduce pollution levels
+    ex: new pollution control technologies
+  def 1: substances that make air, water, soil, etc. dirty
+    ex: beaches covered with pollution
+    ex: The new buses emit no more pollution than the average car.
+
+===  50 | consent | noun | β=0.525 | 2 senses ===
+  def 0: permission to do something, especially given by somebody in authority
+    ex: The written consent of a parent is required.
+    ex: Children under 16 cannot give consent to medical treatment.
+    ex: to refuse/withhold your consent
+  def 1: agreement about something
+    ex: She was chosen as leader by common consent (= everyone agreed to the choice).
+    ex: By mutual consent they didn't go out (= they both agreed not to).
+
+===  51 | informal | adjective | β=0.519 | 3 senses ===
+  def 0: relaxed and friendly; not following strict rules of how to behave or do something
+    ex: an informal atmosphere
+    ex: an informal meeting/gathering/visit
+    ex: an informal arrangement
+  def 1: suitable for normal conversation and writing to friends rather than for serious speech and letters
+    ex: an informal expression
+  def 2: suitable for wearing at home or when relaxing rather than for a special or an official occasion
+    ex: I changed into more informal clothes.
+    ex: Dress is informal, and storage space often limited, so you’ll be more comfortable travelling light.
+
+===  52 | precedent | noun | β=0.543 | 2 senses ===
+  def 0: an official action or decision that has happened in the past and that is seen as an example or a rule to be followed in a similar situation later
+    ex: The ruling set a precedent for future libel cases.
+  def 1: a similar action or event that happened earlier
+    ex: historical precedents
+    ex: There is no precedent for a disaster of this scale.
+    ex: Such protests are without precedent in recent history.
+
+===  53 | apartment | noun | β=0.544 | 2 senses ===
+  def 0: a set of rooms for living in, usually on one floor of a building
+    ex: an apartment building
+    ex: I was renting a two-bedroom apartment in an old building.
+    ex: A group of developers wants to build a high-rise apartment complex.
+  def 1: a set of rooms used for a holiday
+    ex: self-catering holiday apartments
+    ex: They are staying in a luxury apartment overlooking the beach.
+
+===  54 | occurrence | noun | β=0.533 | 2 senses ===
+  def 0: something that happens or exists
+    ex: a common/everyday/frequent/regular occurrence
+    ex: Vandalism used to be a rare occurrence here.
+    ex: The program counts the number of occurrences of any word within the text.
+  def 1: the fact of something happening or existing
+    ex: the recent occurrence of skin cancer in younger patients
+
+===  55 | aggressive | adjective | β=0.500 | 2 senses ===
+  def 0: angry, and behaving in a threatening way; ready to attack
+    ex: Seals have been known to exhibit aggressive behaviour towards swimmers.
+    ex: They became increasingly aggressive as the evening wore on.
+    ex: There's no need to get aggressive.
+  def 1: determined and acting with force in order to succeed
+    ex: a very aggressive advertising campaign
+    ex: We need to get more aggressive in our approach.
+    ex: The firm is extremely aggressive in seeking new markets.
+
+===  56 | personal | adjective | β=0.500 | 2 senses ===
+  def 0: your own; not belonging to or connected with anyone else
+    ex: The novel is written from personal experience.
+    ex: a personal account of her experiences
+    ex: personal effects/belongings/possessions
+  def 1: between individual people who know each other
+    ex: Having good personal relationships is the most important thing for me.
+    ex: She is a personal friend of mine.
+
+===  57 | lonely | adjective | β=0.500 | 3 senses ===
+  def 0: unhappy because you have no friends or people to talk to
+    ex: She lives alone and often feels lonely.
+  def 1: sad and spent alone
+    ex: all those lonely nights at home watching TV
+    ex: a lonely childhood
+    ex: She contemplated the lonely walk home.
+  def 2: where only a few people ever come or visit
+    ex: a lonely beach
+    ex: a lonely mountain road
+    ex: It gets pretty lonely here in winter.
+
+===  58 | charity | noun | β=0.550 | 2 senses ===
+  def 0: an organization for helping people in need
+    ex: a registered charity
+    ex: the UK's largest children's charity
+    ex: Many charities sent money to help the victims of the famine.
+  def 1: organizations for helping people in need, considered as a group; the money, food, help, etc. that they give
+    ex: Most of the runners in the London Marathon are raising money for charity.
+    ex: A portion of the proceeds was donated to charity.
+    ex: Do you give much to charity?
+
+===  59 | implicate | verb | β=0.600 | 2 senses ===
+  def 0: to show or suggest that somebody is involved in something bad or criminal
+    ex: He tried to avoid saying anything that would implicate him further.
+  def 1: to show or suggest that something is the cause of something bad
+    ex: The results implicate poor hygiene as one cause of the outbreak.
+
+===  60 | rebuild | verb | β=0.544 | 2 senses ===
+  def 0: to build or put something together again
+    ex: After the earthquake, the people set about rebuilding their homes.
+    ex: He rebuilt the engine using parts from cars that had been scrapped.
+    ex: It could take ten years for the area to completely rebuild after the hurricane.
+  def 1: to make something/somebody complete and strong again
+    ex: When she lost her job, she had to rebuild her life completely.
+    ex: attempts to rebuild the shattered post-war economy
+    ex: After the divorce, it took me a long time to rebuild my confidence.
+
+===  61 | question | noun | β=0.514 | 2 senses ===
+  def 0: a sentence, phrase or word that asks for information
+    ex: You didn't answer my question.
+    ex: You will have the opportunity to ask questions.
+    ex: Does anyone have any questions?
+  def 1: a task or request for information that is intended to test your knowledge or understanding, for example in an exam or a competition
+    ex: Question 3 was very difficult.
+    ex: I couldn't do Question 6.
+    ex: You must answer all ten questions.
+
+===  62 | recruit | noun | β=0.520 | 2 senses ===
+  def 0: a person who has recently joined the armed forces or the police
+    ex: the training of new recruits
+    ex: He spoke of us scornfully as raw recruits (= people without training or experience).
+  def 1: a person who joins an organization, a company, etc.
+    ex: They are stepping up attempts to attract new recruits to the nursing profession.
+
+===  63 | mobilize | verb | β=0.507 | 3 senses ===
+  def 0: to work together in order to achieve a particular aim; to organize a group of people to do this
+    ex: The unions mobilized thousands of workers in a protest against the cuts.
+    ex: They successfully mobilized public opinion against him.
+  def 1: to find and start to use something that is needed for a particular purpose
+    ex: They were unable to mobilize the resources they needed.
+  def 2: if a country mobilizes its army, or if a country or army mobilizes, it makes itself ready to fight in a war
+    ex: The troops were ordered to mobilize.
+    ex: The military is able to mobilize rapidly.
+
+===  64 | conservative | adjective | β=0.500 | 2 senses ===
+  def 0: opposed to great or sudden social change; showing that you prefer traditional styles and values
+    ex: the conservative views of his parents
+    ex: music which is accessible to an audience with extremely conservative tastes
+    ex: The southern state's inhabitants tend to be socially conservative.
+  def 1: connected with the British Conservative Party
+    ex: Conservative members/supporters
+
+===  65 | regret | verb | β=0.531 | 2 senses ===
+  def 0: to feel sorry about something you have done or about something that you have not been able to do
+    ex: If you don't do it now, you'll only regret it.
+    ex: The decision could be one he lives to regret.
+    ex: I soon came to regret my action.
+  def 1: used to say in a polite or formal way that you are sorry or sad about a situation
+    ex: The airline regrets any inconvenience.
+    ex: The president said that his country deeply regretted the incident.
+    ex: The United States regrets the loss of innocent civilian lives.
+
+===  66 | centre | noun | β=0.518 | 2 senses ===
+  def 0: the middle point or part of something
+    ex: He walked to the centre of the circle.
+    ex: There was a long table in the centre of the room.
+    ex: The statue is in the very centre of the temple.
+  def 1: the main part of a town or city where there are a lot of shops and offices
+    ex: I got a lift into the centre of town.
+    ex: a town-centre car park
+
+===  67 | monster | noun | β=0.525 | 2 senses ===
+  def 1: an animal or a thing that is very large or ugly
+    ex: Their dog's an absolute monster!
+  def 2: a person who is very cruel and evil
+    ex: The man is a monster; he terrifies me.
+    ex: What sort of inhuman monster could do such a thing?
+    ex: The tabloid papers labelled him ‘an evil sex monster’.
+
+===  68 | bubble | noun | β=0.543 | 2 senses ===
+  def 0: a ball of air or gas in a liquid, or a ball of air inside a solid substance such as glass
+    ex: champagne bubbles
+    ex: a bubble of oxygen
+    ex: He blew bubbles into the water through a straw.
+  def 1: a round ball of liquid, containing air, produced by soap and water
+    ex: The children like to have bubbles in their bath.
+    ex: The twins were happily blowing bubbles.
+    ex: They jumped about, bursting the bubbles.
+
+===  69 | suspicion | noun | β=0.562 | 3 senses ===
+  def 0: a feeling that somebody has done something wrong, illegal or dishonest, even though you have no proof
+    ex: They drove away slowly to avoid arousing suspicion.
+    ex: He was arrested on suspicion of murder.
+    ex: I have a sneaking suspicion that she's not telling the truth.
+  def 1: a feeling or belief that something is true, even though you have no proof
+    ex: I have a horrible suspicion that we've come to the wrong station.
+  def 2: the feeling that you cannot trust somebody/something
+    ex: Their offer was greeted with some suspicion.
+    ex: Water from shallow wells should be regarded with suspicion, as it may be contaminated.
+
+===  70 | liberty | noun | β=0.500 | 2 senses ===
+  def 0: freedom to live as you choose without too many limits from government or authority
+    ex: the fight for justice and liberty
+    ex: The concept of individual liberty is enshrined in the constitution.
+  def 1: the state of not being a prisoner or a slave
+    ex: He had to endure six months' loss of liberty.
+
+===  71 | glance | verb | β=0.557 | 2 senses ===
+  def 0: to look quickly at something/somebody
+    ex: She glanced at her watch.
+    ex: He glanced around the room.
+    ex: I glanced up quickly to see who had come in.
+  def 1: to read something quickly and not carefully or completely
+    ex: I only had time to glance at my emails.
+    ex: He glanced briefly down the list of names.
+    ex: She glanced through the report.
+
+===  72 | bar | noun | β=0.533 | 2 senses ===
+  def 0: a place where you can buy and drink alcoholic and other drinks
+    ex: We arranged to meet in a bar called the Flamingo.
+    ex: The area is full of restaurants and bars.
+    ex: The bar staff are very friendly.
+  def 1: a place in which a particular kind of food or drink is the main thing that is served
+    ex: a sushi bar
+    ex: The hotel has a cocktail bar on the top floor.
+
+===  73 | silence | noun | β=0.500 | 2 senses ===
+  def 0: a complete lack of noise or sound
+    ex: Their footsteps echoed in the silence.
+    ex: A scream broke the silence of the night.
+    ex: I need absolute silence when I'm working.
+  def 1: a situation when nobody is speaking
+    ex: an embarrassed/awkward/uncomfortable silence
+    ex: a moment’s stunned silence
+    ex: I got used to his long silences.
+
+===  74 | shine | verb | β=0.520 | 2 senses ===
+  def 0: to produce or reflect light; to be bright
+    ex: The sun shone brightly in a cloudless sky.
+    ex: A light was shining in the distance.
+    ex: The dark polished wood shone like glass.
+  def 1: to aim or point the light of a lamp, etc. in a particular direction
+    ex: He shone the flashlight around the cellar.
+    ex: The watchman shone his torch at us.
+    ex: The doctor shone the light in my eyes several times.
+
+===  75 | handle | noun | β=0.531 | 2 senses ===
+  def 0: the part of a door, window, etc. that you use to open it
+    ex: She turned the handle and opened the door.
+    ex: a door handle
+  def 1: the part of an object, such as a cup, a bag or a tool, that you use to hold it or carry it
+    ex: the handle of a knife
+    ex: a broom handle
+    ex: The handle's broken off this jug.
+
+===  76 | imagination | noun | β=0.500 | 3 senses ===
+  def 0: the ability to create pictures in your mind; the part of your mind that does this
+    ex: a vivid/fertile imagination
+    ex: He has no imagination.
+    ex: It doesn't take much imagination to guess what she meant.
+  def 1: something that you have imagined rather than something that exists
+    ex: She was no longer able to distinguish between imagination and reality.
+    ex: Is it my imagination or have you lost a lot of weight?
+  def 2: the ability to have new and exciting ideas
+    ex: His writing lacks imagination.
+    ex: With a little imagination, you could turn this place into a palace.
+    ex: We are looking for someone with ingenuity and imagination.
+
+===  77 | reader | noun | β=0.560 | 2 senses ===
+  def 0: a person who reads, especially one who reads a lot or in a particular way
+    ex: an avid reader of science fiction
+    ex: a fast/slow reader
+    ex: And so, dear reader, our tale comes to its end.
+  def 1: a person who reads a particular newspaper, magazine, etc.
+    ex: readers’ letters
+    ex: Are you a ‘Times’ reader?
+    ex: regular readers of this magazine
+
+===  78 | competent | adjective | β=0.520 | 2 senses ===
+  def 0: having enough skill or knowledge to do something well or to the necessary standard
+    ex: He's very competent in his work.
+    ex: Make sure the firm is competent to carry out the work.
+    ex: I don’t feel competent to comment.
+  def 1: of a good standard but not very good
+    ex: Ron was a competent player—more than that, he was good!
+
+===  79 | candidate | noun | β=0.529 | 2 senses ===
+  def 0: a person who is trying to be elected or is applying for a job
+    ex: a presidential candidate
+    ex: one of the leading candidates for the presidency
+    ex: He is the best candidate for the job.
+  def 1: a person taking an exam
+    ex: Candidates are allowed to use dictionaries in this examination.
+    ex: We run special revision courses for examination candidates.
+    ex: a candidate for the degree of MPhil
+
+===  80 | dissolve | verb | β=0.600 | 2 senses ===
+  def 0: to mix with a liquid and become part of it
+    ex: Salt dissolves in water.
+    ex: Heat gently until the sugar dissolves.
+    ex: The aspirin hasn't dissolved completely yet.
+  def 1: to make a solid become part of a liquid
+    ex: Dissolve the tablet in water.
+
+===  81 | translate | verb | β=0.520 | 2 senses ===
+  def 0: to express the meaning of speech or writing in a different language
+    ex: He translated the letter into English.
+    ex: Her books have been translated into 24 languages.
+    ex: Can you help me translate this legal jargon into plain English?
+  def 1: to be changed from one language to another
+    ex: Most poetry does not translate well.
+    ex: The Welsh name translates as ‘Land's End’.
+    ex: It's a Spanish word that roughly translates as 'unease'.
+
+===  82 | float | verb | β=0.500 | 2 senses ===
+  def 0: to move slowly on water or in the air
+    ex: A group of swans floated by.
+    ex: The smell of new bread floated up from the kitchen.
+    ex: Beautiful music came floating out of the window.
+  def 1: to stay on or near the surface of a liquid and not sink
+    ex: Wood floats.
+    ex: Much of the bay is covered by floating sea ice.
+    ex: She relaxed, floating gently in the water.
+
+===  83 | religious | adjective | β=0.550 | 2 senses ===
+  def 0: connected with religion or with a particular religion
+    ex: religious beliefs/convictions/faith
+    ex: religious freedom/liberty
+    ex: religious traditions/practices/ceremonies
+  def 1: believing strongly in a particular religion and obeying its laws and practices
+    ex: His wife is very religious.
+    ex: a deeply religious man
+    ex: Although I'm not particularly religious, I whispered a few words of prayer.
+
+===  84 | domain | noun | β=0.500 | 2 senses ===
+  def 0: an area of knowledge or activity; especially one that somebody is responsible for
+    ex: Financial matters are her domain.
+    ex: Physics used to be very much a male domain.
+    ex: things that happen outside the domain of the home
+  def 1: a set of websites on the internet that end with the same group of letters, for example ‘.com’, ‘.org’
+    ex: top-level domains
+
+===  85 | exclude | verb | β=0.518 | 3 senses ===
+  def 0: to deliberately not include something in what you are doing or considering
+    ex: The cost of borrowing has been excluded from the inflation figures.
+    ex: Try excluding fat from your diet.
+    ex: Buses run every hour, Sundays excluded.
+  def 1: to prevent somebody/something from entering a place or taking part in something
+    ex: Women are still excluded from some London clubs.
+    ex: Concern is growing over the number of children excluded from school (= not allowed to attend because of bad behaviour).
+    ex: She felt excluded by the other girls (= they did not let her join in what they were doing).
+  def 2: to decide that something is not possible
+    ex: We should not exclude the possibility of negotiation.
+    ex: The police have excluded theft as a motive for the murder.
+    ex: The possibility of error cannot be absolutely excluded.
+
+===  86 | corrupt | adjective | β=0.500 | 2 senses ===
+  def 0: willing to use their power to do dishonest or illegal things in return for money or to get an advantage
+    ex: It was seen as the only way to overthrow a corrupt regime.
+    ex: They promised to seek out the corrupt officials who had accepted the bribes.
+    ex: one of the most notoriously corrupt city councils
+  def 1: not honest or moral
+    ex: They had been engaged in corrupt practices.
+    ex: The whole system is inefficient and corrupt.
+
+===  87 | manipulate | verb | β=0.536 | 2 senses ===
+  def 0: to control or influence somebody/something, often in a dishonest way so that they do not realize it
+    ex: She uses her charm to manipulate people.
+    ex: As a politician, he knows how to manipulate public opinion.
+    ex: They managed to manipulate us into agreeing to help.
+  def 1: to control, use or change something with skill
+    ex: to manipulate the gears and levers of a machine
+    ex: Computers are very efficient at manipulating information.
+    ex: genetically manipulated organisms
+
+===  88 | dispute | verb | β=0.514 | 2 senses ===
+  def 0: to question whether something is true or legally or officially acceptable
+    ex: These figures have been disputed.
+    ex: to dispute a decision/claim
+    ex: The family wanted to dispute the will.
+  def 1: to argue or disagree strongly with somebody about something, especially about who owns something
+    ex: I tried to dispute the bill with the waiter.
+    ex: The United Nations recognizes the area as a disputed territory.
+    ex: The issue remains hotly disputed.
+
+===  89 | girl | noun | β=0.500 | 3 senses ===
+  def 0: a female child
+    ex: a little girl of six
+    ex: a six-year-old girl
+    ex: a baby/young/teenage girl
+  def 1: a daughter
+    ex: They have two girls and a boy.
+    ex: Our youngest girl is at college.
+  def 2: a young woman
+    ex: He married the girl next door.
+    ex: It's a great way to meet girls.
+    ex: Alex is not interested in girls yet.
+
+===  90 | apparatus | noun | β=0.500 | 2 senses ===
+  def 0: the tools or other pieces of equipment that are needed for a particular activity or task
+    ex: a piece of laboratory apparatus
+    ex: Firefighters needed breathing apparatus to enter the burning house.
+    ex: Science departments say they are lacking basic apparatus.
+  def 1: the structure of a system or an organization, particularly that of a political party or a government
+    ex: the power of the state apparatus
+    ex: We cannot do without the apparatus of government in protecting the rights of the individual.
+
+===  91 | conference | noun | β=0.524 | 2 senses ===
+  def 0: a large official meeting, usually lasting for a few days, at which people with the same work or interests come together to discuss their views
+    ex: The hotel is used for exhibitions, conferences and social events.
+    ex: to host/organize a conference
+    ex: to speak at/address a conference
+  def 1: a meeting at which people have formal discussions
+    ex: They agreed to convene a peace conference by mid-November.
+    ex: Her working day consists of conferences with foreign diplomats.
+    ex: He was in conference with his lawyers all day.
+
+===  92 | explicit | adjective | β=0.500 | 2 senses ===
+  def 0: clear and easy to understand, so that you have no doubt what is meant
+    ex: He gave me very explicit directions on how to get there.
+    ex: The reasons for the decision should be made explicit.
+    ex: She made some very explicit references to my personal life.
+  def 1: saying something clearly, exactly and openly
+    ex: She was quite explicit about why she had left.
+
+===  93 | insist | verb | β=0.517 | 2 senses ===
+  def 0: to demand that something happen or that somebody agree to do something
+    ex: I didn't really want to go but he insisted.
+    ex: Stay and have lunch. I insist!
+    ex: ‘Please come with us.’ ‘Very well then, if you insist.’
+  def 1: to state clearly that something is true, especially when other people do not believe you
+    ex: He insisted on his innocence.
+    ex: He insisted (that) he was innocent.
+    ex: The government has always insisted that this was not the case.
+
+===  94 | indicate | verb | β=0.557 | 2 senses ===
+  def 0: to show that something is true or exists
+    ex: Initial tests indicate the presence of oxygen.
+    ex: The survey data indicate a general satisfaction with the process.
+    ex: Although the president promised to foster unity, his actions have indicated otherwise.
+  def 1: to be a sign of something; to show that something is possible or likely
+    ex: A red sky at night often indicates fine weather the next day.
+    ex: Early results indicate that the government will be returned to power.
+    ex: These figures indicate to me that the company is in serious trouble.
+
+===  95 | friendship | noun | β=0.580 | 2 senses ===
+  def 0: a relationship between friends
+    ex: They formed a close friendship at college.
+    ex: a lasting/lifelong friendship
+    ex: to forge/develop/cultivate a friendship
+  def 1: the feeling or relationship that friends have; the state of being friends
+    ex: Your friendship is very important to me.
+    ex: a conference to promote international friendship
+    ex: It was largely out of friendship for him that I agreed to come to Turin.
+
+===  96 | impose | verb | β=0.500 | 2 senses ===
+  def 0: to introduce a new law, rule, tax, etc.; to order that a rule, punishment, etc. be used
+    ex: The UN Security Council imposed sanctions in 1992.
+    ex: to impose a penalty/fine/sentence/ban
+    ex: A new tax was imposed on fuel.
+  def 1: to force somebody/something to have to deal with something that is difficult or unpleasant
+    ex: He described the limitations imposed by his disease.
+    ex: This system imposes additional financial burdens on many people.
+    ex: to impose restrictions/constraints/obligations on somebody/something
+
+===  97 | hunger | noun | β=0.517 | 2 senses ===
+  def 0: the state of not having enough food to eat, especially when this causes illness or death
+    ex: Around fifty people die of hunger every day in the camp.
+    ex: The organization works to alleviate world hunger and disease.
+  def 1: the feeling caused by a need to eat
+    ex: If you feel hunger pangs between meals, eat some fruit or nuts.
+    ex: I felt faint with hunger.
+
+===  98 | authority | noun | β=0.533 | 2 senses ===
+  def 0: the power to give orders to people
+    ex: in a position of authority
+    ex: to undermine/challenge somebody's authority
+    ex: She now has authority over the people who used to be her bosses.
+  def 1: the power or right to do something
+    ex: Some experts think the agency may have exceeded its authority.
+    ex: The government has the authority to regulate the economy.
+    ex: The Constitution gives Congress the authority to decide whether to fund military action.
+
+===  99 | lock | noun | β=0.511 | 2 senses ===
+  def 0: a device that keeps a door, window, box, etc. shut, usually needing a key to open it
+    ex: She turned the key in the lock.
+    ex: It's a good idea to have locks fitted on all your windows.
+  def 1: a device that prevents a vehicle, machine or piece of equipment from being used
+    ex: a bicycle lock
+    ex: a steering lock
+    ex: safety locks for handguns
+
+=== 100 | analysis | noun | β=0.529 | 2 senses ===
+  def 0: the detailed study or examination of something in order to understand more about it; the result of the study
+    ex: statistical/data analysis
+    ex: a detailed analysis of the data
+    ex: to perform/conduct an analysis
+  def 1: a careful examination of a substance in order to find out what it consists of
+    ex: The blood samples are sent to the laboratory for analysis.
+    ex: the results of a DNA sequence analysis
+    ex: You can ask for a chemical analysis of your tap water.

@@ -1,0 +1,547 @@
+/* Anki card design — auto-baked into .apkg.
+ * Source of truth: ../index.html (vùng 2 card CSS, line 197+).
+ * Drift enforced by tests/design/test_design_sync.py.
+ * Selector class names are immutable contracts (don't rename).
+ */
+/* IPA font — Doulos SIL (SIL Global, OFL 1.1) loaded from jsDelivr.
+   See styling.txt for full comment + offline fallback chain. */
+
+/* ─── #7 Fade-in animation ─── */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+.card {
+  font-family: 'Hanken Grotesk', -apple-system, sans-serif;
+  background-color: #141313;
+  color: #e5e2e1;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+}
+/* @preview-only — preview tile is fixed 800px; production uses 100% (fluid in max 800px) */
+.anki-card-container {
+  background: #141313;
+  border-radius: 20px;
+  max-width: 800px;
+  width: 800px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid #2a2929;
+  /* #7 fade animation */
+  animation: fadeSlideIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.55),
+    0 1px 0 rgba(255,255,255,0.03) inset;
+}
+
+/* ── Top bar ── */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid #242323;
+  gap: 8px;
+}
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.top-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* ── CEFR badges ── */
+.cefr-badge-A1         { color: #5eead4; border: 1px solid #0f766e; background: #0f766e20; }
+.cefr-badge-A2         { color: #67e8f9; border: 1px solid #0e7490; background: #0e749020; }
+.cefr-badge-B1         { color: #93c5fd; border: 1px solid #1d4ed8; background: #1d4ed820; }
+.cefr-badge-B2         { color: #c4b5fd; border: 1px solid #6d28d9; background: #6d28d920; }
+.cefr-badge-C1         { color: #fcd34d; border: 1px solid #b45309; background: #b4530920; }
+.cefr-badge-C2         { color: #fda4af; border: 1px solid #9f1239; background: #9f123920; }
+.cefr-badge-UNCLASSIFIED { color: #c4c7c7; border: 1px solid #444748; background: #2b2a2a20; }
+
+/* ── POS chips ── */
+.pos-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #c4c7c7;
+  background: #222121;
+  border: 1px solid #3c3b3b;
+  padding: 3px 12px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pos-chip-num {
+  font-size: 9px;
+  font-weight: 700;
+  color: #a78bfa;
+  letter-spacing: 0;
+  background: #2d2850;
+  border-radius: 3px;
+  padding: 0 4px;
+  line-height: 1.6;
+}
+
+/* ── Front card ── */
+/* @preview-only — preview min-height 220px; production uses 240px */
+.card-content-front {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 40px;
+}
+
+.word-front {
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #f1f5f9;
+  text-align: center;
+}
+
+/* #A: Sense count dots on front card — only shown when multi-sense */
+.front-word-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.sense-count {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.sense-count-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #2e2d2d;
+  border: 1px solid #3a3939;
+}
+
+/* ── Back card ── */
+.card-content-back {
+  padding: 28px 20px; /* #6 wider horizontal breathing room */
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* #6 was 16px */
+}
+.word-header-back {
+  text-align: center;
+  margin-bottom: 0;
+}
+.word-back {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #f1f5f9;
+}
+.meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+/* #3 Fix: IPA — monospace + pill background, distinct from plain text */
+.ipa-text {
+  /* Sử dụng các font hệ thống và font chuyên dụng hỗ trợ chuẩn Unicode/IPA */
+  font-family: 'Charis SIL', 'Doulos SIL', 'Segoe UI', 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif;
+  font-size: 24px;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+  background: #1b1a1a;
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid #272626;
+}
+
+/* ── Dividers ── */
+.divider { border: none; border-top: 1px solid #2e2d2d; margin: 12px 0; }
+.divider-A1          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #5eead4, transparent); margin:12px 0; }
+.divider-A2          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #67e8f9, transparent); margin:12px 0; }
+.divider-B1          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #93c5fd, transparent); margin:12px 0; }
+.divider-B2          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #c4b5fd, transparent); margin:12px 0; }
+.divider-C1          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #fcd34d, transparent); margin:12px 0; }
+.divider-C2          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #fda4af, transparent); margin:12px 0; }
+.divider-UNCLASSIFIED{ border:none; height:1.5px; background:linear-gradient(90deg, transparent, #c4c7c7, transparent); margin:12px 0; }
+
+/* ── #3 Audio buttons ── */
+.audio-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 0;
+}
+.audio-btn-wrapper {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+  background: #181717;
+  border: 1px solid #333232;
+  border-radius: 9999px;  padding: 4px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  /* #3 hover/transition */
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  user-select: none;
+}
+.audio-btn-wrapper:hover {
+  background: #232222;
+  color: #e5e2e1;
+}
+.audio-btn-wrapper:active {
+  transform: scale(0.96);
+}
+/* #3 UK = subtle blue accent, US = subtle red accent */
+.audio-btn-uk {
+  border-color: #1e3a5f;
+}
+.audio-btn-uk:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #1d4ed840;
+}
+.audio-btn-us {
+  border-color: #450a0a;
+}
+.audio-btn-us:hover {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px #9f123840;
+}
+.audio-btn-wrapper i {
+  font-size: 10px;
+}
+
+/* ── Section boxes ── */
+.section-box {
+  background: #181717;
+  border: 1px solid #252424;
+  border-radius: 14px;
+  padding: 14px 18px;
+  text-align: left;
+}
+/* #4 section title with icon */
+.section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #4b5563;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-title i {
+  font-size: 13px;
+  color: #374151;
+}
+
+/* ── #2 Word highlight in examples ── */
+.word-highlight {
+  color: #f1f5f9;
+  font-weight: 700;
+  font-style: normal;
+  text-decoration: underline;
+  text-decoration-color: rgba(167, 139, 250, 0.45);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+/* ── Collocations ── */
+.collocations-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.collocation-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #94a3b8;
+  background: #1e1d1d;
+  border: 1px solid #333232;
+  padding: 4px 11px;
+  border-radius: 9999px;
+  transition: border-color 0.15s, color 0.15s;
+  cursor: default;
+}
+.collocation-chip:hover {
+  border-color: #4b5563;
+  color: #cbd5e1;
+}
+
+/* ── #5 Word family chips ── */
+.word-family-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.wf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid #3b2f6b;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+.wf-chip-word {
+  background: #1c1a2e;
+  color: #c4b5fd;
+  padding: 4px 10px 4px 12px;
+  font-weight: 500;
+}
+.wf-chip-pos {
+  padding: 4px 9px 4px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+/* POS colors */
+.wf-pos-n    { background: #0f2e2e; color: #5eead4; border-left: 1px solid #0f766e; }  /* noun — teal */
+.wf-pos-v    { background: #0c1f40; color: #93c5fd; border-left: 1px solid #1d4ed8; }  /* verb — blue */
+.wf-pos-adj  { background: #1c1a2e; color: #a78bfa; border-left: 1px solid #6d28d9; }  /* adjective — purple */
+.wf-pos-adv  { background: #2d1a00; color: #fbbf24; border-left: 1px solid #78350f; }  /* adverb — amber */
+.wf-pos-phr  { background: #1c0e00; color: #fb923c; border-left: 1px solid #7c2d12; }  /* phrase — orange */
+.wf-pos-prep { background: #0a1a0a; color: #86efac; border-left: 1px solid #166534; }  /* preposition — green */
+
+.word-family-box {
+  background: #131226;
+  border-color: #2d2460;
+}
+.word-family-box .section-title {
+  color: #6d28d9;
+}
+.word-family-box .section-title i {
+  color: #6d28d9;
+}
+
+/* ── Corpus badges ── */
+.corpus-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+.corpus-opal  { color: #e0f2fe; background: #0c4a6e; border: 1px solid #0369a1; }
+.corpus-oxf   { color: #d1fae5; background: #022c22; border: 1px solid #065f46; }
+.corpus-awl   { color: #fef3c7; background: #1c1200; border: 1px solid #78350f; }
+
+/* #4 Fix: register-tag slightly smaller to save L3 column space */
+.register-tag {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  font-style: italic;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+  vertical-align: middle;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+.rt-amber   { color: #fb923c; background: #431407; border: 1px solid #7c2d12; }
+.rt-warm    { color: #fbbf24; background: #2d1a00; border: 1px solid #78350f; }
+.rt-red     { color: #fca5a5; background: #450a0a; border: 1px solid #7f1d1d; }
+.rt-subject { color: #c4b5fd; background: #1e1b4b; border: 1px solid #4338ca; }
+.rt-idiom   { color: #86efac; background: #031a0e; border: 1px solid #166534; }
+
+/* ── Top-bar: POS │ Corpus separator ── */
+.top-bar-sep {
+  width: 1px;
+  height: 14px;
+  background: #2a2929;
+  flex-shrink: 0;
+  align-self: center;
+  margin: 0 2px;
+}
+
+/* ── Usage restriction tags (old-fashioned, dialect, trademark) ── */
+/* Moves to meta-row, next to IPA — word-level constraint */
+.usage-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  border: 1px solid #1e293b;
+  background: #0f172a;
+  padding: 2px 9px;
+  border-radius: 9999px;
+}
+
+/* ── Feature tags row (idioms, phrasal verbs) ── */
+/* Standalone row at bottom, more prominent than old footer */
+.feature-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 0;
+}
+.feature-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #86efac;
+  border: 1px solid #166534;
+  background: #031a0e;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+  transition: background 0.15s, border-color 0.15s;
+}
+.feature-tag:hover {
+  background: #052e16;
+  border-color: #22c55e;
+}
+.feature-tag i {
+  font-size: 12px;
+}
+
+/* ── L3 Sense grid (Def1/Ex1 … Def3/Ex3) ── */
+.senses-box {
+  padding: 0;
+  overflow: hidden;
+}
+.sense-row {
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+  align-items: start;
+  padding: 14px 18px;
+}
+.sense-row + .sense-row {
+  border-top: 1px solid #1e1d1d;
+}
+/* #2 Fix: Audio no-audio disabled state */
+.no-audio {
+  opacity: 0.28;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* #4 Fix: sense-def wider line-height + hyphenation for long words */
+.sense-def {
+  font-size: 15.5px;
+  line-height: 1.8;
+  color: #e2e8f0;
+  padding-right: 14px;
+  hyphens: auto;
+}
+
+/* #1 Fix: empty sense-ex — hide orphaned border-left */
+.sense-ex:empty {
+  border-left: none;
+}
+.sense-ex {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #94a3b8;
+  font-style: italic;
+  border-left: 1px solid #1e1d1d;
+  padding-left: 14px;
+}
+.sense-num {
+  display: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #a78bfa;
+  background: #2d2850;
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-right: 6px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+/* ── Idioms section (Oxford-style: phrase + explanation + examples) ── */
+.idiom-box {
+  background: #1a1810;
+  border-color: #3a2a08;
+}
+.idiom-box .section-title {
+  color: #fbbf24;
+}
+.idiom-box .section-title i {
+  color: #fbbf24;
+}
+.idiom-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.idiom-row {
+  border-left: 2px solid #fbbf24;
+  padding-left: 12px;
+}
+.idiom-phrase {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fbbf24;
+  letter-spacing: 0.01em;
+}
+.idiom-explanation {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+.idiom-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+.idiom-example {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #94a3b8;
+  font-style: italic;
+  padding-left: 10px;
+  border-left: 1px solid #2a2929;
+}

@@ -1,0 +1,3429 @@
+{
+  "note": "γ batch input. 100 clusters.\n\nFor each cluster, output a verdict in strict JSON:\n  {\"cluster_hash\": \"<hash>\", \"word\": \"<word>\", \"decision\": \"merge|split|unsure\", \"confidence\": 0.0-1.0, \"reasoning\": \"1 sentence\", \"examples_substitutable_pct\": 0-100, \"merged_text\": \"...\" | null}\n\nSave as: data/simplify_diff/gamma_batch_verdicts.json\n\nGAMMA_SYSTEM_PROMPT:\nYou are an English vocabulary teacher reviewing 2-3 senses of a single word for an IELTS learner's flashcard.\n\nYOUR RULE (the user's \"80-90% rule\"):\nMerge the senses ONLY IF a single definition lets the learner understand AT LEAST 80-90% of all examples across the senses. Otherwise SPLIT.\n\nOUTPUT FORMAT (strict JSON, no prose):\n{\n  \"decision\": \"merge\" | \"split\" | \"unsure\",\n  \"confidence\": 0.0-1.0,\n  \"reasoning\": \"1 sentence\",\n  \"examples_substitutable_pct\": 0-100,\n  \"merged_text\": \"single definition\" | null\n}\n\nDECISION RULES:\n- merge:    1 def covers >=80% examples, learner doesn't need separate cards\n- split:    senses are too distinct, need 2+ cards\n- unsure:   borderline 70-80%, default to SPLIT in production (conservative)\n\nNEVER merge senses that are clearly different POS, register, or context (e.g. \"go\" verb vs \"go\" noun).",
+  "total_clusters": 100,
+  "clusters": [
+    {
+      "cluster_hash": "0d95aa3a7eb09ba2",
+      "word": "organized",
+      "pos": "adjective",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "involving large numbers of people who work together to do something in a way that has been carefully planned",
+          "cefr": "B1",
+          "examples": [
+            "an organized body of workers",
+            "an organized system of childcare",
+            "He was part of an organized criminal gang.",
+            "39% of male respondents stated that they regularly participated in organized sport compared with 17% of female respondents."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "arranged or planned well or in the way mentioned",
+          "cefr": "B1",
+          "examples": [
+            "a carefully organized campaign",
+            "a well-organized office",
+            "a badly organized event",
+            "a loosely organized political alliance"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "able to plan your work, life, etc. well and in an efficient way",
+          "cefr": "B1",
+          "examples": [
+            "a very organized person",
+            "Isn't it time you started to get organized?"
+          ]
+        }
+      ],
+      "current_score": 0.4918997668997669,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "1dca37c5fef63954",
+      "word": "recover",
+      "pos": "verb",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to get well again after being ill, hurt, etc.",
+          "cefr": "B2",
+          "examples": [
+            "He's still recovering from his operation.",
+            "She spent many weeks in hospital recovering from her injuries.",
+            "He has fully recovered from the shoulder surgery.",
+            "She remains in serious condition, but is expected to recover.",
+            "The victim is recovering well at home."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to return to a normal state after an unpleasant or unusual experience or a period of difficulty",
+          "cefr": "B2",
+          "examples": [
+            "It can take many years to recover from the death of a loved one.",
+            "The economy is at last beginning to recover."
+          ]
+        }
+      ],
+      "current_score": 0.5133333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "69e02195a0a8df03",
+      "word": "supporter",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a person who supports a political party, an idea, etc.",
+          "cefr": "B1",
+          "examples": [
+            "a strong/loyal/staunch/ardent supporter",
+            "Labour supporters",
+            "The magazine is free to members and supporters.",
+            "About a hundred of his supporters rallied to demand justice."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a person who supports a particular sports team",
+          "cefr": "B1",
+          "examples": [
+            "I'm an Arsenal supporter."
+          ]
+        }
+      ],
+      "current_score": 0.5444444444444444,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "0572007c5020b04f",
+      "word": "dealer",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a person whose business is buying and selling a particular product",
+          "cefr": "B2",
+          "examples": [
+            "an art/antique dealer",
+            "He's a dealer in second-hand cars."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a person who sells illegal drugs",
+          "cefr": "B2",
+          "examples": [
+            "a crack dealer"
+          ]
+        }
+      ],
+      "current_score": 0.5222222222222223,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "c764948ca1d65e7e",
+      "word": "red",
+      "pos": "adjective",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "having the colour of blood or fire",
+          "cefr": "A1",
+          "examples": [
+            "bright/light/dark red lipstick",
+            "The lights (= traffic lights) changed to red before I could get across.",
+            "a bunch of red roses",
+            "a red dress/shirt",
+            "the vivid red colour of the soldiers' uniforms"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "red-brown in colour",
+          "cefr": "A1",
+          "examples": [
+            "her flaming red hair",
+            "a red squirrel",
+            "a red-haired girl",
+            "Her hair was long and dark red.",
+            "She dyes her hair red."
+          ]
+        }
+      ],
+      "current_score": 0.5333333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "f9cc3be00561c3b8",
+      "word": "democracy",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a system of government in which the people of a country can vote to elect their representatives",
+          "cefr": "B2",
+          "examples": [
+            "parliamentary democracy",
+            "the principles of democracy"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a country that has this system of government",
+          "cefr": "B2",
+          "examples": [
+            "Western democracies",
+            "I thought we were supposed to be living in a democracy.",
+            "The country is a multiparty democracy."
+          ]
+        }
+      ],
+      "current_score": 0.5857142857142857,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "62c4e6edc71b6a39",
+      "word": "sail",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a sheet of strong cloth which the wind blows against to make a boat or ship travel through the water",
+          "cefr": "B1",
+          "examples": [
+            "As the boat moved down the river the wind began to fill the sails.",
+            "a ship under sail (= using sails)",
+            "in the days of sail (= when ships all used sails)",
+            "She moved away like a ship in full sail (= with all its sails spread out).",
+            "The vessel can be propelled by oars or sail (= sails)."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a trip in a boat or ship",
+          "cefr": "B1",
+          "examples": [
+            "We went for a sail.",
+            "a two-hour sail across the bay",
+            "He took us for a sail up the river."
+          ]
+        }
+      ],
+      "current_score": 0.5307692307692308,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "9906c706b2d683bf",
+      "word": "bottle",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a glass or plastic container, usually round with straight sides and a narrow neck, used especially for storing liquids",
+          "cefr": "A1",
+          "examples": [
+            "a wine/beer/milk/water bottle",
+            "Put the top back on the bottle.",
+            "a plastic/glass bottle",
+            "To open the bottle, you twist and pull out the stopper.",
+            "He threw his message in a bottle into the North Sea."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the amount contained in a bottle",
+          "cefr": "A1",
+          "examples": [
+            "We drank a whole bottle of wine.",
+            "She handed me a bottle of water."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "77c3bcad90dc5e22",
+      "word": "sell",
+      "pos": "verb",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to give something to somebody in exchange for money",
+          "cefr": "A1",
+          "examples": [
+            "I recently sold my bike.",
+            "His parents went bankrupt and the family had to sell their home.",
+            "The board agreed to sell the company.",
+            "The shares were sold in the open market.",
+            "We offered them a good price but they wouldn't sell."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to offer something for people to buy",
+          "cefr": "A1",
+          "examples": [
+            "Most supermarkets sell a range of organic products.",
+            "Do you sell stamps?",
+            "to sell insurance",
+            "His books are sold worldwide.",
+            "She decided to sell her work in order to support her family."
+          ]
+        }
+      ],
+      "current_score": 0.525,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "d9d773f8be5b456a",
+      "word": "encounter",
+      "pos": "verb",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to experience something, especially something unpleasant or difficult, while you are trying to do something else",
+          "cefr": "B2",
+          "examples": [
+            "We encountered a number of difficulties in the first week.",
+            "The report details the problems encountered by families in this situation.",
+            "I had never encountered such resistance before."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to meet somebody, or discover or experience something, especially somebody/something new, unusual or unexpected",
+          "cefr": "B2",
+          "examples": [
+            "She was the most remarkable woman he had ever encountered.",
+            "Plant scientists first encountered the phenomenon in the 1930s."
+          ]
+        }
+      ],
+      "current_score": 0.5428571428571428,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "e3b0bb25cca4dd47",
+      "word": "moment",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a very short period of time",
+          "cefr": "A1",
+          "examples": [
+            "Could you wait a moment, please?",
+            "One moment, please (= Please wait a short time).",
+            "He thought for a moment before replying.",
+            "For one brief moment I thought, ‘I can handle this.’",
+            "I'll be back in a moment."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "an exact point in time",
+          "cefr": "A1",
+          "examples": [
+            "We're busy at the moment (= now).",
+            "At that very moment, the phone rang.",
+            "You need to be aware of what you are doing at any given moment.",
+            "I agreed in a moment of weakness.",
+            "From that moment on, she never felt really well again."
+          ]
+        }
+      ],
+      "current_score": 0.5333333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "7604d91a90c91d59",
+      "word": "horror",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a very unpleasant or frightening experience",
+          "cefr": "B2",
+          "examples": [
+            "an account of the horrors inflicted on the detainees",
+            "The UN has been slow to condemn the horrors being perpetrated by the regime.",
+            "the horrors of war"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "the very unpleasant nature of something, especially when it shocks or frightens you",
+          "cefr": "B2",
+          "examples": [
+            "The full horror of the accident was beginning to become clear.",
+            "In his dreams he relives the horror of the attack.",
+            "Our report will reveal the true horror of conditions in the camps.",
+            "The horror of the situation overwhelmed him completely."
+          ]
+        }
+      ],
+      "current_score": 0.5444444444444444,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "e9acda003885f840",
+      "word": "nest",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a hollow place or structure that a bird makes or chooses for laying its eggs in and sheltering its young",
+          "cefr": "C1",
+          "examples": [
+            "sparrows building a nest of twigs and dry grass"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a place where insects or other small creatures live and produce their young",
+          "cefr": "C1",
+          "examples": [
+            "a wasps’ nest",
+            "a nest of mice",
+            "The snake will attack if disturbed inside its nest."
+          ]
+        }
+      ],
+      "current_score": 0.525,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "87f10bcd9a6e883a",
+      "word": "evacuate",
+      "pos": "verb",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to move people from a place of danger to a safer place",
+          "cefr": "C1",
+          "examples": [
+            "Police evacuated nearby buildings.",
+            "Children were evacuated from London to escape the bombing.",
+            "Families were evacuated to safer parts of the city."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to move out of a place because of danger, and leave the place empty",
+          "cefr": "C1",
+          "examples": [
+            "Employees were urged to evacuate their offices immediately.",
+            "Locals were told to evacuate."
+          ]
+        }
+      ],
+      "current_score": 0.56,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "49b1ee2abd1d192a",
+      "word": "loop",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a shape like a curve or circle made by a line curving right round",
+          "cefr": "C1",
+          "examples": [
+            "The road went in a huge loop around the lake.",
+            "Duclair is a small town on a loop of the River Seine."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a piece of rope, wire, etc. in the shape of a curve or circle",
+          "cefr": "C1",
+          "examples": [
+            "He tied a loop of rope around his arm.",
+            "Make a loop in the string.",
+            "a belt loop (= on trousers, etc. for holding a belt in place)"
+          ]
+        }
+      ],
+      "current_score": 0.5461538461538462,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "5fdc40b78077e607",
+      "word": "sanity",
+      "pos": "noun",
+      "headword_cefr": null,
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the state of having a healthy mind",
+          "cefr": null,
+          "examples": [
+            "His behaviour was so strange that I began to question his sanity.",
+            "to keep/preserve your sanity"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the state of being sensible and reasonable",
+          "cefr": null,
+          "examples": [
+            "After a series of road accidents the police pleaded for sanity among drivers."
+          ]
+        }
+      ],
+      "current_score": 0.5333333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "5f95822744fa612b",
+      "word": "identity",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "who or what somebody/something is",
+          "cefr": "B1",
+          "examples": [
+            "The police are trying to discover the identity of the killer.",
+            "to establish/reveal/confirm the identity of somebody/something",
+            "Their names have been changed for the purposes of this article to protect their identities.",
+            "Their identities were kept secret.",
+            "Do you have any proof of identity?"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the characteristics, feelings or beliefs that make people different from others",
+          "cefr": "B1",
+          "examples": [
+            "national/cultural/personal identity",
+            "ethnic/racial identity",
+            "The region's sense of identity remained strong.",
+            "a plan to strengthen the corporate identity of the company",
+            "Scotland has never lost its identity as a separate nation."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "62456673da7e033b",
+      "word": "location",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a place where something happens or exists; the position of something",
+          "cefr": "B1",
+          "examples": [
+            "a honeymoon in a secret location",
+            "Mobile phones can determine our exact location and relay it to the police in an emergency.",
+            "The harsh climate and remote location made mining even more difficult.",
+            "the country's strategic geographical/geographic location"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a place outside a film studio where scenes of a film are made",
+          "cefr": "B1",
+          "examples": [
+            "The village was used as the location for a popular TV series.",
+            "The movie was shot entirely on location in Italy.",
+            "the exotic locations they filmed in",
+            "He went to the restaurant to scout a location for his next film."
+          ]
+        }
+      ],
+      "current_score": 0.52,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "ce45fd9d7a528262",
+      "word": "investment",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the act of investing money in something",
+          "cefr": "B2",
+          "examples": [
+            "foreign/private investment",
+            "capital/business/property investment",
+            "to attract/encourage investment",
+            "This country needs investment in education.",
+            "This initiative involves considerable long-term investment by the university."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the money that you invest, or the thing that you invest in",
+          "cefr": "B2",
+          "examples": [
+            "a minimum investment of $10 000",
+            "a substantial/significant/major investment",
+            "Our investments are not doing well.",
+            "We bought the house as an investment (= to make money).",
+            "The area is trying to attract £11 million of private investment to stimulate the local economy."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a thing that is worth buying because it will be useful or helpful",
+          "cefr": "B2",
+          "examples": [
+            "A microwave is a good investment."
+          ]
+        }
+      ],
+      "current_score": 0.5291666666666667,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "5ecacc8a9643bf30",
+      "word": "noisy",
+      "pos": "adjective",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "making a lot of noise",
+          "cefr": "A2",
+          "examples": [
+            "noisy children/traffic/crowds",
+            "He was kept awake by noisy neighbours.",
+            "a noisy protest (= when people shout)",
+            "The kids were even noisier than the dogs.",
+            "The engine is very noisy at high speed."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "full of noise",
+          "cefr": "A2",
+          "examples": [
+            "a noisy classroom/office",
+            "People find it difficult to concentrate in noisy environments such as open-plan offices.",
+            "The streets were very noisy throughout the night.",
+            "The party was getting a bit noisy.",
+            "It was so noisy I couldn't hear myself speak."
+          ]
+        }
+      ],
+      "current_score": 0.55,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "f1999a6b347a256f",
+      "word": "rich",
+      "pos": "adjective",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "having a lot of money or property",
+          "cefr": "A1",
+          "examples": [
+            "She's one of the richest women in the world.",
+            "to get/grow/become rich",
+            "Nobody gets rich from writing nowadays.",
+            "She longed to be rich and famous.",
+            "He was born in a rich and powerful family."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "producing a lot of wealth so that many of its people can live at a high standard",
+          "cefr": "A1",
+          "examples": [
+            "the richest countries/economies/nations"
+          ]
+        }
+      ],
+      "current_score": 0.5181818181818182,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "774682b53f8b2b37",
+      "word": "slavery",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the state of being forced to work as a slave",
+          "cefr": "C1",
+          "examples": [
+            "to be sold into slavery"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the practice of owning and forcing people to work as slaves",
+          "cefr": "C1",
+          "examples": [
+            "the abolition of slavery",
+            "The Thirteenth Amendment abolished slavery in 1865."
+          ]
+        }
+      ],
+      "current_score": 0.5222222222222223,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "faa932619fc999f1",
+      "word": "charge",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 4,
+          "text": "an official claim made by the police that somebody has committed a crime",
+          "cefr": "B2",
+          "examples": [
+            "criminal charges",
+            "a murder/an assault charge",
+            "a charge of theft/rape/attempted murder",
+            "He will be sent back to England to face a charge of (= to be on trial for) armed robbery.",
+            "Both men deny the charges."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 5,
+          "text": "a statement accusing somebody of doing something wrong or bad",
+          "cefr": "B2",
+          "examples": [
+            "She rejected the charge that the story was untrue.",
+            "Be careful you don't leave yourself open to charges of political bias."
+          ]
+        }
+      ],
+      "current_score": 0.5153846153846153,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "8fca3a208a031581",
+      "word": "ironic",
+      "pos": "adjective",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "showing that you really mean the opposite of what you are saying; expressing irony",
+          "cefr": "C1",
+          "examples": [
+            "an ironic comment"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "strange or funny because it is very different from what you expect",
+          "cefr": "C1",
+          "examples": [
+            "It's ironic that she became a teacher—she used to hate school."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "28d868b353e36172",
+      "word": "memorial",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "a statue, stone, etc. that is built in order to remind people of an important past event or of a famous person who has died",
+          "cefr": "C1",
+          "examples": [
+            "a war memorial (= in memory of soldiers who died in a war)",
+            "a memorial to victims of the Holocaust"
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "a thing that will continue to remind people of somebody/something",
+          "cefr": "C1",
+          "examples": [
+            "The painting will be a lasting memorial to a remarkable woman.",
+            "a memorial of my husband"
+          ]
+        }
+      ],
+      "current_score": 0.5235294117647059,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "4dac578677db601e",
+      "word": "brown",
+      "pos": "adjective",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "having the colour of earth or coffee",
+          "cefr": "A1",
+          "examples": [
+            "brown eyes/hair",
+            "brown bread/sugar/rice",
+            "dark brown shoe polish",
+            "a package wrapped in brown paper",
+            "Soon the yellow leaves will turn brown."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "having skin that is naturally brown or has been made brown by the sun",
+          "cefr": "A1",
+          "examples": [
+            "I don't go brown very easily.",
+            "After the summer in Spain, the children were brown as berries.",
+            "He looked very brown after the cruise."
+          ]
+        }
+      ],
+      "current_score": 0.5222222222222223,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "0e3d620e7032738c",
+      "word": "miracle",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "an act or event that does not follow the laws of nature and is believed to be caused by God",
+          "cefr": "C1",
+          "examples": [
+            "the miracle of rising from the grave"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a lucky thing that happens that you did not expect or think was possible",
+          "cefr": "C1",
+          "examples": [
+            "an economic miracle",
+            "a miracle cure/drug",
+            "It's a miracle (that) nobody was killed in the crash.",
+            "It would take a miracle to make this business profitable."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "7ad33e38644e7376",
+      "word": "ignore",
+      "pos": "verb",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to pay no attention to something",
+          "cefr": "B1",
+          "examples": [
+            "He ignored the 30 mph speed limit sign and accelerated down the road.",
+            "I made a suggestion but they chose to ignore it.",
+            "We cannot afford to ignore their advice.",
+            "to ignore a warning/a problem/an issue",
+            "She deliberately ignored my question and changed the subject."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to pretend that you have not seen somebody or that somebody is not there",
+          "cefr": "B1",
+          "examples": [
+            "She ignored him and carried on with her work.",
+            "If he tries to start an argument, just ignore him."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "3a8bb1b5aa7bda73",
+      "word": "ingrained",
+      "pos": "adjective",
+      "headword_cefr": null,
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "that has existed for a long time and is therefore difficult to change",
+          "cefr": null,
+          "examples": [
+            "ingrained prejudices",
+            "The belief that we should do our duty is deeply ingrained in most of us."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "under the surface of something and therefore difficult to get rid of",
+          "cefr": null,
+          "examples": []
+        }
+      ],
+      "current_score": 0.5363636363636364,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "43d32fc01ae1c945",
+      "word": "fragile",
+      "pos": "adjective",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "easily broken or damaged",
+          "cefr": "C1",
+          "examples": [
+            "fragile china/glass/bones",
+            "Be careful not to drop it; it’s very fragile."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "weak and uncertain; easy to destroy or harm",
+          "cefr": "C1",
+          "examples": [
+            "a fragile alliance/ceasefire/relationship",
+            "The economy remains extremely fragile.",
+            "In her job she was used to dealing with actors’ fragile egos.",
+            "fragile habitats threatened by pollution"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 3,
+          "text": "not strong and likely to become ill",
+          "cefr": "C1",
+          "examples": [
+            "Her father is now 86 and in fragile health.",
+            "I'm feeling a bit fragile after last night (= not well, perhaps because of drinking too much alcohol)."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "5490764aaf63d022",
+      "word": "deny",
+      "pos": "verb",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to say that something is not true",
+          "cefr": "B2",
+          "examples": [
+            "to deny an allegation/a charge/an accusation",
+            "He has denied any involvement in the incident.",
+            "The company strongly denies wrongdoing.",
+            "to vehemently/strenuously/categorically deny something",
+            "A spokesperson refused to either confirm or deny the reports."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to refuse to admit or accept something",
+          "cefr": "B2",
+          "examples": [
+            "She denied all knowledge of the incident.",
+            "The department denies responsibility for what occurred.",
+            "an anti-environmentalist campaign group that denies climate change"
+          ]
+        }
+      ],
+      "current_score": 0.5333333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "b94853cdd198c95f",
+      "word": "arise",
+      "pos": "verb",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to happen; to start to exist",
+          "cefr": "B2",
+          "examples": [
+            "An opportunity arose to work in the United States.",
+            "Questions naturally arose as to who was responsible.",
+            "A serious problem can arise if the heart stops pumping effectively.",
+            "We only use the car when the need arises (= when it is necessary).",
+            "This issue arose as an unintended consequence of the Act."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to happen as a result of a particular situation",
+          "cefr": "B2",
+          "examples": [
+            "injuries arising out of a road accident",
+            "Emotional or mental problems can arise from a physical cause.",
+            "Are there any matters arising from the minutes of the last meeting?"
+          ]
+        }
+      ],
+      "current_score": 0.5333333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "bbd98addc554860f",
+      "word": "ideology",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a set of ideas that an economic or political system is based on",
+          "cefr": "C1",
+          "examples": [
+            "Marxist/capitalist ideology"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a set of beliefs, especially one held by a particular group, that influences the way people behave",
+          "cefr": "C1",
+          "examples": [
+            "the ideology of gender roles",
+            "alternative ideologies"
+          ]
+        }
+      ],
+      "current_score": 0.5125,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "179490906d7f6db6",
+      "word": "danger",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the possibility of something happening that will injure, harm or kill somebody, or damage or destroy something",
+          "cefr": "A2",
+          "examples": [
+            "Danger! Keep Out!",
+            "Firefighters face danger every day.",
+            "Children's lives are in danger every time they cross this road.",
+            "in grave/mortal danger",
+            "They found themselves in grave danger."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the possibility of something bad or unpleasant happening",
+          "cefr": "A2",
+          "examples": [
+            "There is no danger of a bush fire now.",
+            "They reminded residents of the potential dangers of living so near an active volcano.",
+            "‘Nicky won't find out, will she?’ ‘Oh, no, there's no danger of that.’",
+            "The building is in danger of collapsing.",
+            "How many people are in danger of losing their jobs?"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a person or thing that may cause damage, or harm somebody",
+          "cefr": "A2",
+          "examples": [
+            "There are many hidden dangers for small children in the home.",
+            "Smoking is a serious danger to health.",
+            "Police said the man was a danger to the public."
+          ]
+        }
+      ],
+      "current_score": 0.5272727272727273,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "4dc17065b797f142",
+      "word": "process",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a series of things that are done in order to achieve a particular result",
+          "cefr": "A2",
+          "examples": [
+            "the consultation/planning process",
+            "Each time we have to go through the whole decision-making process again.",
+            "Repeat this process until the entire area is tiled.",
+            "I'm afraid getting things changed will be a slow process.",
+            "Getting divorced was a long and painful (= difficult) process for him."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a series of things that happen, especially ones that result in natural changes",
+          "cefr": "A2",
+          "examples": [
+            "It's a normal part of the learning process.",
+            "The drug has been found to significantly speed up the healing process.",
+            "Tiny crystals that form naturally in the cheese during the ageing process to give it a delicate crunchy texture.",
+            "Everything is in a process of change."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a method of doing or making something, especially one that is used in industry",
+          "cefr": "A2",
+          "examples": [
+            "manufacturing processes",
+            "She is involved in the production process from start to finish.",
+            "a new process for rustproofing car bodies"
+          ]
+        }
+      ],
+      "current_score": 0.5316666666666667,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "2747da5f846b91c0",
+      "word": "exploit",
+      "pos": "verb",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "to treat a person or situation as an opportunity to gain an advantage for yourself",
+          "cefr": "B2",
+          "examples": [
+            "He exploited his father's name to get himself a job.",
+            "She realized that her youth and inexperience were being exploited.",
+            "The opposition parties will always exploit government problems to their own advantage."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "to treat somebody unfairly by making them work and not giving them much in return",
+          "cefr": "B2",
+          "examples": [
+            "What is being done to stop employers from exploiting young people?",
+            "The workers are ruthlessly exploited by their employers."
+          ]
+        }
+      ],
+      "current_score": 0.5142857142857142,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "4eaa13e7ae112595",
+      "word": "tin",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a metal container in which food is sold; the contents of one of these containers",
+          "cefr": "B1",
+          "examples": [
+            "Open the tin and drain the tuna.",
+            "a tin of beans/soup",
+            "Next, add two tins of tomatoes.",
+            "a sardine tin"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a metal container with a lid (= cover), in the shape of a cylinder, in which paint, glue, etc. is sold and stored; the contents of one of these containers",
+          "cefr": "B1",
+          "examples": [
+            "a tin of varnish",
+            "The bedroom needed three tins of paint (= in order to paint it).",
+            "a paint tin"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 3,
+          "text": "a metal container used for cooking food in",
+          "cefr": "B1",
+          "examples": [
+            "a cake/loaf tin"
+          ]
+        }
+      ],
+      "current_score": 0.5517647058823529,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "0f2890c2eb629b85",
+      "word": "storm",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "very bad weather with strong winds and rain, and often thunder and lightning",
+          "cefr": "A2",
+          "examples": [
+            "fierce/heavy/severe/violent storms",
+            "Winter storms swept the coasts.",
+            "Her home was hit by two tropical storms.",
+            "A few minutes later the storm broke (= began).",
+            "I think we're in for a storm (= going to have one)."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "very bad weather of the type mentioned",
+          "cefr": "A2",
+          "examples": [
+            "She had to brave an ice storm to get to the interview."
+          ]
+        }
+      ],
+      "current_score": 0.5545454545454546,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "aa88cd0f78068324",
+      "word": "sympathetic",
+      "pos": "adjective",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "showing that you approve of somebody/something or that you share their views and are willing to support them",
+          "cefr": "C1",
+          "examples": [
+            "He was speaking to a highly sympathetic audience.",
+            "to be sympathetic to the party’s aims",
+            "Russian newspapers are largely sympathetic to the president."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "easy to like",
+          "cefr": "C1",
+          "examples": [
+            "a sympathetic character in a novel",
+            "I don't find her a very sympathetic person.",
+            "The character's faults actually make him more sympathetic."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "499b9a9ce4bfdf35",
+      "word": "service",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a system that provides something that the public needs, organized by the government or a private company",
+          "cefr": "A2",
+          "examples": [
+            "the ambulance/bus/postal service",
+            "The government aims to improve public services, especially education.",
+            "Essential services (= the supply of water, gas, electricity) will be maintained.",
+            "Councillors have called for better provision of services for young people.",
+            "The charity provides a vital service to the local community."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "an organization or a company that provides something for the public or does something for the government",
+          "cefr": "A2",
+          "examples": [
+            "the prison service",
+            "the BBC World Service",
+            "the Foreign Service"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a business whose work involves doing something for customers but not producing goods; the work that such a business does",
+          "cefr": "A2",
+          "examples": [
+            "financial services",
+            "the development of new goods and services",
+            "Smith's Catering Services (= a company) offers the best value.",
+            "We guarantee (an) excellent service.",
+            "We aim to provide a high-quality service."
+          ]
+        }
+      ],
+      "current_score": 0.5571428571428572,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "7da54e6dadfadacc",
+      "word": "subtle",
+      "pos": "adjective",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "not very obvious or easy to notice",
+          "cefr": "C1",
+          "examples": [
+            "subtle colours/flavours/smells, etc.",
+            "There are subtle differences between the two versions.",
+            "The fragrance is a subtle blend of jasmine and sandalwood.",
+            "She's been dropping subtle hints about what she'd like as a present."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "behaving or organized in a clever way, and using indirect methods, in order to achieve something",
+          "cefr": "C1",
+          "examples": [
+            "I decided to try a more subtle approach.",
+            "a subtle plan",
+            "a subtle use of lighting in the play"
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "a0556f59cf7ff2c9",
+      "word": "classification",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the act or process of putting people or things into a group or class (= of classifying them)",
+          "cefr": "C1",
+          "examples": [
+            "a style of music that defies classification (= is like no other)"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a group, class, division, etc. into which somebody or something is put",
+          "cefr": "C1",
+          "examples": [
+            "a document with the security classification ‘confidential’",
+            "The material was put into the highest security classification.",
+            "These messages could be said to fall under the classification of ‘abuse’.",
+            "Electric bikes are in the same classification as mopeds.",
+            "The classification ‘science’ covers a great many different subjects."
+          ]
+        }
+      ],
+      "current_score": 0.5428571428571428,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "3ea520b12c8552ad",
+      "word": "prosecutor",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a public official who charges somebody officially with a crime and prosecutes them in court",
+          "cefr": "C1",
+          "examples": [
+            "the public/state prosecutor"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a lawyer who leads the case against a defendant in court",
+          "cefr": "C1",
+          "examples": [
+            "The prosecutor rose to give the opening address."
+          ]
+        }
+      ],
+      "current_score": 0.5153846153846153,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "f7dc98d86a54ba21",
+      "word": "therapy",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the treatment of a physical problem or an illness",
+          "cefr": "B2",
+          "examples": [
+            "He is receiving therapy for cancer.",
+            "Most leukaemia patients undergo some sort of drug therapy (= treatment using drugs).",
+            "alternative/complementary therapies (= treatments that do not use traditional drugs)",
+            "new cancer therapies",
+            "They recommend exercise therapy for patients with chronic back pain."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the treatment of problems with somebody's mental health by talking with them",
+          "cefr": "B2",
+          "examples": [
+            "She's in therapy.",
+            "I went into therapy because my doctor suggested it.",
+            "the use of hypnosis as a form of therapy",
+            "a therapy group/session"
+          ]
+        }
+      ],
+      "current_score": 0.5222222222222223,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "218f18809ba7ae5c",
+      "word": "alcohol",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "drinks such as beer, wine, etc. that can make people drunk",
+          "cefr": "B1",
+          "examples": [
+            "He never drinks alcohol.",
+            "alcohol abuse/use/dependence",
+            "the dangers of excessive alcohol consumption",
+            "Alcohol should only be consumed in moderation.",
+            "Licences to sell alcohol are granted by local councils."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the clear liquid that is found in drinks such as beer, wine, etc. and is used in medicines, cleaning products, etc.",
+          "cefr": "B1",
+          "examples": [
+            "Wine contains about 10% alcohol.",
+            "The food and drink industry has responded to the demand for low- and no-alcohol drinks.",
+            "levels of alcohol in the blood",
+            "She was arrested for driving under the influence of alcohol.",
+            "He pleaded guilty to driving with excess alcohol."
+          ]
+        }
+      ],
+      "current_score": 0.5666666666666667,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "7a51df846f14928e",
+      "word": "audience",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the group of people who have gathered to watch or listen to something (a play, concert, somebody speaking, etc.)",
+          "cefr": "A2",
+          "examples": [
+            "The audience was/were clapping for 10 minutes.",
+            "The debate was televised in front of a live audience.",
+            "an audience of 10 000",
+            "Audience members voted on their favorite presentations.",
+            "We encourage audience participation during our show."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a number of people or a particular group of people who watch, read, or listen to the same thing",
+          "cefr": "A2",
+          "examples": [
+            "TV/television/cinema/movie audiences",
+            "His book reached an even wider audience when it was made into a movie.",
+            "This book will appeal to a broad audience.",
+            "She has generated a massive online audience since uploading her first clip three years ago.",
+            "The target audience for this advertisement was mainly teenagers."
+          ]
+        }
+      ],
+      "current_score": 0.55,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "3ce942a43396978b",
+      "word": "procedure",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a way of doing something, especially the usual or correct way",
+          "cefr": "B2",
+          "examples": [
+            "emergency/safety/disciplinary procedures",
+            "Making a complaint is quite a simple procedure.",
+            "The school in this case did not follow the correct procedure.",
+            "to follow normal/standard/the proper procedure",
+            "To ensure high quality, all products go through rigorous testing procedures."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a medical operation",
+          "cefr": "B2",
+          "examples": [
+            "a routine surgical procedure",
+            "to perform/undergo a procedure"
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "13498cea6004795f",
+      "word": "ban",
+      "pos": "verb",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to decide or say officially that something is not allowed",
+          "cefr": "B1",
+          "examples": [
+            "This law bans the use of dangerous pesticides.",
+            "a list of banned substances",
+            "The use of these chemicals in homes was banned outright by the government in 2000.",
+            "a campaign to ban sugary drinks from schools"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to order somebody not to do something, go somewhere, etc., especially officially",
+          "cefr": "B1",
+          "examples": [
+            "He was banned from the meeting.",
+            "She was banned from the road for ten months for drinking and driving.",
+            "She's been banned from leaving the country while the allegations are investigated.",
+            "He was banned from driving for six months.",
+            "The sprinter has been banned for life after failing a drugs test."
+          ]
+        }
+      ],
+      "current_score": 0.54,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "49e29411459626ff",
+      "word": "parking",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the act of stopping a vehicle at a place and leaving it there for a period of time",
+          "cefr": "A2",
+          "examples": [
+            "There is no parking here between 9 a.m. and 6 p.m.",
+            "I managed to find a parking space.",
+            "I got there early to grab a parking spot.",
+            "I pulled the car over into a parking bay.",
+            "a parking fine (= for parking illegally)"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a space or an area for leaving vehicles",
+          "cefr": "A2",
+          "examples": [
+            "The hotel is centrally situated with ample free parking.",
+            "parking for 300 cars",
+            "There is off-street parking at the front of the house.",
+            "The town has free on-street parking.",
+            "The public did not vote for increased car parking charges."
+          ]
+        }
+      ],
+      "current_score": 0.5181818181818182,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "16bb0a558b776242",
+      "word": "storage",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the process of keeping something in a particular place until it is needed; the space where things can be kept",
+          "cefr": "C1",
+          "examples": [
+            "tables that fold flat for storage",
+            "There's a lot of storage space in the loft.",
+            "food storage facilities",
+            "We need more storage now."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the process of keeping information, etc. on a computer; the way it is kept",
+          "cefr": "C1",
+          "examples": [
+            "the storage and retrieval of information",
+            "data storage"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "the process of paying to keep furniture, etc. in a special building until you want it",
+          "cefr": "C1",
+          "examples": [
+            "When we moved we had to put our furniture in storage for a while."
+          ]
+        }
+      ],
+      "current_score": 0.5357142857142857,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "3baec4a57c9f2fd5",
+      "word": "pack",
+      "pos": "verb",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "to put clothes, etc. into a bag in preparation for a trip away from home",
+          "cefr": "A2",
+          "examples": [
+            "I haven't packed yet.",
+            "I have to start packing for my trip.",
+            "I haven't packed my suitcase yet.",
+            "I packed my bags and left.",
+            "Did you pack the camera?"
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "to put something into a container so that it can be stored, transported or sold",
+          "cefr": "A2",
+          "examples": [
+            "The pottery was packed in boxes and shipped to the US.",
+            "I carefully packed up the gifts.",
+            "Ryan busied himself packing everything up into bags.",
+            "He found a part-time job packing eggs."
+          ]
+        }
+      ],
+      "current_score": 0.5266666666666666,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "ea3334bd2726bf87",
+      "word": "afraid",
+      "pos": "adjective",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "feeling fear; frightened because you think that you might be hurt or suffer",
+          "cefr": "A1",
+          "examples": [
+            "Don't be afraid.",
+            "It's all over. There's nothing to be afraid of now.",
+            "He had always been afraid of dogs.",
+            "They know I'm afraid of heights.",
+            "Are you afraid of spiders?"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "worried about what might happen",
+          "cefr": "A1",
+          "examples": [
+            "She was afraid of upsetting her parents.",
+            "He was afraid of making a fool of himself.",
+            "Don't be afraid to ask if you don't understand.",
+            "She certainly isn't afraid to speak her mind.",
+            "We were afraid (that) we were going to capsize the boat."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "worried or frightened that something unpleasant, dangerous, etc. will happen to a particular person or thing",
+          "cefr": "A1",
+          "examples": [
+            "I'm not afraid for me, but for the baby.",
+            "They had already fired three people and he was afraid for his job.",
+            "I am very afraid for their safety.",
+            "I was afraid for my life."
+          ]
+        }
+      ],
+      "current_score": 0.5181818181818182,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "84034080bd8d816c",
+      "word": "requirement",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "something that you need or want",
+          "cefr": "B2",
+          "examples": [
+            "the basic requirements of life",
+            "a software solution to meet your requirements",
+            "All products can be customized to suit your specific requirements.",
+            "Our immediate requirement is extra staff.",
+            "These goods are surplus to requirements (= more than we need)."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "something that you must have in order to do something else",
+          "cefr": "B2",
+          "examples": [
+            "to meet/fulfil/satisfy the requirements",
+            "What is the minimum entry requirement for this course?",
+            "Banks now face stricter regulatory requirements."
+          ]
+        }
+      ],
+      "current_score": 0.5333333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "9b6c69c7169def70",
+      "word": "invasion",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the fact of a large number of people or things arriving somewhere, especially people or things that are unpleasant",
+          "cefr": "C1",
+          "examples": [
+            "the annual tourist invasion",
+            "Farmers are struggling to cope with an invasion of slugs.",
+            "Robberies and home invasions are grim facts of daily life."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "an act or a process that affects somebody/something in a way that is not welcome",
+          "cefr": "C1",
+          "examples": [
+            "The singer described the photographs of her as an invasion of privacy."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "8db3009c7fbb654c",
+      "word": "stranger",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a person that you do not know",
+          "cefr": "B1",
+          "examples": [
+            "There was a complete stranger sitting at my desk.",
+            "They got on well together although they were total strangers.",
+            "Why should a perfect (= complete) stranger ever help me out?",
+            "We've told our daughter not to speak to strangers.",
+            "She remained a stranger to me."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a person who is in a place that they have not been in before",
+          "cefr": "B1",
+          "examples": [
+            "Sorry, I don't know where the bank is. I'm a stranger here myself.",
+            "He must have been a stranger to the town."
+          ]
+        }
+      ],
+      "current_score": 0.55,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "94655080a303322b",
+      "word": "disappear",
+      "pos": "verb",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to become impossible to see",
+          "cefr": "A2",
+          "examples": [
+            "With that, Matt promptly disappeared.",
+            "The mirror made the ceiling seem to disappear.",
+            "The plane disappeared behind a cloud.",
+            "Lisa watched until the train disappeared from view.",
+            "Lucy watched his tall figure disappear into the cafe."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to stop existing",
+          "cefr": "A2",
+          "examples": [
+            "Her nervousness quickly disappeared once she was on stage.",
+            "The problem won't just disappear.",
+            "Our countryside is disappearing at an alarming rate.",
+            "Wildlife is fast disappearing from our countryside.",
+            "These fish have virtually disappeared from their traditional waters."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "to be lost or impossible to find",
+          "cefr": "A2",
+          "examples": [
+            "I can never find a pen in this house. They disappear as soon as I buy them.",
+            "Then one day he simply disappeared.",
+            "The plane mysteriously disappeared over the Indian Ocean.",
+            "The child disappeared from his home some time after four."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "9c2edd534ed6b075",
+      "word": "potent",
+      "pos": "adjective",
+      "headword_cefr": null,
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "having a strong effect on your body or mind",
+          "cefr": null,
+          "examples": [
+            "a potent drug",
+            "a very potent alcoholic brew",
+            "a potent argument",
+            "That chilli sauce is pretty potent stuff."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "powerful",
+          "cefr": null,
+          "examples": [
+            "a potent force"
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "6e94d513a320df26",
+      "word": "sheet",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a flat thin piece of any material, normally square or rectangular",
+          "cefr": "B1",
+          "examples": [
+            "a sheet of glass/plastic/plywood/steel",
+            "sheet metal (= metal that has been made into thin sheets)"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 3,
+          "text": "a wide flat area of something, covering the surface of something else",
+          "cefr": "B1",
+          "examples": [
+            "The road was covered with a sheet of ice."
+          ]
+        }
+      ],
+      "current_score": 0.5142857142857142,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "e6793efacca75b59",
+      "word": "fit",
+      "pos": "verb",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 2,
+          "def_idx": 0,
+          "text": "to be the right shape and size for somebody/something",
+          "cefr": "A2",
+          "examples": [
+            "I tried the dress on but it didn't fit.",
+            "That jacket fits well.",
+            "My shoes fit perfectly.",
+            "a close-fitting dress",
+            "I can't find clothes to fit me."
+          ]
+        },
+        {
+          "pd_idx": 2,
+          "def_idx": 1,
+          "text": "to be of the right size, type or number to go somewhere",
+          "cefr": "A2",
+          "examples": [
+            "I'd like to have a desk in the room but it won't fit.",
+            "This device is small enough to fit in a pocket.",
+            "His arms fitted snugly around me."
+          ]
+        }
+      ],
+      "current_score": 0.55,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "cf4090c72b2b7bc9",
+      "word": "politics",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "matters connected with getting or using power within a particular group or organization",
+          "cefr": "B2",
+          "examples": [
+            "I don't want to get involved in office politics.",
+            "the internal politics of the legal profession",
+            "racial/gender/sexual politics (= connected with relationships of power between different groups in society)",
+            "the politics of identity/race/gender",
+            "the politics of fear/envy/division/hate (= when people are influenced by fear, envy, etc.)"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a person’s political views or beliefs",
+          "cefr": "B2",
+          "examples": [
+            "His politics are extreme."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "c679f43fb2cf922c",
+      "word": "goods",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "things that are produced to be sold",
+          "cefr": "B1",
+          "examples": [
+            "to produce/buy/sell goods",
+            "manufactured/imported goods",
+            "luxury goods",
+            "electrical/sporting goods",
+            "cheap/expensive goods"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "possessions that can be moved",
+          "cefr": "B1",
+          "examples": [
+            "He was accused of handling stolen goods.",
+            "In 1872 Ann loaded her five children and her household goods onto a wagon and travelled north.",
+            "The plastic bag contained all his worldly goods (= everything he owned)."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "a6f7d1afa789349b",
+      "word": "neighbourhood",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a district or an area of a town; the people who live there",
+          "cefr": "B1",
+          "examples": [
+            "We grew up in the same neighbourhood.",
+            "a poor/quiet/residential neighbourhood",
+            "an old working-class neighbourhood",
+            "Manhattan is divided into distinct neighborhoods.",
+            "the neighbourhood police"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the area that you are in or the area near a particular place",
+          "cefr": "B1",
+          "examples": [
+            "We searched the surrounding neighbourhood for the missing boy.",
+            "It was a car from outside the immediate neighbourhood.",
+            "Houses in the neighbourhood of Paris are extremely expensive."
+          ]
+        }
+      ],
+      "current_score": 0.5222222222222223,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "01ce389b60835609",
+      "word": "patrol",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the act of going to different parts of a building, an area, etc. to make sure that there is no trouble or crime",
+          "cefr": "C1",
+          "examples": [
+            "Security guards make regular patrols at night.",
+            "a police car on patrol"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a group of soldiers, vehicles, etc. that patrol an area",
+          "cefr": "C1",
+          "examples": [
+            "a naval/police patrol",
+            "a patrol car/boat"
+          ]
+        }
+      ],
+      "current_score": 0.525,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "69839534b7bb3817",
+      "word": "advise",
+      "pos": "verb",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to tell somebody what you think they should do in a particular situation",
+          "cefr": "B1",
+          "examples": [
+            "I would strongly advise against going out on your own.",
+            "They advised me against visiting the troubled south of the country.",
+            "The Foreign Office is advising Britons against all non-essential travel to the region.",
+            "They advised against the use of military force.",
+            "Her mother was away and couldn't advise her."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to give somebody help and information on a subject that you know a lot about",
+          "cefr": "B1",
+          "examples": [
+            "We employ an expert to advise on new technology.",
+            "The nurse will advise about getting out of bed, bathing, and diet.",
+            "She advises the government on environmental issues.",
+            "They can advise customers about safely using and storing pesticides.",
+            "The pharmacist will advise which medicines are safe to take."
+          ]
+        }
+      ],
+      "current_score": 0.5166666666666667,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "db48a5f68c1e1726",
+      "word": "crystal",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a small piece of a substance with many even sides, that is formed naturally when the substance becomes solid",
+          "cefr": "C1",
+          "examples": [
+            "ice/salt crystals"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a clear mineral, such as quartz, used in making jewellery and attractive objects",
+          "cefr": "C1",
+          "examples": [
+            "crystal earrings"
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "84b2edc2c13cd905",
+      "word": "sun",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the star that shines in the sky during the day and gives the earth heat and light",
+          "cefr": "A1",
+          "examples": [
+            "The sun was shining and birds were singing.",
+            "the sun’s rays",
+            "The sun rises highest in the sky during the summer.",
+            "the rising/setting sun",
+            "The sun was just setting."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the light and heat from the sun",
+          "cefr": "A1",
+          "examples": [
+            "the warmth of the afternoon sun",
+            "The sun was blazing hot.",
+            "This room gets the sun in the mornings.",
+            "We sat in the sun.",
+            "The harvested crop is dried in the hot Indian sun."
+          ]
+        }
+      ],
+      "current_score": 0.5363636363636364,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "c0a810d55637ee1c",
+      "word": "corridor",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a long narrow passage in a building, with doors that open into rooms on either side",
+          "cefr": "B2",
+          "examples": [
+            "His room is along the corridor."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 3,
+          "text": "a passage along the side of some railway trains, from which doors lead into separate compartments",
+          "cefr": "B2",
+          "examples": []
+        }
+      ],
+      "current_score": 0.5444444444444444,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "8406fcc74268ba4a",
+      "word": "acquisition",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the act of getting something, especially knowledge, a skill, etc.",
+          "cefr": "C1",
+          "examples": [
+            "theories of child language acquisition"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "something that somebody buys to add to what they already own, usually something valuable",
+          "cefr": "C1",
+          "examples": [
+            "His latest acquisition is a racehorse.",
+            "The money will be spent on acquisitions for the university library."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a company, piece of land, etc. bought by somebody, especially another company; the act of buying it",
+          "cefr": "C1",
+          "examples": [
+            "They have made acquisitions in several EU countries.",
+            "the acquisition of shares by employees",
+            "The group has announced its first overseas acquisition: a successful software company.",
+            "The company has just made another acquisition."
+          ]
+        }
+      ],
+      "current_score": 0.5130252100840336,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "ac5d25a28711dda6",
+      "word": "date",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 3,
+          "text": "an arrangement to meet somebody at a particular time",
+          "cefr": "A2",
+          "examples": [
+            "Call me next week and we'll try and make a date.",
+            "Next Friday? Fine—it's a date!"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 4,
+          "text": "a meeting that you have arranged with a boyfriend or girlfriend or with somebody who might become a boyfriend or girlfriend",
+          "cefr": "A2",
+          "examples": [
+            "I've got a date with Lucy tomorrow night.",
+            "We agreed to go out on a date.",
+            "Do you think I should ask him out on a date?",
+            "Paul's not coming. He's got a hot date (= an exciting one).",
+            "She's out on a date with her new boyfriend."
+          ]
+        }
+      ],
+      "current_score": 0.52,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "3467d9b9d3d45981",
+      "word": "rebel",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a person who fights against the government of their country",
+          "cefr": "C1",
+          "examples": [
+            "rebel forces",
+            "Armed rebels advanced towards the capital.",
+            "Some parts of the country fell into rebel hands."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a person who opposes somebody in authority over them within an organization, a political party, etc.",
+          "cefr": "C1",
+          "examples": [
+            "A number of Tory rebels are planning to vote against the government.",
+            "The Education Secretary has made further concessions to the back-bench rebels."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a person who does not like to obey rules or who does not follow generally accepted standards of behaviour, dress, etc.",
+          "cefr": "C1",
+          "examples": [
+            "I've always been the rebel of the family.",
+            "He was a rebel in his teens but he’s a respectable citizen these days."
+          ]
+        }
+      ],
+      "current_score": 0.5176691729323308,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "9d5790b760de57f4",
+      "word": "principal",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "the person who is in charge of a college or (in Scotland and Canada) a university",
+          "cefr": "C1",
+          "examples": [
+            "Peter Brown, principal of St John’s College"
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "a teacher who is in charge of a school",
+          "cefr": "C1",
+          "examples": [
+            "Principal Ray Smith",
+            "The regulations have been opposed by local high school principals."
+          ]
+        }
+      ],
+      "current_score": 0.525,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "69db871fc7c54dd8",
+      "word": "deficit",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the amount by which money spent or owed is greater than money earned in a particular period of time",
+          "cefr": "C1",
+          "examples": [
+            "a budget deficit",
+            "The trade balance has been in deficit for the past five years."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the amount by which something, especially an amount of money, is too small or smaller than something else",
+          "cefr": "C1",
+          "examples": [
+            "There's a deficit of $3 million in the total needed to complete the project.",
+            "The team has to come back from a 2–0 deficit in the first half."
+          ]
+        }
+      ],
+      "current_score": 0.5375,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "c75c6088683df349",
+      "word": "output",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the amount of something that a person, a machine or an organization produces",
+          "cefr": "B2",
+          "examples": [
+            "Manufacturing output has increased by 8 per cent."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the information, results, etc. produced by a computer",
+          "cefr": "B2",
+          "examples": [
+            "data output",
+            "an output device"
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "629d0aad08b938ff",
+      "word": "half",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "either of two equal parts into which something is or can be divided",
+          "cefr": "A1",
+          "examples": [
+            "two and a half kilos (= 2½)",
+            "One and a half hours are allowed for the exam.",
+            "An hour and a half is allowed for the exam.",
+            "in the first half of the 20th century",
+            "The second half of the book is more exciting."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "either of two periods of time into which a sports game, concert, etc. is divided",
+          "cefr": "A1",
+          "examples": [
+            "No goals were scored in the first half.",
+            "She played well in the second half of the match.",
+            "He made two superb saves in the first two minutes of the half.",
+            "We had a few chances to score in both halves."
+          ]
+        }
+      ],
+      "current_score": 0.5615384615384615,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "bd87d0d84141166f",
+      "word": "step",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "one of a series of things that you do in order to achieve something",
+          "cefr": "A2",
+          "examples": [
+            "We are taking steps to prevent pollution.",
+            "It's a big step giving up your job and moving halfway across the world.",
+            "a necessary/an important/a positive step",
+            "This was a first step towards a united Europe.",
+            "This won't solve the problem but it's a step in the right direction."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "one of a series of things that somebody does or that happen, which forms part of a process",
+          "cefr": "A2",
+          "examples": [
+            "Having completed the first stage, you can move on to step 2.",
+            "If you follow all the steps, nothing will go wrong.",
+            "I'd like to take this idea a step further.",
+            "This was a big step up (= to a better position) in his career.",
+            "I'll explain it to you step by step."
+          ]
+        }
+      ],
+      "current_score": 0.5545454545454546,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "5dec873fa0d4bd85",
+      "word": "capital",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "wealth or property that is owned by a business or a person and can be invested or used to start a business",
+          "cefr": "B2",
+          "examples": [
+            "share/investment/equity capital",
+            "He had various ideas on how to raise capital for the project.",
+            "a guide to investing capital in new markets",
+            "Our capital is all tied up in property.",
+            "capital investment (= money invested in a business)"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 3,
+          "text": "an amount of money that is invested or is used to start a business",
+          "cefr": "B2",
+          "examples": [
+            "to set up a business with a starting capital of £100 000"
+          ]
+        }
+      ],
+      "current_score": 0.5800000000000001,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "a29c13728968c431",
+      "word": "boat",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a vehicle (smaller than a ship) that travels on water, moved by oars, sails or a motor",
+          "cefr": "A1",
+          "examples": [
+            "a rowing/sailing boat",
+            "a fishing boat",
+            "You can take a boat trip along the coast.",
+            "The country intends to build a special fleet of patrol boats.",
+            "a rescue/pleasure/passenger boat"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "any ship",
+          "cefr": "A1",
+          "examples": [
+            "‘How are you going to France?’ ‘We're going by boat (= by ferry).’",
+            "The island is just a short boat ride from the mainland."
+          ]
+        }
+      ],
+      "current_score": 0.5181818181818182,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "799731c18c4fad9f",
+      "word": "designate",
+      "pos": "verb",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "to say officially that somebody/something has a particular character or name; to describe somebody/something in a particular way",
+          "cefr": "C1",
+          "examples": [
+            "This area has been designated (as) a National Park.",
+            "The school has been designated a specialist science academy.",
+            "Several pupils were designated as having moderate or severe learning difficulties.",
+            "a designated nature reserve",
+            "designated seats for the elderly"
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "to choose or name somebody for a particular job or position",
+          "cefr": "C1",
+          "examples": [
+            "The director is allowed to designate his/her successor.",
+            "Who has she designated (as) her deputy?",
+            "the man designated to succeed the president"
+          ]
+        }
+      ],
+      "current_score": 0.55,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "1f8a6c87a52b8a32",
+      "word": "support",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 4,
+          "text": "a thing that holds something and prevents it from falling",
+          "cefr": "B2",
+          "examples": [
+            "The supports under the bridge were starting to bend.",
+            "When my father died, Jim was a real support."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 5,
+          "text": "the act of holding something in position or preventing it from falling",
+          "cefr": "B2",
+          "examples": [
+            "She held on to his arm for support.",
+            "After the operation he couldn't walk without support.",
+            "A firmer mattress gives your back an improved level of support."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 6,
+          "text": "something you wear to hold an injured or weak part of your body in position",
+          "cefr": "B2",
+          "examples": [
+            "a knee/back support"
+          ]
+        }
+      ],
+      "current_score": 0.5453846153846154,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "854b28c1c33c8d32",
+      "word": "same",
+      "pos": "adjective",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "exactly the one or ones referred to or mentioned; not different",
+          "cefr": "A1",
+          "examples": [
+            "We have lived in the same house for twenty years.",
+            "Our children go to the same school as theirs.",
+            "She's still the same fun-loving person that I knew at college.",
+            "This one works in exactly the same way as the other.",
+            "They promise to meet again in the exact same place six months later."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "exactly like the one or ones referred to or mentioned",
+          "cefr": "A1",
+          "examples": [
+            "I bought the same car as yours (= another car of that type).",
+            "She was wearing the same dress that I had on.",
+            "The same thing happened to me last week.",
+            "Most parents tend to raise their children in much the same way they were raised",
+            "Other countries don't suffer from the same kinds of health problems we do."
+          ]
+        }
+      ],
+      "current_score": 0.6428571428571429,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "0b9b708898145451",
+      "word": "attend",
+      "pos": "verb",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to be present at an event",
+          "cefr": "A2",
+          "examples": [
+            "We'd like as many people as possible to attend.",
+            "The meeting was attended by 90% of shareholders.",
+            "to attend a wedding/funeral/service/ceremony",
+            "Everyone is welcome to attend the free event.",
+            "All members are requested to attend this meeting."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to go regularly to a place",
+          "cefr": "A2",
+          "examples": [
+            "Our children attend the same school.",
+            "Students are expected to attend class regularly.",
+            "How many people attend church every Sunday?",
+            "Your dentist will ask you to attend for regular check-ups.",
+            "The child was failing to attend regularly at the school."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "fa0bbb7b50e52245",
+      "word": "dry",
+      "pos": "adjective",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "not wet or sticky; without water or moisture",
+          "cefr": "A2",
+          "examples": [
+            "Is my shirt dry yet?",
+            "Store onions in a cool dry place.",
+            "I'm afraid this cake has turned out very dry.",
+            "Some plants grow better in dry soil.",
+            "When the paint is completely dry, apply another coat."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "with very little rain",
+          "cefr": "A2",
+          "examples": [
+            "weeks of hot, dry weather",
+            "the dry season",
+            "I hope it stays dry for our picnic.",
+            "There is every prospect of the weather remaining dry this week.",
+            "Rattlesnakes occur in the warmer, drier parts of North America."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "f4fd9119f3805e26",
+      "word": "mood",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the way you are feeling at a particular time",
+          "cefr": "B1",
+          "examples": [
+            "She's in a good mood today (= happy and friendly).",
+            "He's always in a bad mood (= unhappy, or angry and impatient).",
+            "to be in a foul/festive mood",
+            "Wait until he’s in a better mood before you ask him.",
+            "I'm just not in the mood for a party tonight."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "the way a group of people feel about something; the atmosphere in a place or among a group of people",
+          "cefr": "B1",
+          "examples": [
+            "The mood of the meeting was distinctly pessimistic.",
+            "The movie captures the mood of the interwar years perfectly.",
+            "He threw in some jokes to lighten the mood.",
+            "But the mood of the country has changed.",
+            "Haunting music greatly adds to the mood of the film."
+          ]
+        }
+      ],
+      "current_score": 0.5166666666666667,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "1d210d23b2a4f2f8",
+      "word": "listener",
+      "pos": "noun",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a person who listens",
+          "cefr": "A2",
+          "examples": [
+            "a good listener (= somebody who you can rely on to listen with attention or sympathy)",
+            "a sympathetic/willing listener",
+            "an attentive listener"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a person listening to a radio programme or podcast",
+          "cefr": "A2",
+          "examples": [
+            "radio listeners",
+            "Regular listeners will know this is the Year of Czech Music.",
+            "Listeners to Radio 4 have plenty to look forward to this week."
+          ]
+        }
+      ],
+      "current_score": 0.5333333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "e66a23262bbe7374",
+      "word": "ambiguous",
+      "pos": "adjective",
+      "headword_cefr": null,
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "that can be understood in more than one way; having different meanings",
+          "cefr": null,
+          "examples": [
+            "an ambiguous word/term/statement",
+            "Her account was deliberately ambiguous."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "not clearly stated or defined",
+          "cefr": null,
+          "examples": [
+            "His role has always been ambiguous."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "2ee0a54d54ab16f2",
+      "word": "intuitive",
+      "pos": "adjective",
+      "headword_cefr": null,
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "obtained by using your feelings rather than by considering the facts",
+          "cefr": null,
+          "examples": [
+            "He had an intuitive sense of what the reader wanted."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "able to understand something by using feelings rather than by considering the facts",
+          "cefr": null,
+          "examples": [
+            "She was an intuitive person, quickly understanding what people wanted and needed."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "easy to understand and to use",
+          "cefr": null,
+          "examples": []
+        }
+      ],
+      "current_score": 0.5690909090909091,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "25293dbca3e9c7aa",
+      "word": "secret",
+      "pos": "adjective",
+      "headword_cefr": "A2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "known about by only a few people; kept hidden from others",
+          "cefr": "A2",
+          "examples": [
+            "secret information/meetings/talks",
+            "They belong to an age-old secret society.",
+            "He tried to keep it secret from his family.",
+            "Details of the proposals remain secret.",
+            "a secret passage leading to the beach"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "used to describe actions and behaviour that you do not tell other people about",
+          "cefr": "A2",
+          "examples": [
+            "He's a secret drinker.",
+            "I didn't know you were a secret football fan.",
+            "her secret fears",
+            "Perhaps he has secret hopes that she'll go back to him."
+          ]
+        }
+      ],
+      "current_score": 0.5266666666666666,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "af53daf58a7a44c4",
+      "word": "agency",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a business or an organization that provides a particular service especially when representing other businesses or organizations",
+          "cefr": "B2",
+          "examples": [
+            "She works for an advertising agency.",
+            "He managed to find a job through an agency."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a government department that provides a particular service",
+          "cefr": "B2",
+          "examples": [
+            "law enforcement agencies",
+            "Some laboratories are operated by government agencies."
+          ]
+        }
+      ],
+      "current_score": 0.55,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "4b8782072f97993f",
+      "word": "sanction",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "an official order that limits trade, contact, etc. with a particular country, in order to make it do something, such as obeying international law",
+          "cefr": "C1",
+          "examples": [
+            "Trade sanctions were imposed against any country that refused to sign the agreement.",
+            "The economic sanctions have been lifted."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a course of action that can be used, if necessary, to make people obey a law or behave in a particular way",
+          "cefr": "C1",
+          "examples": [
+            "The ultimate sanction will be the closure of the restaurant.",
+            "We now have an effective sanction against the killing of whales."
+          ]
+        }
+      ],
+      "current_score": 0.5272727272727272,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "bd481d4733bea29f",
+      "word": "consistent",
+      "pos": "adjective",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "always behaving in the same way, or having the same opinions, standards, etc.",
+          "cefr": "B2",
+          "examples": [
+            "a consistent approach to the problem",
+            "a consistent pattern of behaviour",
+            "He has been Milan's most consistent player (= who plays well most often) this season.",
+            "She's not very consistent in the way she treats her children.",
+            "We must be consistent in applying the rules."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "happening in the same way and continuing for a period of time",
+          "cefr": "B2",
+          "examples": [
+            "We have had enough of the party's consistent failure to come up with any new policies.",
+            "There has been a pattern of consistent growth in the economy.",
+            "Defence spending levels have remained consistent.",
+            "The Sunday paper failed to sell its target of 30 000 copies a week on a consistent basis."
+          ]
+        }
+      ],
+      "current_score": 0.5333333333333333,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "138380a823e63979",
+      "word": "transform",
+      "pos": "verb",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "to change the form of something; to change in form",
+          "cefr": "B2",
+          "examples": [
+            "The photochemical reactions transform the light into electrical impulses.",
+            "Materials are transformed from their original state into other forms.",
+            "I am convinced that the electric power industry is transforming.",
+            "The way we work, play and communicate every day has completely transformed from a decade ago."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "to completely change the appearance or character of something/somebody, especially so that it is better; to completely change in appearance or character",
+          "cefr": "B2",
+          "examples": [
+            "A new colour scheme will transform your bedroom.",
+            "It was an event that would transform my life.",
+            "During the performance the artist transforms herself with the aid of make-up and a wig.",
+            "London's Docklands have been radically transformed over the last 20 years.",
+            "He seems to have been miraculously transformed into a first-class player."
+          ]
+        }
+      ],
+      "current_score": 0.5444444444444444,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "8176855d42c81e6b",
+      "word": "productive",
+      "pos": "adjective",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "making goods or growing crops, especially in large quantities",
+          "cefr": "C1",
+          "examples": [
+            "highly productive farming land",
+            "productive workers",
+            "The aim was to maximize the machine’s productive capacity.",
+            "The bush must be pruned to remain productive."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "doing or achieving a lot",
+          "cefr": "C1",
+          "examples": [
+            "a productive meeting",
+            "My time spent in the library was very productive."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "6d32f999dc196f6c",
+      "word": "mix",
+      "pos": "verb",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "if two or more substances or things mix or you mix them, they combine, usually in a way that means they cannot easily be separated",
+          "cefr": "B1",
+          "examples": [
+            "Oil and water do not mix.",
+            "Oil does not mix with water.",
+            "Grief mixed with fear and rage as the people surveyed the ruins of their homes.",
+            "Mix all the ingredients together in a bowl.",
+            "If you mix blue and yellow, you get green."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "to prepare something by combining two or more different substances",
+          "cefr": "B1",
+          "examples": [
+            "With this range of paints, you can mix your own colours.",
+            "Be sure to mix the solution properly .",
+            "Why don't you mix a cocktail for our guests?",
+            "Why don't you mix our guests a cocktail?"
+          ]
+        }
+      ],
+      "current_score": 0.5375,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "9606c8187ad94c21",
+      "word": "clinic",
+      "pos": "noun",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a building or part of a hospital where people can go for special medical treatment or advice",
+          "cefr": "B2",
+          "examples": [
+            "He was treated at the hospital's eye clinic.",
+            "The patient then returns to the outpatient clinic two weeks later."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a period of time during which doctors give special medical treatment or advice",
+          "cefr": "B2",
+          "examples": [
+            "The antenatal clinic is on Wednesdays.",
+            "Doctors held a special clinic to talk to worried parents after a child at the school died of meningitis."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 2,
+          "text": "a private hospital or one that treats health problems of a particular kind",
+          "cefr": "B2",
+          "examples": [
+            "He is being treated at the London clinic.",
+            "a rehabilitation clinic for people with alcoholism"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 3,
+          "text": "a building shared by a group of doctors who work together",
+          "cefr": "B2",
+          "examples": []
+        }
+      ],
+      "current_score": 0.5205128205128206,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "8560d7f84e2de4c8",
+      "word": "rise",
+      "pos": "noun",
+      "headword_cefr": "B1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "an increase in an amount, a number or a level",
+          "cefr": "B1",
+          "examples": [
+            "The industry is feeling the effects of recent price rises.",
+            "a tax rise",
+            "an interest rate rise",
+            "the rise and fall of daily temperatures",
+            "a rapid temperature rise"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "an increase in the money you are paid for the work you do",
+          "cefr": "B1",
+          "examples": [
+            "I'm going to ask for a rise.",
+            "He criticized the huge pay rises awarded to industry bosses.",
+            "Wage rises have been held at 1 per cent.",
+            "The union is demanding an across-the-board rise of 5 per cent."
+          ]
+        }
+      ],
+      "current_score": 0.5285714285714286,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "c0052f9b2d8c3719",
+      "word": "shame",
+      "pos": "verb",
+      "headword_cefr": "B2",
+      "senses": [
+        {
+          "pd_idx": 1,
+          "def_idx": 0,
+          "text": "to make somebody feel ashamed",
+          "cefr": null,
+          "examples": [
+            "His generosity shamed them all.",
+            "The people who did this all deserve to be publicly shamed."
+          ]
+        },
+        {
+          "pd_idx": 1,
+          "def_idx": 1,
+          "text": "to make somebody feel that they have lost honour or respect",
+          "cefr": null,
+          "examples": [
+            "You have shamed your family."
+          ]
+        }
+      ],
+      "current_score": 0.5857142857142857,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "446977afac946b89",
+      "word": "detention",
+      "pos": "noun",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "the state of being kept in a place, especially a prison, and prevented from leaving",
+          "cefr": "C1",
+          "examples": [
+            "They were sentenced to 12 months' detention in a young offender institution.",
+            "police powers of arrest and detention",
+            "allegations of torture and detention without trial",
+            "Prisoners have the right to challenge their detentions.",
+            "a detention camp"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the punishment of being kept at school for a time after other students have gone home",
+          "cefr": "C1",
+          "examples": [
+            "They can’t give me (a) detention for this."
+          ]
+        }
+      ],
+      "current_score": 0.5125,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "13d8f6068465f37f",
+      "word": "meal",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "an occasion when people eat food, especially breakfast, lunch or dinner",
+          "cefr": "A1",
+          "examples": [
+            "Try not to eat between meals.",
+            "Lunch is his main meal of the day.",
+            "to go out for a meal (= to go to a restaurant to have a meal)",
+            "What time would you like your evening meal?"
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "the food that is eaten at a meal",
+          "cefr": "A1",
+          "examples": [
+            "Enjoy your meal.",
+            "a three-course meal",
+            "They are learning to cook simple, healthy meals."
+          ]
+        }
+      ],
+      "current_score": 0.52,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "ea38c3682423cb68",
+      "word": "endless",
+      "pos": "adjective",
+      "headword_cefr": "C1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "very large in size or amount and seeming to have no end",
+          "cefr": "C1",
+          "examples": [
+            "endless patience",
+            "endless opportunities for making money",
+            "The possibilities are endless.",
+            "an endless list of things to do",
+            "We don't have an endless supply of money, you know."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "continuing for a long time and seeming to have no end",
+          "cefr": "C1",
+          "examples": [
+            "an endless round of parties and visits",
+            "The journey seemed endless."
+          ]
+        }
+      ],
+      "current_score": 0.5444444444444444,
+      "current_split_reason": null
+    },
+    {
+      "cluster_hash": "a0fa423c37129310",
+      "word": "child",
+      "pos": "noun",
+      "headword_cefr": "A1",
+      "senses": [
+        {
+          "pd_idx": 0,
+          "def_idx": 0,
+          "text": "a young human who is not yet an adult",
+          "cefr": "A1",
+          "examples": [
+            "a child of 3/a 3-year-old child",
+            "men, women and children",
+            "an organization that campaigns for the rights of the unborn child",
+            "The film is not suitable for young children.",
+            "I lived in London as a child."
+          ]
+        },
+        {
+          "pd_idx": 0,
+          "def_idx": 1,
+          "text": "a son or daughter of any age",
+          "cefr": "A1",
+          "examples": [
+            "They have three grown-up children.",
+            "All four of their adult children work in the family business.",
+            "They can't have children."
+          ]
+        }
+      ],
+      "current_score": 0.5,
+      "current_split_reason": null
+    }
+  ]
+}

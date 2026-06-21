@@ -1,0 +1,819 @@
+line_no,word,pos_list,n_senses,declared_cefr,source_oxford_badge,badge_match,src_cambridge_flag,src_oxford_flag,card_status,card_reason,tags
+8,uncertain,adjective,2,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,"1/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B1 [per-def])",Audio::Cambridge idioms Source::Oxford
+16,resources,noun,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+21,countermeasures,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+26,disconnected,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+28,narrative,noun,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B1 CEFR::oxford Oxford_3000 Source::Oxford
+30,evolved,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED OPAL_W Source::Oxford
+35,lineages,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+40,setbacks,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+45,domesticated,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge Source::Oxford
+54,concentrations,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+55,regulations,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+61,ambition,noun,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Oxford_3000 Source::Oxford
+62,stimulant,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+64,addictive,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+73,competitive,adjective,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Oxford_3000 Source::Oxford
+74,hyperfocus,verb,1,UNCLASSIFIED,,no,EdgeTTS,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+76,dehydrated,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+82,saturating,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+87,soullessly,verb,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+88,invading,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+94,extrapolated,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+96,shoddy,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+103,eliminated,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+104,estimates,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+105,evidence,noun,1,A2,A2,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::A2 CEFR::oxford idioms OPAL_W Oxford_3000 Source::Oxford
+109,harbored,verb,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+110,harnessing,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED idioms Source::Oxford
+112,monitors,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+116,teeming,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+122,primitive,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+132,embryo,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge idioms Source::Oxford
+134,unfiltered,adjective,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+145,convenient,adjective,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Oxford_3000 Source::Oxford
+148,glitch,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+149,eternal,adjective,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+152,carrying capacity,noun,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+155,devour,verb,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge idioms Source::Oxford
+158,blink of an eye,idiom,1,UNCLASSIFIED,,no,EdgeTTS,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+159,daunting,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+165,harbor,noun,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+172,burnout,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+180,intimacy,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+182,curated,adjective,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED idioms Source::Oxford
+184,currency,noun,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Oxford_3000 Source::Oxford
+196,heightened,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+198,relay,noun,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+199,dialogue,noun,2,A1,A1,yes,Cambridge,Oxford,mismatch,"1/2 senses failed: cefr-mismatch (deck=A1, source=B2 [per-def], source-badge=A1)",Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Oxford_3000 Source::Oxford
+202,affirm,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+205,wither,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+223,consolidation,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+232,logistical,adjective,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+240,plague,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge idioms Source::Oxford
+258,contrast,noun,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B1 CEFR::oxford OPAL_W Oxford_3000 Source::Oxford
+259,proportions,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED idioms OPAL_W Source::Oxford
+265,lateralized,adjective,1,UNCLASSIFIED,,no,EdgeTTS,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+279,slouching,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+284,ligaments,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+287,promote,verb,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED OPAL_W Oxford_3000 Source::Oxford
+288,vertebrae,noun,1,UNCLASSIFIED,,no,EdgeTTS,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+289,stacked,verb,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,3/3 senses failed: sense-text-not-in-source,Audio::Cambridge idioms Source::Oxford
+290,aligned,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+299,sabotage,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+303,anecdote,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B2 [per-def])",Audio::Cambridge Source::Oxford
+310,resilient,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+311,harvest,noun|verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+312,foraging,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+317,identify,verb,2,A2,A2,yes,Cambridge,Oxford,mismatch,"1/2 senses failed: cefr-mismatch (deck=A2, source=B1 [per-def], source-badge=A2)",Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED OPAL_W Oxford_3000 Source::Oxford
+318,paranoid,adjective,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+320,essential,adjective,2,B1,B1,yes,Cambridge,Oxford,mismatch,"1/2 senses failed: cefr-mismatch (deck=B1, source=B2 [per-def], source-badge=B1)",Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED OPAL_W Oxford_3000 Source::Oxford
+322,inconvenience,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+324,inherited,adjective,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+328,byproducts,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+331,pathways,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+339,dread,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+353,standards,noun,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+355,insecurity,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+356,lush,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+362,autopilot,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge idioms Source::Oxford
+368,designated,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+372,interwoven,adjective,1,UNCLASSIFIED,,no,EdgeTTS,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+391,bliss,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED idioms Source::Oxford
+393,essence,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+395,engaged,adjective,2,B1,B1,yes,Cambridge,Oxford,mismatch,"1/2 senses failed: cefr-mismatch (deck=B1, source=B2 [per-def], source-badge=B1)",Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Oxford_3000 Source::Oxford
+397,gouging,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+399,identity,noun,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED OPAL_W Oxford_3000 Source::Oxford
+401,chemistry,noun,1,A2,A2,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Oxford_3000 Source::Oxford
+402,extends,verb,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,3/3 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+404,sync,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: sense-text-not-in-source,Audio::Cambridge idioms Source::Oxford
+406,clunkiness,noun,1,UNCLASSIFIED,,no,EdgeTTS,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+407,survival,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+412,shunned,verb,1,UNCLASSIFIED,,no,EdgeTTS,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+415,dabbler,noun,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+417,tidy,adjective,1,A2,A2,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Oxford_3000 Source::Oxford
+420,meandering,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+421,zigzagging,verb,1,UNCLASSIFIED,,no,EdgeTTS,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+427,shortsighted,adjective,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+435,cosmetics,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+438,convulsions,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+444,billions,noun,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+447,greed,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+452,diminishing,adjective,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge idioms Source::Oxford
+455,untethered,adjective,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+456,destabilizing,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+465,invent,verb,1,A2,A2,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED OPAL_S Oxford_3000 Source::Oxford
+466,shifting,adjective,1,UNCLASSIFIED,,no,Cambridge,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED OPAL_W Source::Oxford
+468,aspiring,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+469,intellectual,noun,1,C1,B2,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=B2 [oxford-badge])",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+470,labor,noun,2,UNCLASSIFIED,B2,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B2 [per-def])",Audio::Cambridge idioms Source::Oxford
+472,justification,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+475,permission,noun,1,A2,A2,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Oxford_3000 Source::Oxford
+479,injustice,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+493,randomized,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED OPAL_W Source::Oxford
+500,bullet,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_3000 Source::Oxford
+517,have the floor,phrase,1,UNCLASSIFIED,,no,EdgeTTS,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+519,recess,noun,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+524,chapel,noun,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+525,consist,verb,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED Source::Oxford
+527,indeed,verb,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED idioms OPAL_W Oxford_3000 Source::Oxford
+528,typically,verb,1,B1,B1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::oxford CEFR::UNCLASSIFIED OPAL_W Oxford_3000 Source::Oxford
+541,pace,noun|verb,1,B2,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_3000 Source::Oxford
+543,pension,noun,1,B2,,no,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_3000 Source::Oxford
+553,tale,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_3000 Source::Oxford
+574,goodness,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+584,jury,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+637,arm,verb,2,C1,A1,no,Oxford,Oxford,mismatch,"1/2 senses failed: cefr-mismatch (deck=C1, source=A1 [oxford-badge])",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_3000 Source::Oxford
+651,attendance,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+659,bail,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+661,banner,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+666,behalf,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,3/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+676,boundary,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+688,cease,verb,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+713,contradiction,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+725,bass,noun,3,C1,,no,Oxford,Oxford,mismatch,3/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+738,bow,noun|verb,3,C1,,no,Oxford,Oxford,mismatch,3/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+747,canvas,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+756,caution,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+779,fairness,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+781,fate,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+805,forth,adverb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+814,funeral,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+821,glance,noun|verb,3,C1,C1,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+827,grave,adjective|noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge idioms Source::Oxford
+828,grave,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge idioms Source::Oxford
+832,grin,noun|verb,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+842,halt,noun|verb,3,C1,C1,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+859,hook,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,"2/3 senses failed: cefr-mismatch (deck=C1, source=B2 [per-def], source-badge=C1); sense-text-not-in-source",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+861,horizon,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+863,hostage,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+873,ignorance,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+909,insult,noun|verb,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+918,intent,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+922,interference,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+936,isolation,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+947,lap,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+964,lesser,adjective,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+970,license,verb,1,C1,B2,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=B2 [oxford-badge])",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+984,loom,verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+992,mainland,noun,1,C1,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=UNCLASSIFIED [none])",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+1009,meantime,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1018,mercy,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1021,merge,verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1025,midst,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1065,noon,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1118,peculiar,adjective,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1119,persist,verb,1,C1,C1,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+1127,pipeline,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1132,pledge,noun|verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+1137,pond,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1151,prejudice,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1155,premium,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1167,prevention,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+1168,prey,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1174,proceedings,noun,3,C1,,no,Oxford,Oxford,mismatch,3/3 senses failed: word-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+1198,pump,noun|verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1203,radar,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1205,rage,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1214,realm,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1219,recount,verb,1,C1,,no,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+1282,sake,noun,3,C1,,no,Oxford,Oxford,mismatch,3/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1284,say,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_3000 Source::Oxford
+1311,shoot,noun,3,C1,B1,no,Oxford,Oxford,mismatch,"1/3 senses failed: cefr-mismatch (deck=C1, source=B1 [oxford-badge])",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_3000 Source::Oxford
+1312,shrink,verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1352,stab,verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1356,standing,adjective,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1368,striking,adjective,2,B2,C1,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def])",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+1369,strip,noun|verb,2,UNCLASSIFIED,C1,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def]); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge idioms Source::Oxford
+1370,strip,verb,3,UNCLASSIFIED,C1,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge idioms Source::Oxford
+1410,sword,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1418,tempt,verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1469,troubled,adjective,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1487,vanish,verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1520,widen,verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1537,forbid,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1545,cue,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1548,differ,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+1549,devote,verb,1,B2,B2,yes,Cambridge,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford Source::Oxford
+1573,palm,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1575,choir,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1584,coherent,adjective,2,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::AWL
+1585,compatible,adjective,2,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::AWL
+1587,conform,verb,2,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::AWL
+1589,contradict,verb,2,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+1590,convene,verb,2,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::AWL
+1592,criteria,noun,1,UNCLASSIFIED,,no,EdgeTTS,AWL,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::AWL
+1595,depress,verb,1,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::AWL
+1598,discriminate,verb,1,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::AWL
+1600,erode,verb,1,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::AWL
+1604,implicate,verb,3,UNCLASSIFIED,,no,Oxford,AWL,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge idioms Source::AWL
+1605,implicit,adjective,1,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge OPAL_W Source::AWL
+1611,manual,noun,1,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::AWL
+1612,mediate,verb,2,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge OPAL_W Source::AWL
+1613,migrate,verb,1,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge OPAL_W Source::AWL
+1622,refine,verb,1,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::AWL
+1625,rigid,adjective,1,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::AWL
+1627,statistics,noun,1,UNCLASSIFIED,,no,EdgeTTS,AWL,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED OPAL_W Source::AWL
+1630,bat,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Oxford CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1631,hook,verb,3,B2,C1,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [oxford-badge])",Audio::Oxford CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1635,tackle,verb,2,B2,C1,no,Oxford,Oxford,mismatch,"1/2 senses failed: cefr-mismatch (deck=B2, source=C1 [oxford-badge])",Audio::Oxford CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+1637,trace,verb,3,B2,C1,no,Oxford,Oxford,mismatch,"1/3 senses failed: cefr-mismatch (deck=B2, source=C1 [oxford-badge])",Audio::Oxford CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+1639,reckon,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1642,absence,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+1647,abundance,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1656,accordance,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1665,accused,noun,1,C1,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+1709,apology,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1730,balloon,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1732,bargain,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1736,beside,preposition,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1738,bid,noun|verb,3,B2,,no,Oxford,Oxford,mismatch,3/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+1752,candle,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1766,cliff,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1771,collision,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1823,contempt,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1826,contention,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1829,contrary,adjective|noun,2,C1,,no,Oxford,Oxford,mismatch,2/2 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+1832,convenience,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1842,cop,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1857,counter (long flat surface),noun,3,B2,,no,Oxford,Oxford,mismatch,3/3 senses failed: word-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1858,counter (argue against),verb,2,C1,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1861,courtesy,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1864,craft,noun,3,B2,C1,no,Oxford,Oxford,mismatch,"1/3 senses failed: cefr-mismatch (deck=B2, source=C1 [oxford-badge])",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+1876,curiosity,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1884,dare,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1887,dawn,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1898,deed,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1900,default,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1917,depart,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1923,deposit,noun,3,B2,C1,no,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1950,dilemma,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1952,diminish,verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1968,discretion,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+1999,dose,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2011,duration,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2015,ease,noun|verb,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2025,ego,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2066,envelope,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2082,exception,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2107,fame,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2114,fool,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2130,gene,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2141,grave (for dead person),noun,3,C1,,no,Oxford,Oxford,mismatch,3/3 senses failed: word-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2142,grave (serious),adjective,1,C1,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2153,hence,adverb,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2156,highway,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2160,honesty,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2164,ID,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2203,lifetime,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2216,making,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2226,medal,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2236,motion,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2239,naked,adjective,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2242,necessity,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2271,panic,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2281,penalty,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2284,pity,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2288,precise,adjective,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2291,preference,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2304,psychological,adjective,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2316,rat,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2322,recognition,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2341,ridiculous,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2344,rob,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2380,spill,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2381,spite,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2386,sporting,adjective,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2387,starve,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2390,strictly,adverb,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2391,strip (long narrow piece),noun,3,C1,,no,Oxford,Oxford,mismatch,3/3 senses failed: word-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2392,strip (remove clothes/a layer),verb,3,C1,,no,Oxford,Oxford,mismatch,3/3 senses failed: word-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2407,terms,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,2/3 senses failed: sense-text-not-in-source,Audio::Oxford CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2420,thumb,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2422,tissue,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2459,weird,adjective,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2460,wellbeing,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Oxford Oxford_5000 Source::Oxford
+2461,wheat,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2470,worm,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,1/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2471,wrist,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2474,regulation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_3000 Source::Oxford
+2475,contagious,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2476,foundation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2477,foundation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2478,subjective,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B2 [per-def])",Audio::Cambridge OPAL_W Source::Oxford
+2479,suffering,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2480,vital,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_3000 Source::Oxford
+2481,immature,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B2 [per-def])",Audio::Cambridge Source::Oxford
+2482,resources,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+2483,disconnected,verb,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,3/3 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+2484,mutation,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2486,fatigue,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2487,domesticated,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2489,sustainable,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2490,regulations,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+2491,hallucination,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2492,concentrations,noun,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,3/3 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+2494,hostile,adjective,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2495,invading,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+2496,paradox,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2497,sustain,verb,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2498,eliminated,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+2499,eliminated,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+2500,hospitable,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2502,eliminate,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2503,embryo,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge idioms Source::Oxford
+2504,distinguish,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2505,monitors,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+2506,devour,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge idioms Source::Oxford
+2507,hypothesis,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2508,sophisticated,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2510,discipline,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_3000 Source::Oxford
+2511,validate,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge OPAL_W Source::Oxford
+2513,congruence,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2514,phenomenon,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_3000 Source::Oxford
+2516,poised,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2518,tension,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2519,contract,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_3000 Source::Oxford
+2520,resistance,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2521,stimulate,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2522,mechanism,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2523,leverage,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2525,deception,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2527,assumption,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2528,dominant,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2529,handicap,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2530,exhibit,noun|verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2531,bias,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2532,proportions,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED idioms OPAL_W Source::Oxford
+2533,proportions,noun,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,3/3 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED idioms OPAL_W Source::Oxford
+2536,agile,adjective,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2537,consistent,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_3000 Source::Oxford
+2538,sanctuary,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2539,sanctuary,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2540,restorative,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2541,stacked,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge idioms Source::Oxford
+2542,perception,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2543,reinforce,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2544,pathways,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+2548,anxiety,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2549,standards,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+2550,standards,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+2551,standards,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+2552,cascade,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2553,byproducts,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+2554,engage,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_3000 Source::Oxford
+2555,bond,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2556,bond,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2557,sync,noun,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: sense-text-not-in-source,Audio::Cambridge idioms Source::Oxford
+2558,extends,verb,3,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,3/3 senses failed: word-not-in-source,Audio::Cambridge OPAL_W Source::Oxford
+2559,inherited,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::EdgeTTS CEFR::UNCLASSIFIED Source::Oxford
+2560,pigment,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2561,toxicity,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2562,meandering,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED Source::Oxford
+2563,advocate,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2564,contaminate,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2566,labor,noun,1,UNCLASSIFIED,B2,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def], source-badge=B2)",Audio::Cambridge idioms Source::Oxford
+2567,labor,noun,2,UNCLASSIFIED,B2,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B2 [oxford-badge]); sense-text-not-in-source",Audio::Cambridge idioms Source::Oxford
+2568,extension,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2569,extension,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2570,billions,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge Source::Oxford
+2571,navigate,verb,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B2 [per-def])",Audio::Cambridge Source::Oxford
+2572,navigate,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [per-def])",Audio::Cambridge Source::Oxford
+2573,springboard,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2574,timeline,noun,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B2 [per-def])",Audio::Cambridge Source::Oxford
+2575,grace,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2576,breach,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2579,scramble,verb,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Source::Oxford
+2580,diminishing,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge idioms Source::Oxford
+2581,imply,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_3000 Source::Oxford
+2582,heel,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2583,nerve,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2584,pile,noun|verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2585,pitch,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2586,pitch,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2587,pupil,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_3000 Source::Oxford
+2588,shifting,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED OPAL_W Source::Oxford
+2589,shifting,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED OPAL_W Source::Oxford
+2590,shifting,adjective,2,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::UNCLASSIFIED OPAL_W Source::Oxford
+2591,comprehensive,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2592,assure,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2593,erupt,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2594,exceed,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2595,goodness,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2596,governor,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2597,exploit,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2598,integrate,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2599,index,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2600,index,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2601,inspector,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2602,infer,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2603,embrace,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2604,interpretation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2605,jury,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2606,miserable,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2607,margin,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2608,orchestra,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2609,perceive,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2610,precede,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2611,proceed,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2612,stroke,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2613,stroke,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2614,suspend,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2615,unfold,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2616,spare,verb,3,C1,B2,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=C1, source=B2 [oxford-badge]); sense-text-not-in-source",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2617,tap,noun|verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2618,archive,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2619,array,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2620,ash,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2621,banner,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2622,bail,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2623,backing,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2624,beam,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2625,boundary,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2626,composition,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2627,bay,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2628,bench,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2629,blade,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2630,bishop,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2631,bass,noun,1,C1,,no,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2632,bat,verb,3,C1,B2,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=C1, source=B2 [oxford-badge]); sense-text-not-in-source",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2633,bounce,verb,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2634,boom,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2635,buck,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2636,buffer,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2637,carve,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2638,bow,noun|verb,1,C1,,no,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2639,caution,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2640,charter,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2641,chamber,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2642,charm,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2643,faculty,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2644,faction,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2645,filter,noun|verb,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2646,footage,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2647,frustrated,adjective,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2648,franchise,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2649,fit,noun,1,C1,A2,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=B2 [per-def], source-badge=A2)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2650,frustration,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2651,grief,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2652,grip,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2653,gross,adjective,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2654,hail,verb,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2655,grasp,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2656,handling,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2657,halt,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2658,hook,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); sense-text-not-in-source",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2659,horn,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2660,indictment,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2661,induce,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2662,interference,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); sense-text-not-in-source",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2663,landmark,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=B2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2664,lap,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2665,legitimate,adjective,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2666,lobby,noun|verb,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2667,logic,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2668,line-up,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 phrasal_verbs Source::Oxford
+2669,loop,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2670,magnitude,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2671,maintenance,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2672,marginal,adjective,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2673,mature,adjective|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2674,mask,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2675,march,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2676,merit,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2677,ministry,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2678,mob,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2679,momentum,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2680,niche,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2681,nursery,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2682,outsider,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2683,pad,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=B2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2684,pad,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2685,partial,adjective,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2686,patron,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2687,patch,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2688,peculiar,adjective,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2689,peak,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2690,plead,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2691,pole,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2692,premier,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2693,probe,noun|verb,3,C1,C1,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2694,pop,verb,2,C1,A2,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=A2)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_3000 Source::Oxford
+2695,principal,noun,3,C1,B2,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=C1, source=B2 [oxford-badge])",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2696,protocol,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2697,pulse,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2698,rally,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2699,rape,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2700,ray,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2701,punch,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2702,pump,noun|verb,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2703,rejection,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2704,representation,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2705,render,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2706,retreat,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2707,revival,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2708,restoration,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2709,rip,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2710,sack,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2711,sanction,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2713,segment,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2714,settlement,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2715,screw,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2716,shed,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2717,shipping,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2718,shrink,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2719,sketch,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=B2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2720,slam,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2721,snap,verb,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2722,spam,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2723,spine,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2724,stake,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2725,span,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2726,strand,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2727,strain,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2728,stir,verb,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2729,spin,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2730,strip,noun|verb,2,UNCLASSIFIED,C1,no,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge idioms Source::Oxford
+2731,strip,noun|verb,3,UNCLASSIFIED,C1,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [oxford-badge]); no-per-sense-pos-in-deck; flat-matched; sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge idioms Source::Oxford
+2732,suburban,adjective,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2733,stumble,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2734,strip,verb,3,UNCLASSIFIED,C1,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C1 [oxford-badge])",Audio::Cambridge idioms Source::Oxford
+2735,suite,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2736,supplement,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2737,suspension,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2738,syndrome,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2739,tenure,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2740,terminate,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2742,tackle,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2743,swing,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2744,terminal,adjective,1,C1,B2,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=B2 [oxford-badge])",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2745,timber,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2746,toll,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2747,transcript,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2748,trauma,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2750,trio,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2751,total,verb,1,C1,B1,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=B1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_3000 Source::Oxford
+2752,utility,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2753,verse,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2754,warrior,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2755,weed,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2756,whip,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2757,wit,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2758,ward,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2759,colony,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2760,circuit,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2761,cue,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2762,dot,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2763,critically,adverb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2764,differ,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2765,dull,adjective,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2766,furious,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2767,fond,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2768,implication,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2769,incentive,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2770,stall,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2771,parade,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2772,offender,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2773,prompt,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2774,prompt,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2775,choir,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2776,commander,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2777,commander,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2785,migrate,verb,1,UNCLASSIFIED,,no,Oxford,AWL,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=B2 [per-def])",Audio::Cambridge OPAL_W Source::AWL
+2788,manual,noun,2,UNCLASSIFIED,,no,Oxford,AWL,mismatch,1/2 senses failed: sense-text-not-in-source,Audio::Cambridge Source::AWL
+2790,bat,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Oxford CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2791,intellectual,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Oxford CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2792,tackle,verb,3,B2,C1,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def])",Audio::Oxford CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2793,trace,verb,3,B2,C1,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def])",Audio::Oxford CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2794,terminal,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Oxford CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2795,trigger,verb,1,B2,C1,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=C1)",Audio::Oxford CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2796,hook,verb,1,B2,C1,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def])",Audio::Oxford CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2797,absorb,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2798,contract,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_3000 Source::Oxford
+2799,academy,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2800,accommodate,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2801,ally,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2802,ancestor,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2803,angel,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2804,apology,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2805,aside,adverb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2806,assign,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2807,assign,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2808,automatic,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2809,attachment,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2810,awkward,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2811,automatically,adverb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2812,barely,adverb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2813,blanket,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2814,bound,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2815,bid,noun|verb,1,B2,,no,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source; no-per-sense-pos-in-deck; flat-matched,Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2816,booking,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2817,cabin,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2818,canal,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2819,bug,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2820,certainty,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2821,casual,adjective,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2822,challenging,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2823,charming,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2824,cheek,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2825,clip,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2826,collision,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); sense-text-not-in-source",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2827,colonial,adjective,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2828,colourful,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2829,commissioner,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2830,compose,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2831,concrete,adjective|noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2832,configuration,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2833,confirmation,noun,2,C1,C1,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2834,concession,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2835,conservation,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2836,consumption,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2837,contempt,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2838,conventional,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2839,convention,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2840,coordinate,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2841,corporation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2842,copper,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2843,corridor,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2844,craft,noun,1,B2,C1,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2845,counter (long flat surface),noun,1,B2,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2846,coverage,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2847,crawl,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2848,crown,noun,3,C1,C1,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2849,cutting,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2850,crack,noun|verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2851,dare,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2852,deadly,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2853,dealer,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2854,deck,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2855,deck,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2856,default,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2857,demonstration,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2858,democracy,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2859,deed,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2860,dense,adjective,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2861,depression,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2862,depression,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2863,deposit,noun,3,B2,C1,no,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def])",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2864,deposit,noun,1,B2,C1,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2865,deputy,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2866,descent,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2867,dip,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2868,directory,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2869,disagreement,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2870,discharge,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2871,disorder,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2872,dismissal,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2873,disruption,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2874,dissolve,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2875,disrupt,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2876,distant,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2877,disturb,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2878,domain,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2879,donation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2880,dump,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2881,dynamic,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Oxford CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2882,economics,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2883,eligible,adjective,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2884,elementary,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2885,echo,noun|verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2886,elevate,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2887,embed,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2888,enact,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2889,empire,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2890,engagement,noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2891,envelope,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2892,execute,verb,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1)",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2893,exit,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2894,explosive,adjective|noun,1,C1,C1,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=C1, source=C2 [per-def], source-badge=C1); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::C1 CEFR::oxford Oxford_5000 Source::Oxford
+2895,exposure,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2896,extract,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2897,fabric,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2898,fabric,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2899,fantasy,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2900,flavour,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2901,formation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2902,fool,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2903,freely,adverb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2904,fulfil,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2905,gender,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2906,gesture,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2907,graphic,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2908,grave (serious),adjective,1,C1,,no,Oxford,Oxford,mismatch,1/1 senses failed: word-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2909,highway,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2910,hopefully,adverb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_S Oxford_5000 Source::Oxford
+2911,hunger,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2912,immune,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2913,icon,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2914,ink,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2915,inherit,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2916,interval,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2917,installation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2918,installation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2919,interact,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2920,invade,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2921,isolate,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2922,isolated,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2923,interaction,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2924,invasion,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2925,landing,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2926,ladder,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2927,lane,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2928,legend,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2929,lens,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2930,literary,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2931,literally,adverb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2932,litter,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2933,manufacture,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2934,mate,noun|verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2935,marker,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2936,mechanic,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2937,mechanical,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2938,mode,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2939,membership,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2940,modest,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2941,marathon,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2942,monster,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2943,make-up,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 phrasal_verbs Source::Oxford
+2944,make-up,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 phrasal_verbs Source::Oxford
+2945,naked,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2946,motion,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2947,navigation,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2948,norm,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2949,nutrition,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2950,necessity,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2951,neutral,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2952,observer,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2953,occupation,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2954,obstacle,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2955,operator,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2956,opera,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2957,occupy,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2958,organic,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2959,overcome,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2960,outstanding,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2961,overnight,adverb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2962,partnership,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2963,penalty,noun,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2964,peer,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2965,placement,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2966,precise,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2967,pity,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2968,pride,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2969,programming,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2970,progressive,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2971,progressive,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2972,proportion,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2973,pursuit,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2974,promotion,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2975,puzzle,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2976,rail,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,1/1 senses failed: sense-text-not-in-source,Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2977,rating,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2978,receiver,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2979,recovery,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2980,recovery,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2981,referee,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2982,referee,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2983,recognition,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+2984,registration,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2985,relieve,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2986,resolution,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2987,retirement,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2988,restriction,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+2989,rocky,adjective,1,UNCLASSIFIED,,no,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=UNCLASSIFIED, source=C2 [per-def])",Audio::Cambridge Oxford_5000 Source::Oxford
+2990,romance,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2991,rocket,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+2992,scandal,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2993,scholar,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2994,screening,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2995,scholarship,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2996,seminar,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_S Oxford_5000 Source::Oxford
+2997,sexy,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+2998,significance,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_3000 Source::Oxford
+2999,signature,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3000,speculate,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3001,speculation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3002,spoil,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+3003,strip (long narrow piece),noun,2,C1,,no,Oxford,Oxford,mismatch,2/2 senses failed: word-not-in-source,Audio::Cambridge CEFR::C1 CEFR::oxford idioms Oxford_5000 Source::Oxford
+3004,strictly,adverb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+3005,stunning,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3006,tag,noun|verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3007,sympathetic,adjective,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3008,temple,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3009,terms,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Oxford CEFR::B2 CEFR::oxford idioms OPAL_W Oxford_5000 Source::Oxford
+3010,thesis,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3011,terror,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3012,tragic,adjective,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3013,tissue,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+3014,transmit,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+3015,trap,noun|verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2); no-per-sense-pos-in-deck; flat-matched",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+3016,tribe,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3017,uncertainty,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+3018,undertake,verb,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+3019,unity,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3020,viewpoint,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3021,variation,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford OPAL_W Oxford_5000 Source::Oxford
+3022,wander,verb,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3023,withdraw,verb,3,B2,B2,yes,Oxford,Oxford,mismatch,"3/3 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford Oxford_5000 Source::Oxford
+3024,worm,noun,2,B2,B2,yes,Oxford,Oxford,mismatch,"2/2 senses failed: cefr-mismatch (deck=B2, source=C1 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
+3025,worm,noun,1,B2,B2,yes,Oxford,Oxford,mismatch,"1/1 senses failed: cefr-mismatch (deck=B2, source=C2 [per-def], source-badge=B2)",Audio::Cambridge CEFR::B2 CEFR::oxford idioms Oxford_5000 Source::Oxford
