@@ -385,6 +385,8 @@ class TestCrossCutInvariants:
         drift_superseded_keys = {
             'p5_precision_phrase_repaired',
             'p5b_manual_review_repaired',
+            'p5c_loop_guard_repaired',
+            'p5d_manual_review_repaired',
         }
         for rec in ledger:
             if rec.get('decision') != 'keep_single':

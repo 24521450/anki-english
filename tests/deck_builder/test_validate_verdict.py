@@ -1,10 +1,20 @@
 """Tests for validate_verdict gate (Stream B — bug fix).
 
-These tests lock in the 4 auto-detectable hard rules:
-  1. separator/count/content consistency
-  2. word count range (1-6 total) + per-chunk limits (1-3 for ;, 1-4 for |)
-  3. headword-in-chunk (covers self-ref + leak)
-  4. no-gloss bypass
+These tests lock in the auto-detectable hard rules AFTER the 2026-06-22
+P5D pass that REMOVED word-count limits:
+
+  1. separator/count/content consistency (incl. empty chunk detection)
+  2. headword-in-chunk (covers self-ref + leak + morphological_variant)
+  3. no-gloss bypass
+
+REMOVED in P5D:
+  - Total word count 1-6 limit
+  - Per-chunk word limits (`pick1` ≤6, `|` ≤4, `;` ≤3)
+
+Human-filled glosses are now trusted over arbitrary numeric length caps.
+See ADR 0005 addendum and `tools/_diag_p5d_validate_check.py` (the
+pre-flight check that confirmed exactly 8 v2 repairs were blocked
+purely by the word-count limit).
 
 Rule A (synonym detection) is NOT auto-detectable; verified by M3 + human.
 """
@@ -34,42 +44,84 @@ class TestSelfReferential:
 
     def test_pick1_word_in_gloss_but_not_whole_word_passes(self):
         # "basket" contains "basket" but "basketball" is not "basket"
-        # This is fine — only exact match counts
+        # This is fine -- only exact match counts
         errs = validate_verdict('ball', 'basketball court', 'none', 1)
         assert errs == []
 
 
-class TestWordCount:
-    """Total 1-6 words; per-chunk limits."""
+class TestWordCountLimitsRemoved:
+    """P5D: word-count limits removed. Long glosses pass if structure +
+    headword checks are clean."""
 
-    def test_total_one_word_passes(self):
-        # Rule A synonym-collapse: 1 word is allowed
-        errs = validate_verdict('absurd', 'ridiculous', 'none', 1)
+    def test_long_single_chunk_passes(self):
+        """A 7-word gloss used to fail with `word_count_out_of_range`.
+        Now passes if separator/count/headword are valid."""
+        errs = validate_verdict('test', 'a b c d e f g', 'none', 1)
         assert errs == []
 
-    def test_total_seven_words_fails(self):
-        errs = validate_verdict('test', 'a b c d e f g', 'none', 1)
-        assert any('word_count_out_of_range' in e for e in errs)
+    def test_long_pipe_chunks_pass(self):
+        """Each side 5 words (was >4 limit for |). Now passes."""
+        errs = validate_verdict(
+            'test', 'one two three four five | six seven eight nine ten', '|', 2
+        )
+        assert errs == []
 
-    def test_per_chunk_pipe_max_4(self):
-        # '|': each side must be ≤4 words; 5 fails
-        errs = validate_verdict('test', 'one two three four five | x', '|', 2)
-        assert any('chunk_word_count[0]=5 > max=4' in e for e in errs)
+    def test_long_semicolon_chunks_pass(self):
+        """Each side 4 words (was >3 limit for ;). Now passes."""
+        errs = validate_verdict(
+            'test', 'one two three four ; five six seven eight', ';', 2
+        )
+        assert errs == []
 
-    def test_per_chunk_pipe_max_4_passes_at_boundary(self):
-        errs = validate_verdict('test', 'one two three four | five', '|', 2)
-        # chunk[0] = 4 words OK (boundary); chunk[1] = 1 word OK
-        assert not any('chunk_word_count' in e for e in errs)
+    def test_p5d_seed_additionally_passes(self):
+        """The P5D seed fix `additionally -> also` already had a 1-word
+        gloss, but verify the new validator still passes it."""
+        errs = validate_verdict('additionally', 'also', 'none', 1)
+        assert errs == []
 
-    def test_per_chunk_semicolon_max_3(self):
-        # ';': each side must be ≤3 words
-        errs = validate_verdict('test', 'one two three four ; five', ';', 2)
-        assert any('chunk_word_count[0]=4 > max=3' in e for e in errs)
+    def test_p5d_identification_long_phrase_passes(self):
+        """`identification` -> long multi-chunk gloss (12 words total).
+        Pre-P5D: failed word_count_out_of_range. Post-P5D: passes."""
+        gloss = (
+            'proving who or what|recognizing importance|'
+            'ID document|strong sympathy|close linking'
+        )
+        errs = validate_verdict('identification', gloss, '|', 5)
+        assert errs == []
 
-    def test_per_chunk_pick1_max_6(self):
-        # 'none': single chunk up to 6 words
-        errs = validate_verdict('test', 'a b c d e f g', 'none', 1)
-        assert any('word_count_out_of_range' in e for e in errs)
+    def test_p5d_rental_three_chunks_passes(self):
+        """`rental` -> 3-chunk gloss (7 words total).
+        Pre-P5D: failed word_count_out_of_range. Post-P5D: passes."""
+        errs = validate_verdict('rental', 'use fee|hiring deal|thing for hire', '|', 3)
+        assert errs == []
+
+    def test_p5d_pop_five_chunks_passes(self):
+        """`pop` -> 5-chunk gloss (9 words total).
+        Pre-P5D: failed word_count_out_of_range. Post-P5D: passes."""
+        gloss = (
+            'short sound|burst|go quickly|put quickly|appear suddenly'
+        )
+        errs = validate_verdict('pop', gloss, '|', 5)
+        assert errs == []
+
+    def test_p5d_compromise_three_chunks_passes(self):
+        """`compromise` -> 3-chunk gloss (8 words total).
+        Pre-P5D: failed word_count_out_of_range. Post-P5D: passes."""
+        gloss = 'agreement by concession|lower standards|put at risk'
+        errs = validate_verdict('compromise', gloss, '|', 3)
+        assert errs == []
+
+    def test_p5d_whip_four_chunks_passes(self):
+        """`whip` -> 4-chunk gloss (9 words total).
+        Pre-P5D: failed word_count_out_of_range. Post-P5D: passes."""
+        gloss = 'hit with cord|move suddenly|pull suddenly|mix fast'
+        errs = validate_verdict('whip', gloss, '|', 4)
+        assert errs == []
+
+    def test_p5d_punk_phrase_passes(self):
+        """`punk` -> 2-word gloss."""
+        errs = validate_verdict('punk', 'rock subculture member', 'none', 1)
+        assert errs == []
 
 
 class TestSeparatorCountConsistency:
@@ -96,6 +148,16 @@ class TestSeparatorCountConsistency:
         errs = validate_verdict('test', 'one|two|three', '|', 3)
         assert errs == []
 
+    def test_empty_chunk_after_pipe_fails(self):
+        """`x |` -> separator with empty side. Empty chunk must fail."""
+        errs = validate_verdict('test', 'x |', '|', 1)
+        assert any('empty_chunk' in e for e in errs)
+
+    def test_empty_chunk_between_semicolons_fails(self):
+        """`x ; ; y` -> empty middle chunk. Must fail."""
+        errs = validate_verdict('test', 'x ; ; y', ';', 2)
+        assert any('empty_chunk' in e for e in errs)
+
 
 class TestNoGlossBypass:
     """decision='no-gloss' should skip all checks."""
@@ -111,7 +173,9 @@ class TestNoGlossBypass:
 
     def test_no_gloss_with_huge_word_count_passes(self):
         # Even 100-word "gloss" is allowed in no-gloss mode
-        errs = validate_verdict('test', ' '.join(['w'] * 100), 'none', 1, decision='no-gloss')
+        errs = validate_verdict(
+            'test', ' '.join(['w'] * 100), 'none', 1, decision='no-gloss'
+        )
         assert errs == []
 
 
@@ -128,18 +192,15 @@ class TestRealisticCases:
         assert errs != []
 
     def test_align_self_ref_leak(self):
-        # align|verb|C1: 'line up; align' — headword leak
+        # align|verb|C1: 'line up; align' -- headword leak
         errs = validate_verdict('align', 'line up; align', ';', 2)
         assert any('headword_in_chunk[1]' in e for e in errs)
 
-    def test_amid_chunk_too_long(self):
-        # amid|preposition|C1: 'in the middle of; among' — chunk[0]=4 > max=3 for ;
-        errs = validate_verdict('amid', 'in the middle of; among', ';', 2)
-        assert any('chunk_word_count[0]=4 > max=3' in e for e in errs)
-
     def test_consultant_separator_mismatch(self):
-        # consultant|noun|B2: 'subject expert; hospital specialist', '|' — declared | but actual ;
-        errs = validate_verdict('consultant', 'subject expert; hospital specialist', '|', 2)
+        # consultant|noun|B2: 'subject expert; hospital specialist', '|' -- declared | but actual ;
+        errs = validate_verdict(
+            'consultant', 'subject expert; hospital specialist', '|', 2
+        )
         assert any('separator_mismatch' in e for e in errs)
 
 
@@ -156,7 +217,10 @@ class TestMorphologicalSelfReferential:
 
     def test_multi_word_exact_headword_in_phrase_fails(self):
         errs = validate_verdict('solo', 'solo performance', 'none', 1)
-        assert any('headword_in_definition' in e for e in errs) or any('headword_in_phrase' in e for e in errs)
+        assert any(
+            'headword_in_definition' in e or 'headword_in_phrase' in e
+            for e in errs
+        )
 
     def test_multi_word_related_derivative_passes(self):
         errs1 = validate_verdict('disabled', 'having disability', 'none', 1)

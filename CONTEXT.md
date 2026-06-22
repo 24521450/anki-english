@@ -186,13 +186,14 @@ _Files: `src/deck_builder/gamma_llm.py` (schema + export), `src/deck_builder/bet
 
 ### Gloss pipeline
 
-The layer that produces 2-6 word learner-friendly paraphrases of Oxford's
-verbose definitions, shown on the back card instead of the full Oxford text.
+The layer that produces learner-friendly paraphrases of Oxford's verbose
+definitions, shown on the back card instead of the full Oxford text.
+Length is **not** hard-capped post-P5D (2026-06-22) — the human/M3
+verdict decides it; the validator only checks structure + headword-leak.
 Decision recorded in [`docs/adr/0005-gloss-pipeline-rendering.md`](./docs/adr/0005-gloss-pipeline-rendering.md).
 
 **Gloss**:
-A short (1-6 words total) learner-friendly paraphrase of a single card's def.
-May be 1 chunk (1 sense), 2 chunks joined by `|` (distinct senses rendered as separate card rows), or 2 chunks joined by `;` (variants/sub-nuances rendered in 1 row). Stored in the Anki note's `Definition` field as the def column — replaces the long Oxford def at apply time.
+A short learner-friendly paraphrase of a single card's def. Word count is **not** hard-capped by the validator (P5D 2026-06-22 removed the 1-6 word limit and per-chunk limits) — the human/M3 verdict decides length, and the validator only checks structure + headword-leak. `gloss_word_count` is preserved as metadata/reporting. May be 1 chunk (1 sense), 2 chunks joined by `|` (distinct senses rendered as separate card rows), or 2 chunks joined by `;` (variants/sub-nuances rendered in 1 row). Stored in the Anki note's `Definition` field as the def column — replaces the long Oxford def at apply time.
 _Avoid_: short def, mini definition, paraphrase
 
 **Gloss Verdict**:
@@ -204,7 +205,7 @@ The batch script (`tools/_m3_rerun_v2.py`) that re-generates M3 verdicts for the
 _Avoid_: regenerate verdicts, gloss rebuild
 
 **Gloss Validation Gate**:
-The 4-rule automated check in `validate_verdict(word, gloss, separator, count)` in `src/deck_builder/gloss_llm.py`. Returns `list[str]` of violations (empty = pass, never raises). Rules: (1) separator/count/content consistency, (2) word count 1-6 total + per-chunk 1-3 (`;`) / 1-4 (`|`) / 1-6 (none), (3) headword in any chunk (catches self-ref + leak), (4) no-gloss bypass. Defense-in-depth: called from 3 sites (M3 rerun, apply-to-txt, `__post_init__`).
+The auto-detectable structural check in `validate_verdict(word, gloss, separator, count)` in `src/deck_builder/gloss_llm.py`. Returns `list[str]` of violations (empty = pass, never raises). **As of P5D (2026-06-22)**, the gate enforces 2 rules: (1) separator/count/content consistency (incl. empty-chunk detection), (2) headword in any chunk (catches self-ref + leak + morphological variants). The word-count limits (total 1-6, per-chunk 1-3/1-4/1-6) were **removed** — human-filled glosses are trusted over arbitrary numeric length caps. `no-gloss` decision bypasses all checks. Defense-in-depth: called from 3 sites (M3 rerun, apply-to-txt, `__post_init__`).
 _Avoid_: gate, validator, gloss checker
 
 **Apply-Step Skip**:
@@ -245,7 +246,7 @@ A `rule_b_pick2` verdict with a single-chunk gloss is a **rule-shape contradicti
 _Avoid_: rule-shape mismatch, "1-chunk with multi-def def_before is a bug" (it isn't always — see Rule A/B/C).
 
 **Precision Phrase**:
-A single-chunk gloss that uses 2-6 words (a phrase) instead of a single-word synonym, because the single-word synonym would shift into a nearby contrast word or narrow the headword's semantic type. The phrase captures the headword's meaning more precisely while staying learner-friendly.
+A single-chunk gloss that uses a phrase (typically 2-6 words but **not** length-capped after P5D 2026-06-22) instead of a single-word synonym, because the single-word synonym would shift into a nearby contrast word or narrow the headword's semantic type. The phrase captures the headword's meaning more precisely while staying learner-friendly.
 
 When to use:
 - The one-word synonym shifts into a nearby **contrast pair**: `mediate → arbitrate` (mediator helps parties; arbitrator decides) — use `help resolve a dispute`.
@@ -279,7 +280,7 @@ Schema:
 ```
 
 Decisions:
-- `repair_gloss` — clear semantic loss with a 2-6 word phrase that captures the headword's meaning precisely. Updates audit row's `gloss_after`, `rule_applied`, `separator`, `gloss_word_count`, `gate_status`, `fix_status`; updates TXT def cell; triggers `tools/build_notes.py` to regenerate JSONL.
+- `repair_gloss` — clear semantic loss with a phrase (no length cap post-P5D 2026-06-22) that captures the headword's meaning precisely. Updates audit row's `gloss_after`, `rule_applied`, `separator`, `gloss_word_count`, `gate_status`, `fix_status`; updates TXT def cell; triggers `tools/build_notes.py` to regenerate JSONL.
 - `review_candidate` — heuristic candidate flagged for future human review. No audit change.
 - `keep_current` — single-word gloss reviewed and confirmed as adequate (Rule A synonym collapse legit, no precision loss). No audit change. Recorded so re-scans don't keep flagging it.
 

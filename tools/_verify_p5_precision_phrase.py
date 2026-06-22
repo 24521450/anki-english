@@ -1,7 +1,7 @@
-"""P5 Precision Phrase Ledger + P5B Manual Review — verifier.
+"""P5 Precision Phrase Ledger + P5B/P5D Manual Review — verifier.
 
 Reads the ledger + audit + TXT + JSONL and asserts that:
-  1. Ledger exists, has 990 rows (337 repair + 653 keep).
+  1. Ledger exists, has 990 rows (346 repair + 644 keep).
   2. Every `repair_gloss` decision's audit row reflects the repair
       (gloss_after, rule_applied=precision_phrase, fix_status, word_count).
   3. Every `repair_gloss` decision's TXT row reflects the new gloss
@@ -12,10 +12,17 @@ Reads the ledger + audit + TXT + JSONL and asserts that:
   6. P3B / P4A / P4B verifiers still PASS (regression check).
   7. P4C verifier still PASS (regression check).
 
-After P5B manual review pass:
-- 988 review_candidate rows replaced by 335 repair_gloss + 653 keep_current.
-- 2 seed repairs (mediate, solo) remain at the top of repair_gloss.
-- Total repair_gloss = 337; total keep_current = 653; review_candidate = 0.
+Pass history:
+- P5 (2026-06-21):  2 seed + 988 review = 990 rows
+- P5B (2026-06-22): 337 repair + 653 keep + 0 review (988 review_candidate
+                     replaced by 335 repair + 653 keep; +2 seed repairs
+                     unchanged from P5 = 337 total repair)
+- P5D (2026-06-22): 346 repair + 644 keep + 0 review (post word-count-limit
+                     removal; 9 keys flipped from keep → repair using v2
+                     longer glosses, and 27 unchanged-repair keys updated
+                     to v2's longer glosses — 26 of which differed from
+                     the v1 shortened versions, plus 1 P5C seed (`additionally`)
+                     that was already at v2's value)
 
 Run: `python -m tools._verify_p5_precision_phrase`
 """
@@ -130,12 +137,12 @@ def main() -> int:
 
     if len(ledger) != 990:
         failures.append(f'ledger has {len(ledger)} rows (expected 990)')
-    if n_repair != 337:
-        failures.append(f'ledger has {n_repair} repair rows (expected 337)')
+    if n_repair != 346:
+        failures.append(f'ledger has {n_repair} repair rows (expected 346)')
     if n_review != 0:
         failures.append(f'ledger has {n_review} review_candidate rows (expected 0)')
-    if n_keep != 653:
-        failures.append(f'ledger has {n_keep} keep rows (expected 653)')
+    if n_keep != 644:
+        failures.append(f'ledger has {n_keep} keep rows (expected 644)')
 
     # 2. Load audit + TXT + JSONL
     audit = _load_audit()
@@ -198,10 +205,11 @@ def main() -> int:
             'p5_precision_phrase_repaired',
             'p5b_manual_review_repaired',
             'p5c_loop_guard_repaired',
+            'p5d_manual_review_repaired',
         ):
             failures.append(
                 f'  ({word}, {pos}, {cefr}) audit fix_status={audit_row.get("fix_status")!r} '
-                f'!= expected p5_precision_phrase_repaired | p5b_manual_review_repaired | p5c_loop_guard_repaired'
+                f'!= expected p5_precision_phrase_repaired | p5b_manual_review_repaired | p5c_loop_guard_repaired | p5d_manual_review_repaired'
             )
             continue
         # Verify gate_status=pass and word_count

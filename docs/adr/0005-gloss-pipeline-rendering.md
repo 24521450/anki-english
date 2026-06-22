@@ -584,3 +584,115 @@ The 2-6 word phrase form is already supported by the gate (word
 count range covers 1-6). The only architectural change is adding the
 rule code and a new ledger — a process addition, not a structural
 change.
+---
+
+## Addendum 2026-06-22 (P5D) — Remove gloss word-count limits from validator
+
+### Why the limits came off
+
+The validation gate (`validate_verdict` in `src/deck_builder/gloss_llm.py`)
+originally enforced 4 rules, including a **word-count range**: total 1-6
+content words, plus per-chunk limits (≤6 for `none`, ≤4 for `|`, ≤3 for `;`).
+The intent was to keep glosses learner-friendly.
+
+After the P5 manual review pass, this limit became the loudest blocker:
+the user's filled v2 file (`manual_gloss_review_p5_candidates_filled_QA_patched_v2 (1).jsonl`)
+contained 8 repairs whose glosses exceeded the 6-word total — not because
+the glosses were bad, but because capturing the headword's full multi-sense
+content at C1/C2 academic level required more than 6 words.
+
+Concrete examples that the v1 validator rejected but the v2 manual pass
+trusted:
+
+| (word, pos, CEFR) | v2 gloss (now accepted) | Words |
+|---|---|---:|
+| `identification\|noun\|C1` | `proving who or what\|recognizing importance\|ID document\|strong sympathy\|close linking` | 12 |
+| `rental\|noun\|C1` | `use fee\|hiring deal\|thing for hire` | 7 |
+| `whip\|verb\|C1` | `hit with cord\|move suddenly\|pull suddenly\|mix fast` | 9 |
+| `pop\|verb\|C1` | `short sound\|burst\|go quickly\|put quickly\|appear suddenly` | 9 |
+| `compromise\|noun, verb\|C1` | `agreement by concession\|lower standards\|put at risk` | 8 |
+| `burst\|verb\|C1` | `break open\|move suddenly\|be very full` | 7 |
+| `outrage\|noun, verb\|C1` | `shock and anger\|wrong act\|anger greatly` | 7 |
+| `overwhelm\|verb\|C1` | `affect too strongly\|defeat completely\|give too much` | 8 |
+
+In each case, the v1 manual pass had to **artificially shorten** the gloss
+into a sub-6-word version, even when the full version was more accurate.
+That shortening (e.g. `proving who or what|recognizing importance|ID document|strong sympathy|close linking`
+→ `proving who or what|recognizing importance|ID document`) was a forced
+loss of semantic coverage for the sake of an arbitrary length cap.
+
+### Decision
+
+**Remove the word-count limit from the validator.** Trust the human/M3
+verdict on length. The validator keeps the **2 rules** that are
+machine-detectable without semantic judgment:
+
+1. **separator/count/content consistency** (incl. empty-chunk detection) —
+   catches typos like `declared '|' but actual ';'` and structural bugs
+   like `x |` or `x ; ; y`.
+2. **headword in any chunk** — catches self-referential glosses (`gloss ==
+   headword`), multi-chunk leaks (`x ; accelerate`), and morphological
+   variants (`configuration` as gloss for `configure`).
+
+Removed:
+- Total content words 1-6 (the `word_count_out_of_range` category).
+- Per-chunk word limits (`pick1` ≤6, `|` ≤4, `;` ≤3) — the
+  `chunk_word_count[i]` category.
+
+`gloss_word_count` field is **preserved** in audit + ledger rows as
+metadata/reporting (helps audit spot outliers), but no longer blocks apply.
+
+### Trade-offs
+
+| Alternative | Why not chosen |
+|---|---|
+| Keep total cap, raise to 12 words | Same forced-shortening problem at higher CEFR; arbitrary cap remains. |
+| Keep cap, add an explicit "academic override" rule | Adds a rule-code path that M3 would have to honor; same trust-the-human problem. |
+| Cap stays at 6, but loosen to "soft warn" | Defense-in-depth gate would still skip at apply time (`tools/_apply_glosses_to_txt.py`), so same blocker. |
+| Validate semantic correctness (Rule A) | Out of scope — needs synonym DB. M3 + human review handle that (see P4C Policy Review Ledger). |
+
+### Files changed
+
+- `src/deck_builder/gloss_llm.py` — `validate_verdict` now checks only
+  structure + headword-leak. Empty-gloss check added (decision='gloss' +
+  empty gloss → `empty_gloss` violation).
+- `tests/deck_builder/test_validate_verdict.py` — old `TestWordCount`
+  class replaced with `TestWordCountLimitsRemoved`; new tests assert that
+  the 8 P5D seed fixes (and the seed `additionally -> also`) all pass.
+  `TestSeparatorCountConsistency` gained `test_empty_chunk_after_pipe_fails`
+  and `test_empty_chunk_between_semicolons_fails` to lock in the empty-chunk
+  check (an old gate bug that was masked by the word-count limit; empty
+  chunks were silently dropped by `if c.strip()` filter before count).
+- `CONTEXT.md` — `Gloss`, `Gloss Validation Gate`, `Precision Phrase` entries
+  updated to drop the 1-6 / 2-6 claims and link to this addendum.
+- `tools/_verify_p5d_manual_review.py` (new) — verifies the v2 canonical
+  decisions file has 988 rows / 344 repair / 644 keep, all repairs pass
+  the new validator (zero `word_count_out_of_range` expected), no duplicates.
+- `tools/_apply_p5d_manual_review.py` (new) — applies the v2 decisions,
+  delta vs current P5B state: previously-kept v1 decisions whose v2
+  verdict flips to `repair_gloss` get a fresh repair; previously-repaired
+  v1 decisions whose v2 verdict flips to `keep_current` revert. Audit +
+  TXT + P5 ledger all updated; JSONL rebuilt via `tools/build_notes.py`.
+
+### Verification
+
+- `pytest`: 547/547 pass (was 515/515 before P5D; +32 new/updated gate tests)
+- `python -m tools._verify_p5_precision_phrase`: PASS
+- `python -m tools._verify_p5b_manual_review`: PASS
+- `python -m tools._verify_p5d_manual_review`: PASS (new)
+- `python -m tools._verify_p4c_policy_review`: PASS
+- `python -m tools._verify_p4b_rule_shape_fix`: PASS
+- `python -m tools._verify_p4a_coverage_fix`: PASS
+- `python -m tools._verify_deck_output_p3b`: PASS
+- `python -m tools._check_gloss_hygiene --report --quiet`: PASS
+- `python -m tools.build_notes --dry-run`: PASS
+
+### Why no new ADR
+
+This is a tightening of an existing validator (removing one rule class),
+not a new architectural decision. The gate's role (defense-in-depth
+mechanical check) is unchanged — it just trusts the producer more on length.
+The v2 manual pass demonstrates the producer (human review) makes
+reasonable length choices; if a future pass shows systematic over-length
+glosses that hurt learners, the limit could be re-added with a higher
+threshold or made into a soft-warn.

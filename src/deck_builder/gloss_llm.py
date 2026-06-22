@@ -123,7 +123,7 @@ def validate_verdict(
     count: int,
     decision: str = 'gloss',
 ) -> list[str]:
-    """Validate a verdict against 3 auto-detectable hard rules.
+    """Validate a verdict against 2 auto-detectable hard rules.
 
     Returns list of violation strings (empty = OK). Never raises — caller decides
     what to do (skip / warn / abort).
@@ -133,14 +133,18 @@ def validate_verdict(
       1. SEPARATOR/COUNT/CONTENT CONSISTENCY:
          - declared separator field must match actual '|' / ';' in gloss
          - declared count must match actual chunk count
+         - empty chunk (e.g. `x |` or `| x` or `x ; ; y`) is a violation
 
-      2. WORD COUNT RANGE:
-         - total content words (excluding separators) must be 1-6
-         - 1-word is allowed (Rule A synonym-collapse example: 'ridiculous')
-
-      3. HEADWORD IN CHUNK:
+      2. HEADWORD IN CHUNK:
          - any chunk equal to headword (case-insensitive) is a violation
          - covers self-referential pick1 (gloss==headword) AND leak in multi-chunk
+         - single-word gloss that stems-matches the headword is a violation
+           (morphological_variant)
+         - multi-word gloss containing the exact headword token is a violation
+
+    REMOVED 2026-06-22 (P5D): total word count 1-6 limit and per-chunk word
+    limits (`pick1` ≤6, `|` ≤4, `;` ≤3). Human-filled glosses are trusted
+    over arbitrary numeric length caps — see ADR 0005 addendum.
 
     Bypassed: decision='no-gloss' (no-gloss verdicts skip all checks).
     """
@@ -153,9 +157,17 @@ def validate_verdict(
     word_lower = word.strip().lower()
     gloss_stripped = gloss.strip()
 
+    # Empty gloss + decision='gloss' is a hard fail.
+    if not gloss_stripped:
+        violations.append('empty_gloss: gloss is empty but decision=gloss')
+
     # Compute actual structure
     actual_sep = '|' if '|' in gloss_stripped else ';' if ';' in gloss_stripped else 'none'
     raw_chunks = re.split(r'\s*[|;]\s*', gloss_stripped)
+    # `chunks` drops empty raw chunks (separator with empty side) so
+    # `x |` and `x ; ; y` collapse to a smaller list. We use both
+    # `raw_chunks` (for empty-chunk detection) and `chunks` (for
+    # structural checks below).
     chunks = [c.strip() for c in raw_chunks if c.strip()]
     actual_count = len(chunks)
 
@@ -169,38 +181,13 @@ def validate_verdict(
             f'count_mismatch: declared={count}, actual_chunks={actual_count}'
         )
 
-    # Check 2: word count range (1-6 total)
-    total_words = len(re.sub(r'[|;]', ' ', gloss_stripped).split())
-    if not 1 <= total_words <= 6:
-        violations.append(
-            f'word_count_out_of_range: total={total_words} (must be 1-6)'
-        )
-
-    # Per-chunk limits (from prompt):
-    #   pick1 (none): up to 6 words
-    #   pick2 with '|': each side 1-4 words
-    #   pick2 with ';': each side 1-3 words
-    per_chunk_max = {
-        'none': 6,
-        '|': 4,
-        ';': 3,
-    }.get(actual_sep, 6)
-    for i, chunk in enumerate(chunks):
-        cw = len(chunk.split())
-        if cw == 0:
+    # Empty chunk check (separator with empty side, e.g. `x |` or `x ; ; y`).
+    # Iterate `raw_chunks` (BEFORE filter) so empty entries are visible.
+    for i, raw in enumerate(raw_chunks):
+        if not raw.strip():
             violations.append(f'empty_chunk[{i}]')
-        elif cw > per_chunk_max:
-            violations.append(
-                f'chunk_word_count[{i}]={cw} > max={per_chunk_max} for sep={actual_sep!r}'
-            )
 
-    # Total = 1 + multi-chunk is structurally impossible (separator with empty sides)
-    if total_words == 1 and actual_count > 1:
-        violations.append(
-            f'total=1 with multi_chunk={actual_count} (separator with empty sides)'
-        )
-
-    # Check 3: headword in chunk (covers both self-ref and leak)
+    # Check 2: headword in chunk (covers both self-ref and leak)
     from nltk.stem import PorterStemmer
     ps = PorterStemmer()
 
@@ -216,11 +203,11 @@ def validate_verdict(
                     f'headword_in_chunk[{i}]: chunk={chunk!r} == headword={word!r}'
                 )
                 continue
-            
+
             # Split chunk into clean tokens
             tokens = [clean_token(t) for t in re.split(r"[\s\-\']", chunk) if t.strip()]
             tokens = [t for t in tokens if t]
-            
+
             if len(tokens) == 1:
                 # Single-word chunk: reject if its stem matches the headword stem (lazy morphological variants)
                 gw_stem = ps.stem(tokens[0])
@@ -234,7 +221,7 @@ def validate_verdict(
                 def_part = parts[1] if len(parts) > 1 else chunk
                 def_words = [clean_token(t) for t in re.split(r"[\s\-\']", def_part) if t.strip()]
                 def_words = [t for t in def_words if t]
-                
+
                 if word_lower in def_words:
                     violations.append(
                         f'headword_in_definition[{i}]: headword {word!r} found in definition part of chunk {chunk!r}'

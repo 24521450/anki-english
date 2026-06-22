@@ -165,17 +165,18 @@ class TestCheckAuditCoverage:
     def test_real_ledger_covers_real_audit(self):
         """All repair rows match a synthetic pre-apply audit row.
 
-        After P5B: 337 repair rows match. Keep count = 653 (was 988
-        review_candidate before P5B flipped them).
+        After P5D: 346 repair rows match (2 seed + 344 P5D v2 manual).
+        Keep count = 644 (was 988 review_candidate before P5B flipped them,
+        then P5D flipped 9 keep -> repair).
         """
         ledger = _load_ledger()
         audit = self._build_pre_apply_audit(ledger)
         matched, repair_recs, keep_recs, errors = _check_audit_coverage(audit, ledger)
         assert errors == [], f'unexpected errors: {errors}'
-        assert len(matched) == 337
-        assert len(repair_recs) == 337
-        # 653 keep_current → keep_recs = 653
-        assert len(keep_recs) == 653
+        assert len(matched) == 346
+        assert len(repair_recs) == 346
+        # 644 keep_current -> keep_recs = 644
+        assert len(keep_recs) == 644
 
     def test_missing_repair_audit_row_fails(self):
         """If a repair key has no matching audit row, abort."""
@@ -307,11 +308,14 @@ class TestCrossCutInvariants:
         ledger = _load_ledger()
         assert len(ledger) == 990, f'P5 scope is 990, got {len(ledger)}'
 
-    def test_repair_count_is_337(self):
-        """After P5B: 337 repair_gloss (2 seed + 335 manual)."""
+    def test_repair_count_is_346(self):
+        """After P5D: 346 repair_gloss (2 seed + 344 P5D v2 manual).
+
+        P5B had 337 (2 seed + 335); P5D added 9 more by flipping keep -> repair.
+        """
         ledger = _load_ledger()
         n = sum(1 for r in ledger if r.get('decision') == 'repair_gloss')
-        assert n == 337, f'expected 337 repair_gloss, got {n}'
+        assert n == 346, f'expected 346 repair_gloss, got {n}'
 
     def test_review_candidate_count_is_0(self):
         """After P5B: 0 review_candidate (all 988 are now repair or keep)."""
@@ -319,11 +323,14 @@ class TestCrossCutInvariants:
         n = sum(1 for r in ledger if r.get('decision') == 'review_candidate')
         assert n == 0, f'expected 0 review_candidate, got {n}'
 
-    def test_keep_count_is_653(self):
-        """After P5B: 653 keep_current from manual review."""
+    def test_keep_count_is_644(self):
+        """After P5D: 644 keep_current from manual review.
+
+        P5B had 653; P5D removed 9 by flipping keep -> repair.
+        """
         ledger = _load_ledger()
         n = sum(1 for r in ledger if r.get('decision') == 'keep_current')
-        assert n == 653, f'expected 653 keep_current, got {n}'
+        assert n == 644, f'expected 644 keep_current, got {n}'
 
     def test_seed_repairs_have_correct_metadata(self):
         """The 2 seed repairs (mediate, solo) have the expected metadata.
