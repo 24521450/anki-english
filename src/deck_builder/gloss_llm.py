@@ -6,7 +6,12 @@ Per user (2026-06-16):
 - 1 nghĩa: 1 gloss, không có ;
 - 2 nghĩa khác nhau: "X ; Y"
 - Abstract words OK với phrase
-- Output: 2-6 words learner-friendly, NO quotes
+- Output: concise learner-friendly gloss, NO quotes
+
+Word-count limits were REMOVED 2026-06-22 (P5D). The validator
+(`validate_verdict` below) only checks structure + headword-leak.
+The producer should still aim for short, clear glosses — but length
+is no longer a hard gate.
 
 Category auto-detect (no M3 cost):
 - concrete: def has 1 sense, 1 obvious object/concept
@@ -69,7 +74,7 @@ class GlossVerdict:
     pos: str
     cefr: str
     decision: Literal['gloss', 'no-gloss']
-    gloss: str  # 2-6 words, max 2 semicolon-separated
+    gloss: str  # learner-friendly gloss; length not validator-capped (P5D 2026-06-22)
     confidence: float = 1.0  # 0-1, M3 self-assessed
     reasoning: str = ''  # optional, e.g. why 'no-gloss'
     category: str = ''  # auto-detected: concrete/abstract/multi-sense-3+/multi-pos
@@ -249,11 +254,18 @@ def summarize_violations(violations_by_key: dict[str, list[str]]) -> None:
             print(f'    {k}: {c}')
 
 
-GLOSS_SYSTEM_PROMPT = """You generate 2-6 word learner-friendly glosses for vocabulary flashcards.
+GLOSS_SYSTEM_PROMPT = """You generate concise learner-friendly glosses for vocabulary flashcards.
 
-Given a dictionary definition, paraphrase it in 2-6 words. Capture the CORE meaning
+Given a dictionary definition, paraphrase it concisely. Capture the CORE meaning
 in simple, memorable language. Drop grammatical connectors and hedges. Skip register
 labels (formal, informal, etc.). Output ONLY the gloss, no quotes, no explanation.
+
+LENGTH GUIDANCE (post-P5D 2026-06-22): use the shortest clear learner-friendly
+gloss; do not drop meaning just to hit a word count. The validator no longer
+hard-caps total or per-chunk word counts — length is a soft judgment call,
+not a hard gate. When a gloss needs more than 6 words to capture the headword's
+full semantic coverage (e.g. multi-sense C1/C2 academic vocabulary), prefer
+the longer accurate gloss over a forced-shortened one that drops sense coverage.
 
 The input def may contain multiple senses separated by "|" (pipe, no spaces).
 Within a sense, sub-chunks (Oxford "act of finding sb guilty; the fact of having been found guilty")
@@ -305,9 +317,6 @@ MULTI-SENSE 2 RULES (kept from before, with new separator + addendum):
 - 2 senses, one physical/tactile + one abstract: "X | Y" (different domains per addendum).
 
 PHYSICAL RULES:
-- Each side of "|" must independently be 1-4 words.
-- Each side of ";" must independently be 1-3 words.
-- Total content words across both sides: 2-6 (not counting separator itself).
 - No quotes, no period, no preamble.
 - If the definition is unintelligible or unscorable, output: NO-GLOSS
 

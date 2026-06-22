@@ -56,6 +56,13 @@ non-empty = bad). Never raises — caller decides what to do.
 | headword in any chunk | `gloss == headword` self-ref; `; accelerate` leak | Yes |
 | no-gloss bypass | decision='no-gloss' skips all checks | Yes |
 
+> **HISTORICAL NOTE (2026-06-22, P5D):** the `word count 1-6 total + per-chunk`
+> row above was **removed** from `validate_verdict` on 2026-06-22. The
+> current gate enforces only structure + headword-leak. See the P5D
+> addendum below for the rationale and migration. Keep this row in
+> the historical ADR for context, but it does NOT describe current
+> gate behavior.
+
 **Rule A (near-synonym pair) is NOT auto-detectable** — would need a synonym
 DB. Verified by M3 + human review. Example: `absurd|adjective|C1: ('ridiculous;
 illogical', ';', 2, '2sense_samedomain')` is structurally valid but violates
@@ -521,8 +528,9 @@ review ledger.
 ### The new `precision_phrase` rule
 
 `precision_phrase` joins the `VALID_RULE_CODES` tuple as a
-first-class rule. It denotes a single-chunk gloss that uses 2-6 words
-(phrase form) because the single-word synonym would shift into a
+first-class rule. It denotes a single-chunk gloss that uses a concise
+phrase (not length-capped — see P5D addendum 2026-06-22 below)
+because the single-word synonym would shift into a
 nearby contrast word or narrow the headword's semantic type.
 
 `tools/_audit_gloss_policy_coverage.py` adds `precision_phrase` to
@@ -535,13 +543,13 @@ separator, no contradiction.
 following the P4C Policy Review Ledger convention. Each row records
 either:
 
-- `repair_gloss` — clear semantic loss with a 2-6 word phrase that
-  captures the headword precisely. Updates audit row's `gloss_after`,
-  `rule_applied` (set to `precision_phrase`), `separator`, and
-  `gloss_word_count`; updates TXT def cell; triggers `build_notes`
-  JSONL regen. Risk-type tag explains why the one-word synonym
-  failed (`contrast_pair`, `type_narrowing`, `overgeneralized_synonym`,
-  `domain_loss`, `multi_pos_loss`).
+- `repair_gloss` — clear semantic loss with a concise phrase (length
+  not capped post-P5D 2026-06-22) that captures the headword precisely.
+  Updates audit row's `gloss_after`, `rule_applied` (set to
+  `precision_phrase`), `separator`, and `gloss_word_count`; updates TXT
+  def cell; triggers `build_notes` JSONL regen. Risk-type tag explains
+  why the one-word synonym failed (`contrast_pair`, `type_narrowing`,
+  `overgeneralized_synonym`, `domain_loss`, `multi_pos_loss`).
 - `review_candidate` — heuristic candidate flagged for future human
   review (no audit change). Keeps the candidate visible across scans.
 - `keep_current` — single-word gloss reviewed and confirmed as
@@ -580,10 +588,11 @@ not the rule.
 (`VALID_RULE_CODES`) rather than replacing the gloss-pipeline
 architecture. The Precision Phrase Ledger mirrors the P4C Policy
 Review Ledger pattern (separate JSONL, separate apply/verify tools).
-The 2-6 word phrase form is already supported by the gate (word
-count range covers 1-6). The only architectural change is adding the
-rule code and a new ledger — a process addition, not a structural
-change.
+The phrase form was supported by the gate (word count range covered
+1-6 at P5 time; P5D 2026-06-22 removed the range entirely — see
+addendum below). The only architectural change at P5 time was
+adding the rule code and a new ledger — a process addition, not a
+structural change.
 ---
 
 ## Addendum 2026-06-22 (P5D) — Remove gloss word-count limits from validator
