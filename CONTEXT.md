@@ -285,6 +285,23 @@ Decisions:
 
 _Avoid_: silently replacing single-word glosses with phrases (Rule A synonyms are legit); widening glosses to phrases that exceed 6 words.
 
+**Lexical Loop Guard**:
+A gloss-policy constraint that prevents a gloss from sending the learner back to a word that's roughly as hard as the headword. The gloss's job is to **explain the headword in a simpler register**, not to swap one C1 word for another C1 word. Three failure modes are tracked; each is a `loop_type` value in the review ledger:
+
+- **`word_family_loop`** — the gloss shares a morphological root or derivational family with the headword, so the learner can't use the gloss to decode the headword without already knowing it. Example: `additionally → in addition` (both `addit-*` root) — replace with `also`. Detection: headword stem appears in any gloss chunk stem (Porter stemmer).
+
+- **`antonym_loop`** — the gloss uses a negation of an antonym that itself is at the same or higher learner difficulty. The negation inverts the difficulty instead of reducing it. Example: `permanent → not temporary` (`temporary` is B1, negation adds parse cost) — replace with `long-lasting`. Detection: gloss starts with `not|no|never|without|un-` followed by an academic-ish word.
+
+- **`hard_synonym_drift`** — the gloss is a single synonym at the same or higher learner difficulty, often a contrast pair. Example: `mediate → arbitrate` (mediator vs arbitrator are distinct roles). This is the failure mode already covered by **`precision_phrase`**; the `loop_type` tag lets the ledger distinguish it from the other two loops for reporting. Detection: gloss is 1 chunk, gloss word count ≤ 2, gloss doesn't share headword stem (so not `word_family_loop`) and isn't a `not+`-prefix antonym (so not `antonym_loop`).
+
+`Lexical Loop Guard` does **not** introduce a new rule code — `precision_phrase` remains the repair rule. The `loop_type` field is a tag on review ledger entries and audit row metadata, not a separate decision. The detector (`tools/_detect_lexical_loops.py`) is **read-only**: it scans audit + ledger rows and reports likely loop candidates. It must NOT auto-fix; human review remains required because (a) some loops are intentional (e.g. precision_phrase is the planned fix), and (b) false positives are common in single-word overlap detection (e.g. `legal → law` shares a stem, but the gloss is genuinely simpler).
+
+Worked example — `additionally|adverb|B2`:
+- Current gloss: `in addition` (loop_type=`word_family_loop` — both share `addit-*`).
+- Repair: `also` (no shared stem, no antonym, no hard synonym).
+- rule_applied: `precision_phrase` (same rule as before; the loop_type tag is metadata, not a different rule).
+
+_Avoid_: flagging any same-stem as a loop (false-positive trap); using `Lexical Loop Guard` as a separate validator that gates apply (it is read-only reporting); collapsing all loops into one bucket (the 3 modes are reported separately so reviewers see the right pattern).
 **Policy Review Ledger**:
 A separate JSONL file (`data/gloss_policy_review_p4c.jsonl` for the P4C pass, future passes use the same convention) that records the **human review decision** for every `policy_review` row. The ledger is the source of truth for which `policy_review` rows have been triaged; the audit master row stays as-is and gains nothing from the review.
 

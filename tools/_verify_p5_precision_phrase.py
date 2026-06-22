@@ -197,10 +197,11 @@ def main() -> int:
         if audit_row.get('fix_status', '').strip() not in (
             'p5_precision_phrase_repaired',
             'p5b_manual_review_repaired',
+            'p5c_loop_guard_repaired',
         ):
             failures.append(
                 f'  ({word}, {pos}, {cefr}) audit fix_status={audit_row.get("fix_status")!r} '
-                f'!= expected p5_precision_phrase_repaired | p5b_manual_review_repaired'
+                f'!= expected p5_precision_phrase_repaired | p5b_manual_review_repaired | p5c_loop_guard_repaired'
             )
             continue
         # Verify gate_status=pass and word_count
