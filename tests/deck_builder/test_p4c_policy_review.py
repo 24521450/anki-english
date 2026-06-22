@@ -387,6 +387,7 @@ class TestCrossCutInvariants:
             'p5b_manual_review_repaired',
             'p5c_loop_guard_repaired',
             'p5d_manual_review_repaired',
+            'p6_multisense_harddrop_repaired',
         }
         for rec in ledger:
             if rec.get('decision') != 'keep_single':

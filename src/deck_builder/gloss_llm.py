@@ -108,11 +108,16 @@ VALID_RULE_CODES = (
     'rule_b_pick2_addendum',     # 3+ senses, physical/tactile+abstract → 2 with |
     '2sense_samedomain',         # 2 senses, same domain → 2 with ;
     '2sense_distinct',           # 2 senses, different domains → 2 with |
+    '3sense_distinct',           # LEGACY (pre-P6): 3+ senses, all distinct → 3+ with |
+    # Normalized to `multi_sense_distinct` on P6 import; retained for
+    # backward compat with historical rows.
+    'multi_sense_distinct',      # 2+ distinct senses, keep all with | (P6, replaces
+                                 # the "NEVER pick 3" cap on distinct multisense cases)
     'concrete_1sense',           # 1 sense, no special rule
     'multi_pos_pick1',           # multi-POS, all variants → 1 word
     'safety_net',                # 1 sense, domain-restricted, kept per Rule C
     'precision_phrase',          # single-word gloss would shift semantic type
-                                 # (e.g. contrast_pair, type_narrowing) → 2-6 word phrase
+                                 # (e.g. contrast_pair, type_narrowing) → phrase form
 )
 
 

@@ -200,8 +200,9 @@ def main() -> int:
                     'p5b_manual_review_repaired',
                     'p5c_loop_guard_repaired',
                     'p5d_manual_review_repaired',
+                    'p6_multisense_harddrop_repaired',
                 ):
-                    # Drift tolerated: P5/P5B/P5C/P5D verdict superseded P4C keep_single.
+                    # Drift tolerated: P5/P5B/P5C/P5D/P6 verdict superseded P4C keep_single.
                     matched_keep.append((rec, r_drift))
                     print(
                         f'  DRIFT: ({rec.get("word")}, {rec.get("pos")}, '
@@ -326,13 +327,14 @@ def main() -> int:
             n_keep_unchanged += 1
             continue
         # Drift tolerated (P5/P5B verdict superseded this keep_single)
-        # Drift tolerated (P5/P5B/P5C/P5D verdict superseded this keep_single)
+        # Drift tolerated (P5/P5B/P5C/P5D/P6 verdict superseded this keep_single)
         fix_status = (r.get('fix_status') or '').strip()
         if fix_status in (
             'p5_precision_phrase_repaired',
             'p5b_manual_review_repaired',
             'p5c_loop_guard_repaired',
             'p5d_manual_review_repaired',
+            'p6_multisense_harddrop_repaired',
         ):
             n_keep_drift += 1
             continue

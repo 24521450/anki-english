@@ -1,0 +1,282 @@
+"""P6 Multisense Hard-Drop Repair -- verifier.
+
+Reads:
+  - `data/multisense_harddrop_p6_decisions.jsonl` (117 P6 decisions)
+  - `data/audit_full_deck_v2.jsonl` (post-apply)
+  - `English Academic Vocabulary.txt` (post-apply)
+  - `data/anki_notes.jsonl` (post-rebuild)
+
+Asserts structural invariants. Idempotent — re-runnable any time after
+P6 apply to validate the patch is fully reflected in the deck.
+
+Required checks (all must hold):
+
+  1. Decisions file has exactly 117 rows.
+  2. All decisions use `rule_after = multi_sense_distinct`.
+  3. All decisions' `new_gloss` passes `validate_verdict` (post-P5D).
+  4. All decisions' `gloss_word_count` matches actual count.
+  5. Audit row count remains 2487; no duplicate guards.
+  6. Exactly 117 audit rows reflect P6 decisions
+     (`fix_status = p6_multisense_harddrop_repaired`,
+     `gloss_after = decision.new_gloss`).
+  7. Exactly 114 TXT rows sync; exactly 3 deferred keys match the
+     known set: harbor|verb|UNCLASSIFIED, invading|verb|UNCLASSIFIED,
+     shortsighted|adjective|UNCLASSIFIED.
+  8. No P6 audit row is mis-classified as `rule_shape_contradiction`
+     by `_audit_gloss_policy_coverage`.
+
+Run: `python -m tools._verify_p6_multisense_harddrop`
+"""
+from __future__ import annotations
+
+import json
+import re
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+DECISIONS_PATH = PROJECT_ROOT / 'data' / 'multisense_harddrop_p6_decisions.jsonl'
+AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
+TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+
+EXPECTED_DEFERRED_KEYS: set[tuple[str, str, str]] = {
+    ('harbor', 'verb', 'UNCLASSIFIED'),
+    ('invading', 'verb', 'UNCLASSIFIED'),
+    ('shortsighted', 'adjective', 'UNCLASSIFIED'),
+}
+
+
+def _load_jsonl(path: Path) -> list[dict]:
+    if not path.exists():
+        raise FileNotFoundError(f'Not found: {path}')
+    return [json.loads(l) for l in path.read_text(encoding='utf-8').splitlines() if l.strip()]
+
+
+def _key(r: dict) -> tuple[str, str, str]:
+    return (
+        (r.get('word') or '').strip().lower(),
+        (r.get('pos') or '').strip().lower(),
+        (r.get('cefr') or '').strip().upper(),
+    )
+
+
+def _compute_word_count(gloss: str) -> int:
+    if not gloss:
+        return 0
+    chunks = [c.strip() for c in re.split(r'\s*[|;]\s*', gloss.strip()) if c.strip()]
+    return sum(len(c.split()) for c in chunks)
+
+
+def main() -> int:
+    print('=' * 72)
+    print('P6 MULTISENSE HARD-DROP REPAIR -- VERIFIER')
+    print('=' * 72)
+
+    failures: list[str] = []
+
+    # Load inputs.
+    print('\n[1] Loading inputs...')
+    try:
+        decisions = _load_jsonl(DECISIONS_PATH)
+        audit = _load_jsonl(AUDIT_PATH)
+    except FileNotFoundError as e:
+        print(f'FATAL: {e}')
+        return 1
+    print(f'  Decisions: {len(decisions)}')
+    print(f'  Audit:     {len(audit)}')
+
+    if len(decisions) != 117:
+        failures.append(f'  decisions has {len(decisions)} rows (expected 117)')
+    if len(audit) != 2487:
+        failures.append(f'  audit has {len(audit)} rows (expected 2487)')
+
+    # Distribution + invariant checks per decision.
+    from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
+
+    n_qa = 0
+    seen_guards: dict[tuple, int] = {}
+    seen_rule_after: set[str] = set()
+    print('\n[2] Per-decision invariants...')
+    for d in decisions:
+        word = (d.get('word') or '').strip()
+        pos = (d.get('pos') or '').strip()
+        cefr = (d.get('cefr') or '').strip()
+        rule_after = (d.get('rule_after') or '').strip()
+        gloss = (d.get('new_gloss') or '').strip()
+        old_gloss = (d.get('old_gloss') or '').strip()
+        sep = (d.get('separator') or '').strip()
+        wc = d.get('gloss_word_count', 0) or 0
+        fix_status = (d.get('fix_status') or '').strip()
+
+        seen_rule_after.add(rule_after)
+        g = _key(d)
+        seen_guards[g] = seen_guards.get(g, 0) + 1
+        if d.get('qa_normalized'):
+            n_qa += 1
+
+        if rule_after != 'multi_sense_distinct':
+            failures.append(
+                f'  ({word}, {pos}, {cefr}) rule_after={rule_after!r} '
+                f'(expected multi_sense_distinct)'
+            )
+        if not gloss:
+            failures.append(f'  ({word}, {pos}, {cefr}) new_gloss empty')
+            continue
+        if gloss == old_gloss:
+            failures.append(
+                f'  ({word}, {pos}, {cefr}) new_gloss == old_gloss ({gloss!r})'
+            )
+        actual_wc = _compute_word_count(gloss)
+        if actual_wc != wc:
+            failures.append(
+                f'  ({word}, {pos}, {cefr}) gloss_word_count={wc} '
+                f'!= actual {actual_wc}'
+            )
+        if fix_status != 'p6_multisense_harddrop_repaired':
+            failures.append(
+                f'  ({word}, {pos}, {cefr}) fix_status={fix_status!r} '
+                f'(expected p6_multisense_harddrop_repaired)'
+            )
+        chunks = [c.strip() for c in re.split(r'\s*[|;]\s*', gloss) if c.strip()]
+        v = validate_verdict(word, gloss, sep, len(chunks))
+        if v:
+            failures.append(
+                f'  ({word}, {pos}, {cefr}) new_gloss={gloss!r} fails validator: {v}'
+            )
+
+    if seen_rule_after != {'multi_sense_distinct'}:
+        failures.append(
+            f'  rule_after values: {seen_rule_after} (expected {{multi_sense_distinct}})'
+        )
+    dups = [g for g, n in seen_guards.items() if n > 1]
+    if dups:
+        failures.append(f'  {len(dups)} duplicate (word, pos, cefr) guards')
+
+    print(f'  Validated {len(decisions)} decisions ({n_qa} QA-normalized)')
+    print(f'  rule_after values: {seen_rule_after}')
+
+    # Audit reflection. After P6 apply, the audit row at (word,pos,cefr)
+    # has been mutated. Match by key, then check the row reflects the
+    # P6 decision (gloss_after == new_gloss, rule_applied ==
+    # multi_sense_distinct, fix_status == p6_multisense_harddrop_repaired).
+    print('\n[3] Audit reflection...')
+    dec_by_key = {_key(d): d for d in decisions}
+    audit_by_key: dict[tuple, list[dict]] = {}
+    for r in audit:
+        audit_by_key.setdefault(_key(r), []).append(r)
+    n_synced = 0
+    for d in decisions:
+        k = _key(d)
+        rows = audit_by_key.get(k, [])
+        if not rows:
+            failures.append(f'  audit missing for {k}')
+            continue
+        if len(rows) > 1:
+            failures.append(
+                f'  audit has {len(rows)} rows for {k} (expected 1)'
+            )
+            continue
+        target = rows[0]
+        if target.get('fix_status', '').strip() != 'p6_multisense_harddrop_repaired':
+            failures.append(
+                f'  audit {k} fix_status={target.get("fix_status")!r} '
+                f'(expected p6_multisense_harddrop_repaired)'
+            )
+        if target.get('gloss_after', '').strip() != (d.get('new_gloss') or '').strip():
+            failures.append(
+                f'  audit {k} gloss_after={target.get("gloss_after")!r} '
+                f'!= decision new_gloss={(d.get("new_gloss") or "")!r}'
+            )
+        if target.get('rule_applied', '').strip() != 'multi_sense_distinct':
+            failures.append(
+                f'  audit {k} rule_applied={target.get("rule_applied")!r} '
+                f'(expected multi_sense_distinct)'
+            )
+        n_synced += 1
+    print(f'  Audit rows synced: {n_synced}/117')
+
+    # TXT reflection.
+    print('\n[4] TXT reflection...')
+    txt_keys: dict[tuple, str] = {}
+    for line in TXT_PATH.read_text(encoding='utf-8').splitlines():
+        if line.startswith('#') or not line.strip():
+            continue
+        parts = line.split('\t')
+        if len(parts) < 17:
+            continue
+        k = (
+            parts[3].strip().lower(),
+            parts[4].strip().lower(),
+            parts[14].strip().upper(),
+        )
+        txt_keys[k] = parts[6]
+    n_txt_synced = 0
+    missing_in_txt: set[tuple] = set()
+    for d in decisions:
+        k = _key(d)
+        if k not in txt_keys:
+            missing_in_txt.add(k)
+            continue
+        if txt_keys[k].strip() != (d.get('new_gloss') or '').strip():
+            failures.append(
+                f'  TXT {k} def={txt_keys[k]!r} '
+                f'!= decision new_gloss={(d.get("new_gloss") or "")!r}'
+            )
+        n_txt_synced += 1
+    print(f'  TXT cells synced: {n_txt_synced}/117; missing: {len(missing_in_txt)}')
+    for k in sorted(missing_in_txt):
+        print(f'    missing: {k}')
+    if missing_in_txt != EXPECTED_DEFERRED_KEYS:
+        unexpected = missing_in_txt - EXPECTED_DEFERRED_KEYS
+        missing_from_expected = EXPECTED_DEFERRED_KEYS - missing_in_txt
+        if unexpected:
+            failures.append(f'  unexpected deferred keys: {unexpected}')
+        if missing_from_expected:
+            failures.append(
+                f'  expected deferred keys missing: {missing_from_expected}'
+            )
+    else:
+        print(f'  Deferred keys match expected: {sorted(EXPECTED_DEFERRED_KEYS)}')
+
+    # No rule_shape_contradiction introduced for P6 rows.
+    print('\n[5] Rule-shape check...')
+    from tools._audit_gloss_policy_coverage import (  # noqa: E402
+        PICK_RULES, _classify_row,
+    )
+    for d in decisions:
+        k = _key(d)
+        rows = audit_by_key.get(k, [])
+        if not rows:
+            continue
+        target = rows[0]
+        bucket, reason = _classify_row(target)
+        if bucket == 'rule_shape_contradiction':
+            failures.append(
+                f'  P6 row {k} mis-classified as rule_shape_contradiction: {reason}'
+            )
+    print(f'  No P6 row is rule_shape_contradiction.')
+
+    # Final verdict.
+    print()
+    if failures:
+        print('=' * 72)
+        print(f'FAIL -- P6 verification has {len(failures)} error(s):')
+        for f in failures[:30]:
+            print(f)
+        if len(failures) > 30:
+            print(f'  ... and {len(failures) - 30} more')
+        print('=' * 72)
+        return 1
+    print('=' * 72)
+    print(
+        f'PASS -- P6 verified: 117 decisions; 117 audit rows synced; '
+        f'{n_txt_synced} TXT cells synced; 3 expected deferred keys.'
+    )
+    print('=' * 72)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

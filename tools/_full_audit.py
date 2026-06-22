@@ -32,8 +32,11 @@ print(f"Loaded {len(records)} records\n")
 # ============================================================
 KNOWN_RULES = {
     "2sense_samedomain", "2sense_distinct",
+    "3sense_distinct",  # legacy pre-P6
+    "multi_sense_distinct",  # P6: N distinct senses, kept with |
     "rule_b_pick1", "rule_b_pick2", "rule_b_pick2_addendum",
     "concrete_1sense", "multi_pos_pick1", "multi_pos_pick2",
+    "precision_phrase", "safety_net",  # P5/P5D additions
 }
 
 layer_a_issues = defaultdict(list)

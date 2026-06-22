@@ -224,7 +224,16 @@ _Avoid_: synonym rule, Rule A
 If the def has 3+ senses: pick 1 gloss if all senses are variants or sub-nuances of the same core concept; pick 2 glosses (`|`) if first 2 cover clearly different domains, usage contexts, or grammatical roles. **NEVER pick 3.** Drop a sense (even if not sub-nuance) if domain-restricted (music, law, finance, medicine) AND unlikely in general IELTS. After picking, apply Rule A or the separator semantics.
 _Avoid_: pick rule, 3+ rule, Rule B
 
-**Gloss Rule B Addendum — Physical/Tactile vs Abstract**:
+> **P6 UPDATE (2026-06-22):** the **"NEVER pick 3"** clause above is **retired**
+> for distinct-multisense cases. When 2+ senses are *distinct* (not near-
+> synonyms, not sub-nuances), keep all of them with `|`. The new rule code
+> `multi_sense_distinct` formalizes this and supersedes the legacy
+> `3sense_distinct` / `4sense_distinct` codes (still kept in
+> `VALID_RULE_CODES` for backward compat with historical rows). Worked
+> example: `transcribe|verb|UNCLASSIFIED` def has 3 distinct senses (write
+> down | phonetic notation | rewrite music) → P6 keeps all 3 with `|`,
+> not 2. The "max 2" cap was a heuristic for *variant* senses, not a hard
+> cap on *distinct* senses — see ADR 0005 P6 addendum.**Gloss Rule B Addendum — Physical/Tactile vs Abstract**:
 When judging "variants vs different domains" for 3+ sense cluster, treat a **physical/tactile** sense (touching, holding, operating a physical object with hands) as a different domain from an **abstract** sense (managing a situation, an idea, or an emotion) — even if a single gloss word could loosely cover both. Pick 2 in this case. Example: `handle` has "deal with situation" (abstract), "touch/hold object" (physical), "control vehicle" (physical) → abstract + physical = different domains → pick 2 with `|`.
 _Avoid_: tactile rule, physical rule, Rule B addendum
 
@@ -238,7 +247,7 @@ A `Gloss Verdict` must have a separator/chunk shape consistent with its `rule_ap
 | `rule_applied` | Required shape |
 |---|---|
 | `rule_b_pick1`, `concrete_1sense`, `multi_pos_pick1`, `precision_phrase` | one chunk allowed (no separator) |
-| `2sense_distinct`, `3sense_distinct`, `rule_b_pick2`, `rule_b_pick2_addendum`, `multi_pos_pick2` | **must have more than one chunk** (`|` or `;`) |
+| `2sense_distinct`, `3sense_distinct`, `multi_sense_distinct` (P6), `rule_b_pick2`, `rule_b_pick2_addendum`, `multi_pos_pick2` | **must have more than one chunk** (`|` or `;`) |
 | `2sense_samedomain` | one chunk allowed when Rule A collapses near-synonyms; otherwise `;` or `|` may be justified by review |
 | `pos_aware_gloss` | policy review (one chunk may be intentional, see P4B addendum) |
 

@@ -38,6 +38,8 @@ LEDGER_PATH = PROJECT_ROOT / 'data' / 'gloss_policy_review_p4c.jsonl'
 # Rules that require multi-chunk gloss (per CONTEXT.md § Rule-Shape Consistency).
 PICK_RULES = {
     '2sense_distinct', '3sense_distinct',
+    'multi_sense_distinct',  # P6: supersedes '3sense_distinct' / '4sense_distinct'.
+                              # N distinct senses kept with `|` (N >= 2, no upper cap).
     'rule_b_pick2', 'rule_b_pick2_addendum',
     'multi_pos_pick2',
 }
