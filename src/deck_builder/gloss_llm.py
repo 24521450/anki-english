@@ -6,7 +6,12 @@ Per user (2026-06-16):
 - 1 nghĩa: 1 gloss, không có ;
 - 2 nghĩa khác nhau: "X ; Y"
 - Abstract words OK với phrase
-- Output: 2-6 words learner-friendly, NO quotes
+- Output: concise learner-friendly gloss, NO quotes
+
+Word-count limits were REMOVED 2026-06-22 (P5D). The validator
+(`validate_verdict` below) only checks structure + headword-leak.
+The producer should still aim for short, clear glosses — but length
+is no longer a hard gate.
 
 Category auto-detect (no M3 cost):
 - concrete: def has 1 sense, 1 obvious object/concept
@@ -69,7 +74,7 @@ class GlossVerdict:
     pos: str
     cefr: str
     decision: Literal['gloss', 'no-gloss']
-    gloss: str  # 2-6 words, max 2 semicolon-separated
+    gloss: str  # learner-friendly gloss; length not validator-capped (P5D 2026-06-22)
     confidence: float = 1.0  # 0-1, M3 self-assessed
     reasoning: str = ''  # optional, e.g. why 'no-gloss'
     category: str = ''  # auto-detected: concrete/abstract/multi-sense-3+/multi-pos
@@ -106,6 +111,8 @@ VALID_RULE_CODES = (
     'concrete_1sense',           # 1 sense, no special rule
     'multi_pos_pick1',           # multi-POS, all variants → 1 word
     'safety_net',                # 1 sense, domain-restricted, kept per Rule C
+    'precision_phrase',          # single-word gloss would shift semantic type
+                                 # (e.g. contrast_pair, type_narrowing) → 2-6 word phrase
 )
 
 
@@ -121,7 +128,7 @@ def validate_verdict(
     count: int,
     decision: str = 'gloss',
 ) -> list[str]:
-    """Validate a verdict against 3 auto-detectable hard rules.
+    """Validate a verdict against 2 auto-detectable hard rules.
 
     Returns list of violation strings (empty = OK). Never raises — caller decides
     what to do (skip / warn / abort).
@@ -131,14 +138,18 @@ def validate_verdict(
       1. SEPARATOR/COUNT/CONTENT CONSISTENCY:
          - declared separator field must match actual '|' / ';' in gloss
          - declared count must match actual chunk count
+         - empty chunk (e.g. `x |` or `| x` or `x ; ; y`) is a violation
 
-      2. WORD COUNT RANGE:
-         - total content words (excluding separators) must be 1-6
-         - 1-word is allowed (Rule A synonym-collapse example: 'ridiculous')
-
-      3. HEADWORD IN CHUNK:
+      2. HEADWORD IN CHUNK:
          - any chunk equal to headword (case-insensitive) is a violation
          - covers self-referential pick1 (gloss==headword) AND leak in multi-chunk
+         - single-word gloss that stems-matches the headword is a violation
+           (morphological_variant)
+         - multi-word gloss containing the exact headword token is a violation
+
+    REMOVED 2026-06-22 (P5D): total word count 1-6 limit and per-chunk word
+    limits (`pick1` ≤6, `|` ≤4, `;` ≤3). Human-filled glosses are trusted
+    over arbitrary numeric length caps — see ADR 0005 addendum.
 
     Bypassed: decision='no-gloss' (no-gloss verdicts skip all checks).
     """
@@ -151,9 +162,17 @@ def validate_verdict(
     word_lower = word.strip().lower()
     gloss_stripped = gloss.strip()
 
+    # Empty gloss + decision='gloss' is a hard fail.
+    if not gloss_stripped:
+        violations.append('empty_gloss: gloss is empty but decision=gloss')
+
     # Compute actual structure
     actual_sep = '|' if '|' in gloss_stripped else ';' if ';' in gloss_stripped else 'none'
     raw_chunks = re.split(r'\s*[|;]\s*', gloss_stripped)
+    # `chunks` drops empty raw chunks (separator with empty side) so
+    # `x |` and `x ; ; y` collapse to a smaller list. We use both
+    # `raw_chunks` (for empty-chunk detection) and `chunks` (for
+    # structural checks below).
     chunks = [c.strip() for c in raw_chunks if c.strip()]
     actual_count = len(chunks)
 
@@ -167,38 +186,13 @@ def validate_verdict(
             f'count_mismatch: declared={count}, actual_chunks={actual_count}'
         )
 
-    # Check 2: word count range (1-6 total)
-    total_words = len(re.sub(r'[|;]', ' ', gloss_stripped).split())
-    if not 1 <= total_words <= 6:
-        violations.append(
-            f'word_count_out_of_range: total={total_words} (must be 1-6)'
-        )
-
-    # Per-chunk limits (from prompt):
-    #   pick1 (none): up to 6 words
-    #   pick2 with '|': each side 1-4 words
-    #   pick2 with ';': each side 1-3 words
-    per_chunk_max = {
-        'none': 6,
-        '|': 4,
-        ';': 3,
-    }.get(actual_sep, 6)
-    for i, chunk in enumerate(chunks):
-        cw = len(chunk.split())
-        if cw == 0:
+    # Empty chunk check (separator with empty side, e.g. `x |` or `x ; ; y`).
+    # Iterate `raw_chunks` (BEFORE filter) so empty entries are visible.
+    for i, raw in enumerate(raw_chunks):
+        if not raw.strip():
             violations.append(f'empty_chunk[{i}]')
-        elif cw > per_chunk_max:
-            violations.append(
-                f'chunk_word_count[{i}]={cw} > max={per_chunk_max} for sep={actual_sep!r}'
-            )
 
-    # Total = 1 + multi-chunk is structurally impossible (separator with empty sides)
-    if total_words == 1 and actual_count > 1:
-        violations.append(
-            f'total=1 with multi_chunk={actual_count} (separator with empty sides)'
-        )
-
-    # Check 3: headword in chunk (covers both self-ref and leak)
+    # Check 2: headword in chunk (covers both self-ref and leak)
     from nltk.stem import PorterStemmer
     ps = PorterStemmer()
 
@@ -214,11 +208,11 @@ def validate_verdict(
                     f'headword_in_chunk[{i}]: chunk={chunk!r} == headword={word!r}'
                 )
                 continue
-            
+
             # Split chunk into clean tokens
             tokens = [clean_token(t) for t in re.split(r"[\s\-\']", chunk) if t.strip()]
             tokens = [t for t in tokens if t]
-            
+
             if len(tokens) == 1:
                 # Single-word chunk: reject if its stem matches the headword stem (lazy morphological variants)
                 gw_stem = ps.stem(tokens[0])
@@ -232,7 +226,7 @@ def validate_verdict(
                 def_part = parts[1] if len(parts) > 1 else chunk
                 def_words = [clean_token(t) for t in re.split(r"[\s\-\']", def_part) if t.strip()]
                 def_words = [t for t in def_words if t]
-                
+
                 if word_lower in def_words:
                     violations.append(
                         f'headword_in_definition[{i}]: headword {word!r} found in definition part of chunk {chunk!r}'
@@ -260,11 +254,18 @@ def summarize_violations(violations_by_key: dict[str, list[str]]) -> None:
             print(f'    {k}: {c}')
 
 
-GLOSS_SYSTEM_PROMPT = """You generate 2-6 word learner-friendly glosses for vocabulary flashcards.
+GLOSS_SYSTEM_PROMPT = """You generate concise learner-friendly glosses for vocabulary flashcards.
 
-Given a dictionary definition, paraphrase it in 2-6 words. Capture the CORE meaning
+Given a dictionary definition, paraphrase it concisely. Capture the CORE meaning
 in simple, memorable language. Drop grammatical connectors and hedges. Skip register
 labels (formal, informal, etc.). Output ONLY the gloss, no quotes, no explanation.
+
+LENGTH GUIDANCE (post-P5D 2026-06-22): use the shortest clear learner-friendly
+gloss; do not drop meaning just to hit a word count. The validator no longer
+hard-caps total or per-chunk word counts — length is a soft judgment call,
+not a hard gate. When a gloss needs more than 6 words to capture the headword's
+full semantic coverage (e.g. multi-sense C1/C2 academic vocabulary), prefer
+the longer accurate gloss over a forced-shortened one that drops sense coverage.
 
 The input def may contain multiple senses separated by "|" (pipe, no spaces).
 Within a sense, sub-chunks (Oxford "act of finding sb guilty; the fact of having been found guilty")
@@ -316,9 +317,6 @@ MULTI-SENSE 2 RULES (kept from before, with new separator + addendum):
 - 2 senses, one physical/tactile + one abstract: "X | Y" (different domains per addendum).
 
 PHYSICAL RULES:
-- Each side of "|" must independently be 1-4 words.
-- Each side of ";" must independently be 1-3 words.
-- Total content words across both sides: 2-6 (not counting separator itself).
 - No quotes, no period, no preamble.
 - If the definition is unintelligible or unscorable, output: NO-GLOSS
 

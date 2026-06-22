@@ -130,7 +130,9 @@ def test_is_valid_handles_self_ref():
 
 
 def test_is_valid_handles_long():
-    assert not is_valid('test', 'one two three four five six seven')
+    # P5D (2026-06-22) removed word-count limits from `validate_verdict`.
+    # Long glosses now PASS as long as structure + headword are clean.
+    assert is_valid('test', 'one two three four five six seven')
 
 
 def test_negations_preserved_in_shorten():

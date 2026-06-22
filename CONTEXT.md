@@ -186,13 +186,14 @@ _Files: `src/deck_builder/gamma_llm.py` (schema + export), `src/deck_builder/bet
 
 ### Gloss pipeline
 
-The layer that produces 2-6 word learner-friendly paraphrases of Oxford's
-verbose definitions, shown on the back card instead of the full Oxford text.
+The layer that produces learner-friendly paraphrases of Oxford's verbose
+definitions, shown on the back card instead of the full Oxford text.
+Length is **not** hard-capped post-P5D (2026-06-22) — the human/M3
+verdict decides it; the validator only checks structure + headword-leak.
 Decision recorded in [`docs/adr/0005-gloss-pipeline-rendering.md`](./docs/adr/0005-gloss-pipeline-rendering.md).
 
 **Gloss**:
-A short (1-6 words total) learner-friendly paraphrase of a single card's def.
-May be 1 chunk (1 sense), 2 chunks joined by `|` (distinct senses rendered as separate card rows), or 2 chunks joined by `;` (variants/sub-nuances rendered in 1 row). Stored in the Anki note's `Definition` field as the def column — replaces the long Oxford def at apply time.
+A short learner-friendly paraphrase of a single card's def. Word count is **not** hard-capped by the validator (P5D 2026-06-22 removed the 1-6 word limit and per-chunk limits) — the human/M3 verdict decides length, and the validator only checks structure + headword-leak. `gloss_word_count` is preserved as metadata/reporting. May be 1 chunk (1 sense), 2 chunks joined by `|` (distinct senses rendered as separate card rows), or 2 chunks joined by `;` (variants/sub-nuances rendered in 1 row). Stored in the Anki note's `Definition` field as the def column — replaces the long Oxford def at apply time.
 _Avoid_: short def, mini definition, paraphrase
 
 **Gloss Verdict**:
@@ -204,7 +205,7 @@ The batch script (`tools/_m3_rerun_v2.py`) that re-generates M3 verdicts for the
 _Avoid_: regenerate verdicts, gloss rebuild
 
 **Gloss Validation Gate**:
-The 4-rule automated check in `validate_verdict(word, gloss, separator, count)` in `src/deck_builder/gloss_llm.py`. Returns `list[str]` of violations (empty = pass, never raises). Rules: (1) separator/count/content consistency, (2) word count 1-6 total + per-chunk 1-3 (`;`) / 1-4 (`|`) / 1-6 (none), (3) headword in any chunk (catches self-ref + leak), (4) no-gloss bypass. Defense-in-depth: called from 3 sites (M3 rerun, apply-to-txt, `__post_init__`).
+The auto-detectable structural check in `validate_verdict(word, gloss, separator, count)` in `src/deck_builder/gloss_llm.py`. Returns `list[str]` of violations (empty = pass, never raises). **As of P5D (2026-06-22)**, the gate enforces 2 rules: (1) separator/count/content consistency (incl. empty-chunk detection), (2) headword in any chunk (catches self-ref + leak + morphological variants). The word-count limits (total 1-6, per-chunk 1-3/1-4/1-6) were **removed** — human-filled glosses are trusted over arbitrary numeric length caps. `no-gloss` decision bypasses all checks. Defense-in-depth: called from 3 sites (M3 rerun, apply-to-txt, `__post_init__`).
 _Avoid_: gate, validator, gloss checker
 
 **Apply-Step Skip**:
@@ -236,13 +237,100 @@ A `Gloss Verdict` must have a separator/chunk shape consistent with its `rule_ap
 
 | `rule_applied` | Required shape |
 |---|---|
-| `rule_b_pick1`, `concrete_1sense`, `multi_pos_pick1` | one chunk allowed (no separator) |
+| `rule_b_pick1`, `concrete_1sense`, `multi_pos_pick1`, `precision_phrase` | one chunk allowed (no separator) |
 | `2sense_distinct`, `3sense_distinct`, `rule_b_pick2`, `rule_b_pick2_addendum`, `multi_pos_pick2` | **must have more than one chunk** (`|` or `;`) |
 | `2sense_samedomain` | one chunk allowed when Rule A collapses near-synonyms; otherwise `;` or `|` may be justified by review |
 | `pos_aware_gloss` | policy review (one chunk may be intentional, see P4B addendum) |
 
 A `rule_b_pick2` verdict with a single-chunk gloss is a **rule-shape contradiction** — the rule says "pick 2" but the gloss has only 1. Caught and fixed by P4B (`tools/_apply_p4b_rule_shape_fix.py`). The reverse — many `def_before` segments collapsing to one gloss — is **not** automatically a bug: Rule A allows near-synonym collapse, Rule B allows same-concept collapse, Rule C forces retention. Use `tools/_audit_gloss_policy_coverage.py` to classify rows into `allowed_single_gloss` / `rule_shape_contradiction` / `policy_review` / `metadata_error` buckets.
 _Avoid_: rule-shape mismatch, "1-chunk with multi-def def_before is a bug" (it isn't always — see Rule A/B/C).
+
+**Precision Phrase**:
+A single-chunk gloss that uses a phrase (typically 2-6 words but **not** length-capped after P5D 2026-06-22) instead of a single-word synonym, because the single-word synonym would shift into a nearby contrast word or narrow the headword's semantic type. The phrase captures the headword's meaning more precisely while staying learner-friendly.
+
+When to use:
+- The one-word synonym shifts into a nearby **contrast pair**: `mediate → arbitrate` (mediator helps parties; arbitrator decides) — use `help resolve a dispute`.
+- The one-word synonym **narrows the semantic type**: `solo (noun) → recital` (recital is a performance event; `solo` covers composition, passage, OR performance by one person) — use `single-performer music`.
+- A single-word gloss would be a **near-synonym** that learners might confuse with the headword or with a related concept.
+
+When NOT to use:
+- The single-word synonym is a true synonym (Rule A collapse is correct).
+- The def_before is a single concrete sense with no type-narrowing risk.
+- The headword is C1+ academic vocabulary where learners benefit from the compact single-word form.
+
+`precision_phrase` is a first-class rule code in `VALID_RULE_CODES`. The audit policy tool classifies it as `allowed_single_gloss` (one-chunk allowed). The Precision Phrase Ledger (`data/gloss_precision_phrase_p5.jsonl` for the P5 pass) records the human review decision for each candidate.
+
+Schema:
+```json
+{
+  "word": "mediate", "pos": "verb", "cefr": "C2",
+  "rule_applied": "concrete_1sense",   // current rule BEFORE P5 review
+  "def_before": "to try to end a situation between two or more people...",
+  "old_gloss": "arbitrate",
+  "candidate_gloss": "help resolve a dispute",   // proposed (or current if keep)
+  "decision": "repair_gloss" | "review_candidate" | "keep_current",
+  "new_gloss": "help resolve a dispute",         // required iff repair_gloss; null otherwise
+  "rule_after": "precision_phrase",              // rule to write post-repair; null otherwise
+  "separator": "none",                           // derived from new_gloss for repair
+  "gloss_word_count": 4,                         // computed
+  "reason": "mediator helps parties reach agreement; arbitrator decides the dispute",
+  "risk_type": "contrast_pair" | "type_narrowing" | "overgeneralized_synonym" | "domain_loss" | "multi_pos_loss",
+  "p5_version": "2026-06-21"
+}
+```
+
+Decisions:
+- `repair_gloss` — clear semantic loss with a phrase (no length cap post-P5D 2026-06-22) that captures the headword's meaning precisely. Updates audit row's `gloss_after`, `rule_applied`, `separator`, `gloss_word_count`, `gate_status`, `fix_status`; updates TXT def cell; triggers `tools/build_notes.py` to regenerate JSONL.
+- `review_candidate` — heuristic candidate flagged for future human review. No audit change.
+- `keep_current` — single-word gloss reviewed and confirmed as adequate (Rule A synonym collapse legit, no precision loss). No audit change. Recorded so re-scans don't keep flagging it.
+
+_Avoid_: silently replacing single-word glosses with phrases (Rule A synonyms are legit); widening glosses to phrases that exceed 6 words.
+
+**Lexical Loop Guard**:
+A gloss-policy constraint that prevents a gloss from sending the learner back to a word that's roughly as hard as the headword. The gloss's job is to **explain the headword in a simpler register**, not to swap one C1 word for another C1 word. Three failure modes are tracked; each is a `loop_type` value in the review ledger:
+
+- **`word_family_loop`** — the gloss shares a morphological root or derivational family with the headword, so the learner can't use the gloss to decode the headword without already knowing it. Example: `additionally → in addition` (both `addit-*` root) — replace with `also`. Detection: headword stem appears in any gloss chunk stem (Porter stemmer).
+
+- **`antonym_loop`** — the gloss uses a negation of an antonym that itself is at the same or higher learner difficulty. The negation inverts the difficulty instead of reducing it. Example: `permanent → not temporary` (`temporary` is B1, negation adds parse cost) — replace with `long-lasting`. Detection: gloss starts with `not|no|never|without|un-` followed by an academic-ish word.
+
+- **`hard_synonym_drift`** — the gloss is a single synonym at the same or higher learner difficulty, often a contrast pair. Example: `mediate → arbitrate` (mediator vs arbitrator are distinct roles). This is the failure mode already covered by **`precision_phrase`**; the `loop_type` tag lets the ledger distinguish it from the other two loops for reporting. Detection: gloss is 1 chunk, gloss word count ≤ 2, gloss doesn't share headword stem (so not `word_family_loop`) and isn't a `not+`-prefix antonym (so not `antonym_loop`).
+
+`Lexical Loop Guard` does **not** introduce a new rule code — `precision_phrase` remains the repair rule. The `loop_type` field is a tag on review ledger entries and audit row metadata, not a separate decision. The detector (`tools/_detect_lexical_loops.py`) is **read-only**: it scans audit + ledger rows and reports likely loop candidates. It must NOT auto-fix; human review remains required because (a) some loops are intentional (e.g. precision_phrase is the planned fix), and (b) false positives are common in single-word overlap detection (e.g. `legal → law` shares a stem, but the gloss is genuinely simpler).
+
+Worked example — `additionally|adverb|B2`:
+- Current gloss: `in addition` (loop_type=`word_family_loop` — both share `addit-*`).
+- Repair: `also` (no shared stem, no antonym, no hard synonym).
+- rule_applied: `precision_phrase` (same rule as before; the loop_type tag is metadata, not a different rule).
+
+_Avoid_: flagging any same-stem as a loop (false-positive trap); using `Lexical Loop Guard` as a separate validator that gates apply (it is read-only reporting); collapsing all loops into one bucket (the 3 modes are reported separately so reviewers see the right pattern).
+**Policy Review Ledger**:
+A separate JSONL file (`data/gloss_policy_review_p4c.jsonl` for the P4C pass, future passes use the same convention) that records the **human review decision** for every `policy_review` row. The ledger is the source of truth for which `policy_review` rows have been triaged; the audit master row stays as-is and gains nothing from the review.
+
+Schema (one JSON object per line):
+```json
+{
+  "word": "curious", "pos": "adjective", "cefr": "B2",
+  "rule_applied": "2sense_samedomain",
+  "def_before": "having a strong desire to know about something|strange and unusual",
+  "old_gloss": "inquisitive",
+  "decision": "keep_single" | "repair_gloss",
+  "new_gloss": "inquisitive|strange",   // required iff decision=repair_gloss; ignored iff keep_single
+  "separator": "|",                      // "|" / ";" / "none" — derived from new_gloss for repair_gloss, "none" for keep_single
+  "gloss_word_count": 2,                 // computed
+  "reason": "sense 2 'strange' dropped by old gloss",
+  "p4c_version": "2026-06-21"
+}
+```
+
+Decisions:
+- `keep_single` — current single-gloss reviewed as covering all major academic meaning; no audit change. The ledger row is the only artifact of the review.
+- `repair_gloss` — current gloss has a clear semantic loss (multi-POS drops a POS, def_before shows a domain the gloss can't suggest, gloss is too narrow or drift). Updates audit + TXT + JSONL via `tools/build_notes.py`.
+
+The audit policy tool (`tools/_audit_gloss_policy_coverage.py`) reads the ledger and splits `policy_review` into three sub-buckets:
+- `policy_review_open` — policy_review rows with no ledger row (untriaged). Hard fail (exit 1).
+- `policy_review_reviewed_keep` — ledger has a `keep_single` decision. Informational.
+- `policy_review_repaired` — ledger has a `repair_gloss` decision and the audit row reflects it. Informational.
+_Avoid_: putting review metadata into `data/audit_full_deck_v2.jsonl` (the audit master is for production data, not review state).
 
 **`|` vs `;` separator semantics** (strict):
 - `|` (pipe, no spaces) = distinct senses in different domains → rendered as separate rows on the card. The template splits on `|` to pair each chunk with its example.

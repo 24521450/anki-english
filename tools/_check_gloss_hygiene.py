@@ -9,9 +9,11 @@ Per user plan (2026-06-21, "P0 Gloss Hygiene Cleanup"):
     4. Exact duplicate audit rows (canonical tuple match)
 
   REPORTS (does NOT fail): validator debt — glosses that pass hygiene but still
-  violate the gloss_llm validator (long gloss, headword leak, POS-label candidates).
-  These are deferred to a future P1 pass; we surface them so the user knows the
-  scope of remaining work.
+  violate the gloss_llm validator (headword leak, POS-label candidates).
+  Word-count limits were REMOVED from `validate_verdict` on 2026-06-22 (P5D),
+  so "long gloss" is no longer validator debt — length is a soft judgment.
+  These debt categories are deferred to a future P1 pass; we surface them so
+  the user knows the scope of remaining work.
 
 Touches (read-only):
   - ``data/audit_full_deck_v2.jsonl``
@@ -65,6 +67,11 @@ def chunk_count(gloss: str) -> int:
 
 
 def debt_category(violation: str) -> str:
+    # P5D (2026-06-22) removed the `word_count_out_of_range` validator
+    # category. The `gloss_too_long` debt bucket is therefore empty by
+    # design and no longer receives any violations. Kept the
+    # conditional for backward compatibility with pre-P5D audit rows
+    # that may still surface the old category string in reports.
     category = violation.split(':', 1)[0].split('[', 1)[0]
     if category == 'word_count_out_of_range':
         return 'gloss_too_long'

@@ -56,6 +56,13 @@ non-empty = bad). Never raises — caller decides what to do.
 | headword in any chunk | `gloss == headword` self-ref; `; accelerate` leak | Yes |
 | no-gloss bypass | decision='no-gloss' skips all checks | Yes |
 
+> **HISTORICAL NOTE (2026-06-22, P5D):** the `word count 1-6 total + per-chunk`
+> row above was **removed** from `validate_verdict` on 2026-06-22. The
+> current gate enforces only structure + headword-leak. See the P5D
+> addendum below for the rationale and migration. Keep this row in
+> the historical ADR for context, but it does NOT describe current
+> gate behavior.
+
 **Rule A (near-synonym pair) is NOT auto-detectable** — would need a synonym
 DB. Verified by M3 + human review. Example: `absurd|adjective|C1: ('ridiculous;
 illogical', ';', 2, '2sense_samedomain')` is structurally valid but violates
@@ -402,3 +409,299 @@ This is a clarification of the existing gloss-pipeline decision (gate
 semantics + Rule A/B/C authority), not a new architectural decision. The
 Rule-Shape Consistency term is added to CONTEXT.md as a glossary entry,
 and this addendum documents the policy-aware audit reasoning.
+
+---
+
+## Addendum 2026-06-21 (P4C) — Policy Review Ledger + Targeted Semantic Fix
+
+### Why a separate review ledger (not edits to the audit master)
+
+The 64 rows that fall into `policy_review` after P4B are *not* automatic
+fixes — Rule A (near-synonyms) and Rule C (safety net) genuinely permit
+many of them to stay one-chunk. Forcing them all into multi-chunk would
+either widen glosses past their actual learner-meaning coverage or
+duplicate Rule A's synonym collapses under a different name.
+
+The decision per row is *semantic* (does this single-gloss cover the
+IELTS-relevant meaning?) and can't be made by a mechanical rule. It
+needs a human or M3 review.
+
+**Decision:** keep review state out of `data/audit_full_deck_v2.jsonl`.
+The audit master is the source of truth for production card data —
+review metadata doesn't belong there. The Policy Review Ledger
+(`data/gloss_policy_review_p4c.jsonl` for the P4C pass) is a separate
+JSONL file with one record per reviewed row.
+
+### Ledger schema
+
+```json
+{
+  "word": "curious", "pos": "adjective", "cefr": "B2",
+  "rule_applied": "2sense_samedomain",
+  "def_before": "having a strong desire to know about something|strange and unusual",
+  "old_gloss": "inquisitive",
+  "decision": "keep_single" | "repair_gloss",
+  "new_gloss": "inquisitive|strange",   // required iff decision=repair_gloss
+  "separator": "|",                      // derived
+  "gloss_word_count": 2,
+  "reason": "sense 2 'strange' dropped by old gloss",
+  "p4c_version": "2026-06-21"
+}
+```
+
+### Triage outcome (P4C)
+
+64 policy_review rows triaged. Result:
+- 7 `repair_gloss` — clear semantic loss the current gloss doesn't cover.
+- 57 `keep_single` — current single-gloss reviewed as covering the
+  IELTS-relevant meaning (Rule A/C legitimize the collapse, or the
+  dominant sense subsumes the others).
+
+The P4C pass explicitly does **not** widen the remaining 57 rows
+mechanically. A future P4D or M3 regen pass can revisit them if
+auditing shows specific learner confusion.
+
+### New audit buckets
+
+`tools/_audit_gloss_policy_coverage.py` reads the ledger and reports:
+- `policy_review_open` — policy_review rows with no ledger row (untriaged). **Hard fail.**
+- `policy_review_reviewed_keep` — ledger has `keep_single`. Informational.
+- `policy_review_repaired` — ledger has `repair_gloss` and audit reflects it. Informational.
+- `allowed_single_gloss` / `rule_shape_contradiction` / `metadata_error` / `other` — unchanged from P4B.
+
+Exit 1 conditions: `rule_shape_contradiction > 0`, `metadata_error > 0`,
+or **`policy_review_open > 0`** (the new hard fail).
+
+### Why no new ADR
+
+This is a process change (separate ledger) and a terminology addition
+(Policy Review Ledger). The P4B policy-aware audit reasoning is
+extended, not replaced. The ledger separation is the right separation
+of concerns (production data vs review state) but doesn't change the
+gloss-pipeline architecture.
+
+---
+
+## Addendum 2026-06-21 (P5) — Precision Phrase: when a single-word synonym is wrong
+
+### The problem P5 closes
+
+The gloss pipeline permits single-word glosses via Rule A (collapse
+near-synonyms) and the `concrete_1sense` / `multi_pos_pick1` /
+`rule_b_pick1` rules. This works when the one-word gloss is a true
+synonym. It **breaks** when the one-word gloss is a *near-synonym*
+that shifts into a different semantic neighborhood.
+
+Two seed examples from P5:
+
+**`mediate → arbitrate`** (verb, C2)
+- Def: "to try to end a situation between two or more people or groups
+  who disagree by talking to them and trying to find things that
+  everyone can agree on | to succeed in finding a solution to a
+  problem between people or groups who disagree"
+- Old gloss: `arbitrate` (one word, "concrete_1sense" rule, gate=pass)
+- Risk: `mediate` and `arbitrate` are a **contrast pair**. A mediator
+  helps parties reach agreement; an arbitrator *decides* the dispute.
+  Using `arbitrate` as the gloss for `mediate` is a definition error —
+  learners who memorize "mediate = arbitrate" will use them
+  interchangeably, which is wrong.
+- New gloss: `help resolve a dispute` (4 words, phrase form).
+- Risk type: `contrast_pair`.
+
+**`solo (noun) → recital`** (C1)
+- Def: "a musical composition, or a passage, for a single voice or
+  instrument; a performance by one person alone"
+- Old gloss: `recital` (one word, "POS_DEF_MISMATCH_fixed" rule)
+- Risk: `recital` narrows the sense to a *performance event*. The
+  Oxford def covers composition, passage, OR performance by one
+  person. A composition or passage is not a recital.
+- New gloss: `single-performer music` (2 words, phrase form).
+- Risk type: `type_narrowing`.
+
+Both rows passed the gate because `validate_verdict` only checks
+shape (separator/count/word-count/headword-leak), not semantic
+correctness. The audit policy tool classifies them as
+`allowed_single_gloss` — also correct under the existing rules.
+P5 closes this gap by adding a `precision_phrase` rule code and a
+review ledger.
+
+### The new `precision_phrase` rule
+
+`precision_phrase` joins the `VALID_RULE_CODES` tuple as a
+first-class rule. It denotes a single-chunk gloss that uses a concise
+phrase (not length-capped — see P5D addendum 2026-06-22 below)
+because the single-word synonym would shift into a
+nearby contrast word or narrow the headword's semantic type.
+
+`tools/_audit_gloss_policy_coverage.py` adds `precision_phrase` to
+`SINGLE_ALLOWED` — one-chunk is the structural expectation, no
+separator, no contradiction.
+
+### The Precision Phrase Ledger
+
+`data/gloss_precision_phrase_p5.jsonl` is a separate JSONL file
+following the P4C Policy Review Ledger convention. Each row records
+either:
+
+- `repair_gloss` — clear semantic loss with a concise phrase (length
+  not capped post-P5D 2026-06-22) that captures the headword precisely.
+  Updates audit row's `gloss_after`, `rule_applied` (set to
+  `precision_phrase`), `separator`, and `gloss_word_count`; updates TXT
+  def cell; triggers `build_notes` JSONL regen. Risk-type tag explains
+  why the one-word synonym failed (`contrast_pair`, `type_narrowing`,
+  `overgeneralized_synonym`, `domain_loss`, `multi_pos_loss`).
+- `review_candidate` — heuristic candidate flagged for future human
+  review (no audit change). Keeps the candidate visible across scans.
+- `keep_current` — single-word gloss reviewed and confirmed as
+  adequate (Rule A synonym collapse legit, no precision loss). No
+  audit change. Recorded so re-scans don't keep flagging it.
+
+The audit master (`data/audit_full_deck_v2.jsonl`) stays as the
+production source of truth. Review decisions live in the ledger; the
+audit row gains nothing except the post-repair `rule_applied=precision_phrase`
+and `fix_status=p5_precision_phrase_repaired` metadata.
+
+### P5 scope discipline
+
+A naive audit scan flags ~989 single-word glosses at advanced CEFR
+(B2/C1/C2/UNCLASSIFIED) as "potential precision-phrase candidates."
+P5 deliberately does **not** auto-fix them. Single-word synonyms are
+legit when:
+
+- The def_before is one concrete sense with no type-narrowing risk
+  (most `concrete_1sense` rows).
+- The single word is a true synonym (Rule A collapse is correct).
+- The headword is C1+ academic vocabulary where learners benefit from
+  the compact single-word form.
+
+P5's first deliverable is a ledger with the **2 confirmed seed
+repairs** plus a `review_candidate` list of heuristic discoveries
+populated from the full-audit scan. Future passes (P5b, P5c, ...)
+triage the review-candidate list one decision at a time. Aggressive
+auto-fix is rejected because Rule A collapse is legitimate for most
+single-word glosses — the precision-phrase case is the exception,
+not the rule.
+
+### Why no new ADR
+
+`precision_phrase` extends the existing rule-code vocabulary
+(`VALID_RULE_CODES`) rather than replacing the gloss-pipeline
+architecture. The Precision Phrase Ledger mirrors the P4C Policy
+Review Ledger pattern (separate JSONL, separate apply/verify tools).
+The phrase form was supported by the gate (word count range covered
+1-6 at P5 time; P5D 2026-06-22 removed the range entirely — see
+addendum below). The only architectural change at P5 time was
+adding the rule code and a new ledger — a process addition, not a
+structural change.
+---
+
+## Addendum 2026-06-22 (P5D) — Remove gloss word-count limits from validator
+
+### Why the limits came off
+
+The validation gate (`validate_verdict` in `src/deck_builder/gloss_llm.py`)
+originally enforced 4 rules, including a **word-count range**: total 1-6
+content words, plus per-chunk limits (≤6 for `none`, ≤4 for `|`, ≤3 for `;`).
+The intent was to keep glosses learner-friendly.
+
+After the P5 manual review pass, this limit became the loudest blocker:
+the user's filled v2 file (`manual_gloss_review_p5_candidates_filled_QA_patched_v2 (1).jsonl`)
+contained 8 repairs whose glosses exceeded the 6-word total — not because
+the glosses were bad, but because capturing the headword's full multi-sense
+content at C1/C2 academic level required more than 6 words.
+
+Concrete examples that the v1 validator rejected but the v2 manual pass
+trusted:
+
+| (word, pos, CEFR) | v2 gloss (now accepted) | Words |
+|---|---|---:|
+| `identification\|noun\|C1` | `proving who or what\|recognizing importance\|ID document\|strong sympathy\|close linking` | 12 |
+| `rental\|noun\|C1` | `use fee\|hiring deal\|thing for hire` | 7 |
+| `whip\|verb\|C1` | `hit with cord\|move suddenly\|pull suddenly\|mix fast` | 9 |
+| `pop\|verb\|C1` | `short sound\|burst\|go quickly\|put quickly\|appear suddenly` | 9 |
+| `compromise\|noun, verb\|C1` | `agreement by concession\|lower standards\|put at risk` | 8 |
+| `burst\|verb\|C1` | `break open\|move suddenly\|be very full` | 7 |
+| `outrage\|noun, verb\|C1` | `shock and anger\|wrong act\|anger greatly` | 7 |
+| `overwhelm\|verb\|C1` | `affect too strongly\|defeat completely\|give too much` | 8 |
+
+In each case, the v1 manual pass had to **artificially shorten** the gloss
+into a sub-6-word version, even when the full version was more accurate.
+That shortening (e.g. `proving who or what|recognizing importance|ID document|strong sympathy|close linking`
+→ `proving who or what|recognizing importance|ID document`) was a forced
+loss of semantic coverage for the sake of an arbitrary length cap.
+
+### Decision
+
+**Remove the word-count limit from the validator.** Trust the human/M3
+verdict on length. The validator keeps the **2 rules** that are
+machine-detectable without semantic judgment:
+
+1. **separator/count/content consistency** (incl. empty-chunk detection) —
+   catches typos like `declared '|' but actual ';'` and structural bugs
+   like `x |` or `x ; ; y`.
+2. **headword in any chunk** — catches self-referential glosses (`gloss ==
+   headword`), multi-chunk leaks (`x ; accelerate`), and morphological
+   variants (`configuration` as gloss for `configure`).
+
+Removed:
+- Total content words 1-6 (the `word_count_out_of_range` category).
+- Per-chunk word limits (`pick1` ≤6, `|` ≤4, `;` ≤3) — the
+  `chunk_word_count[i]` category.
+
+`gloss_word_count` field is **preserved** in audit + ledger rows as
+metadata/reporting (helps audit spot outliers), but no longer blocks apply.
+
+### Trade-offs
+
+| Alternative | Why not chosen |
+|---|---|
+| Keep total cap, raise to 12 words | Same forced-shortening problem at higher CEFR; arbitrary cap remains. |
+| Keep cap, add an explicit "academic override" rule | Adds a rule-code path that M3 would have to honor; same trust-the-human problem. |
+| Cap stays at 6, but loosen to "soft warn" | Defense-in-depth gate would still skip at apply time (`tools/_apply_glosses_to_txt.py`), so same blocker. |
+| Validate semantic correctness (Rule A) | Out of scope — needs synonym DB. M3 + human review handle that (see P4C Policy Review Ledger). |
+
+### Files changed
+
+- `src/deck_builder/gloss_llm.py` — `validate_verdict` now checks only
+  structure + headword-leak. Empty-gloss check added (decision='gloss' +
+  empty gloss → `empty_gloss` violation).
+- `tests/deck_builder/test_validate_verdict.py` — old `TestWordCount`
+  class replaced with `TestWordCountLimitsRemoved`; new tests assert that
+  the 8 P5D seed fixes (and the seed `additionally -> also`) all pass.
+  `TestSeparatorCountConsistency` gained `test_empty_chunk_after_pipe_fails`
+  and `test_empty_chunk_between_semicolons_fails` to lock in the empty-chunk
+  check (an old gate bug that was masked by the word-count limit; empty
+  chunks were silently dropped by `if c.strip()` filter before count).
+- `CONTEXT.md` — `Gloss`, `Gloss Validation Gate`, `Precision Phrase` entries
+  updated to drop the 1-6 / 2-6 claims and link to this addendum.
+- `tools/_verify_p5d_manual_review.py` (new) — verifies the v2 canonical
+  decisions file has 988 rows / 344 repair / 644 keep, all repairs pass
+  the new validator (zero `word_count_out_of_range` expected), no duplicates.
+- `tools/_apply_p5d_manual_review.py` (new) — applies the v2 decisions,
+  delta vs current P5B state: previously-kept v1 decisions whose v2
+  verdict flips to `repair_gloss` get a fresh repair; previously-repaired
+  v1 decisions whose v2 verdict flips to `keep_current` revert. Audit +
+  TXT + P5 ledger all updated; JSONL rebuilt via `tools/build_notes.py`.
+
+### Verification
+
+- `pytest`: 547/547 pass (was 515/515 before P5D; +32 new/updated gate tests)
+- `python -m tools._verify_p5_precision_phrase`: PASS
+- `python -m tools._verify_p5b_manual_review`: PASS
+- `python -m tools._verify_p5d_manual_review`: PASS (new)
+- `python -m tools._verify_p4c_policy_review`: PASS
+- `python -m tools._verify_p4b_rule_shape_fix`: PASS
+- `python -m tools._verify_p4a_coverage_fix`: PASS
+- `python -m tools._verify_deck_output_p3b`: PASS
+- `python -m tools._check_gloss_hygiene --report --quiet`: PASS
+- `python -m tools.build_notes --dry-run`: PASS
+
+### Why no new ADR
+
+This is a tightening of an existing validator (removing one rule class),
+not a new architectural decision. The gate's role (defense-in-depth
+mechanical check) is unchanged — it just trusts the producer more on length.
+The v2 manual pass demonstrates the producer (human review) makes
+reasonable length choices; if a future pass shows systematic over-length
+glosses that hurt learners, the limit could be re-added with a higher
+threshold or made into a soft-warn.

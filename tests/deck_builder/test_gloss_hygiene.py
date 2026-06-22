@@ -276,8 +276,13 @@ class TestCheckerDebtReport:
 
         assert result["hard"] == {}
         debt = result["debt"]
-        assert len(debt["gloss_too_long"]) == 1
-        assert len(debt["chunk_word_count"]) == 1
+        # P5D (2026-06-22) removed word-count limits from `validate_verdict`,
+        # so `gloss_too_long` (from `word_count_out_of_range`) and
+        # `chunk_word_count` (from per-chunk `> max=N` violations) no longer
+        # appear in the debt report. The 3 remaining debt categories are
+        # the structural + semantic checks that survived the limit removal.
+        assert "gloss_too_long" not in debt
+        assert "chunk_word_count" not in debt
         assert len(debt["headword_in_definition"]) == 1
         assert len(debt["morphological_variant"]) == 1
         assert len(debt["pos_label_candidate"]) == 1
