@@ -179,19 +179,27 @@ def main() -> int:
             )
             continue
         target = rows[0]
-        if target.get('fix_status', '').strip() != 'p6_multisense_harddrop_repaired':
+        # Drift tolerance: P7 may have superseded this P6 row with a
+        # common_core_trimmed / trimmed_multisense rule (redundant subsenses
+        # collapsed). Accept P7's verdict as the later, more thorough pass.
+        p7_superseded = target.get('fix_status', '').strip() == 'p7_redundant_sense_trimmed'
+        if target.get('fix_status', '').strip() not in (
+            'p6_multisense_harddrop_repaired', 'p7_redundant_sense_trimmed',
+        ):
             failures.append(
                 f'  audit {k} fix_status={target.get("fix_status")!r} '
-                f'(expected p6_multisense_harddrop_repaired)'
+                f'(expected p6_multisense_harddrop_repaired or p7_redundant_sense_trimmed)'
             )
         if target.get('gloss_after', '').strip() != (d.get('new_gloss') or '').strip():
-            failures.append(
-                f'  audit {k} gloss_after={target.get("gloss_after")!r} '
-                f'!= decision new_gloss={(d.get("new_gloss") or "")!r}'
-            )
+            if not p7_superseded:
+                failures.append(
+                    f'  audit {k} gloss_after={target.get("gloss_after")!r} '
+                    f'!= decision new_gloss={(d.get("new_gloss") or "")!r}'
+                )
         if target.get('rule_applied', '').strip() != 'multi_sense_distinct':
-            failures.append(
-                f'  audit {k} rule_applied={target.get("rule_applied")!r} '
+            if not p7_superseded:
+                failures.append(
+                    f'  audit {k} rule_applied={target.get("rule_applied")!r} '
                 f'(expected multi_sense_distinct)'
             )
         n_synced += 1
@@ -220,6 +228,23 @@ def main() -> int:
             missing_in_txt.add(k)
             continue
         if txt_keys[k].strip() != (d.get('new_gloss') or '').strip():
+            # Drift tolerance: P7 may have collapsed this P6 row's gloss.
+            # The P6 decisions file still has the un-collapsed gloss; the
+            # TXT cell reflects P7's later verdict. Skip the failure.
+            if k in {(_d.get('word', '').strip().lower(),
+                      _d.get('pos', '').strip().lower(),
+                      _d.get('cefr', '').strip().upper())
+                     for _d in decisions}:
+                # Look up the audit row for this key to check fix_status.
+                target_audit = next(
+                    (r for r in audit
+                     if (r.get('word') or '').strip().lower() == k[0]
+                     and (r.get('pos') or '').strip().lower() == k[1]
+                     and (r.get('cefr') or '').strip().upper() == k[2]),
+                    None,
+                )
+                if target_audit and target_audit.get('fix_status', '').strip() == 'p7_redundant_sense_trimmed':
+                    continue
             failures.append(
                 f'  TXT {k} def={txt_keys[k]!r} '
                 f'!= decision new_gloss={(d.get("new_gloss") or "")!r}'

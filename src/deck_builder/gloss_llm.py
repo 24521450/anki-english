@@ -113,6 +113,10 @@ VALID_RULE_CODES = (
     # backward compat with historical rows.
     'multi_sense_distinct',      # 2+ distinct senses, keep all with | (P6, replaces
                                  # the "NEVER pick 3" cap on distinct multisense cases)
+    'common_core_trimmed',       # P7: redundant subsenses collapsed to 1 chunk
+                                 # (countable/uncountable, process/result, noun/verb, subtype).
+    'trimmed_multisense',        # P7: redundant/minor senses trimmed but 2+ distinct
+                                 # chunks still kept (with |).
     'concrete_1sense',           # 1 sense, no special rule
     'multi_pos_pick1',           # multi-POS, all variants → 1 word
     'safety_net',                # 1 sense, domain-restricted, kept per Rule C

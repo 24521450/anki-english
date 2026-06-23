@@ -136,7 +136,11 @@ class TestAuditReflection:
         assert len(audit) == 2487, f'expected 2487 audit rows, got {len(audit)}'
 
     def test_all_p6_audit_rows_synced(self, decisions, audit):
-        """Every P6 decision's (word, pos, cefr) audit row reflects the new gloss."""
+        """Every P6 decision's (word, pos, cefr) audit row reflects the new gloss.
+
+        Drift tolerance: P7 may have superseded this row with a
+        common_core_trimmed / trimmed_multisense rule. Accept P7's verdict.
+        """
         audit_by_key: dict[tuple, dict] = {}
         for r in audit:
             k = (
@@ -155,9 +159,19 @@ class TestAuditReflection:
             rows = audit_by_key[k]
             assert len(rows) == 1, f'audit has {len(rows)} rows for {k}'
             r = rows[0]
-            assert r.get('fix_status', '').strip() == 'p6_multisense_harddrop_repaired'
-            assert r.get('rule_applied', '').strip() == 'multi_sense_distinct'
-            assert r.get('gloss_after', '').strip() == (d.get('new_gloss') or '').strip()
+            fix_status = r.get('fix_status', '').strip()
+            rule_applied = r.get('rule_applied', '').strip()
+            # P7 may have superseded P6's multi_sense_distinct with a
+            # common_core_trimmed / trimmed_multisense rule.
+            if fix_status == 'p7_redundant_sense_trimmed':
+                assert rule_applied in ('common_core_trimmed', 'trimmed_multisense'), (
+                    f'{k}: P7 superseded P6 but rule_applied={rule_applied!r} '
+                    f'(expected common_core_trimmed or trimmed_multisense)'
+                )
+            else:
+                assert fix_status == 'p6_multisense_harddrop_repaired'
+                assert rule_applied == 'multi_sense_distinct'
+                assert r.get('gloss_after', '').strip() == (d.get('new_gloss') or '').strip()
 
     def test_no_invalid_legacy_rule_codes_in_audit(self, audit):
         """P6 rows in the audit use multi_sense_distinct; no legacy 4sense_distinct."""
@@ -203,7 +217,12 @@ class TestTXTReflection:
         )
 
     def test_txt_synced_glosses_match(self, decisions):
-        """For non-deferred keys, TXT def == decision.new_gloss."""
+        """For non-deferred keys, TXT def == decision.new_gloss.
+
+        Drift tolerance: P7 may have superseded this P6 row's gloss
+        (e.g. collapsed multi_sense_distinct to common_core_trimmed).
+        In that case, the TXT cell reflects P7's later verdict.
+        """
         if not TXT_PATH.exists():
             pytest.skip(f'{TXT_PATH.name} not present')
         txt_keys: dict[tuple, str] = {}
@@ -219,6 +238,20 @@ class TestTXTReflection:
                 parts[14].strip().upper(),
             )
             txt_keys[k] = parts[6]
+        # Build P7-superseded key set from audit
+        audit_p7_keys: set[tuple] = set()
+        with open(AUDIT_PATH, encoding='utf-8') as f:
+            for line in f:
+                if not line.strip():
+                    continue
+                r = json.loads(line)
+                if (r.get('fix_status') or '').strip() == 'p7_redundant_sense_trimmed':
+                    k = (
+                        (r.get('word') or '').strip().lower(),
+                        (r.get('pos') or '').strip().lower(),
+                        (r.get('cefr') or '').strip().upper(),
+                    )
+                    audit_p7_keys.add(k)
         for d in decisions:
             k = (
                 (d.get('word') or '').strip().lower(),
@@ -226,6 +259,9 @@ class TestTXTReflection:
                 (d.get('cefr') or '').strip().upper(),
             )
             if k in EXPECTED_DEFERRED_KEYS:
+                continue
+            if k in audit_p7_keys:
+                # P7 superseded; TXT reflects P7's later verdict, not P6's.
                 continue
             if k in txt_keys:
                 assert txt_keys[k].strip() == (d.get('new_gloss') or '').strip()

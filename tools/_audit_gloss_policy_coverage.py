@@ -40,6 +40,7 @@ PICK_RULES = {
     '2sense_distinct', '3sense_distinct',
     'multi_sense_distinct',  # P6: supersedes '3sense_distinct' / '4sense_distinct'.
                               # N distinct senses kept with `|` (N >= 2, no upper cap).
+    'trimmed_multisense',    # P7: 2+ chunks kept with `|` after redundant-sense trim.
     'rule_b_pick2', 'rule_b_pick2_addendum',
     'multi_pos_pick2',
 }
@@ -48,7 +49,8 @@ SINGLE_ALLOWED = {
     'rule_b_pick1',
     'concrete_1sense',
     'multi_pos_pick1',
-    'precision_phrase',  # P5: 2-6 word phrase form, single chunk by design
+    'precision_phrase',  # P5: phrase form, single chunk by design
+    'common_core_trimmed',  # P7: collapsed to single chunk
 }
 # Rules where one-chunk is policy-review (needs M3/human check).
 # Both `pos_aware_gloss` and `2sense_samedomain` may legitimately collapse

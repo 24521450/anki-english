@@ -246,8 +246,8 @@ A `Gloss Verdict` must have a separator/chunk shape consistent with its `rule_ap
 
 | `rule_applied` | Required shape |
 |---|---|
-| `rule_b_pick1`, `concrete_1sense`, `multi_pos_pick1`, `precision_phrase` | one chunk allowed (no separator) |
-| `2sense_distinct`, `3sense_distinct`, `multi_sense_distinct` (P6), `rule_b_pick2`, `rule_b_pick2_addendum`, `multi_pos_pick2` | **must have more than one chunk** (`|` or `;`) |
+| `rule_b_pick1`, `concrete_1sense`, `multi_pos_pick1`, `precision_phrase`, `common_core_trimmed` (P7) | one chunk allowed (no separator) |
+| `2sense_distinct`, `3sense_distinct`, `multi_sense_distinct` (P6), `trimmed_multisense` (P7), `rule_b_pick2`, `rule_b_pick2_addendum`, `multi_pos_pick2` | **must have more than one chunk** (`|` or `;`) |
 | `2sense_samedomain` | one chunk allowed when Rule A collapses near-synonyms; otherwise `;` or `|` may be justified by review |
 | `pos_aware_gloss` | policy review (one chunk may be intentional, see P4B addendum) |
 
@@ -294,6 +294,46 @@ Decisions:
 - `keep_current` — single-word gloss reviewed and confirmed as adequate (Rule A synonym collapse legit, no precision loss). No audit change. Recorded so re-scans don't keep flagging it.
 
 _Avoid_: silently replacing single-word glosses with phrases (Rule A synonyms are legit); widening glosses to phrases that exceed 6 words.
+
+**Common-Core Trimmed**:
+A single-chunk gloss that collapses redundant Oxford subsenses into one
+learner-friendly gloss. Used when the headword's multiple senses are
+*redundant variants of the same core concept* (not distinct domains).
+Examples that trigger this rule:
+
+- **countable vs uncountable**: `information` (no plural form) — single chunk.
+- **process vs result**: `judgment` (act of judging | opinion formed) — single chunk.
+- **noun vs verb**: `attack` (offensive act | to assault) — single chunk.
+- **subtype vs core**: `puppy` (young dog) — single chunk if the headword's
+  sense collapses to a single learner-meaning.
+
+`common_core_trimmed` joins `VALID_RULE_CODES` as a first-class rule
+(P7 2026-06-22). Single-chunk by design (`separator = none`).
+Audit policy tool classifies it as `allowed_single_gloss`.
+
+_Avoid_: forcing common_core_trimmed onto truly distinct senses (use
+`trimmed_multisense` or `multi_sense_distinct` instead); treating the
+single chunk as a license to omit semantic content.
+
+**Trimmed Multisense**:
+A multi-chunk gloss (2+ chunks with `|`) after redundant/minor senses
+have been trimmed. Used when the headword has multiple distinct senses
+but some were dropped as redundant variants, leaving 2+ truly distinct
+senses still worth keeping separately. Example: `gut|noun|C1` had 5
+senses (intestines | stomach organs | belly | courage | instinct); P7
+trimmed `belly` as redundant with `intestines`/`stomach organs`, kept
+the remaining 4 with `|` — but the canonical form normalized the rule
+to `trimmed_multisense` (NOT `5sense_distinct`).
+
+`trimmed_multisense` joins `VALID_RULE_CODES` as a first-class rule
+(P7 2026-06-22). Multi-chunk by design (`separator = |` typically).
+Audit policy tool classifies it as `other` (multi-chunk; no
+contradiction).
+
+_Avoid_: forcing `trimmed_multisense` onto a headword whose senses
+fully collapse (use `common_core_trimmed` instead); using
+`trimmed_multisense` as a license to keep redundant variants — the
+trim is what justifies multi-chunk, not the raw count of senses.
 
 **Lexical Loop Guard**:
 A gloss-policy constraint that prevents a gloss from sending the learner back to a word that's roughly as hard as the headword. The gloss's job is to **explain the headword in a simpler register**, not to swap one C1 word for another C1 word. Three failure modes are tracked; each is a `loop_type` value in the review ledger:

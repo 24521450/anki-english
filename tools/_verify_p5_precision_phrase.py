@@ -190,17 +190,16 @@ def main() -> int:
         audit_row = rows[0]
         # Verify audit reflects the repair.
         if audit_row['gloss_after'] != new_gloss:
-            # Drift tolerance: P6 may have further mutated the gloss to
-            # multi-sense_distinct form. The P5 ledger's repair_gloss was
-            # a P5B-era shorter gloss; P6 widened it for distinct-sense cases.
-            # We accept the drift if the audit row's fix_status is a
-            # later-pass marker AND the audit rule is multi_sense_distinct.
+            # Drift tolerance: a later pass (P6 / P7) may have further
+            # mutated the gloss. Accept the drift if the audit row's
+            # fix_status + rule_applied match a later-pass signature.
             audit_fix = (audit_row.get('fix_status') or '').strip()
             audit_rule = (audit_row.get('rule_applied') or '').strip()
-            if audit_fix == 'p6_multisense_harddrop_repaired' and audit_rule == 'multi_sense_distinct':
-                # Accept drift.
-                pass
-            else:
+            p6_drift = audit_fix == 'p6_multisense_harddrop_repaired' and audit_rule == 'multi_sense_distinct'
+            p7_drift = audit_fix == 'p7_redundant_sense_trimmed' and audit_rule in (
+                'common_core_trimmed', 'trimmed_multisense'
+            )
+            if not (p6_drift or p7_drift):
                 failures.append(
                     f'  ({word}, {pos}, {cefr}) audit gloss_after={audit_row["gloss_after"]!r} '
                     f'!= ledger new_gloss={new_gloss!r}'
@@ -209,6 +208,10 @@ def main() -> int:
         if audit_row.get('rule_applied', '').strip() != rule_after and not (
             audit_row.get('fix_status', '').strip() == 'p6_multisense_harddrop_repaired'
             and audit_row.get('rule_applied', '').strip() == 'multi_sense_distinct'
+            or audit_row.get('fix_status', '').strip() == 'p7_redundant_sense_trimmed'
+            and audit_row.get('rule_applied', '').strip() in (
+                'common_core_trimmed', 'trimmed_multisense'
+            )
         ):
             failures.append(
                 f'  ({word}, {pos}, {cefr}) audit rule_applied={audit_row.get("rule_applied")!r} '
@@ -221,10 +224,11 @@ def main() -> int:
             'p5c_loop_guard_repaired',
             'p5d_manual_review_repaired',
             'p6_multisense_harddrop_repaired',
+            'p7_redundant_sense_trimmed',
         ):
             failures.append(
                 f'  ({word}, {pos}, {cefr}) audit fix_status={audit_row.get("fix_status")!r} '
-                f'!= expected p5_precision_phrase_repaired | p5b_manual_review_repaired | p5c_loop_guard_repaired | p5d_manual_review_repaired | p6_multisense_harddrop_repaired'
+                f'!= expected p5_precision_phrase_repaired | p5b_manual_review_repaired | p5c_loop_guard_repaired | p5d_manual_review_repaired | p6_multisense_harddrop_repaired | p7_redundant_sense_trimmed'
             )
             continue
         # Verify gate_status=pass and word_count
@@ -269,6 +273,7 @@ def main() -> int:
                 'p5c_loop_guard_repaired',
                 'p5d_manual_review_repaired',
                 'p6_multisense_harddrop_repaired',
+                'p7_redundant_sense_trimmed',
             ):
                 n_txt_drift += 1
                 continue
@@ -307,6 +312,7 @@ def main() -> int:
                 'p5c_loop_guard_repaired',
                 'p5d_manual_review_repaired',
                 'p6_multisense_harddrop_repaired',
+                'p7_redundant_sense_trimmed',
             ):
                 n_jsonl_drift += 1
                 continue

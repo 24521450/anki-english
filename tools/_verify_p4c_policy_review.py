@@ -201,8 +201,9 @@ def main() -> int:
                     'p5c_loop_guard_repaired',
                     'p5d_manual_review_repaired',
                     'p6_multisense_harddrop_repaired',
+                    'p7_redundant_sense_trimmed',
                 ):
-                    # Drift tolerated: P5/P5B/P5C/P5D/P6 verdict superseded P4C keep_single.
+                    # Drift tolerated: P5/P5B/P5C/P5D/P6/P7 verdict superseded P4C keep_single.
                     matched_keep.append((rec, r_drift))
                     print(
                         f'  DRIFT: ({rec.get("word")}, {rec.get("pos")}, '
@@ -335,6 +336,7 @@ def main() -> int:
             'p5c_loop_guard_repaired',
             'p5d_manual_review_repaired',
             'p6_multisense_harddrop_repaired',
+            'p7_redundant_sense_trimmed',
         ):
             n_keep_drift += 1
             continue

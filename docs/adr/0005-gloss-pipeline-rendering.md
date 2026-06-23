@@ -816,3 +816,118 @@ clarifies that it applies only to *variant* senses (where collapsing
 is correct), not to *distinct* senses (where collapsing would mislead).
 No validator behavior changes; only the rule-code vocabulary and the
 shape policy expand.
+
+---
+
+## Addendum 2026-06-22 (P7) — Redundant/Minor Sense Trim + `common_core_trimmed` / `trimmed_multisense` rule codes
+
+### The problem P7 closes
+
+After P6 widened `multi_sense_distinct` to keep all distinct senses
+(including 3+ chunks), some rows had **redundant subsenses** that the
+v3 patch correctly identified as collapsible:
+
+- **`information`** — Oxford lists both "facts/news" and "data" as
+  subsenses under one headword. Oxford's `|` separator put them on
+  different chunks, but the learner-meaning is "facts or data" — one
+  chunk covers both.
+
+- **`judgment`** — process ("the act of judging") vs result ("the
+  opinion formed"). Both are learner-relevant under the same
+  learner-meaning "an opinion or decision". One chunk.
+
+- **`attack`** — noun ("offensive act") vs verb ("to assault"). Same
+  learner-meaning "to assault / an assault". One chunk.
+
+- **`puppy`** — "young dog" — single learner-meaning, no real
+  distinction.
+
+These are NOT distinct-multisense cases (P6) — they are **subsenses
+that share the same learner-meaning**. Forcing them into separate
+chunks would overstate learner-meaning coverage.
+
+The v3 patch also contained **metadata-only drift** (98+ rows where
+`rule_applied` flipped back from `multi_sense_distinct` to legacy
+labels like `3sense_distinct` / `4sense_distinct` / `2sense_distinct`
+without any gloss change). P7 ignores these — they would silently undo
+the P6 widening policy.
+
+### Decision
+
+**Two new rule codes** to cover the redundant-sense case:
+
+- **`common_core_trimmed`** — single-chunk collapse of redundant
+  subsenses. Triggered by: countable/uncountable, process/result,
+  noun/verb, subtype/core variants. `separator = none` (single
+  chunk).
+
+- **`trimmed_multisense`** — multi-chunk (2+ with `|`) after redundant
+  senses trimmed. Used when distinct senses remain but some subsenses
+  were dropped. `separator = |` typically.
+
+**Normalize rules**: the v3 patch carried raw labels like
+`3sense_distinct`, `4sense_distinct`, `5sense_distinct`, and even
+`common_core_trimmed` raw. P7 ignores v3's `rule_applied` and
+**recomputes** the canonical rule from the new `separator`:
+
+- `separator = none` → `common_core_trimmed`
+- `separator = |` or `;` → `trimmed_multisense`
+
+This is the inverse of P6 (which used `rule_after = multi_sense_distinct`
+unconditionally). The separator is the authoritative signal; the rule
+is derived.
+
+**Do NOT import v3 rule backdrift**: 98+ rows where v3 had a different
+`rule_applied` but the SAME `gloss_after` are explicitly skipped.
+The P6 `multi_sense_distinct` rule stays in place on those rows; v3's
+revert to `3sense_distinct` is metadata noise that would silently
+narrow the P6 policy.
+
+### Worked examples
+
+- **`information|noun|UNCLASSIFIED`**: 1 chunk → `common_core_trimmed`.
+- **`judgment|noun|C1`**: 1 chunk → `common_core_trimmed`.
+- **`attack|noun|verb|C1`**: 1 chunk → `common_core_trimmed`.
+- **`puppy|noun|B2`**: 1 chunk → `common_core_trimmed`.
+- **`gut|noun|C1`**: 4 chunks (intestines | stomach organs | courage |
+  instinct) → `trimmed_multisense`. Originally v3 had `5sense_distinct`
+  with 5 chunks; the v3 patch's own 5th chunk (`belly`) was redundant
+  with `intestines`/`stomach organs`, so the canonical form keeps 4.
+
+### P7 scope
+
+- Input: `C:\Users\admin\Downloads\audit_full_deck_v2_multisense_patched_v3 (1).jsonl`
+  (full audit master with 59 P7-gloss diffs vs current state).
+- Output: `data/redundant_sense_trim_p7_decisions.jsonl` (59 canonical
+  decisions), then guarded apply to audit (59 rows updated) + TXT
+  (59 cells updated; 0 deferred).
+
+### Known metadata mismatch in v3
+
+`transportation|noun|B2`: v3 says `gloss_word_count = 3` but actual is
+2 (for `moving people/goods`). P7 recomputes from the canonical gloss,
+ignoring v3's metadata mismatch.
+
+### Files changed
+
+- `src/deck_builder/gloss_llm.py` — `VALID_RULE_CODES` extended with
+  `common_core_trimmed` and `trimmed_multisense`.
+- `tools/_audit_gloss_policy_coverage.py` — `PICK_RULES` includes
+  `trimmed_multisense`; `SINGLE_ALLOWED` includes `common_core_trimmed`.
+- `tools/_full_audit.py` — `KNOWN_RULES` includes both new codes.
+- `tools/_import_p7_decisions.py` (new) — guarded import: filters
+  gloss-only diffs (skips 2428 metadata-only), recomputes separator
+  + rule, recomputes word_count, sets
+  `fix_status = p7_redundant_sense_trimmed`.
+- `tools/_apply_p7_redundant_sense_trim.py` (new) — guarded apply by
+  5-element key; aborts on guard mismatch.
+- `tools/_verify_p7_redundant_sense_trim.py` (new) — invariant checker.
+
+### Why no new ADR (this is an addendum)
+
+`common_core_trimmed` and `trimmed_multisense` extend the existing
+rule-code vocabulary rather than replacing the gloss-pipeline
+architecture. The trim logic is human-driven (P7 applies a user-
+patched v3 file's decisions, not an automatic classifier), so this
+is a process addition (new rule codes + apply tool), not a structural
+change.
