@@ -108,11 +108,37 @@ VALID_RULE_CODES = (
     'rule_b_pick2_addendum',     # 3+ senses, physical/tactile+abstract → 2 with |
     '2sense_samedomain',         # 2 senses, same domain → 2 with ;
     '2sense_distinct',           # 2 senses, different domains → 2 with |
+    '3sense_distinct',           # LEGACY (pre-P6): 3+ senses, all distinct → 3+ with |
+    # Normalized to `multi_sense_distinct` on P6 import; retained for
+    # backward compat with historical rows.
+    'multi_sense_distinct',      # 2+ distinct senses, keep all with | (P6, replaces
+                                 # the "NEVER pick 3" cap on distinct multisense cases)
+    'common_core_trimmed',       # P7: redundant subsenses collapsed to 1 chunk
+                                 # (countable/uncountable, process/result, noun/verb, subtype).
+    'trimmed_multisense',        # P7: redundant/minor senses trimmed but 2+ distinct
+                                 # chunks still kept (with |).
     'concrete_1sense',           # 1 sense, no special rule
     'multi_pos_pick1',           # multi-POS, all variants → 1 word
     'safety_net',                # 1 sense, domain-restricted, kept per Rule C
-    'precision_phrase',          # single-word gloss would shift semantic type
-                                 # (e.g. contrast_pair, type_narrowing) → 2-6 word phrase
+    'precision_phrase',          # P5: single-word gloss would shift semantic type
+                                 # (e.g. contrast_pair, type_narrowing) → phrase form.
+                                 # P8: deprecated; split into word_gloss / phrase_gloss /
+                                 # facet_phrase. Retained for backward compat with
+                                 # historical rows still in audit.
+    # === P8 convention taxonomy ===
+    'word_gloss',                # P8: one-word gloss, clearer than the headword
+                                 # (single-chunk by design).
+    'phrase_gloss',              # P8: short phrase without `or` or `|`
+                                 # (single-chunk by design; replaces P5
+                                 # precision_phrase for non-facet cases).
+    'facet_phrase',              # P8: `or` phrase under separator=none, both
+                                 # sides are same-sense facets (single-chunk).
+    '2sense_distinct_with_facet', # P8: 2 pipe-separated senses, one with
+                                 # internal `or` facet; QA-sensitive.
+    '3sense_distinct_with_facet', # P8: 3 pipe-separated senses, one with
+                                 # internal `or` facet; QA-sensitive.
+    '4sense_distinct',           # P8: 4 distinct senses, kept with |.
+    '5sense_distinct',           # P8: 5 distinct senses, kept with |.
 )
 
 

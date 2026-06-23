@@ -387,6 +387,8 @@ class TestCrossCutInvariants:
             'p5b_manual_review_repaired',
             'p5c_loop_guard_repaired',
             'p5d_manual_review_repaired',
+            'p6_multisense_harddrop_repaired',
+            'p7_redundant_sense_trimmed',
         }
         for rec in ledger:
             if rec.get('decision') != 'keep_single':
@@ -402,7 +404,7 @@ class TestCrossCutInvariants:
             if g in audit_by_full_guard:
                 # Exact match: audit still has old_gloss, no drift.
                 continue
-            # No exact match: check if a P5/P5B repair verdict
+            # No exact match: check if a P5/P5B/P5C/P5D/P6/P7 repair verdict
             # superseded this keep_single. Tolerated.
             k = (
                 rec['word'].strip().lower(),
@@ -414,6 +416,6 @@ class TestCrossCutInvariants:
             audit_row = candidates[0]
             fix_status = (audit_row.get('fix_status') or '').strip()
             assert fix_status in drift_superseded_keys, (
-                f'keep_single audit drift without P5/P5B supersede: '
+                f'keep_single audit drift without P5/P5B/P5C/P5D/P6/P7 supersede: '
                 f'{g!r} fix_status={fix_status!r}'
             )

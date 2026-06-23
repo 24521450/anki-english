@@ -38,15 +38,29 @@ LEDGER_PATH = PROJECT_ROOT / 'data' / 'gloss_policy_review_p4c.jsonl'
 # Rules that require multi-chunk gloss (per CONTEXT.md § Rule-Shape Consistency).
 PICK_RULES = {
     '2sense_distinct', '3sense_distinct',
+    'multi_sense_distinct',  # P6: supersedes '3sense_distinct' / '4sense_distinct'.
+                              # N distinct senses kept with `|` (N >= 2, no upper cap).
+    'trimmed_multisense',    # P7: 2+ chunks kept with `|` after redundant-sense trim.
     'rule_b_pick2', 'rule_b_pick2_addendum',
     'multi_pos_pick2',
+    # === P8 convention taxonomy ===
+    '4sense_distinct',       # P8: 4 distinct senses, kept with |.
+    '5sense_distinct',       # P8: 5 distinct senses, kept with |.
+    '2sense_distinct_with_facet',  # P8: 2 senses, internal `or` facet; QA-sensitive.
+    '3sense_distinct_with_facet',  # P8: 3 senses, internal `or` facet; QA-sensitive.
 }
 # Rules that explicitly allow a one-chunk gloss.
 SINGLE_ALLOWED = {
     'rule_b_pick1',
     'concrete_1sense',
     'multi_pos_pick1',
-    'precision_phrase',  # P5: 2-6 word phrase form, single chunk by design
+    'precision_phrase',  # P5: phrase form, single chunk by design.
+                          # P8: deprecated; historical rows still allowed.
+    'common_core_trimmed',  # P7: collapsed to single chunk
+    # === P8 convention taxonomy ===
+    'word_gloss',         # P8: one-word gloss, single chunk by design.
+    'phrase_gloss',       # P8: short phrase, single chunk by design.
+    'facet_phrase',       # P8: `or` facet phrase, single chunk by design.
 }
 # Rules where one-chunk is policy-review (needs M3/human check).
 # Both `pos_aware_gloss` and `2sense_samedomain` may legitimately collapse

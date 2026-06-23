@@ -1,4 +1,4 @@
-# ADR 0005 — Gloss pipeline refactor: `|` encoding, validation gate, M3 re-run
+﻿# ADR 0005 — Gloss pipeline refactor: `|` encoding, validation gate, M3 re-run
 
 **Applied:** 2026-06-18
 
@@ -705,3 +705,347 @@ The v2 manual pass demonstrates the producer (human review) makes
 reasonable length choices; if a future pass shows systematic over-length
 glosses that hurt learners, the limit could be re-added with a higher
 threshold or made into a soft-warn.
+
+---
+
+## Addendum 2026-06-22 (P6) — `multi_sense_distinct` rule + retire "NEVER pick 3" for distinct multisense
+
+### The problem P6 closes
+
+The legacy Rule B (`rule_b_pick2` / `rule_b_pick2_addendum` / `3sense_distinct`)
+hard-capped multi-sense distinct glosses at 2 chunks:
+
+> "If the def has 3+ senses: pick 2 glosses (`|`) ... **NEVER pick 3.**"
+
+This cap was a heuristic for senses that are *variants or sub-nuances*
+of the same core concept (where collapsing is correct) — but it
+applied equally to senses that are *distinct* (where collapsing would
+silently drop learner-meaning coverage).
+
+Three concrete examples that the cap mis-handled:
+
+- **`transcribe|verb|UNCLASSIFIED`** — Oxford sense 1 = "write down",
+  sense 2 = "write in a different writing system" (e.g. phonetic
+  notation), sense 3 = "rewrite (music) for a different instrument".
+  These are 3 distinct acts in different domains (general writing /
+  transliteration / music). Cap-2 forced the gloss to `write down`
+  only — losing the transliteration and music senses entirely.
+
+- **`grid|noun|C1`** — sense 1 = "pattern of squares" (general),
+  sense 2 = "map with square references" (geography), sense 3 =
+  "network for distributing electricity" (energy). 3 distinct domains.
+  Cap-2 lost either energy OR geography.
+
+- **`betray|verb|C1`** — sense 1 = "give to enemy", sense 2 =
+  "break trust", sense 3 = "abandon principles", sense 4 =
+  "reveal unintentionally". 4 distinct senses. Cap-2 lost either
+  "abandon" or "reveal".
+
+In each case the user-filled v2 patch (P6 input) keeps ALL distinct
+senses with `|`, restoring full semantic coverage.
+
+### Decision
+
+**Retire the "NEVER pick 3" cap for distinct multisense cases.** Keep
+it for *variant / sub-nuance* cases (where Rule A collapse is correct).
+
+New rule code `multi_sense_distinct`:
+- First-class `VALID_RULE_CODES` entry.
+- Requires `count >= 2` chunks with `|` separator (no upper cap).
+- Supersedes legacy `3sense_distinct` and `4sense_distinct` codes (both
+  kept in `VALID_RULE_CODES` for backward compat with historical rows).
+- P6 import normalizes new P6 rows to `multi_sense_distinct`. Legacy
+  rows keep their existing codes until a future pass migrates them.
+
+### P6 scope
+
+- Input: `C:\Users\admin\Downloads\audit_full_deck_v2_multisense_patched.jsonl`
+  (the full audit master with 117 P6-gloss diffs vs current state).
+- Output: `data/multisense_harddrop_p6_decisions.jsonl` (117 canonical
+  decisions), then guarded apply to audit (117 rows updated) + TXT
+  (114 cells updated; 3 deferred keys with no TXT row exist).
+
+3 deferred keys (audit-only):
+- `harbor|verb|UNCLASSIFIED`
+- `invading|verb|UNCLASSIFIED`
+- `shortsighted|adjective|UNCLASSIFIED`
+
+### QA normalizations (8 rows)
+
+The user's patch contained 8 rows whose raw `gloss_after` would fail
+`validate_verdict` with `headword_in_definition` (headword token
+appears in a chunk as a sub-word). Each was hand-fixed during P6 import
+to remove the headword token while preserving semantic content:
+
+| key | raw (fails) | canonical (passes) |
+|---|---|---|
+| `arrow\|noun\|B2` | `arrow shot from bow\|direction mark` | `bow projectile\|direction mark` |
+| `compound\|noun\|B2` | `combined thing\|chemical substance\|compound word` | `combined thing\|chemical substance\|word combination` |
+| `democratic\|adjective\|B2` | `people-ruled\|member-equal\|socially equal\|Democratic Party` | `people-ruled\|member-equal\|socially equal\|US party-related` |
+| `lens\|noun\|B2` | `curved seeing glass\|camera glass\|contact lens` | `curved seeing glass\|camera glass\|contact eyewear` |
+| `patrol\|noun, verb\|C1` | `checking round\|patrol group\|go round checking` | `checking round\|security group\|go round checking` |
+| `squad\|noun\|C1` | `police unit\|sports squad\|soldier group` | `police unit\|sports team\|soldier group` |
+| `tap\|noun, verb\|B2` | `water valve\|light touch\|touch lightly\|tap rhythm` | `water valve\|light touch\|touch lightly\|rhythmic beat` |
+| `top\|verb\|C1` | `exceed\|rank first\|put on top` | `exceed\|rank first\|place above` |
+
+### Files changed
+
+- `src/deck_builder/gloss_llm.py` — `VALID_RULE_CODES` extended with
+  `multi_sense_distinct` (and legacy `3sense_distinct` retained).
+- `tools/_audit_gloss_policy_coverage.py` — `PICK_RULES` set includes
+  `multi_sense_distinct` (PICK_RULES = rules requiring multi-chunk gloss).
+- `tools/_full_audit.py` — `KNOWN_RULES` updated to include
+  `multi_sense_distinct` and the P5 additions.
+- `tools/_import_p6_multisense.py` (new) — guarded import: identifies
+  the 117 diffs, applies 8 headword-leak normalizations, recomputes
+  separator/word_count, sets `fix_status=p6_multisense_harddrop_repaired`.
+- `tools/_apply_p6_multisense.py` (new) — guarded apply by 5-element
+  key; aborts on guard mismatch; checks deferred keys against known
+  set; updates 117 audit + 114 TXT.
+- `tools/_verify_p6_multisense_harddrop.py` (new) — invariant checker.
+
+### Why no new ADR (this is an addendum)
+
+`multi_sense_distinct` extends the existing rule-code vocabulary
+(`VALID_RULE_CODES`) and rule-shape classification (`PICK_RULES`) rather
+than replacing the gloss-pipeline architecture. The P6 patch is a
+targeted user-driven repair (117 keys), not a structural change.
+
+The Rule B "NEVER pick 3" cap was always a heuristic — this addendum
+clarifies that it applies only to *variant* senses (where collapsing
+is correct), not to *distinct* senses (where collapsing would mislead).
+No validator behavior changes; only the rule-code vocabulary and the
+shape policy expand.
+
+---
+
+## Addendum 2026-06-22 (P7) — Redundant/Minor Sense Trim + `common_core_trimmed` / `trimmed_multisense` rule codes
+
+### The problem P7 closes
+
+After P6 widened `multi_sense_distinct` to keep all distinct senses
+(including 3+ chunks), some rows had **redundant subsenses** that the
+v3 patch correctly identified as collapsible:
+
+- **`information`** — Oxford lists both "facts/news" and "data" as
+  subsenses under one headword. Oxford's `|` separator put them on
+  different chunks, but the learner-meaning is "facts or data" — one
+  chunk covers both.
+
+- **`judgment`** — process ("the act of judging") vs result ("the
+  opinion formed"). Both are learner-relevant under the same
+  learner-meaning "an opinion or decision". One chunk.
+
+- **`attack`** — noun ("offensive act") vs verb ("to assault"). Same
+  learner-meaning "to assault / an assault". One chunk.
+
+- **`puppy`** — "young dog" — single learner-meaning, no real
+  distinction.
+
+These are NOT distinct-multisense cases (P6) — they are **subsenses
+that share the same learner-meaning**. Forcing them into separate
+chunks would overstate learner-meaning coverage.
+
+The v3 patch also contained **metadata-only drift** (98+ rows where
+`rule_applied` flipped back from `multi_sense_distinct` to legacy
+labels like `3sense_distinct` / `4sense_distinct` / `2sense_distinct`
+without any gloss change). P7 ignores these — they would silently undo
+the P6 widening policy.
+
+### Decision
+
+**Two new rule codes** to cover the redundant-sense case:
+
+- **`common_core_trimmed`** — single-chunk collapse of redundant
+  subsenses. Triggered by: countable/uncountable, process/result,
+  noun/verb, subtype/core variants. `separator = none` (single
+  chunk).
+
+- **`trimmed_multisense`** — multi-chunk (2+ with `|`) after redundant
+  senses trimmed. Used when distinct senses remain but some subsenses
+  were dropped. `separator = |` typically.
+
+**Normalize rules**: the v3 patch carried raw labels like
+`3sense_distinct`, `4sense_distinct`, `5sense_distinct`, and even
+`common_core_trimmed` raw. P7 ignores v3's `rule_applied` and
+**recomputes** the canonical rule from the new `separator`:
+
+- `separator = none` → `common_core_trimmed`
+- `separator = |` or `;` → `trimmed_multisense`
+
+This is the inverse of P6 (which used `rule_after = multi_sense_distinct`
+unconditionally). The separator is the authoritative signal; the rule
+is derived.
+
+**Do NOT import v3 rule backdrift**: 98+ rows where v3 had a different
+`rule_applied` but the SAME `gloss_after` are explicitly skipped.
+The P6 `multi_sense_distinct` rule stays in place on those rows; v3's
+revert to `3sense_distinct` is metadata noise that would silently
+narrow the P6 policy.
+
+### Worked examples
+
+- **`information|noun|UNCLASSIFIED`**: 1 chunk → `common_core_trimmed`.
+- **`judgment|noun|C1`**: 1 chunk → `common_core_trimmed`.
+- **`attack|noun|verb|C1`**: 1 chunk → `common_core_trimmed`.
+- **`puppy|noun|B2`**: 1 chunk → `common_core_trimmed`.
+- **`gut|noun|C1`**: 4 chunks (intestines | stomach organs | courage |
+  instinct) → `trimmed_multisense`. Originally v3 had `5sense_distinct`
+  with 5 chunks; the v3 patch's own 5th chunk (`belly`) was redundant
+  with `intestines`/`stomach organs`, so the canonical form keeps 4.
+
+### P7 scope
+
+- Input: `C:\Users\admin\Downloads\audit_full_deck_v2_multisense_patched_v3 (1).jsonl`
+  (full audit master with 59 P7-gloss diffs vs current state).
+- Output: `data/redundant_sense_trim_p7_decisions.jsonl` (59 canonical
+  decisions), then guarded apply to audit (59 rows updated) + TXT
+  (59 cells updated; 0 deferred).
+
+### Known metadata mismatch in v3
+
+`transportation|noun|B2`: v3 says `gloss_word_count = 3` but actual is
+2 (for `moving people/goods`). P7 recomputes from the canonical gloss,
+ignoring v3's metadata mismatch.
+
+### Files changed
+
+- `src/deck_builder/gloss_llm.py` — `VALID_RULE_CODES` extended with
+  `common_core_trimmed` and `trimmed_multisense`.
+- `tools/_audit_gloss_policy_coverage.py` — `PICK_RULES` includes
+  `trimmed_multisense`; `SINGLE_ALLOWED` includes `common_core_trimmed`.
+- `tools/_full_audit.py` — `KNOWN_RULES` includes both new codes.
+- `tools/_import_p7_decisions.py` (new) — guarded import: filters
+  gloss-only diffs (skips 2428 metadata-only), recomputes separator
+  + rule, recomputes word_count, sets
+  `fix_status = p7_redundant_sense_trimmed`.
+- `tools/_apply_p7_redundant_sense_trim.py` (new) — guarded apply by
+  5-element key; aborts on guard mismatch.
+- `tools/_verify_p7_redundant_sense_trim.py` (new) — invariant checker.
+
+### Why no new ADR (this is an addendum)
+
+`common_core_trimmed` and `trimmed_multisense` extend the existing
+rule-code vocabulary rather than replacing the gloss-pipeline
+architecture. The trim logic is human-driven (P7 applies a user-
+patched v3 file's decisions, not an automatic classifier), so this
+is a process addition (new rule codes + apply tool), not a structural
+change.
+
+## Addendum 2026-06-23 (P8) - Convention Taxonomy + Miserable Hotfix
+
+### Why split precision_phrase and multi_sense_distinct
+
+P5 introduced precision_phrase (one-chunk phrase form to avoid contrast
+loss), and P6 introduced multi_sense_distinct (catch-all for 2+ distinct
+senses with |). After 7 passes, both rules covered too much ground
+for QA to pattern-match without re-reading the gloss:
+
+- precision_phrase was applied to genuinely different scenarios:
+  one-word glosses that the M3 rejected for **type narrowing**
+  (parameter → condition or limit), for **contrast pair avoidance**
+  (mediate → help resolve a dispute), and for **single-chunk phrases
+  of any length**. Three different intents under one rule code.
+- multi_sense_distinct was applied to 2-sense, 3-sense, 4-sense, and
+  5-sense rows. The actual sense count matters for downstream QA
+  (e.g. flashcard layout decisions on sense count).
+
+P8 splits these into sharper, learner-meaning-driven codes.
+
+### The new taxonomy (single chunk)
+
+- **word_gloss** - one-word gloss, single chunk. Crisp capture.
+- **phrase_gloss** - short phrase, single chunk. The P5
+  precision_phrase successor for most non-facet cases.
+- **facet_phrase** - single-chunk or-joined facet. Both sides are
+  same-sense wordings, not distinct domains. separator = none.
+
+### The new taxonomy (multi chunk)
+
+- **2sense_distinct / 3sense_distinct / 4sense_distinct /
+  5sense_distinct** - pipe-separated distinct senses, named by the
+  actual chunk count. Replaces the catch-all multi_sense_distinct
+  with concrete counts. P6 rows migrate post-P8.
+- **2sense_distinct_with_facet / 3sense_distinct_with_facet** -
+  pipe-separated distinct senses where **one** sense is itself a
+  same-sense facet phrase joined by or. **Always
+  review_needed: true** because internal or in a multi-sense
+  gloss is QA-sensitive.
+
+### Why internal or can be valid as a same-sense facet
+
+In consent|noun, verb|C1, the first Oxford sense is
+permission to do something, especially given by somebody in authority
+and the second is agreement about something. These are two wordings
+for the **same core concept** (the noun sense is "permission/agreement"
+in one go). Rendering as permission or agreement|give permission
+preserves the facet while keeping the multi-sense top-level separator
+clear. Without the _with_facet rule, the only options would be:
+
+1. **Drop the facet** - lose the permission/agreement nuance, gloss
+   becomes just permission|give permission which under-specifies
+   the noun.
+2. **Promote to 3-sense** - render as permission|agreement|give
+   permission, but permission and agreement aren't really
+   distinct senses; they're two phrasings of the same one. The 3-sense
+   gloss misleads the learner into thinking there are 3 distinct
+   concepts.
+
+The _with_facet rule is the right middle path. It carries
+review_needed: true because the heuristic detector (separating
+same-sense facets from distinct senses) is not 100% reliable; human
+QA confirms the facet claim.
+
+### Why miserable is NOT a facet case
+
+miserable|adjective|B2 Oxford has TWO numbered B2 senses:
+"very unhappy or uncomfortable" and "making you feel very unhappy or
+uncomfortable". These are **distinct** (one is the FEELING, one is the
+CAUSE) - not same-sense facets. The cause-sense uses
+"making you feel" which is structurally different from the
+feeling-sense. So:
+
+- Top-level separator MUST be | (distinct senses).
+- rule_applied MUST be 2sense_distinct, NOT 2sense_distinct_with_facet.
+- The internal or in the original defs ("unhappy or uncomfortable")
+  is Oxford's source convention, not a same-sense facet marker.
+
+The P8 hotfix:
+- def_before becomes
+  very unhappy or uncomfortable|making you feel very unhappy or
+  uncomfortable (pipe, not ; - Oxford HTML's ; is the
+  list-of-senses separator at HTML level, not the def_before
+  convention).
+- gloss_after becomes very unhappy|very unpleasant (was
+  very unhappy|very bad or inadequate, which carried a hidden
+  nested or inside a pipe-separated gloss - that's a P8 anti-pattern).
+
+### Migration impact
+
+- **457 audit rows migrated** out of 2487.
+- **102 P6 rows** (multi_sense_distinct) migrated to specific
+  Nsense_distinct / _with_facet codes.
+- **326 P5 rows** (precision_phrase) migrated to
+  word_gloss / phrase_gloss / facet_phrase / Nsense_distinct.
+- **0 deprecated rules remain in audit** post-apply.
+- **3 _with_facet rows** carry review_needed: true:
+  casualty, consent, portray.
+
+### Backward compat
+
+- precision_phrase and multi_sense_distinct REMAIN in
+  VALID_RULE_CODES for backward compat with historical rows
+  (some P5/P6 decisions files still reference them).
+- _audit_gloss_policy_coverage PICK_RULES / SINGLE_ALLOWED keep
+  the old codes in their sets but the audit has 0 of them post-apply.
+- KNOWN_RULES in _full_audit.py extended with the 7 new codes.
+
+### Why no new ADR (this is an addendum)
+
+The P8 pass is a vocabulary refinement + 1 hotfix, not a structural
+change to the gloss pipeline architecture. The split into
+word_gloss/phrase_gloss/facet_phrase is a rename-and-clarify; the
+Nsense_distinct codes are a count-tag specialization; the _with_facet
+codes are a structural annotation. No validator changes, no card-layout
+changes, no schema changes. Process addition (new codes + apply tool)
+rather than architecture change.
