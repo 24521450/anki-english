@@ -190,16 +190,30 @@ def main() -> int:
         audit_row = rows[0]
         # Verify audit reflects the repair.
         if audit_row['gloss_after'] != new_gloss:
-            # Drift tolerance: a later pass (P6 / P7) may have further
+            # Drift tolerance: a later pass (P6 / P7 / P8) may have further
             # mutated the gloss. Accept the drift if the audit row's
             # fix_status + rule_applied match a later-pass signature.
             audit_fix = (audit_row.get('fix_status') or '').strip()
             audit_rule = (audit_row.get('rule_applied') or '').strip()
-            p6_drift = audit_fix == 'p6_multisense_harddrop_repaired' and audit_rule == 'multi_sense_distinct'
+            # P8 successor rules: any rule in the new convention taxonomy.
+            P8_SUCCESSOR_RULES = {
+                'word_gloss', 'phrase_gloss', 'facet_phrase',
+                '2sense_distinct', '3sense_distinct',
+                '4sense_distinct', '5sense_distinct',
+                '2sense_distinct_with_facet', '3sense_distinct_with_facet',
+            }
+            p6_drift = audit_fix == 'p6_multisense_harddrop_repaired' and (
+                audit_rule == 'multi_sense_distinct'
+                or audit_rule in P8_SUCCESSOR_RULES
+            )
             p7_drift = audit_fix == 'p7_redundant_sense_trimmed' and audit_rule in (
                 'common_core_trimmed', 'trimmed_multisense'
             )
-            if not (p6_drift or p7_drift):
+            # P8 successor rules can co-occur with any prior fix_status.
+            # If audit_rule is in P8_SUCCESSOR_RULES, the gloss drift is
+            # legitimately a P8 convention migration.
+            p8_drift = audit_rule in P8_SUCCESSOR_RULES
+            if not (p6_drift or p7_drift or p8_drift):
                 failures.append(
                     f'  ({word}, {pos}, {cefr}) audit gloss_after={audit_row["gloss_after"]!r} '
                     f'!= ledger new_gloss={new_gloss!r}'
@@ -211,6 +225,16 @@ def main() -> int:
             or audit_row.get('fix_status', '').strip() == 'p7_redundant_sense_trimmed'
             and audit_row.get('rule_applied', '').strip() in (
                 'common_core_trimmed', 'trimmed_multisense'
+            )
+            # P8 split precision_phrase into word_gloss / phrase_gloss /
+            # facet_phrase, and may have also moved multi_sense_distinct rows
+            # to Nsense_distinct. Accept any P8 successor regardless of
+            # the row's fix_status (most rows kept their p5b/p6 fix_status).
+            or audit_row.get('rule_applied', '').strip() in (
+                'word_gloss', 'phrase_gloss', 'facet_phrase',
+                '2sense_distinct', '3sense_distinct',
+                '4sense_distinct', '5sense_distinct',
+                '2sense_distinct_with_facet', '3sense_distinct_with_facet',
             )
         ):
             failures.append(
@@ -225,10 +249,13 @@ def main() -> int:
             'p5d_manual_review_repaired',
             'p6_multisense_harddrop_repaired',
             'p7_redundant_sense_trimmed',
+            'p9_convention_repaired',
+            'p10_semantic_hotfix',
+            'p11_semantic_hotfix_v2',
         ):
             failures.append(
                 f'  ({word}, {pos}, {cefr}) audit fix_status={audit_row.get("fix_status")!r} '
-                f'!= expected p5_precision_phrase_repaired | p5b_manual_review_repaired | p5c_loop_guard_repaired | p5d_manual_review_repaired | p6_multisense_harddrop_repaired | p7_redundant_sense_trimmed'
+                f'!= expected p5_precision_phrase_repaired | p5b_manual_review_repaired | p5c_loop_guard_repaired | p5d_manual_review_repaired | p6_multisense_harddrop_repaired | p7_redundant_sense_trimmed | p9_convention_repaired | p10_semantic_hotfix | p11_semantic_hotfix_v2'
             )
             continue
         # Verify gate_status=pass and word_count
@@ -274,6 +301,9 @@ def main() -> int:
                 'p5d_manual_review_repaired',
                 'p6_multisense_harddrop_repaired',
                 'p7_redundant_sense_trimmed',
+                'p9_convention_repaired',
+                'p10_semantic_hotfix',
+                'p11_semantic_hotfix_v2',
             ):
                 n_txt_drift += 1
                 continue
@@ -313,6 +343,9 @@ def main() -> int:
                 'p5d_manual_review_repaired',
                 'p6_multisense_harddrop_repaired',
                 'p7_redundant_sense_trimmed',
+                'p9_convention_repaired',
+                'p10_semantic_hotfix',
+                'p11_semantic_hotfix_v2',
             ):
                 n_jsonl_drift += 1
                 continue
@@ -350,13 +383,16 @@ def main() -> int:
             solo_audit = candidates[0]
     if solo_audit is None:
         failures.append('  solo|noun|C1 audit row not found')
-    elif solo_audit['gloss_after'] != 'single-performer music':
+    elif solo_audit['gloss_after'] not in ('single-performer music', 'one-person performance'):
+        # P8 migrated solo|noun|C1 to 'one-person performance' as the agreed
+        # final noun-solo gloss; 'single-performer music' was the P5 ledger
+        # value. Accept either.
         failures.append(
             f'  solo|noun|C1 audit gloss_after={solo_audit["gloss_after"]!r} '
-            f'(expected "single-performer music")'
+            f'(expected "single-performer music" or post-P8 "one-person performance")'
         )
     else:
-        print('  [OK] solo|noun|C1 audit = "single-performer music"')
+        print(f'  [OK] solo|noun|C1 audit = {solo_audit["gloss_after"]!r}')
 
     # 7. Regression: P3B / P4A / P4B / P4C verifiers still PASS
     print('\n[7] Regression checks (P3B / P4A / P4B / P4C)...')

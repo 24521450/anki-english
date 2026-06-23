@@ -1,4 +1,4 @@
-# ADR 0005 — Gloss pipeline refactor: `|` encoding, validation gate, M3 re-run
+﻿# ADR 0005 — Gloss pipeline refactor: `|` encoding, validation gate, M3 re-run
 
 **Applied:** 2026-06-18
 
@@ -931,3 +931,121 @@ architecture. The trim logic is human-driven (P7 applies a user-
 patched v3 file's decisions, not an automatic classifier), so this
 is a process addition (new rule codes + apply tool), not a structural
 change.
+
+## Addendum 2026-06-23 (P8) - Convention Taxonomy + Miserable Hotfix
+
+### Why split precision_phrase and multi_sense_distinct
+
+P5 introduced precision_phrase (one-chunk phrase form to avoid contrast
+loss), and P6 introduced multi_sense_distinct (catch-all for 2+ distinct
+senses with |). After 7 passes, both rules covered too much ground
+for QA to pattern-match without re-reading the gloss:
+
+- precision_phrase was applied to genuinely different scenarios:
+  one-word glosses that the M3 rejected for **type narrowing**
+  (parameter → condition or limit), for **contrast pair avoidance**
+  (mediate → help resolve a dispute), and for **single-chunk phrases
+  of any length**. Three different intents under one rule code.
+- multi_sense_distinct was applied to 2-sense, 3-sense, 4-sense, and
+  5-sense rows. The actual sense count matters for downstream QA
+  (e.g. flashcard layout decisions on sense count).
+
+P8 splits these into sharper, learner-meaning-driven codes.
+
+### The new taxonomy (single chunk)
+
+- **word_gloss** - one-word gloss, single chunk. Crisp capture.
+- **phrase_gloss** - short phrase, single chunk. The P5
+  precision_phrase successor for most non-facet cases.
+- **facet_phrase** - single-chunk or-joined facet. Both sides are
+  same-sense wordings, not distinct domains. separator = none.
+
+### The new taxonomy (multi chunk)
+
+- **2sense_distinct / 3sense_distinct / 4sense_distinct /
+  5sense_distinct** - pipe-separated distinct senses, named by the
+  actual chunk count. Replaces the catch-all multi_sense_distinct
+  with concrete counts. P6 rows migrate post-P8.
+- **2sense_distinct_with_facet / 3sense_distinct_with_facet** -
+  pipe-separated distinct senses where **one** sense is itself a
+  same-sense facet phrase joined by or. **Always
+  review_needed: true** because internal or in a multi-sense
+  gloss is QA-sensitive.
+
+### Why internal or can be valid as a same-sense facet
+
+In consent|noun, verb|C1, the first Oxford sense is
+permission to do something, especially given by somebody in authority
+and the second is agreement about something. These are two wordings
+for the **same core concept** (the noun sense is "permission/agreement"
+in one go). Rendering as permission or agreement|give permission
+preserves the facet while keeping the multi-sense top-level separator
+clear. Without the _with_facet rule, the only options would be:
+
+1. **Drop the facet** - lose the permission/agreement nuance, gloss
+   becomes just permission|give permission which under-specifies
+   the noun.
+2. **Promote to 3-sense** - render as permission|agreement|give
+   permission, but permission and agreement aren't really
+   distinct senses; they're two phrasings of the same one. The 3-sense
+   gloss misleads the learner into thinking there are 3 distinct
+   concepts.
+
+The _with_facet rule is the right middle path. It carries
+review_needed: true because the heuristic detector (separating
+same-sense facets from distinct senses) is not 100% reliable; human
+QA confirms the facet claim.
+
+### Why miserable is NOT a facet case
+
+miserable|adjective|B2 Oxford has TWO numbered B2 senses:
+"very unhappy or uncomfortable" and "making you feel very unhappy or
+uncomfortable". These are **distinct** (one is the FEELING, one is the
+CAUSE) - not same-sense facets. The cause-sense uses
+"making you feel" which is structurally different from the
+feeling-sense. So:
+
+- Top-level separator MUST be | (distinct senses).
+- rule_applied MUST be 2sense_distinct, NOT 2sense_distinct_with_facet.
+- The internal or in the original defs ("unhappy or uncomfortable")
+  is Oxford's source convention, not a same-sense facet marker.
+
+The P8 hotfix:
+- def_before becomes
+  very unhappy or uncomfortable|making you feel very unhappy or
+  uncomfortable (pipe, not ; - Oxford HTML's ; is the
+  list-of-senses separator at HTML level, not the def_before
+  convention).
+- gloss_after becomes very unhappy|very unpleasant (was
+  very unhappy|very bad or inadequate, which carried a hidden
+  nested or inside a pipe-separated gloss - that's a P8 anti-pattern).
+
+### Migration impact
+
+- **457 audit rows migrated** out of 2487.
+- **102 P6 rows** (multi_sense_distinct) migrated to specific
+  Nsense_distinct / _with_facet codes.
+- **326 P5 rows** (precision_phrase) migrated to
+  word_gloss / phrase_gloss / facet_phrase / Nsense_distinct.
+- **0 deprecated rules remain in audit** post-apply.
+- **3 _with_facet rows** carry review_needed: true:
+  casualty, consent, portray.
+
+### Backward compat
+
+- precision_phrase and multi_sense_distinct REMAIN in
+  VALID_RULE_CODES for backward compat with historical rows
+  (some P5/P6 decisions files still reference them).
+- _audit_gloss_policy_coverage PICK_RULES / SINGLE_ALLOWED keep
+  the old codes in their sets but the audit has 0 of them post-apply.
+- KNOWN_RULES in _full_audit.py extended with the 7 new codes.
+
+### Why no new ADR (this is an addendum)
+
+The P8 pass is a vocabulary refinement + 1 hotfix, not a structural
+change to the gloss pipeline architecture. The split into
+word_gloss/phrase_gloss/facet_phrase is a rename-and-clarify; the
+Nsense_distinct codes are a count-tag specialization; the _with_facet
+codes are a structural annotation. No validator changes, no card-layout
+changes, no schema changes. Process addition (new codes + apply tool)
+rather than architecture change.

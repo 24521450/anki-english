@@ -246,8 +246,8 @@ A `Gloss Verdict` must have a separator/chunk shape consistent with its `rule_ap
 
 | `rule_applied` | Required shape |
 |---|---|
-| `rule_b_pick1`, `concrete_1sense`, `multi_pos_pick1`, `precision_phrase`, `common_core_trimmed` (P7) | one chunk allowed (no separator) |
-| `2sense_distinct`, `3sense_distinct`, `multi_sense_distinct` (P6), `trimmed_multisense` (P7), `rule_b_pick2`, `rule_b_pick2_addendum`, `multi_pos_pick2` | **must have more than one chunk** (`|` or `;`) |
+| `rule_b_pick1`, `concrete_1sense`, `multi_pos_pick1`, `precision_phrase`, `common_core_trimmed` (P7), `word_gloss` / `phrase_gloss` / `facet_phrase` (P8) | one chunk allowed (no separator) |
+| `2sense_distinct`, `3sense_distinct`, `multi_sense_distinct` (P6, deprecated post-P8), `trimmed_multisense` (P7), `rule_b_pick2`, `rule_b_pick2_addendum`, `multi_pos_pick2`, `4sense_distinct` / `5sense_distinct` / `2sense_distinct_with_facet` / `3sense_distinct_with_facet` (P8) | **must have more than one chunk** (`|` or `;`) |
 | `2sense_samedomain` | one chunk allowed when Rule A collapses near-synonyms; otherwise `;` or `|` may be justified by review |
 | `pos_aware_gloss` | policy review (one chunk may be intentional, see P4B addendum) |
 
@@ -334,6 +334,69 @@ _Avoid_: forcing `trimmed_multisense` onto a headword whose senses
 fully collapse (use `common_core_trimmed` instead); using
 `trimmed_multisense` as a license to keep redundant variants — the
 trim is what justifies multi-chunk, not the raw count of senses.
+
+**Convention Taxonomy (P8 2026-06-23)**:
+The post-P8 rule vocabulary normalizes P5's `precision_phrase` and P6's
+`multi_sense_distinct` into sharper, learner-meaning-driven codes. The
+intent is **not** to invent new gloss content but to make the audit row's
+`rule_applied` field say exactly what was done, so QA can pattern-match
+without parsing gloss text.
+
+- **`word_gloss`** — one-word gloss, single chunk. Used when the
+  headword's meaning can be crisply captured by a single different
+  word. Example: `parameter|noun|C1` → `condition`.
+- **`phrase_gloss`** — short phrase (typically 2-4 words), single chunk.
+  Used when a one-word gloss would shift semantic type or contrast
+  with a related headword. Replaces most P5 `precision_phrase`
+  decisions. Example: `parameter|noun|C1` → `condition or limit`
+  is `facet_phrase`; `parameter` → `mathematical condition` would be
+  `phrase_gloss`.
+- **`facet_phrase`** — single-chunk gloss using `or` to span
+  same-sense facets of the headword (e.g. `condition or limit`,
+  `victim or loss`). Both sides of `or` are different wordings for
+  the **same core meaning**, not two distinct senses. `separator =
+  none`. Distinct from `_with_facet` (see below).
+- **`2sense_distinct` / `3sense_distinct` / `4sense_distinct` /
+  `5sense_distinct`** — pipe-separated distinct senses, named by the
+  actual chunk count. Replaces P6's catch-all `multi_sense_distinct`
+  with concrete counts so QA can pattern-match by sense count.
+  Backward-compat: P6 rows keep `multi_sense_distinct` as a valid
+  `VALID_RULE_CODES` entry but the audit migrates them post-P8.
+- **`2sense_distinct_with_facet` / `3sense_distinct_with_facet`** —
+  pipe-separated distinct senses where **one** sense is itself a
+  same-sense facet phrase joined by `or`. Example:
+  `consent|noun, verb|C1` → `permission or agreement|give permission`
+  (sense 1 has an `or` facet; sense 2 is separate). **Always
+  `review_needed: true`** — internal `or` in a multi-sense gloss is
+  QA-sensitive (a careless reader may parse it as 3 senses).
+
+_Avoid_: using `facet_phrase` when the two sides of `or` are
+genuinely different domains (that's `_with_facet` or `2sense_distinct`);
+naming a row `4sense_distinct` when P7's `trimmed_multisense` rule
+applies (the trim is the meaningful operation, not the count);
+setting `review_needed: true` on `_with_facet` rows without a reason
+in `review_reason`.
+
+**Miserable Oxford Source Correction (P8 2026-06-23)**:
+The Oxford raw HTML stores `miserable|adjective|B2` as a single
+`def_before` line using ` ; ` (semicolon) to separate two B2 senses:
+`very unhappy or uncomfortable ; making you feel very unhappy or
+uncomfortable`. Oxford uses `;` as its list-of-senses separator at the
+HTML level, but the project's `def_before` convention is to use `|`
+within a multi-sense def. P8 normalizes this:
+
+- `def_before` becomes `very unhappy or uncomfortable|making you feel
+  very unhappy or uncomfortable` (pipe, not semicolon).
+- `gloss_after` becomes `very unhappy|very unpleasant` (was `very
+  unhappy|very bad or inadequate`, which carried a nested `or`).
+- `rule_applied` becomes `2sense_distinct` (was `NULL` / `rebuilt`).
+- `fix_status` becomes `p10_semantic_hotfix` (lineage from the
+  semantic hotfix v2 pass that identified the issue).
+
+_Avoid_: re-introducing the ` ; ` form on any audit row going forward;
+treating `miserable` as a `_with_facet` case — the two Oxford senses
+are genuinely distinct, not same-sense facets, so the top-level
+separator must be `|` not `or`.
 
 **Lexical Loop Guard**:
 A gloss-policy constraint that prevents a gloss from sending the learner back to a word that's roughly as hard as the headword. The gloss's job is to **explain the headword in a simpler register**, not to swap one C1 word for another C1 word. Three failure modes are tracked; each is a `loop_type` value in the review ledger:

@@ -38,7 +38,11 @@ KNOWN_RULES = {
     "trimmed_multisense",  # P7: 2+ distinct chunks kept after redundant-sense trim
     "rule_b_pick1", "rule_b_pick2", "rule_b_pick2_addendum",
     "concrete_1sense", "multi_pos_pick1", "multi_pos_pick2",
-    "precision_phrase", "safety_net",  # P5/P5D additions
+    "precision_phrase", "safety_net",  # P5/P5D additions (precision_phrase deprecated post-P8)
+    # === P8 convention taxonomy ===
+    "word_gloss", "phrase_gloss", "facet_phrase",
+    "2sense_distinct_with_facet", "3sense_distinct_with_facet",
+    "4sense_distinct", "5sense_distinct",
 }
 
 layer_a_issues = defaultdict(list)

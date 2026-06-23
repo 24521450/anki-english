@@ -120,8 +120,25 @@ VALID_RULE_CODES = (
     'concrete_1sense',           # 1 sense, no special rule
     'multi_pos_pick1',           # multi-POS, all variants → 1 word
     'safety_net',                # 1 sense, domain-restricted, kept per Rule C
-    'precision_phrase',          # single-word gloss would shift semantic type
-                                 # (e.g. contrast_pair, type_narrowing) → phrase form
+    'precision_phrase',          # P5: single-word gloss would shift semantic type
+                                 # (e.g. contrast_pair, type_narrowing) → phrase form.
+                                 # P8: deprecated; split into word_gloss / phrase_gloss /
+                                 # facet_phrase. Retained for backward compat with
+                                 # historical rows still in audit.
+    # === P8 convention taxonomy ===
+    'word_gloss',                # P8: one-word gloss, clearer than the headword
+                                 # (single-chunk by design).
+    'phrase_gloss',              # P8: short phrase without `or` or `|`
+                                 # (single-chunk by design; replaces P5
+                                 # precision_phrase for non-facet cases).
+    'facet_phrase',              # P8: `or` phrase under separator=none, both
+                                 # sides are same-sense facets (single-chunk).
+    '2sense_distinct_with_facet', # P8: 2 pipe-separated senses, one with
+                                 # internal `or` facet; QA-sensitive.
+    '3sense_distinct_with_facet', # P8: 3 pipe-separated senses, one with
+                                 # internal `or` facet; QA-sensitive.
+    '4sense_distinct',           # P8: 4 distinct senses, kept with |.
+    '5sense_distinct',           # P8: 5 distinct senses, kept with |.
 )
 
 

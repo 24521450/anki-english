@@ -17,13 +17,25 @@ Required checks (all must hold):
   4. All decisions' `gloss_word_count` matches actual count.
   5. Audit row count remains 2487; no duplicate guards.
   6. Exactly 117 audit rows reflect P6 decisions
-     (`fix_status = p6_multisense_harddrop_repaired`,
-     `gloss_after = decision.new_gloss`).
+     (`fix_status = p6_multisense_harddrop_repaired` or P7/P8 successor,
+     `gloss_after = decision.new_gloss` unless superseded by P7/P8).
   7. Exactly 114 TXT rows sync; exactly 3 deferred keys match the
      known set: harbor|verb|UNCLASSIFIED, invading|verb|UNCLASSIFIED,
      shortsighted|adjective|UNCLASSIFIED.
   8. No P6 audit row is mis-classified as `rule_shape_contradiction`
      by `_audit_gloss_policy_coverage`.
+
+Post-P8 drift tolerance:
+  - P8 split `multi_sense_distinct` into the new convention taxonomy
+    (`2sense_distinct` / `3sense_distinct` / `4sense_distinct` /
+    `5sense_distinct` / `2sense_distinct_with_facet` /
+    `3sense_distinct_with_facet`). P6 audit rows are allowed to have any
+    of these successor rules post-P8.
+  - TXT gloss drift after P8 is tolerated for keys whose current audit
+    row has a P8 successor rule.
+  - The P6 decisions file itself is a historical artifact: its
+    `rule_after` field stays `multi_sense_distinct` regardless of
+    later taxonomy migrations.
 
 Run: `python -m tools._verify_p6_multisense_harddrop`
 """
@@ -45,6 +57,18 @@ EXPECTED_DEFERRED_KEYS: set[tuple[str, str, str]] = {
     ('harbor', 'verb', 'UNCLASSIFIED'),
     ('invading', 'verb', 'UNCLASSIFIED'),
     ('shortsighted', 'adjective', 'UNCLASSIFIED'),
+}
+
+# Post-P8 successors of P6's `multi_sense_distinct` rule. P6 audit rows
+# may now use any of these after the convention taxonomy split.
+P8_P6_SUCCESSOR_RULES = {
+    'multi_sense_distinct',  # legacy rows not yet migrated by P8
+    '2sense_distinct',
+    '3sense_distinct',
+    '4sense_distinct',
+    '5sense_distinct',
+    '2sense_distinct_with_facet',
+    '3sense_distinct_with_facet',
 }
 
 
@@ -181,26 +205,38 @@ def main() -> int:
         target = rows[0]
         # Drift tolerance: P7 may have superseded this P6 row with a
         # common_core_trimmed / trimmed_multisense rule (redundant subsenses
-        # collapsed). Accept P7's verdict as the later, more thorough pass.
-        p7_superseded = target.get('fix_status', '').strip() == 'p7_redundant_sense_trimmed'
-        if target.get('fix_status', '').strip() not in (
+        # collapsed). P8 may have migrated multi_sense_distinct to the new
+        # convention taxonomy. Accept P7/P8 verdicts as later, more thorough
+        # passes.
+        target_fix_status = target.get('fix_status', '').strip()
+        target_rule_applied = target.get('rule_applied', '').strip()
+        p7_superseded = target_fix_status == 'p7_redundant_sense_trimmed'
+        # P8 may have changed the rule_applied + gloss but kept the original
+        # fix_status (p6_multisense_harddrop_repaired) — that's a P8
+        # convention migration, drift-tolerated.
+        p8_migrated = (
+            target_rule_applied in P8_P6_SUCCESSOR_RULES
+            and target_rule_applied != 'multi_sense_distinct'
+        )
+        if target_fix_status not in (
             'p6_multisense_harddrop_repaired', 'p7_redundant_sense_trimmed',
+            'p10_semantic_hotfix', 'p11_semantic_hotfix_v2',
         ):
             failures.append(
                 f'  audit {k} fix_status={target.get("fix_status")!r} '
                 f'(expected p6_multisense_harddrop_repaired or p7_redundant_sense_trimmed)'
             )
         if target.get('gloss_after', '').strip() != (d.get('new_gloss') or '').strip():
-            if not p7_superseded:
+            if not (p7_superseded or p8_migrated):
                 failures.append(
                     f'  audit {k} gloss_after={target.get("gloss_after")!r} '
                     f'!= decision new_gloss={(d.get("new_gloss") or "")!r}'
                 )
-        if target.get('rule_applied', '').strip() != 'multi_sense_distinct':
+        if target_rule_applied not in P8_P6_SUCCESSOR_RULES:
             if not p7_superseded:
                 failures.append(
-                    f'  audit {k} rule_applied={target.get("rule_applied")!r} '
-                f'(expected multi_sense_distinct)'
+                    f'  audit {k} rule_applied={target_rule_applied!r} '
+                f'(expected one of {sorted(P8_P6_SUCCESSOR_RULES)})'
             )
         n_synced += 1
     print(f'  Audit rows synced: {n_synced}/117')
@@ -229,21 +265,24 @@ def main() -> int:
             continue
         if txt_keys[k].strip() != (d.get('new_gloss') or '').strip():
             # Drift tolerance: P7 may have collapsed this P6 row's gloss.
-            # The P6 decisions file still has the un-collapsed gloss; the
-            # TXT cell reflects P7's later verdict. Skip the failure.
-            if k in {(_d.get('word', '').strip().lower(),
-                      _d.get('pos', '').strip().lower(),
-                      _d.get('cefr', '').strip().upper())
-                     for _d in decisions}:
-                # Look up the audit row for this key to check fix_status.
-                target_audit = next(
-                    (r for r in audit
-                     if (r.get('word') or '').strip().lower() == k[0]
-                     and (r.get('pos') or '').strip().lower() == k[1]
-                     and (r.get('cefr') or '').strip().upper() == k[2]),
-                    None,
-                )
-                if target_audit and target_audit.get('fix_status', '').strip() == 'p7_redundant_sense_trimmed':
+            # P8 may have migrated this P6 row's gloss to a new convention
+            # taxonomy entry (different gloss text). The P6 decisions file
+            # still has the un-collapsed gloss; the TXT cell reflects the
+            # later verdict. Skip the failure.
+            target_audit = next(
+                (r for r in audit
+                 if (r.get('word') or '').strip().lower() == k[0]
+                 and (r.get('pos') or '').strip().lower() == k[1]
+                 and (r.get('cefr') or '').strip().upper() == k[2]),
+                None,
+            )
+            if target_audit:
+                target_fix = target_audit.get('fix_status', '').strip()
+                target_rule = target_audit.get('rule_applied', '').strip()
+                if target_fix == 'p7_redundant_sense_trimmed':
+                    continue
+                # P8 migration: rule moved to a P8 successor of multi_sense_distinct.
+                if target_rule in P8_P6_SUCCESSOR_RULES and target_rule != 'multi_sense_distinct':
                     continue
             failures.append(
                 f'  TXT {k} def={txt_keys[k]!r} '

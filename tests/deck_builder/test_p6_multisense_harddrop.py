@@ -10,6 +10,17 @@ Locks in the P6 plan's acceptance criteria:
     (`3sense_distinct`, `4sense_distinct`).
   - All deferred keys match the known set of 3.
   - All decisions' gloss_word_count matches actual count.
+
+Post-P8 drift tolerance:
+  - P6 decisions are historical artifacts; their `rule_after` field stays
+    `multi_sense_distinct` regardless of subsequent taxonomy migrations.
+  - P8 split the old `multi_sense_distinct` PICK rule into the new
+    convention taxonomy (`2sense_distinct` / `3sense_distinct` /
+    `4sense_distinct` / `5sense_distinct` / `2sense_distinct_with_facet` /
+    `3sense_distinct_with_facet`). P6 audit rows are allowed to have any of
+    these successor rules post-P8.
+  - TXT gloss drift after P8 is tolerated for keys whose current audit row
+    has a P8 successor rule (`rule_applied` in `P8_P6_SUCCESSOR_RULES`).
 """
 from __future__ import annotations
 
@@ -30,6 +41,21 @@ EXPECTED_DEFERRED_KEYS = {
     ('invading', 'verb', 'UNCLASSIFIED'),
     ('shortsighted', 'adjective', 'UNCLASSIFIED'),
 }
+
+# Post-P8 successors of P6's `multi_sense_distinct` rule.
+# P6 audit rows may now use any of these after the convention taxonomy split.
+P8_P6_SUCCESSOR_RULES = {
+    'multi_sense_distinct',  # legacy rows not yet migrated by P8 (kept for back-compat)
+    '2sense_distinct',
+    '3sense_distinct',
+    '4sense_distinct',
+    '5sense_distinct',
+    '2sense_distinct_with_facet',
+    '3sense_distinct_with_facet',
+}
+# Post-P8 deprecated rules: P6 rows previously had these but P8 migrated them away.
+# Audit rows should never have `precision_phrase` (P5's deprecated rule).
+P6_DEPRECATED_RULES = {'precision_phrase'}
 
 QA_NORMALIZED_FIXES = {
     ('arrow', 'noun', 'B2'): 'bow projectile|direction mark',
@@ -138,8 +164,13 @@ class TestAuditReflection:
     def test_all_p6_audit_rows_synced(self, decisions, audit):
         """Every P6 decision's (word, pos, cefr) audit row reflects the new gloss.
 
-        Drift tolerance: P7 may have superseded this row with a
-        common_core_trimmed / trimmed_multisense rule. Accept P7's verdict.
+        Drift tolerance:
+        - P7 may have superseded this row with a
+          common_core_trimmed / trimmed_multisense rule. Accept P7's verdict.
+        - P8 may have migrated `multi_sense_distinct` to the new convention
+          taxonomy (`2sense_distinct` / `3sense_distinct` / ... /
+          `_with_facet`). Accept any P8 successor rule, and accept the gloss
+          drift that P8 brings with it.
         """
         audit_by_key: dict[tuple, dict] = {}
         for r in audit:
@@ -168,20 +199,38 @@ class TestAuditReflection:
                     f'{k}: P7 superseded P6 but rule_applied={rule_applied!r} '
                     f'(expected common_core_trimmed or trimmed_multisense)'
                 )
-            else:
-                assert fix_status == 'p6_multisense_harddrop_repaired'
-                assert rule_applied == 'multi_sense_distinct'
-                assert r.get('gloss_after', '').strip() == (d.get('new_gloss') or '').strip()
+                continue
+            # P8 may have migrated multi_sense_distinct to the new taxonomy.
+            # Accept any P8 successor rule + the gloss drift it brings.
+            if rule_applied in P8_P6_SUCCESSOR_RULES and rule_applied != 'multi_sense_distinct':
+                # P8 successor: gloss drift tolerated.
+                continue
+            # Otherwise: legacy assertion — audit row should match P6 decision.
+            assert fix_status == 'p6_multisense_harddrop_repaired', (
+                f'{k}: unexpected fix_status={fix_status!r}'
+            )
+            assert rule_applied == 'multi_sense_distinct', (
+                f'{k}: rule_applied={rule_applied!r} not in P8 successor set '
+                f'and not legacy multi_sense_distinct'
+            )
+            assert r.get('gloss_after', '').strip() == (d.get('new_gloss') or '').strip()
 
     def test_no_invalid_legacy_rule_codes_in_audit(self, audit):
-        """P6 rows in the audit use multi_sense_distinct; no legacy 4sense_distinct."""
-        invalid = {'3sense_distinct', '4sense_distinct'}
-        # Allow 3sense_distinct for the 2 historical rows pre-P6.
+        """P6 deprecated rules must not appear in audit.
+
+        - `precision_phrase` was P5's rule, deprecated post-P8 (split into
+          word_gloss / phrase_gloss / facet_phrase).
+        - P6's `multi_sense_distinct` was migrated post-P8 to Nsense_distinct
+          variants.
+        """
         bad = [
             r for r in audit
-            if (r.get('rule_applied') or '').strip() == '4sense_distinct'
+            if (r.get('rule_applied') or '').strip() in P6_DEPRECATED_RULES
         ]
-        assert not bad, f'audit still has {len(bad)} rows with 4sense_distinct'
+        assert not bad, (
+            f'audit still has {len(bad)} rows with P6-deprecated rules '
+            f'({P6_DEPRECATED_RULES}): {bad[:3]}'
+        )
 
 
 class TestTXTReflection:
@@ -219,9 +268,11 @@ class TestTXTReflection:
     def test_txt_synced_glosses_match(self, decisions):
         """For non-deferred keys, TXT def == decision.new_gloss.
 
-        Drift tolerance: P7 may have superseded this P6 row's gloss
-        (e.g. collapsed multi_sense_distinct to common_core_trimmed).
-        In that case, the TXT cell reflects P7's later verdict.
+        Drift tolerance:
+        - P7 may have superseded this P6 row's gloss
+          (e.g. collapsed multi_sense_distinct to common_core_trimmed).
+        - P8 may have migrated this P6 row's gloss to a new convention
+          taxonomy entry (different gloss text). Accept any P8 successor rule.
         """
         if not TXT_PATH.exists():
             pytest.skip(f'{TXT_PATH.name} not present')
@@ -238,20 +289,26 @@ class TestTXTReflection:
                 parts[14].strip().upper(),
             )
             txt_keys[k] = parts[6]
-        # Build P7-superseded key set from audit
+        # Build P7-superseded + P8-superseded key sets from audit
         audit_p7_keys: set[tuple] = set()
+        audit_p8_keys: set[tuple] = set()
         with open(AUDIT_PATH, encoding='utf-8') as f:
             for line in f:
                 if not line.strip():
                     continue
                 r = json.loads(line)
-                if (r.get('fix_status') or '').strip() == 'p7_redundant_sense_trimmed':
-                    k = (
-                        (r.get('word') or '').strip().lower(),
-                        (r.get('pos') or '').strip().lower(),
-                        (r.get('cefr') or '').strip().upper(),
-                    )
+                fix_status = (r.get('fix_status') or '').strip()
+                rule_applied = (r.get('rule_applied') or '').strip()
+                k = (
+                    (r.get('word') or '').strip().lower(),
+                    (r.get('pos') or '').strip().lower(),
+                    (r.get('cefr') or '').strip().upper(),
+                )
+                if fix_status == 'p7_redundant_sense_trimmed':
                     audit_p7_keys.add(k)
+                elif rule_applied in P8_P6_SUCCESSOR_RULES and rule_applied != 'multi_sense_distinct':
+                    # P8 superseded this row's rule + gloss.
+                    audit_p8_keys.add(k)
         for d in decisions:
             k = (
                 (d.get('word') or '').strip().lower(),
@@ -262,6 +319,9 @@ class TestTXTReflection:
                 continue
             if k in audit_p7_keys:
                 # P7 superseded; TXT reflects P7's later verdict, not P6's.
+                continue
+            if k in audit_p8_keys:
+                # P8 superseded; TXT reflects P8's later verdict, not P6's.
                 continue
             if k in txt_keys:
                 assert txt_keys[k].strip() == (d.get('new_gloss') or '').strip()
