@@ -19,7 +19,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from tools.build_notes import (
+from src.deck_builder.build_notes import (
     _format_examples,
     DEF_SEPARATOR,
     EX_SEP,

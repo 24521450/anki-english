@@ -19,6 +19,12 @@ Guardrails (per P8 plan):
   - `miserable.def_before` exactly contains `|` (Oxford source correction).
   - Audit row count preserved at 2487.
 
+NOTE: This is a historical apply tool. It is stale-sensitive. Running this tool
+against the current `data/audit_full_deck_v2.jsonl` may fail and exit `1` because
+target guard rows have already been modified/superseded by subsequent runs
+(e.g., P12, P13, P15). This strict failure is the correct and expected safety
+behavior to prevent accidental wrong-row corruption.
+
 Run:
   python -m tools._apply_p8_convention_hotfix            # dry-run (default)
   python -m tools._apply_p8_convention_hotfix --apply    # write
@@ -26,7 +32,6 @@ Run:
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -37,7 +42,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 DECISIONS_PATH = PROJECT_ROOT / 'data' / 'convention_p8_decisions.jsonl'
 AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
 TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
-
 
 # Allowed new taxonomy rules (post-P8 migration).
 NEW_TAXONOMY = {
@@ -61,24 +65,23 @@ WITH_FACET_RULES = {
 }
 
 
-def _ts() -> str:
-    return datetime.now().strftime('%Y%m%d_%H%M%S')
-
-
 def _cur_guard(r: dict) -> tuple:
-    return (
-        (r.get('word') or '').strip().lower(),
-        (r.get('pos') or '').strip().lower(),
-        (r.get('cefr') or '').strip().upper(),
-        (r.get('def_before') or '').strip(),
-        (r.get('gloss_after') or '').strip(),
-    )
-
-
-def _load_jsonl(path: Path) -> list[dict]:
-    if not path.exists():
-        raise FileNotFoundError(f'Not found: {path}')
-    return [json.loads(l) for l in path.read_text(encoding='utf-8').splitlines() if l.strip()]
+    if 'guard_word' in r:
+        return (
+            (r.get('guard_word') or '').strip().lower(),
+            (r.get('guard_pos') or '').strip().lower(),
+            (r.get('guard_cefr') or '').strip().upper(),
+            (r.get('guard_def_before') or '').strip(),
+            (r.get('guard_gloss_after') or '').strip(),
+        )
+    else:
+        return (
+            (r.get('word') or '').strip().lower(),
+            (r.get('pos') or '').strip().lower(),
+            (r.get('cefr') or '').strip().upper(),
+            (r.get('def_before') or '').strip(),
+            (r.get('gloss_after') or '').strip(),
+        )
 
 
 def main() -> int:
@@ -88,14 +91,24 @@ def main() -> int:
 
     print('=' * 72)
     print(f'P8 Convention + Hotfix Apply (apply={args.apply})')
-    print(f'Timestamp: {_ts()}')
+    print(f'Timestamp: {datetime.now().strftime("%Y%m%d_%H%M%S")}')
     print('=' * 72)
 
     # Load inputs.
     print('\n[1] Loading inputs...')
+    from src.deck_builder.audit_patch import (
+        AuditPatchPaths,
+        AuditPatchResult,
+        load_jsonl,
+        replace_txt_definition_cells,
+        write_jsonl_text,
+        match_by_guard,
+        backup_and_write,
+    )
+
     try:
-        decisions = _load_jsonl(DECISIONS_PATH)
-        audit_rows = _load_jsonl(AUDIT_PATH)
+        decisions = load_jsonl(DECISIONS_PATH)
+        audit_rows = load_jsonl(AUDIT_PATH)
     except FileNotFoundError as e:
         print(f'FATAL: {e}')
         return 1
@@ -109,50 +122,14 @@ def main() -> int:
         print(f'FATAL: audit has {len(audit_rows)} rows (expected 2487)')
         return 1
 
-    # Build decision index by 5-element guard.
-    dec_by_guard: dict[tuple, dict] = {}
-    for d in decisions:
-        g = (
-            d['guard_word'],
-            d['guard_pos'],
-            d['guard_cefr'],
-            d['guard_def_before'],
-            d['guard_gloss_after'],
-        )
-        dec_by_guard[g] = d
-
     # Cross-check: every decision must match exactly 1 audit row.
     print('\n[2] Cross-checking decisions vs audit...')
-    audit_by_full_guard: dict[tuple, list[dict]] = {}
-    for r in audit_rows:
-        g = _cur_guard(r)
-        audit_by_full_guard.setdefault(g, []).append(r)
-    unmatched: list[dict] = []
-    ambiguous: list[tuple] = []
-    matched_audit: list[dict] = []
-    for d in decisions:
-        g = (
-            d['guard_word'], d['guard_pos'], d['guard_cefr'],
-            d['guard_def_before'], d['guard_gloss_after'],
-        )
-        rows = audit_by_full_guard.get(g, [])
-        if len(rows) == 0:
-            unmatched.append(d)
-        elif len(rows) > 1:
-            ambiguous.append(g)
-        else:
-            matched_audit.append(rows[0])
-    if unmatched:
-        print(f'FATAL: {len(unmatched)} decisions have no matching audit row:')
-        for d in unmatched[:5]:
-            print(f'  ({d["word"]}, {d["pos"]}, {d["cefr"]})')
+    try:
+        matched = match_by_guard(audit_rows, decisions, _cur_guard)
+    except ValueError as e:
+        print(f'FATAL: ledger coverage issues:\n{e}')
         return 1
-    if ambiguous:
-        print(f'FATAL: {len(ambiguous)} decisions are ambiguous (multiple audit matches)')
-        for g in ambiguous[:5]:
-            print(f'  {g}')
-        return 1
-    print(f'  Matched {len(matched_audit)} audit rows.')
+    print(f'  Matched {len(matched)} audit rows.')
 
     # Validate each decision.
     print('\n[3] Validating decisions...')
@@ -182,12 +159,12 @@ def main() -> int:
                 f'  ({d["word"]}, {d["pos"]}, {d["cefr"]}) rule_after={rule_after!r} '
                 f'not in P8 taxonomy'
             )
-        # _with_facet rows must carry review_needed: true
         if rule_after in WITH_FACET_RULES and not d.get('review_needed'):
             failures.append(
                 f'  ({d["word"]}, {d["pos"]}, {d["cefr"]}) rule={rule_after!r} '
                 f'requires review_needed: true (got {d.get("review_needed")!r})'
             )
+            
     # Miserable-specific check
     mis = next((d for d in decisions if d['word'] == 'miserable'
                 and d['pos'] == 'adjective' and d['cefr'] == 'B2'), None)
@@ -217,25 +194,24 @@ def main() -> int:
     replaced = 0
     for r in audit_rows:
         g = _cur_guard(r)
-        d = dec_by_guard.get(g)
-        if d is None:
+        if g in matched:
+            d = matched[g]
+            new_r = dict(r)
+            new_r['def_before'] = d['def_before_new']
+            new_r['gloss_after'] = d['gloss_after']
+            new_r['rule_applied'] = d['rule_after']
+            new_r['separator'] = d['separator']
+            new_r['gloss_word_count'] = d['gloss_word_count']
+            new_r['gate_status'] = d.get('gate_status') or 'pass'
+            new_r['fix_status'] = d['fix_status']
+            if d.get('rule_after') in WITH_FACET_RULES:
+                new_r['review_needed'] = True
+                new_r['review_reason'] = d.get('review_reason') or 'p8_convention_with_facet'
+            new_audit.append(new_r)
+            replaced += 1
+        else:
             new_audit.append(r)
-            continue
-        new_r = dict(r)
-        # Apply new field values from decision.
-        new_r['def_before'] = d['def_before_new']
-        new_r['gloss_after'] = d['gloss_after']
-        new_r['rule_applied'] = d['rule_after']
-        new_r['separator'] = d['separator']
-        new_r['gloss_word_count'] = d['gloss_word_count']
-        new_r['gate_status'] = d.get('gate_status') or 'pass'
-        new_r['fix_status'] = d['fix_status']
-        # Carry review_needed for _with_facet rows.
-        if d.get('rule_after') in WITH_FACET_RULES:
-            new_r['review_needed'] = True
-            new_r['review_reason'] = d.get('review_reason') or 'p8_convention_with_facet'
-        new_audit.append(new_r)
-        replaced += 1
+
     if replaced != 457:
         print(f'FATAL: replaced {replaced} audit rows (expected 457)')
         return 1
@@ -251,32 +227,11 @@ def main() -> int:
             (d['cefr'] or '').strip().upper(),
         )
         txt_keys[k] = d['gloss_after']
-    lines = TXT_PATH.read_text(encoding='utf-8').splitlines()
-    new_lines: list[str] = []
-    n_txt_replaced = 0
-    seen_keys: set[tuple] = set()
-    for line in lines:
-        if line.startswith('#') or not line.strip():
-            new_lines.append(line)
-            continue
-        parts = line.split('\t')
-        if len(parts) < 17:
-            new_lines.append(line)
-            continue
-        k = (
-            parts[3].strip().lower(),
-            parts[4].strip().lower(),
-            parts[14].strip().upper(),
-        )
-        seen_keys.add(k)
-        if k in txt_keys:
-            # parts[6] = Definition cell (gloss).
-            # parts[7] = Example sentence (NOT def_before — that's audit-only).
-            parts[6] = txt_keys[k]
-            n_txt_replaced += 1
-        new_lines.append('\t'.join(parts))
-    deferred_keys: set[tuple] = {k for k in txt_keys if k not in seen_keys}
-    print(f'  TXT cells replaced (gloss): {n_txt_replaced}')
+        
+    txt_text = TXT_PATH.read_text(encoding='utf-8')
+    updated_txt_text, replaced_count, deferred_keys = replace_txt_definition_cells(txt_text, txt_keys)
+
+    print(f'  TXT cells replaced (gloss): {replaced_count}')
     print(f'  Deferred (no TXT row): {len(deferred_keys)}')
     for k in sorted(deferred_keys):
         print(f'    {k}')
@@ -287,21 +242,17 @@ def main() -> int:
 
     # === Apply ===
     print('\n[6] Writing changes...')
-    audit_bak = AUDIT_PATH.with_suffix(AUDIT_PATH.suffix + f'.bak_pre_p8_convention_{_ts()}')
-    txt_bak = TXT_PATH.with_suffix(TXT_PATH.suffix + f'.bak_pre_p8_convention_{_ts()}')
-    audit_bak.write_text(AUDIT_PATH.read_text(encoding='utf-8'), encoding='utf-8')
-    txt_bak.write_text(TXT_PATH.read_text(encoding='utf-8'), encoding='utf-8')
-    print(f'  Audit backup: {audit_bak.name}')
-    print(f'  TXT backup:   {txt_bak.name}')
-
-    AUDIT_PATH.write_text(
-        '\n'.join(json.dumps(r, ensure_ascii=False) for r in new_audit) + '\n',
-        encoding='utf-8',
+    updated_audit_text = write_jsonl_text(new_audit)
+    paths = AuditPatchPaths(audit_jsonl_path=AUDIT_PATH, txt_path=TXT_PATH, ledger_path=DECISIONS_PATH)
+    result = AuditPatchResult(
+        updated_audit_text=updated_audit_text,
+        updated_txt_text=updated_txt_text,
+        matched_count=replaced,
+        replaced_count=replaced_count,
+        deferred_count=len(deferred_keys),
+        validation_errors=[]
     )
-    print(f'  Wrote audit:  {AUDIT_PATH.name} ({len(new_audit)} rows)')
-
-    TXT_PATH.write_text('\n'.join(new_lines) + '\n', encoding='utf-8')
-    print(f'  Wrote TXT:    {TXT_PATH.name}')
+    backup_and_write(paths, result, 'p8_convention')
 
     print('\nDone. Run `python -m tools.build_notes` to regenerate JSONL.')
     return 0
