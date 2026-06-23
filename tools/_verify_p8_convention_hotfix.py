@@ -72,6 +72,11 @@ MISERABLE_EXPECTED_GLOSS = 'very unhappy|very unpleasant'
 MISERABLE_EXPECTED_RULE = '2sense_distinct'
 MISERABLE_EXPECTED_FIX_STATUS = 'p10_semantic_hotfix'
 
+# P12 superseded values for the miserable row.
+MISERABLE_P12_GLOSS = 'very unhappy or unpleasant'
+MISERABLE_P12_RULE = 'facet_phrase'
+MISERABLE_P12_FIX_STATUS = 'p12_equiv_sense_semantic_hotfix'
+
 
 def _key(r: dict) -> tuple[str, str, str]:
     return (
@@ -193,34 +198,46 @@ def main() -> int:
                 f'separator should not appear in def_before). Got: {def_before!r}'
             )
         gloss = (mis_audit.get('gloss_after') or '').strip()
-        if gloss != MISERABLE_EXPECTED_GLOSS:
+        rule = (mis_audit.get('rule_applied') or '').strip()
+        fix = (mis_audit.get('fix_status') or '').strip()
+        # P12 supersession: if fix_status is p12_*, accept the P12 values.
+        p12_superseded = (fix == MISERABLE_P12_FIX_STATUS)
+        if p12_superseded:
+            expected_gloss = MISERABLE_P12_GLOSS
+            expected_rule = MISERABLE_P12_RULE
+        else:
+            expected_gloss = MISERABLE_EXPECTED_GLOSS
+            expected_rule = MISERABLE_EXPECTED_RULE
+        if gloss != expected_gloss:
             failures.append(
                 f'  miserable.gloss_after={gloss!r} '
-                f'(expected {MISERABLE_EXPECTED_GLOSS!r})'
+                f'(expected {expected_gloss!r})'
             )
-        rule = (mis_audit.get('rule_applied') or '').strip()
-        if rule != MISERABLE_EXPECTED_RULE:
+        if rule != expected_rule:
             failures.append(
                 f'  miserable.rule_applied={rule!r} '
-                f'(expected {MISERABLE_EXPECTED_RULE!r})'
+                f'(expected {expected_rule!r})'
             )
-        fix = (mis_audit.get('fix_status') or '').strip()
-        if fix != MISERABLE_EXPECTED_FIX_STATUS:
-            failures.append(
-                f'  miserable.fix_status={fix!r} '
-                f'(expected {MISERABLE_EXPECTED_FIX_STATUS!r})'
-            )
+        if fix != expected_gloss and not p12_superseded:
+            # fix_status check only applies if not P12-superseded
+            if fix != MISERABLE_EXPECTED_FIX_STATUS:
+                failures.append(
+                    f'  miserable.fix_status={fix!r} '
+                    f'(expected {MISERABLE_EXPECTED_FIX_STATUS!r} or '
+                    f'{MISERABLE_P12_FIX_STATUS!r})'
+                )
         if all(
             '|' in def_before and ';' not in def_before
-            and gloss == MISERABLE_EXPECTED_GLOSS
-            and rule == MISERABLE_EXPECTED_RULE
-            and fix == MISERABLE_EXPECTED_FIX_STATUS
+            and gloss == expected_gloss
+            and rule == expected_rule
+            and (fix == MISERABLE_EXPECTED_FIX_STATUS or p12_superseded)
             for _ in [None]
         ):
             print(f'  [OK] miserable|adjective|B2 def_before={def_before!r}')
             print(f'  [OK] miserable|adjective|B2 gloss_after={gloss!r}')
             print(f'  [OK] miserable|adjective|B2 rule_applied={rule!r}')
-            print(f'  [OK] miserable|adjective|B2 fix_status={fix!r}')
+            print(f'  [OK] miserable|adjective|B2 fix_status={fix!r}'
+                  f'  ({"P12-superseded" if p12_superseded else "P8 baseline"})')
 
     # 6. TXT cells updated for changed rows.
     print('\n[6] TXT cells updated for changed rows (deferred tolerated)...')
@@ -252,7 +269,13 @@ def main() -> int:
             # Drift tolerated if the audit row was further mutated by a later pass.
             audit_row = audit_by_key.get(k, {})
             fix = (audit_row.get('fix_status') or '').strip()
-            if fix in {'p10_semantic_hotfix', 'p11_semantic_hotfix_v2', 'p9_convention_repaired'}:
+            if fix in {
+                'p10_semantic_hotfix', 'p11_semantic_hotfix_v2',
+                'p9_convention_repaired',
+                # P12/P13 may supersede P8 rows.
+                'p12_equiv_sense_semantic_hotfix',
+                'p13_pipe_sense_hotfix',
+            }:
                 n_txt_drift += 1
             else:
                 failures.append(

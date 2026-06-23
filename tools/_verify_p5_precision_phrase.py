@@ -133,6 +133,7 @@ def main() -> int:
     n_repair = sum(1 for r in ledger if r.get('decision') == 'repair_gloss')
     n_review = sum(1 for r in ledger if r.get('decision') == 'review_candidate')
     n_keep = sum(1 for r in ledger if r.get('decision') == 'keep_current')
+    n_p12_p13_superseded = 0
     print(f'  Ledger: {len(ledger)} rows ({n_repair} repair + {n_review} review + {n_keep} keep)')
 
     if len(ledger) != 990:
@@ -178,6 +179,31 @@ def main() -> int:
         g = (word.lower(), pos.lower(), cefr.upper(), def_before)
         rows = audit_by_pre_repair.get(g, [])
         if len(rows) == 0:
+            # Drift tolerance: P9a may have changed ` ; ` -> `|` in
+            # def_before, breaking the literal pre-repair guard. Try
+            # with the `|`-separated equivalent.
+            def_before_pipe = def_before.replace(' ; ', '|')
+            g_pipe = (word.lower(), pos.lower(), cefr.upper(), def_before_pipe)
+            rows = audit_by_pre_repair.get(g_pipe, [])
+        if len(rows) == 0:
+            # Drift tolerance: P12/P13 may have changed def_before or the
+            # gloss_after since P5 apply. Try a 3-element (word,pos,cefr)
+            # match and accept if the audit row was superseded by P12/P13.
+            g3 = (word.lower(), pos.lower(), cefr.upper())
+            candidates = [r for r in audit
+                          if (r.get('word') or '').strip().lower() == g3[0]
+                          and (r.get('pos') or '').strip().lower() == g3[1]
+                          and (r.get('cefr') or '').strip().upper() == g3[2]]
+            if candidates:
+                sup = candidates[0]
+                sup_fix = (sup.get('fix_status') or '').strip()
+                if sup_fix in {
+                    'p12_equiv_sense_semantic_hotfix',
+                    'p13_pipe_sense_hotfix',
+                }:
+                    # P12/P13 superseded this P5 row. Drift tolerated.
+                    n_p12_p13_superseded += 1
+                    continue
             failures.append(
                 f'  NO AUDIT MATCH for repair ({word}, {pos}, {cefr}, old={rec["old_gloss"]!r})'
             )
@@ -213,7 +239,12 @@ def main() -> int:
             # If audit_rule is in P8_SUCCESSOR_RULES, the gloss drift is
             # legitimately a P8 convention migration.
             p8_drift = audit_rule in P8_SUCCESSOR_RULES
-            if not (p6_drift or p7_drift or p8_drift):
+            # P12/P13 may have superseded this P5 row.
+            p12_p13_drift = audit_fix in {
+                'p12_equiv_sense_semantic_hotfix',
+                'p13_pipe_sense_hotfix',
+            }
+            if not (p6_drift or p7_drift or p8_drift or p12_p13_drift):
                 failures.append(
                     f'  ({word}, {pos}, {cefr}) audit gloss_after={audit_row["gloss_after"]!r} '
                     f'!= ledger new_gloss={new_gloss!r}'
@@ -236,6 +267,11 @@ def main() -> int:
                 '4sense_distinct', '5sense_distinct',
                 '2sense_distinct_with_facet', '3sense_distinct_with_facet',
             )
+            # P12/P13 may have superseded this row.
+            or audit_row.get('fix_status', '').strip() in {
+                'p12_equiv_sense_semantic_hotfix',
+                'p13_pipe_sense_hotfix',
+            }
         ):
             failures.append(
                 f'  ({word}, {pos}, {cefr}) audit rule_applied={audit_row.get("rule_applied")!r} '
@@ -252,6 +288,8 @@ def main() -> int:
             'p9_convention_repaired',
             'p10_semantic_hotfix',
             'p11_semantic_hotfix_v2',
+            'p12_equiv_sense_semantic_hotfix',
+            'p13_pipe_sense_hotfix',
         ):
             failures.append(
                 f'  ({word}, {pos}, {cefr}) audit fix_status={audit_row.get("fix_status")!r} '
@@ -304,6 +342,8 @@ def main() -> int:
                 'p9_convention_repaired',
                 'p10_semantic_hotfix',
                 'p11_semantic_hotfix_v2',
+                'p12_equiv_sense_semantic_hotfix',
+                'p13_pipe_sense_hotfix',
             ):
                 n_txt_drift += 1
                 continue
@@ -346,6 +386,8 @@ def main() -> int:
                 'p9_convention_repaired',
                 'p10_semantic_hotfix',
                 'p11_semantic_hotfix_v2',
+                'p12_equiv_sense_semantic_hotfix',
+                'p13_pipe_sense_hotfix',
             ):
                 n_jsonl_drift += 1
                 continue

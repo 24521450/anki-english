@@ -212,7 +212,11 @@ class TestAuditReflection:
             )
 
     def test_all_p8_audit_rows_synced(self, decisions, audit):
-        """For every P8 decision, the corresponding audit row reflects it."""
+        """For every P8 decision, the corresponding audit row reflects it.
+
+        Drift tolerance: P12/P13 may have superseded this P8 row.
+        Accept any P12/P13 fix_status as a later verdict.
+        """
         audit_by_key: dict[tuple, dict] = {}
         for r in audit:
             audit_by_key.setdefault(_key(r), r)
@@ -220,6 +224,15 @@ class TestAuditReflection:
             k = _key(d)
             assert k in audit_by_key, f'audit missing {k}'
             r = audit_by_key[k]
+            # P12/P13 may have superseded this P8 row.
+            r_fix = (r.get('fix_status') or '').strip()
+            p12_p13_superseded = r_fix in {
+                'p12_equiv_sense_semantic_hotfix',
+                'p13_pipe_sense_hotfix',
+            }
+            if p12_p13_superseded:
+                # Gloss + rule drift tolerated; P8 doesn't claim these.
+                continue
             assert r.get('gloss_after', '').strip() == (d.get('gloss_after') or '').strip(), (
                 f'{k} audit gloss_after={r.get("gloss_after")!r} != '
                 f'decision gloss_after={d.get("gloss_after")!r}'
@@ -254,14 +267,18 @@ class TestTXTReflection:
             if (parts[3].strip().lower() == 'miserable'
                     and parts[4].strip().lower() == 'adjective'
                     and parts[14].strip().upper() == 'B2'):
-                assert parts[6] == 'very unhappy|very unpleasant', (
+                assert parts[6] in (
+                    'very unhappy|very unpleasant',
+                    'very unhappy or unpleasant',
+                ), (
                     f'miserable|adjective|B2 TXT def={parts[6]!r} '
-                    f'(expected "very unhappy|very unpleasant")'
+                    f'(expected P8 "very unhappy|very unpleasant" or P12 '
+                    f'"very unhappy or unpleasant")'
                 )
                 return
         pytest.fail('miserable|adjective|B2 TXT row not found')
 
-    def test_txt_cells_match_decisions(self, decisions):
+    def test_txt_cells_match_decisions(self, decisions, audit):
         """For non-deferred keys, TXT def == decision.gloss_after."""
         if not TXT_PATH.exists():
             pytest.skip(f'{TXT_PATH.name} not present')
@@ -278,12 +295,23 @@ class TestTXTReflection:
                 parts[14].strip().upper(),
             )
             txt_keys[k] = parts[6]
+        # Build audit key -> fix_status map for P12/P13 supersession tolerance.
+        audit_fix_by_key: dict[tuple, str] = {}
+        for r in audit:
+            audit_fix_by_key[_key(r)] = (r.get('fix_status') or '').strip()
         mismatched: list[tuple] = []
         for d in decisions:
             k = _key(d)
             if k not in txt_keys:
                 continue  # deferred
             if txt_keys[k].strip() != (d['gloss_after'] or '').strip():
+                # Drift tolerance: P12/P13 may have superseded this row.
+                r_fix = audit_fix_by_key.get(k, '')
+                if r_fix in {
+                    'p12_equiv_sense_semantic_hotfix',
+                    'p13_pipe_sense_hotfix',
+                }:
+                    continue
                 mismatched.append((k, txt_keys[k], d['gloss_after']))
         assert not mismatched, f'TXT/decisions mismatches: {mismatched[:5]}'
 
@@ -318,17 +346,34 @@ class TestMiserableRegression:
     def test_miserable_gloss_after(self, audit):
         mis = next((r for r in audit if _key(r) == self.MISERABLE_KEY), None)
         assert mis is not None
-        assert (mis.get('gloss_after') or '').strip() == 'very unhappy|very unpleasant'
+        gloss = (mis.get('gloss_after') or '').strip()
+        # P8 baseline OR P12-superseded. P12 collapsed the two senses into
+        # a single-chunk facet phrase.
+        assert gloss in ('very unhappy|very unpleasant', 'very unhappy or unpleasant'), (
+            f'miserable.gloss_after={gloss!r} '
+            f'(expected P8 "very unhappy|very unpleasant" or P12 '
+            f'"very unhappy or unpleasant")'
+        )
 
     def test_miserable_rule_applied(self, audit):
         mis = next((r for r in audit if _key(r) == self.MISERABLE_KEY), None)
         assert mis is not None
-        assert (mis.get('rule_applied') or '').strip() == '2sense_distinct'
+        rule = (mis.get('rule_applied') or '').strip()
+        assert rule in ('2sense_distinct', 'facet_phrase'), (
+            f'miserable.rule_applied={rule!r} '
+            f'(expected P8 "2sense_distinct" or P12 "facet_phrase")'
+        )
 
     def test_miserable_fix_status(self, audit):
         mis = next((r for r in audit if _key(r) == self.MISERABLE_KEY), None)
         assert mis is not None
-        assert (mis.get('fix_status') or '').strip() == 'p10_semantic_hotfix'
+        fix = (mis.get('fix_status') or '').strip()
+        # P8 baseline OR P12-superseded. P12 superseded P8's fix_status.
+        assert fix in ('p10_semantic_hotfix', 'p12_equiv_sense_semantic_hotfix'), (
+            f'miserable.fix_status={fix!r} '
+            f'(expected P8 "p10_semantic_hotfix" or P12 '
+            f'"p12_equiv_sense_semantic_hotfix")'
+        )
 
 
 class TestRuleCodeVocab:
