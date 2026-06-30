@@ -146,7 +146,8 @@ class TestAuditReflection:
             rows = audit_by_key[k]
             assert len(rows) == 1, f'audit has {len(rows)} rows for {k}'
             r = rows[0]
-            if r.get('fix_status', '').strip() in ('p15_simple_gloss_repaired', 'gloss_review_log_20260630'):
+            from tests.deck_builder.historical_supersession import should_tolerate_historical_drift
+            if should_tolerate_historical_drift(r, 'p15_simple_gloss_repaired'):
                 continue
             assert r.get('fix_status', '').strip() == 'p7_redundant_sense_trimmed'
             assert r.get('rule_applied', '').strip() == d.get('rule_after')
@@ -181,7 +182,8 @@ class TestTXTReflection:
                 missing.append(k)
                 continue
             r = next((x for x in audit if _key(x) == k), None)
-            if r and r.get('fix_status', '').strip() in ('p15_simple_gloss_repaired', 'gloss_review_log_20260630'):
+            from tests.deck_builder.historical_supersession import should_tolerate_historical_drift
+            if r and should_tolerate_historical_drift(r, 'p15_simple_gloss_repaired'):
                 continue
             assert txt_keys[k].strip() == (d.get('new_gloss') or '').strip()
         assert missing == [], f'missing TXT keys: {missing}'

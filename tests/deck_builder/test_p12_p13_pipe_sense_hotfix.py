@@ -27,6 +27,11 @@ from pathlib import Path
 
 import pytest
 
+from tests.deck_builder.historical_supersession import (
+    should_tolerate_historical_drift,
+    is_gloss_review_superseded,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
 TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
@@ -103,7 +108,7 @@ def changed_keys(audit, pre_audit):
         k = _key(r)
         if k not in pre_by_key:
             continue
-        if r.get('fix_status') in ('p15_simple_gloss_repaired', 'gloss_review_log_20260630'):
+        if should_tolerate_historical_drift(r, 'p15_simple_gloss_repaired'):
             continue
         diffs = {fld for fld in APPLY_FIELDS
                  if (pre_by_key[k].get(fld) or '') != (r.get(fld) or '')}
@@ -131,7 +136,7 @@ class TestNoUnrelatedFullFileDrift:
         for k in target_by_key:
             a = audit_by_key.get(k)
             t = target_by_key[k]
-            if a.get('fix_status') in ('p15_simple_gloss_repaired', 'gloss_review_log_20260630'):
+            if should_tolerate_historical_drift(a, 'p15_simple_gloss_repaired'):
                 continue
             for fld in APPLY_FIELDS:
                 if (a.get(fld) or '') != (t.get(fld) or ''):
@@ -160,7 +165,7 @@ class TestMiserableP12Supersession:
     def test_miserable_gloss_after(self, audit):
         mis = next((r for r in audit if _key(r) == MISERABLE_KEY), None)
         assert mis is not None
-        if mis.get('fix_status') == 'gloss_review_log_20260630':
+        if is_gloss_review_superseded(mis):
             return
         assert (mis.get('gloss_after') or '').strip() == MISERABLE_EXPECTED['gloss_after']
 

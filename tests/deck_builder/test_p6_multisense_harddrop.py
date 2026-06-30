@@ -192,7 +192,8 @@ class TestAuditReflection:
             r = rows[0]
             fix_status = r.get('fix_status', '').strip()
             rule_applied = r.get('rule_applied', '').strip()
-            if fix_status == 'gloss_review_log_20260630':
+            from tests.deck_builder.historical_supersession import is_gloss_review_superseded
+            if is_gloss_review_superseded(r):
                 continue
             # P7 may have superseded P6's multi_sense_distinct with a
             # common_core_trimmed / trimmed_multisense rule.
@@ -307,13 +308,14 @@ class TestTXTReflection:
                     (r.get('pos') or '').strip().lower(),
                     (r.get('cefr') or '').strip().upper(),
                 )
-                if fix_status == 'p7_redundant_sense_trimmed':
+                from tests.deck_builder.historical_supersession import is_gloss_review_superseded
+                if is_gloss_review_superseded(r):
+                    audit_review_keys.add(k)
+                elif fix_status == 'p7_redundant_sense_trimmed':
                     audit_p7_keys.add(k)
                 elif rule_applied in P8_P6_SUCCESSOR_RULES and rule_applied != 'multi_sense_distinct':
                     # P8 superseded this row's rule + gloss.
                     audit_p8_keys.add(k)
-                elif fix_status == 'gloss_review_log_20260630':
-                    audit_review_keys.add(k)
         for d in decisions:
             k = (
                 (d.get('word') or '').strip().lower(),

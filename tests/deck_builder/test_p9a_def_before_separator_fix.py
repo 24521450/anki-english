@@ -44,7 +44,8 @@ def _key(r: dict) -> tuple[str, str, str]:
 
 
 def _is_candidate(r: dict) -> bool:
-    if r.get('fix_status') == 'gloss_review_log_20260630':
+    from tests.deck_builder.historical_supersession import is_gloss_review_superseded
+    if is_gloss_review_superseded(r):
         return False
     db = (r.get('def_before') or '')
     ga = (r.get('gloss_after') or '')
