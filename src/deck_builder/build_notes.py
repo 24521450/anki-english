@@ -31,14 +31,14 @@ EX_SEP = '|'
 COLL_SEPARATOR = '|'
 
 class BuildNotesPaths(NamedTuple):
-    jsonl_path: Path
-    txt_path: Path
-    audit_jsonl_path: Path
+    oxford_jsonl_path: Path
+    notes_txt_path: Path
+    deck_audit_jsonl_path: Path
     gamma_verdicts_path: Path
     oxford_3000_md: Path
     oxford_5000_md: Path
     awl_md: Path
-    filled_path: Path
+    manual_card_fills_path: Path
     audio_dir: Path
 
 class BuiltCard(NamedTuple):
@@ -493,6 +493,49 @@ def lookup_gloss(
     return None
 
 
+def _load_audit_overrides(
+    path: Path,
+) -> tuple[
+    dict[tuple[str, str, str], str],
+    dict[tuple[str, str, str], str],
+    dict[tuple[str, str, str], str],
+]:
+    """Load build-stage overrides from the audit ledger.
+
+    `gloss_after` remains the historical Definition override. The optional
+    `example_after` and `collocations_after` fields are used by manual gloss
+    review passes that curate examples/collocations alongside the definition.
+    """
+    audit_glosses: dict[tuple[str, str, str], str] = {}
+    audit_examples: dict[tuple[str, str, str], str] = {}
+    audit_collocations: dict[tuple[str, str, str], str] = {}
+
+    if not path.exists():
+        return audit_glosses, audit_examples, audit_collocations
+
+    with path.open(encoding='utf-8') as audit_file:
+        for line in audit_file:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            key = (
+                row.get('word', '').strip().lower(),
+                row.get('pos', '').strip().lower(),
+                row.get('cefr', '').strip().upper(),
+            )
+            gloss = (row.get('gloss_after') or '').strip()
+            example = (row.get('example_after') or '').strip()
+            collocations = (row.get('collocations_after') or '').strip()
+            if gloss:
+                audit_glosses[key] = gloss
+            if example:
+                audit_examples[key] = example
+            if collocations:
+                audit_collocations[key] = collocations
+
+    return audit_glosses, audit_examples, audit_collocations
+
+
 def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     audio_files = _audio_dir_filenames(paths.audio_dir)
     
@@ -501,30 +544,17 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     vocab_awl = _parse_vocab_list(paths.awl_md)
     target_keys = vocab_3000 | vocab_5000 | vocab_awl
 
-    existing = _parse_existing_txt(paths.txt_path)
+    existing = _parse_existing_txt(paths.notes_txt_path)
     gamma = _load_gamma_verdicts(paths.gamma_verdicts_path)
 
-    audit_glosses: dict[tuple[str, str, str], str] = {}
-    if paths.audit_jsonl_path.exists():
-        with paths.audit_jsonl_path.open(encoding='utf-8') as _af:
-            for _line in _af:
-                if not _line.strip():
-                    continue
-                _r = json.loads(_line)
-                _ga = (_r.get('gloss_after') or '').strip()
-                if not _ga:
-                    continue
-                _key = (
-                    _r.get('word', '').strip().lower(),
-                    _r.get('pos', '').strip().lower(),
-                    _r.get('cefr', '').strip().upper(),
-                )
-                audit_glosses[_key] = _ga
+    audit_glosses, audit_examples, audit_collocations = _load_audit_overrides(
+        paths.deck_audit_jsonl_path
+    )
 
     filled_keys = set()
-    if paths.filled_path.exists():
+    if paths.manual_card_fills_path.exists():
         try:
-            filled_data = json.load(paths.filled_path.open(encoding='utf-8'))
+            filled_data = json.load(paths.manual_card_fills_path.open(encoding='utf-8'))
             for r in filled_data:
                 filled_keys.add((
                     (r.get('word') or '').strip().lower(),
@@ -536,7 +566,7 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
 
     by_word: dict[str, list[dict]] = {}
     idioms_db: dict[str, list[tuple[dict, dict]]] = {}
-    with paths.jsonl_path.open(encoding='utf-8') as f:
+    with paths.oxford_jsonl_path.open(encoding='utf-8') as f:
         for line in f:
             r = json.loads(line)
             w = (r.get('word') or '').lower()
@@ -600,6 +630,8 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
         if key in filled_keys:
             filled_pos_parts = [p.strip().lower() for p in old['pos'].split(',') if p.strip()]
             g = lookup_gloss(audit_glosses, word_lower, old['pos'], cefr, word_lower, filled_pos_parts, cefr)
+            ex_override = lookup_gloss(audit_examples, word_lower, old['pos'], cefr, word_lower, filled_pos_parts, cefr)
+            coll_override = lookup_gloss(audit_collocations, word_lower, old['pos'], cefr, word_lower, filled_pos_parts, cefr)
             defn_override = g if g is not None else old['definition_orig']
             card = BuiltCard(
                 guid=old['guid'],
@@ -609,8 +641,8 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
                 pos=old['pos'],
                 ipa=old['ipa'],
                 definition=defn_override,
-                example=old['example_orig'],
-                collocations=old['collocations_orig'],
+                example=ex_override if ex_override is not None else old['example_orig'],
+                collocations=coll_override if coll_override is not None else old['collocations_orig'],
                 wordfamily=old['wordfamily_orig'],
                 uk_audio=old['uk_audio'],
                 us_audio=old['us_audio'],
@@ -735,7 +767,13 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
         if g is not None:
             defn = g
         ex = EX_SEP.join(_format_examples(s.examples or []) for s in capped)
+        ex_override = lookup_gloss(audit_examples, word_lower, pos_str, cefr, resolved_word, resolved_pos_parts, new_cefr)
+        if ex_override is not None:
+            ex = ex_override
         coll = ''
+        coll_override = lookup_gloss(audit_collocations, word_lower, pos_str, cefr, resolved_word, resolved_pos_parts, new_cefr)
+        if coll_override is not None:
+            coll = coll_override
         wf = ''
         ipa = _format_ipa_field(rec.get('uk_ipa'), rec.get('us_ipa'))
         if not ipa:
@@ -821,9 +859,9 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     jsonl_text = '\n'.join(jsonl_lines) + '\n'
 
     header_lines = []
-    # Read headers if existing txt_path exists
-    if paths.txt_path.exists():
-        for line in paths.txt_path.read_text(encoding='utf-8').splitlines()[:6]:
+    # Read headers if existing notes_txt_path exists
+    if paths.notes_txt_path.exists():
+        for line in paths.notes_txt_path.read_text(encoding='utf-8').splitlines()[:6]:
             if line.startswith('#tags column:'):
                 header_lines.append('#tags column:17')
             else:

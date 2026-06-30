@@ -1,8 +1,8 @@
 """
 tools/fix_pop_verb.py
 ====================
-Updates the definition of pop (verb, C1) in both audit_full_deck_v2.jsonl
-and English Academic Vocabulary.txt to resolve the dropped sense bug.
+Updates the definition of pop (verb, C1) in both deck_audit.jsonl
+and anki_notes.txt to resolve the dropped sense bug.
 """
 
 import json
@@ -10,9 +10,12 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
-AUDIT_FILE = ROOT / "data" / "audit_full_deck_v2.jsonl"
-DECK_FILE = ROOT / "English Academic Vocabulary.txt"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+ROOT = paths.root
+AUDIT_FILE = paths.deck_audit_jsonl
+DECK_FILE = paths.anki_notes_txt
 TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 def main():

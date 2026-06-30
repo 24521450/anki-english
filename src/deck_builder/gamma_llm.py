@@ -91,7 +91,7 @@ def export_review_band(
     out_json: str,
     max_records: int | None = None,
 ) -> int:
-    """Read oxford_merged.jsonl, run simplify_record, collect review-band clusters
+    """Read sources/oxford.jsonl, run simplify_record, collect review-band clusters
     into a JSON file for γ review. Returns count of clusters exported.
     """
     from src.deck_builder.simplify_senses import simplify_record, _resolve_def
@@ -173,9 +173,11 @@ def load_verdicts(path: str) -> dict[str, GammaVerdict]:
 def main_export() -> int:
     """CLI: export review-band clusters to JSON."""
     import argparse
+    from src.config import ProjectPaths
+    paths = ProjectPaths()
     p = argparse.ArgumentParser()
-    p.add_argument('--in-jsonl', default='data/oxford_merged.jsonl')
-    p.add_argument('--out', default='data/simplify_diff/review_band.json')
+    p.add_argument('--in-jsonl', default=str(paths.oxford_jsonl))
+    p.add_argument('--out', default=str(paths.root / 'data' / 'review' / 'review_band.json'))
     p.add_argument('--max-records', type=int, default=None,
                    help='Limit records to read (for pilot).')
     args = p.parse_args()

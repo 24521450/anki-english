@@ -15,9 +15,9 @@ Output: full_audit_report.json + prints to stdout.
 import json
 import re
 from collections import Counter, defaultdict
-from pathlib import Path
-
-AUDIT_PATH = Path(r"C:\Users\admin\Downloads\ankideck\data\simplify_diff\audit_full_deck.jsonl")
+from src.config import ProjectPaths
+paths = ProjectPaths()
+AUDIT_PATH = paths.deck_audit_jsonl
 
 KNOWN_RULES = {
     "2sense_samedomain", "2sense_distinct",
@@ -291,7 +291,7 @@ def main():
     }
 
     # Write full case lists
-    out = Path(r"C:\Users\admin\Downloads\ankideck\data\simplify_diff\full_audit_cases.json")
+    out = paths.root / "data" / "review" / "full_audit_cases.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", encoding="utf-8") as f:
         json.dump({

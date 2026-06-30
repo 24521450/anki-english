@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """CLI adapter for Anki .apkg packaging.
 
-Reads notes from data/anki_notes.jsonl and templates from design/EAVM/,
+Reads notes from data/build/anki_notes.jsonl and templates from design/EAVM/,
 builds a genanki Model/Decks, validates media assets under audio/,
 and compiles them into ielts_deck.apkg.
 """
@@ -13,12 +13,15 @@ import sys
 from pathlib import Path
 import genanki
 
-PROJECT_ROOT = Path(__file__).resolve().parent
-NOTES_JSONL = PROJECT_ROOT / "data" / "anki_notes.jsonl"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+NOTES_JSONL = paths.anki_notes_jsonl
+AUDIO_DIR = paths.audio_dir
+PROJECT_ROOT = paths.root
 FRONT_TEMPLATE = PROJECT_ROOT / "design" / "EAVM" / "front_template.txt"
 BACK_TEMPLATE = PROJECT_ROOT / "design" / "EAVM" / "back_template.txt"
 STYLING_TXT = PROJECT_ROOT / "design" / "EAVM" / "styling.txt"
-AUDIO_DIR = PROJECT_ROOT / "audio"
 OUTPUT_APKG = PROJECT_ROOT / "ielts_deck.apkg"
 
 def generate_deterministic_id(name: str) -> int:

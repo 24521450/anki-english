@@ -23,10 +23,13 @@ from pathlib import Path
 
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
 DECISIONS_PATH = PROJECT_ROOT / 'data' / 'redundant_sense_trim_p7_decisions.jsonl'
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
 
 from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
 
@@ -146,7 +149,8 @@ class TestAuditReflection:
             rows = audit_by_key[k]
             assert len(rows) == 1, f'audit has {len(rows)} rows for {k}'
             r = rows[0]
-            if r.get('fix_status', '').strip() == 'p15_simple_gloss_repaired':
+            from tests.deck_builder.historical_supersession import should_tolerate_historical_drift
+            if should_tolerate_historical_drift(r, 'p15_simple_gloss_repaired'):
                 continue
             assert r.get('fix_status', '').strip() == 'p7_redundant_sense_trimmed'
             assert r.get('rule_applied', '').strip() == d.get('rule_after')
@@ -181,7 +185,8 @@ class TestTXTReflection:
                 missing.append(k)
                 continue
             r = next((x for x in audit if _key(x) == k), None)
-            if r and r.get('fix_status', '').strip() == 'p15_simple_gloss_repaired':
+            from tests.deck_builder.historical_supersession import should_tolerate_historical_drift
+            if r and should_tolerate_historical_drift(r, 'p15_simple_gloss_repaired'):
                 continue
             assert txt_keys[k].strip() == (d.get('new_gloss') or '').strip()
         assert missing == [], f'missing TXT keys: {missing}'

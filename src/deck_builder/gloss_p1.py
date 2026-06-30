@@ -34,7 +34,10 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.deck_builder.gloss_hygiene import normalize_gloss  # noqa: E402
@@ -793,8 +796,8 @@ def collect_bad_rows(path: Path) -> list[dict]:
 
 
 def main():
-    master_bad = collect_bad_rows(Path(r'C:\Users\admin\Downloads\ankideck\data\audit_full_deck_v2.jsonl'))
-    filled_bad = collect_bad_rows(Path(r'C:\Users\admin\Downloads\ankideck\data\audit_expanded_needs_gloss_filled.jsonl'))
+    master_bad = collect_bad_rows(paths.deck_audit_jsonl)
+    filled_bad = collect_bad_rows(PROJECT_ROOT / 'data' / 'audit_expanded_needs_gloss_filled.jsonl')
 
     print(f'Master bad: {len(master_bad)}, Filled bad: {len(filled_bad)}')
 

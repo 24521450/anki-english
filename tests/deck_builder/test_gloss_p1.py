@@ -4,7 +4,7 @@ explicit FIXES map."""
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.deck_builder.gloss_p1 import (  # noqa: E402

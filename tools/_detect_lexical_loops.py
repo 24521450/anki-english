@@ -302,7 +302,7 @@ def main() -> int:
     print('P5C LEXICAL LOOP GUARD -- DETECTOR (read-only)')
     print('=' * 72)
 
-    audit = _load_jsonl(PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl')
+    audit = _load_jsonl(paths.deck_audit_jsonl)
     print(f'\n  Loaded {len(audit)} audit rows.')
 
     # Plan's known cases (sanity).

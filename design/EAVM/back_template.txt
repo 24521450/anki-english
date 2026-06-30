@@ -19,7 +19,7 @@
       <div class="word-back">{{Word}}</div>
       <hr class="divider divider-{{CEFRLevel}}">
       <div class="meta-row">
-        {{#IPA}}<span class="ipa-text">{{IPA}}</span>{{/IPA}}
+        {{#IPA}}<span class="ipa-text" id="ipa-display">{{IPA}}</span>{{/IPA}}
         <span id="usage-tags-container"></span>
       </div>
     </div>
@@ -82,6 +82,11 @@
 (function() {
   function trim(s) { return s ? s.replace(/^\s+|\s+$/g, '') : ''; }
   function getRaw(id) { var e = document.getElementById(id); return e ? trim(e.textContent || e.innerText) : ''; }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
 
   var registers = {
     'informal':'rt-amber','formal':'rt-amber','literary':'rt-amber',
@@ -109,6 +114,39 @@
       else { ok = false; break; }
     }
     return (ok && html) ? html + ' ' + trim(text.substring(m[0].length)) : text;
+  }
+
+  function renderIpa(raw) {
+    raw = trim(raw);
+    if (!raw) return '';
+    var parts = [], re = /(UK|US)\s*:\s*([^|]+)/gi, m;
+    while ((m = re.exec(raw)) !== null) {
+      parts.push({label: m[1].toUpperCase(), value: trim(m[2])});
+    }
+    if (!parts.length) {
+      return '<span class="ipa-chip"><span class="ipa-symbols">' + escapeHtml(raw) + '</span></span>';
+    }
+    var html = '<span class="ipa-cluster">';
+    for (var p = 0; p < parts.length; p++) {
+      if (parts[p].label === 'UK') {
+        html += '<span class="ipa-chip ipa-chip-uk"><span class="ipa-label">UK</span><span class="ipa-symbols">' + escapeHtml(parts[p].value) + '</span></span>';
+      } else {
+        html += '<span class="ipa-chip ipa-chip-us"><span class="ipa-label">US</span><span class="ipa-symbols">' + escapeHtml(parts[p].value) + '</span></span>';
+      }
+    }
+    return html + '</span>';
+  }
+
+  function hasVietnameseChars(text) {
+    return /[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(text);
+  }
+
+  function hideVietnameseGloss(html) {
+    return html.replace(/\s*\(([^()]*)\)\s*$/g, function(match, gloss) {
+      var clean = trim(gloss);
+      if (!hasVietnameseChars(clean)) return match;
+      return ' <button type="button" class="vi-reveal" onclick="this.className+=\' is-open\'; this.disabled=true;"><span class="vi-reveal-label">Hiện nghĩa Việt</span><span class="vi-reveal-text">(' + clean + ')</span></button>';
+    });
   }
 
   // 1. POS chips
@@ -171,6 +209,9 @@
     usageContainer.innerHTML = uHtml;
   }
 
+  var ipaEl = document.getElementById('ipa-display');
+  if (ipaEl) ipaEl.innerHTML = renderIpa(ipaEl.textContent || ipaEl.innerText || '');
+
   // 4. L3 Senses grid
   var rawDef  = getRaw('raw-definition-back');
   var rawEx   = getRaw('raw-example-back');
@@ -194,7 +235,7 @@
       if (ex && wordRe) ex = ex.replace(wordRe, function(m) { return '<span class="word-highlight">' + m + '</span>'; });
       var badge = multi ? '<span class="sense-num">' + badges[di] + '</span>' : '';
       sHtml += '<div class="sense-row">'
-             + '<div class="sense-def">' + badge + parseDef(def) + '</div>'
+             + '<div class="sense-def">' + badge + hideVietnameseGloss(parseDef(def)) + '</div>'
              + '<div class="sense-ex">'  + (ex ? '\u201c' + ex + '\u201d' : '') + '</div>'
              + '</div>';
     }

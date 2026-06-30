@@ -14,7 +14,7 @@ This 5-element guard prevents accidental wrong-row updates if the
 audit drifts between the scan and the apply.
 
 NOTE: This is a historical apply tool. It is stale-sensitive. Running this tool
-against the current `data/audit_full_deck_v2.jsonl` may fail and exit `1` because
+against the current `data/curated/deck_audit.jsonl` may fail and exit `1` because
 target guard rows have already been modified/superseded by subsequent runs
 (e.g., P12, P13, P15). This strict failure is the correct and expected safety
 behavior to prevent accidental wrong-row corruption.
@@ -35,8 +35,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
 LEDGER_PATH = PROJECT_ROOT / 'data' / 'gloss_precision_phrase_p5.jsonl'
 
 

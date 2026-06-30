@@ -18,19 +18,23 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   - `deck_builder/` — owned by `deck-builder` rein: `.apkg` packaging, EAVM note type generation
   - `config.py` — shared config
 - `tests/` — pytest tests, mostly mirrored layout (`tests/scraper/test_x.py` ↔ `src/scraper/x.py`). Non-mirrored layout allowed for cross-cutting infra (e.g. `tests/design/test_design_sync.py`).
-- `tools/` — standalone CLI scripts and shared helpers (not part of `src/` package). Leading-underscore names (`_foo.py`) are private/inspector scripts; no-underscore names are real tools (e.g. `check_design_sync.py`, `scrape_oxford.py`).
-- `data/` — scraped + cleaned word records; `.cache_html/` and `*.bak` are gitignored
+- `tools/` — standalone CLI scripts and shared helpers (not part of `src/` package). Leading-underscore names (`_foo.py`) are private/inspector scripts; no-underscore names are real tools (e.g. `check_design_sync.py`, `build_notes.py`). Unsupported one-shot migrations live under `tools/archive/data_migrations/`.
+- `data/` — lifecycle-organized artifacts; `.cache_html/` and `*.bak` are gitignored
+  - `sources/` — canonical Oxford and Cambridge scraper outputs
+  - `curated/` — production audit overrides
+  - `review/` — review verdicts and manual fills consumed by the build
+  - `build/` — generated Anki-ready TXT and JSONL notes
 - `audio/` — generated TTS files (UK/US per word)
 - `design/` — Anki card visual design system. **`design/index.html` (vùng 2 card CSS) is the source of truth** — `EAVM/styling.txt` derives from it and is baked into `.apkg`. `tools/check_design_sync.py` enforces the sync.
 - `docs/adr/` — Architecture Decision Records. One file per decision, named `NNNN-title.md` (e.g. `0001-lxml-parser-backend.md`). Add a new ADR whenever a decision meets all 3 criteria: hard to reverse, surprising without context, and a real trade-off.
 - `vocab_list/` — source word lists (Oxford 3000/5000 markdown, AWL json/yml)
-- `update_anki_deck.py` — top-level entry point that runs the full pipeline (`notes.json` → `ielts_deck.apkg`). Owned by `developer` rein. Reference: `src/pipeline.py` lines 130-131.
+- `update_anki_deck.py` — top-level packager (`data/build/anki_notes.jsonl` → `ielts_deck.apkg`). Owned by `developer` rein.
 - `src/pipeline.py` — production-stage orchestrator: `scrape → build → split → deck`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`).
   - **scrape**: Oxford/Cambridge + AWL ingestion, audio TTS. Keeps all senses / all CEFR entries (raw).
   - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md) and [Sense Sorting](./CONTEXT.md)** — splits by CEFR, retains all CEFR-matching senses (no per-card def cap), orders by sensenum_local asc. See `design/README.md § Card design rules` for the rule reference.
   - **split**: divides into study profiles.
   - **deck**: bakes `.apkg` via `update_anki_deck.py`.
-  - One-shot fixers (`_cleanup_oxford_pollution`, `_add_def_cefr`, `_rescrape_missing`, `_cambridge_*`) are NOT wrapped — invoke manually when data needs repair.
+  - Archived one-shot fixers are unsupported and are not wrapped by the pipeline.
 
 ## Architecture context
 
@@ -89,14 +93,14 @@ No `<... class="def">` tags anywhere. Current parser (`src/scraper/oxford.py`) d
 1. Open `data/.cache_html/oxford/oxford_<word>_(<pos>).html`
 2. Search for `class="def"` — if 0 hits, it's a hub
 3. Search for `Phrasal Verbs` or `Phrases` section — list of related sub-pages
-4. Manually patch `oxford_merged.jsonl` for that entry, OR fix parser to recurse
+4. Manually patch `data/sources/oxford.jsonl` for that entry, OR fix parser to recurse
 
 **Known affected words** (verb, from 2026-06-19 audit): `consist` (only 1/5,318 — rare). If a word you care about shows 0 defs, check this pattern first before suspecting cache pollution or fold bug.
 
-**Build-pipeline mitigation:** `tools/build_notes.py` falls back to old `English Academic Vocabulary.txt` for defs when jsonl is null — that's why Anki cards still display "be made of" for `consist` despite the Oxford jsonl gap. Don't trust "card looks fine" as proof the jsonl is fine; the txt fallback is masking the parser gap.
+**Build-pipeline mitigation:** `tools/build_notes.py` falls back to `data/build/anki_notes.txt` for defs when JSONL data is null — that's why Anki cards still display "be made of" for `consist` despite the Oxford source gap. Don't trust "card looks fine" as proof the source JSONL is fine; the TXT fallback is masking the parser gap.
 
 ### Oxford rebuild determinism contract (learned 2026-06-13)
-**Rebuilding `data/oxford_merged.jsonl` MUST be byte-identical across runs** (same input cache → same output jsonl). Verified by SHA-256 comparison of two consecutive `python -m tools._run_full_cache --oxford-only` invocations.
+**Rebuilding `data/sources/oxford.jsonl` MUST be byte-identical across runs** (same input cache → same output JSONL). Verified by SHA-256 comparison of two consecutive `python -m tools._run_full_cache --oxford-only` invocations.
 
 The contract is enforced at `tools/_run_full_cache.py:127`:
 ```python

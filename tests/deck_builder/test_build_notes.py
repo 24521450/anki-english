@@ -16,7 +16,10 @@ See CONTEXT.md § Card Identity (2026-06-21) and § Sense Sorting
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.deck_builder.build_notes import (
@@ -157,7 +160,7 @@ class TestBuildRecordCardsPairing:
 
         Fixture: conviction has 3 senses at noun/C1 (legal, opinion, sincerity).
         """
-        # Simulate the 3 senses as they appear in oxford_merged.jsonl
+        # Simulate the 3 senses as they appear in sources/oxford.jsonl
         conviction_senses = [
             {
                 # sense 0: legal — 3 examples in jsonl

@@ -34,9 +34,11 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
-JSONL_PATH = PROJECT_ROOT / 'data' / 'anki_notes.jsonl'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
+JSONL_PATH = paths.anki_notes_jsonl
 
 # Reuse the same P4A_FIXES list as the apply tool (single source of truth).
 from tools._apply_p4a_coverage_fix import P4A_FIXES  # noqa: E402

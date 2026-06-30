@@ -442,7 +442,7 @@ The audit policy tool (`tools/_audit_gloss_policy_coverage.py`) reads the ledger
 - `policy_review_open` — policy_review rows with no ledger row (untriaged). Hard fail (exit 1).
 - `policy_review_reviewed_keep` — ledger has a `keep_single` decision. Informational.
 - `policy_review_repaired` — ledger has a `repair_gloss` decision and the audit row reflects it. Informational.
-_Avoid_: putting review metadata into `data/audit_full_deck_v2.jsonl` (the audit master is for production data, not review state).
+_Avoid_: putting review metadata into `data/curated/deck_audit.jsonl` (the audit master is for production data, not review state).
 
 **`|` vs `;` separator semantics** (strict):
 - `|` (pipe, no spaces) = distinct senses in different domains → rendered as separate rows on the card. The template splits on `|` to pair each chunk with its example.
@@ -484,11 +484,11 @@ _Avoid_: CSS class, hook name
 ### Data sources
 
 **Oxford Record**:
-A word entry in `data/oxford_full.jsonl` produced by scraping Oxford Learner's Dictionary. Carries the full per-def schema (`n`, `sensenum_local`, `is_idiom`, `text`, `examples`, `cefr`) and Oxford-only fields populated (`oxford_lists`, `opal`, `awl`, `register_tags`, `topics`). `source = "oxford"`.
+A consolidated word entry in `data/sources/oxford.jsonl` produced by parsing the Oxford cache and merging multi-file homonyms. Carries the full per-def schema (`n`, `sensenum_local`, `is_idiom`, `text`, `examples`, `cefr`) and Oxford-only fields populated (`oxford_lists`, `opal`, `awl`, `register_tags`, `topics`). `source = "oxford"`.
 _Avoid_: Oxford scrape entry, OLD record
 
 **Cambridge Record**:
-A word entry in `data/cambridge_full.jsonl` produced by scraping Cambridge Dictionary. Carries the same per-def schema as Oxford records but with Oxford-only fields **empty** (`oxford_lists: []`, `opal: null`, `awl: null`, `topics: []`) — Cambridge thuần, không inherit. `register_tags` is parsed from Cambridge's `<span class="usage dusage">` labels (e.g. `formal`, `informal`, `slang`, `specialized`). `source = "cambridge"`.
+A word entry in `data/sources/cambridge.jsonl` produced by parsing the Cambridge cache. Carries the same per-def schema as Oxford records but with Oxford-only fields **empty** (`oxford_lists: []`, `opal: null`, `awl: null`, `topics: []`) — Cambridge thuần, không inherit. `register_tags` is parsed from Cambridge's `<span class="usage dusage">` labels (e.g. `formal`, `informal`, `slang`, `specialized`). `source = "cambridge"`.
 _Avoid_: Cambridge scrape entry, dictionary entry
 
 **Topic**:
@@ -544,7 +544,7 @@ A merge-layer decision (in `src/scraper/merge.py`) that flags a record with `_sk
 
 3. **Folded-into-main-word rule**: after **Phrasal Verb Folding**, the original phrasal-verb record is flagged `_skip: true, _skip_reason: "folded-into-main-word: <main-word>"` so the builder doesn't generate a duplicate card.
 
-Records with `_skip: true` are NOT removed from `data/oxford_merged.jsonl` — the audit trail is preserved. The builder reads `_skip` to decide which records to render into `.apkg`. Adding a new rule means: (1) implement the check in `merge.py`, (2) add tests in `tests/scraper/test_merge.py`, (3) add the reason to this entry.
+Records with `_skip: true` are NOT removed from `data/sources/oxford.jsonl` — the audit trail is preserved. The builder reads `_skip` to decide which records to render into `.apkg`. Adding a new rule means: (1) implement the check in `merge.py`, (2) add tests in `tests/scraper/test_merge.py`, (3) add the reason to this entry.
 _Avoid_: skip flag, exclude, drop record
 
 **Semantic Duplicate**:

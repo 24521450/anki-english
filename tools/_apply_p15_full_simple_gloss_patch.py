@@ -3,11 +3,11 @@
 Reads:
   - `C:\\Users\\admin\\Downloads\\audit_full_deck_v2_p15_full_simple_gloss_patch_v2.jsonl`
     (target values; expected 51 keys differ vs current audit)
-  - `data/audit_full_deck_v2.jsonl` (current state, 2487 rows)
+  - `data/curated/deck_audit.jsonl` (current state, 2487 rows)
 
 Writes (with --apply; otherwise dry-run):
-  - `data/audit_full_deck_v2.jsonl` (2487 rows; exactly 51 updated)
-  - `English Academic Vocabulary.txt` (cells updated for matching rows)
+  - `data/curated/deck_audit.jsonl` (2487 rows; exactly 51 updated)
+  - `data/build/anki_notes.txt` (cells updated for matching rows)
 
 Scope:
   - The patch is a SCOPED 51-key update.
@@ -34,8 +34,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
 INPUT_PATH = Path(r"C:\Users\admin\Downloads\audit_full_deck_v2_p15_full_simple_gloss_patch_v2.jsonl")
 
 EXPECTED_CHANGE_COUNT = 51

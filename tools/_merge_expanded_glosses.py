@@ -5,9 +5,9 @@ Workflow:
      "needs gloss" set after defs were expanded to multi-sense).
   2. They fill in `gloss_after` for each row.
   3. They run `python -m tools._merge_expanded_glosses` to write the
-     updated glosses back into `data/audit_full_deck_v2.jsonl`.
+     updated glosses back into `data/curated/deck_audit.jsonl`.
   4. The build pipeline (`tools/build_notes.py`) reads the merged
-     `audit_full_deck_v2.jsonl` and produces Anki notes.
+     `deck_audit.jsonl` and produces Anki notes.
 
 Usage:
   python -m tools._merge_expanded_glosses
@@ -48,13 +48,15 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.deck_builder.gloss_hygiene import normalize_gloss  # noqa: E402
 
 DEFAULT_EXPANDED = PROJECT_ROOT / 'data' / 'audit_expanded_needs_gloss.jsonl'
-DEFAULT_MASTER = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
+DEFAULT_MASTER = paths.deck_audit_jsonl
 
 # Fields copied VERBATIM from the expanded row to the master row when present.
 # Only ``gloss_after`` is copied raw — the rest are either preserved from
@@ -186,7 +188,7 @@ def write_jsonl(path: Path, rows: list[dict]) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(
         description='Merge manually-edited glosses from audit_expanded_needs_gloss.jsonl '
-                    'into audit_full_deck_v2.jsonl.')
+                    'into curated/deck_audit.jsonl.')
     ap.add_argument('--expanded', type=Path, default=DEFAULT_EXPANDED,
                     help='Path to the expanded JSONL (default: %(default)s)')
     ap.add_argument('--master', type=Path, default=DEFAULT_MASTER,

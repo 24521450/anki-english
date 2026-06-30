@@ -3,16 +3,16 @@
 Reads:
   - `C:\\Users\\admin\\Downloads\\audit_full_deck_v2_p13_pipe_sense_hotfix.jsonl`
     (target values for the 33 keys)
-  - `data/audit_full_deck_v2.jsonl` (post-apply)
-  - `English Academic Vocabulary.txt` (post-apply)
-  - `data/anki_notes.jsonl` (post-rebuild)
+  - `data/curated/deck_audit.jsonl` (post-apply)
+  - `data/build/anki_notes.txt` (post-apply)
+  - `data/build/anki_notes.jsonl` (post-rebuild)
 
 Required checks:
 
   1. Audit row count remains 2487.
   2. Exactly 33 audit keys match the P13 target values.
   3. No non-target audit rows differ from the pre-apply backup
-     (data/audit_full_deck_v2.jsonl.bak_pre_p12_p13_<ts>).
+     (data/curated/deck_audit.jsonl.bak_pre_p12_p13_<ts>).
   4. Each target row's `gloss_after` matches the P13 target.
   5. Each target row's `rule_applied` matches the P13 target.
   6. `miserable|adjective|B2` final state:
@@ -40,9 +40,11 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
-JSONL_PATH = PROJECT_ROOT / 'data' / 'anki_notes.jsonl'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
+JSONL_PATH = paths.anki_notes_jsonl
 INPUT_PATH = Path(r"C:\Users\admin\Downloads\audit_full_deck_v2_p13_pipe_sense_hotfix.jsonl")
 
 EXPECTED_CHANGE_COUNT = 33

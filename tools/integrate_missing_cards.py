@@ -4,13 +4,16 @@ import random
 import string
 from pathlib import Path
 
-ROOT = Path(r"C:\Users\admin\Downloads\ankideck")
-FILLED_JSON_PATH = Path(r"C:\Users\admin\Downloads\missing_oxford_5000_cards_filled.json")
-DECK_FILE = ROOT / "English Academic Vocabulary.txt"
-ANKI_NOTES_JSONL = ROOT / "data" / "anki_notes.jsonl"
-AUDIT_FILE = ROOT / "data" / "audit_full_deck_v2.jsonl"
-OXFORD_MERGED = ROOT / "data" / "oxford_merged.jsonl"
-CAMBRIDGE_FULL = ROOT / "data" / "cambridge_full.jsonl"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+ROOT = paths.root
+FILLED_JSON_PATH = paths.manual_card_fills
+DECK_FILE = paths.anki_notes_txt
+ANKI_NOTES_JSONL = paths.anki_notes_jsonl
+AUDIT_FILE = paths.deck_audit_jsonl
+OXFORD_MERGED = paths.oxford_jsonl
+CAMBRIDGE_FULL = paths.cambridge_jsonl
 
 def new_guid(length: int = 10) -> str:
     alphabet = string.ascii_letters + string.digits + '!#$%&()*+,-./:;<=>?@[]^_`{|}~'
@@ -166,7 +169,7 @@ for card in missing_cards:
     # Audit row
     new_audit_rows.append(card)
 
-# Write to English Academic Vocabulary.txt (append to end)
+# Write to anki_notes.txt (append to end)
 if DECK_FILE.exists():
     deck_content = DECK_FILE.read_text(encoding="utf-8")
     # Make sure it ends with newline
@@ -183,7 +186,7 @@ if ANKI_NOTES_JSONL.exists():
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     print(f"Appended {len(new_jsonl_rows)} records to {ANKI_NOTES_JSONL.name}")
 
-# Write to audit_full_deck_v2.jsonl (append to end)
+# Write to deck_audit.jsonl (append to end)
 if AUDIT_FILE.exists():
     with AUDIT_FILE.open("a", encoding="utf-8") as f:
         for r in new_audit_rows:

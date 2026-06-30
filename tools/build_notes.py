@@ -42,18 +42,21 @@ from src.deck_builder.build_notes import (
     build_notes,
 )
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from src.config import ProjectPaths
 
-JSONL_PATH = PROJECT_ROOT / 'data' / 'oxford_merged.jsonl'
-GAMMA_VERDICTS_PATH = PROJECT_ROOT / 'data' / 'simplify_diff' / 'gamma_all_verdicts.json'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
-OUT_JSONL = PROJECT_ROOT / 'data' / 'anki_notes.jsonl'
-OXFORD_3000_MD = PROJECT_ROOT / 'vocab_list' / 'Oxford' / 'Oxford_3000.md'
-OXFORD_5000_MD = PROJECT_ROOT / 'vocab_list' / 'Oxford' / 'Oxford_5000.md'
-AWL_MD = PROJECT_ROOT / 'vocab_list' / 'AWL' / 'AWL.md'
-AUDIT_JSONL_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-FILLED_PATH = PROJECT_ROOT / 'data' / 'missing_oxford_5000_cards_filled.json'
-AUDIO_DIR = PROJECT_ROOT / 'audio'
+paths_registry = ProjectPaths()
+PROJECT_ROOT = paths_registry.root
+
+JSONL_PATH = paths_registry.oxford_jsonl
+GAMMA_VERDICTS_PATH = paths_registry.gamma_verdicts
+TXT_PATH = paths_registry.anki_notes_txt
+OUT_JSONL = paths_registry.anki_notes_jsonl
+OXFORD_3000_MD = paths_registry.oxford_3000_md
+OXFORD_5000_MD = paths_registry.oxford_5000_md
+AWL_MD = paths_registry.awl_md
+AUDIT_JSONL_PATH = paths_registry.deck_audit_jsonl
+FILLED_PATH = paths_registry.manual_card_fills
+AUDIO_DIR = paths_registry.audio_dir
 
 
 def main() -> int:
@@ -66,14 +69,14 @@ def main() -> int:
     args = ap.parse_args()
 
     paths = BuildNotesPaths(
-        jsonl_path=args.jsonl,
-        txt_path=args.txt,
-        audit_jsonl_path=AUDIT_JSONL_PATH,
+        oxford_jsonl_path=args.jsonl,
+        notes_txt_path=args.txt,
+        deck_audit_jsonl_path=AUDIT_JSONL_PATH,
         gamma_verdicts_path=args.gamma,
         oxford_3000_md=OXFORD_3000_MD,
         oxford_5000_md=OXFORD_5000_MD,
         awl_md=AWL_MD,
-        filled_path=FILLED_PATH,
+        manual_card_fills_path=FILLED_PATH,
         audio_dir=AUDIO_DIR
     )
 

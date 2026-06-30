@@ -56,7 +56,8 @@ class TestParseVocabList:
     """Verify the vocab_list parser handles real file format."""
 
     def test_parses_3000_real(self):
-        path = Path(r'C:\Users\admin\Downloads\ankideck\vocab_list\Oxford\Oxford_3000.md')
+        project_root = Path(__file__).resolve().parents[2]
+        path = project_root / 'vocab_list' / 'Oxford' / 'Oxford_3000.md'
         if not path.exists():
             pytest.skip("vocab_list not available")
         result = _parse_vocab_list(path)
@@ -69,7 +70,8 @@ class TestParseVocabList:
         assert ('about', 'adverb', 'A1') in result
 
     def test_parses_5000_real(self):
-        path = Path(r'C:\Users\admin\Downloads\ankideck\vocab_list\Oxford\Oxford_5000.md')
+        project_root = Path(__file__).resolve().parents[2]
+        path = project_root / 'vocab_list' / 'Oxford' / 'Oxford_5000.md'
         if not path.exists():
             pytest.skip("vocab_list not available")
         result = _parse_vocab_list(path)

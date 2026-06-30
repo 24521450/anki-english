@@ -1,9 +1,12 @@
 from pathlib import Path
 
-ROOT = Path(r"C:\Users\admin\Downloads\ankideck")
-DECK_FILE = ROOT / "English Academic Vocabulary.txt"
-ANKI_NOTES_JSONL = ROOT / "data" / "anki_notes.jsonl"
-AUDIT_FILE = ROOT / "data" / "audit_full_deck_v2.jsonl"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+ROOT = paths.root
+DECK_FILE = paths.anki_notes_txt
+ANKI_NOTES_JSONL = paths.anki_notes_jsonl
+AUDIT_FILE = paths.deck_audit_jsonl
 
 def revert_append(file_path, num_lines=30):
     if not file_path.exists():

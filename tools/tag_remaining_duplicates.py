@@ -1,9 +1,12 @@
 import json
 from pathlib import Path
 
-root = Path(r"C:\Users\admin\Downloads\ankideck")
-txt_path = root / "English Academic Vocabulary.txt"
-jsonl_path = root / "data" / "anki_notes.jsonl"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+root = paths.root
+txt_path = paths.anki_notes_txt
+jsonl_path = paths.anki_notes_jsonl
 
 # Redundant card GUIDs to tag with delete:
 TO_DELETE = {

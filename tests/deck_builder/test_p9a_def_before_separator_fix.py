@@ -20,9 +20,12 @@ from pathlib import Path
 
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-OXF_PATH = PROJECT_ROOT / 'data' / 'oxford_merged.jsonl'
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
+AUDIT_PATH = paths.deck_audit_jsonl
+OXF_PATH = paths.oxford_jsonl
 
 EXPECTED_CHANGE_COUNT = 66
 
@@ -44,6 +47,9 @@ def _key(r: dict) -> tuple[str, str, str]:
 
 
 def _is_candidate(r: dict) -> bool:
+    from tests.deck_builder.historical_supersession import is_gloss_review_superseded
+    if is_gloss_review_superseded(r):
+        return False
     db = (r.get('def_before') or '')
     ga = (r.get('gloss_after') or '')
     rule = (r.get('rule_applied') or '').strip()

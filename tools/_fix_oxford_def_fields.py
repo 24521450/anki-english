@@ -1,5 +1,5 @@
 """One-shot fixer: backfill `countability`, `register_tags`, `domain`, and
-`opal` fields in `data/oxford_merged.jsonl` from cache HTML.
+`opal` fields in `data/sources/oxford.jsonl` from cache HTML.
 
 Scope (4 fields):
   1. register_tags  — PARSER BUG FIX. Selector was `span.reg` (0 hits);
@@ -430,8 +430,9 @@ def run_fixer(
 
 
 def main() -> int:
-    PROJECT_ROOT = Path(r"C:\Users\admin\Downloads\ankideck")
-    jsonl_in = PROJECT_ROOT / "data" / "oxford_merged.jsonl"
+    from src.config import ProjectPaths
+    paths = ProjectPaths(PROJECT_ROOT)
+    jsonl_in = paths.oxford_jsonl
     # v3: no jsonl_out. Fixer writes IN-PLACE atomically to jsonl_in.
     cache_dir = PROJECT_ROOT / "data" / ".cache_html" / "oxford"
     labels_path = PROJECT_ROOT / "data" / "oxford_labels.json"

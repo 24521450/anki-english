@@ -27,7 +27,7 @@ Oxford (oxford_full.jsonl schema v2):
 - oxford5000       : VERIFIED — [ox5000] attribute (3 in texture_(noun).html)
 - see_also         : VERIFIED — link "see also" in run-in text
 
-Cambridge (cambridge_full.jsonl schema v2):
+Cambridge (sources/cambridge.jsonl schema v2):
 - headword         : VERIFIED — .headword (2-3 matches, first is canonical)
 - pos              : VERIFIED — span.pos.dpos (1-3 matches, scoped correctly)
 - ipa              : VERIFIED — .dipa (error on IPA chars in PowerShell, selector works in lxml)

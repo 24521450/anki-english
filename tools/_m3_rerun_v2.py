@@ -18,11 +18,15 @@ Rule codes:
 """
 import json
 import sys
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
-PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.config import ProjectPaths
+
+PROJECT_ROOT = ProjectPaths(PROJECT_ROOT).root
 from src.deck_builder.gloss_llm import (
     GlossVerdict, detect_category, validate_verdict, summarize_violations,
 )

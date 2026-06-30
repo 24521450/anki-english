@@ -161,13 +161,13 @@ def test_build_output_parser():
       5000: 2138 entries
       AWL:  715 entries
       total target keys: 6100
-    Loading existing txt: English Academic Vocabulary.txt
+    Loading existing txt: anki_notes.txt
       existing cards: 2450
-    Loading gamma verdicts: gamma_all_verdicts.json
+    Loading gamma verdicts: gamma_verdicts.json
       gamma verdicts: 548
       audit glosses loaded: 2487
       filled keys loaded: 30
-    Loading jsonl: oxford_merged.jsonl
+    Loading jsonl: oxford.jsonl
       unique words in jsonl: 5311
       unique idioms in jsonl: 6175
     === Building cards (existing txt scope) ===

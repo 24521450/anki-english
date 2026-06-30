@@ -1,4 +1,4 @@
-"""Phase 7b validation: validate Oxford merged + Cambridge full JSONL against schemas.
+"""Validate the canonical Oxford and Cambridge source JSONL files.
 
 Run with: python -m tools._validate_jsonl
 """
@@ -10,12 +10,14 @@ from pathlib import Path
 
 import jsonschema
 
-PROJECT_ROOT = Path(r"C:\Users\admin\Downloads\ankideck")
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
 OXFORD_SCHEMA = PROJECT_ROOT / "data" / "schema" / "oxford_record.schema.json"
 CAMBRIDGE_SCHEMA = PROJECT_ROOT / "data" / "schema" / "cambridge_record.schema.json"
-OXFORD_MERGED = PROJECT_ROOT / "data" / "oxford_merged.jsonl"
-CAMBRIDGE_FULL = PROJECT_ROOT / "data" / "cambridge_full.jsonl"
-OXFORD_FULL = PROJECT_ROOT / "data" / "oxford_full.jsonl"
+OXFORD_MERGED = paths.oxford_jsonl
+CAMBRIDGE_FULL = paths.cambridge_jsonl
 
 
 def validate_file(jsonl_path: Path, schema_path: Path, label: str) -> tuple[int, list[tuple[int, str, str]]]:
@@ -61,11 +63,6 @@ def main() -> int:
 
     # 2) Cambridge full (1 source per word, no merge)
     t, e = validate_file(CAMBRIDGE_FULL, CAMBRIDGE_SCHEMA, "Cambridge full")
-    grand_total += t
-    grand_errors += len(e)
-
-    # 3) Oxford unmerged (audit trail — per-file records)
-    t, e = validate_file(OXFORD_FULL, OXFORD_SCHEMA, "Oxford unmerged (audit trail)")
     grand_total += t
     grand_errors += len(e)
 

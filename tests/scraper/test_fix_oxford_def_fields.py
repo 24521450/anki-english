@@ -33,7 +33,10 @@ from pathlib import Path
 
 import pytest  # noqa: E402
 
-PROJECT_ROOT = r"C:\Users\admin\Downloads\ankideck"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = str(paths.root)
 sys.path.insert(0, PROJECT_ROOT)
 
 # Module under test
@@ -257,14 +260,14 @@ class TestExtractOpal:
 
 @pytest.fixture
 def tmp_workspace():
-    """Create a temp dir with mock data/oxford_merged.jsonl, cache, and labels."""
+    """Create a temp dir with mock data/oxford.jsonl, cache, and labels."""
     tmp = Path(tempfile.mkdtemp(prefix="fixer_test_"))
     # Copy labels file
     shutil.copy(Path(PROJECT_ROOT) / "data" / "oxford_labels.json", tmp / "oxford_labels.json")
     cache_dir = tmp / "cache" / "oxford"
     cache_dir.mkdir(parents=True)
     (tmp / "data").mkdir()
-    (tmp / "data" / "oxford_merged.jsonl").touch()
+    (tmp / "data" / "oxford.jsonl").touch()
     yield tmp
     shutil.rmtree(tmp)
 
@@ -633,14 +636,14 @@ class TestDeterminism:
             "_skip": True,
             "pos_data": [],
         })
-        _write_jsonl(tmp_workspace / "data" / "oxford_merged.jsonl", records)
+        _write_jsonl(tmp_workspace / "data" / "oxford.jsonl", records)
         return records
 
     def test_determinism(self, tmp_workspace):
         records = self._make_mock_workspace(tmp_workspace)
         # Run fixer twice — v3 in-place: writes to jsonl_in both times
         from tools._fix_oxford_def_fields import run_fixer
-        jsonl_in = tmp_workspace / "data" / "oxford_merged.jsonl"
+        jsonl_in = tmp_workspace / "data" / "oxford.jsonl"
         # Snapshot input before run 1 (mock data has fixes to apply)
         before_bytes = jsonl_in.read_bytes()
         run_fixer(
@@ -664,11 +667,9 @@ class TestDeterminism:
         )
 
 
-# ── v3 in-place atomic write contract (replaces v2 .fixed.jsonl pattern) ─────
-#
-# v2 design: read data/oxford_merged.jsonl, write data/oxford_merged.fixed.jsonl,
-#            user manually renames .fixed.jsonl → oxford_merged.jsonl.
-# v3 design: read data/oxford_merged.jsonl, write to .tmp, atomic rename
+# v2 design: read data/oxford.jsonl, write data/oxford.fixed.jsonl,
+#            user manually renames .fixed.jsonl → oxford.jsonl.
+# v3 design: read data/oxford.jsonl, write to .tmp, atomic rename
 #            in-place. No separate output file. No manual step.
 # Rationale: the manual-rename step has been missed at least 3 times this
 # session, leading to "data not promoted" failures. Atomic in-place write
@@ -682,7 +683,7 @@ class TestInPlaceAtomicWrite:
         is optional and defaults to jsonl_in (in-place)."""
         from tools._fix_oxford_def_fields import run_fixer
         records = self._make_mock_workspace(tmp_workspace)
-        jsonl_in = tmp_workspace / "data" / "oxford_merged.jsonl"
+        jsonl_in = tmp_workspace / "data" / "oxford.jsonl"
         # Snapshot input before run
         before_bytes = jsonl_in.read_bytes()
         # Run with jsonl_out omitted (defaults to in-place)
@@ -693,7 +694,7 @@ class TestInPlaceAtomicWrite:
             log_path=tmp_workspace / "log.txt",
         )
         # No .fixed.jsonl should be created
-        fixed_path = tmp_workspace / "data" / "oxford_merged.fixed.jsonl"
+        fixed_path = tmp_workspace / "data" / "oxford.fixed.jsonl"
         assert not fixed_path.exists(), (
             f"v3 fixer created {fixed_path} but contract is in-place write. "
             f"The .fixed.jsonl pattern has been removed."
@@ -709,7 +710,7 @@ class TestInPlaceAtomicWrite:
         jsonl_in. No .fixed.jsonl. No .tmp leaks."""
         from tools._fix_oxford_def_fields import run_fixer
         self._make_mock_workspace(tmp_workspace)
-        jsonl_in = tmp_workspace / "data" / "oxford_merged.jsonl"
+        jsonl_in = tmp_workspace / "data" / "oxford.jsonl"
         run_fixer(
             jsonl_in=jsonl_in,
             cache_dir=tmp_workspace / "cache" / "oxford",
@@ -726,7 +727,7 @@ class TestInPlaceAtomicWrite:
         """Two consecutive in-place runs produce byte-identical output (same input)."""
         from tools._fix_oxford_def_fields import run_fixer
         self._make_mock_workspace(tmp_workspace)
-        jsonl_in = tmp_workspace / "data" / "oxford_merged.jsonl"
+        jsonl_in = tmp_workspace / "data" / "oxford.jsonl"
         # Run 1
         run_fixer(
             jsonl_in=jsonl_in,
@@ -751,7 +752,7 @@ class TestInPlaceAtomicWrite:
     def _make_mock_workspace(self, tmp_workspace):
         """Create a minimal in-memory Oxford corpus for the test."""
         records = self._records_for_workspace(tmp_workspace)
-        _write_jsonl(tmp_workspace / "data" / "oxford_merged.jsonl", records)
+        _write_jsonl(tmp_workspace / "data" / "oxford.jsonl", records)
         return records
 
     def _records_for_workspace(self, tmp_workspace):

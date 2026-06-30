@@ -17,7 +17,8 @@ from __future__ import annotations
 
 import sys
 
-PROJECT_ROOT = r"C:\Users\admin\Downloads\ankideck"
+from pathlib import Path
+PROJECT_ROOT = str(Path(__file__).resolve().parents[2])
 sys.path.insert(0, PROJECT_ROOT)
 
 import pytest  # noqa: E402

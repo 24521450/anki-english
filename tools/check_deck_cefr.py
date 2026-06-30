@@ -1,7 +1,7 @@
-"""Check CEFR of Anki deck vs oxford_merged.jsonl source.
+"""Check CEFR of Anki deck vs oxford.jsonl source.
 
 Compares (Word, POS, sense_text) triples from the Anki deck export against
-`data/oxford_merged.jsonl` (schema v2, per-def cefr).
+`data/sources/oxford.jsonl` (schema v2, per-def cefr).
 
 Deck format: Anki's "Notes in Plain Text" with `html:false`. 16 tab-
 separated columns. Card fields:
@@ -19,7 +19,7 @@ Outputs:
   data/cefr_audit/per_card_audit.csv   (one row per card)
 
 Decision spec (grilled with user 2026-06-11):
-  - Source: oxford_merged.jsonl
+  - Source: sources/oxford.jsonl
   - Per-card + per-sense output
   - Strict text match (unmatched sense = mismatch). Tolerance:
     strip "[register,tag] " prefix, expand "sth"/"sb" abbreviations,
@@ -39,9 +39,12 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Optional
 
-ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
-DECK_PATH = ROOT / 'English Academic Vocabulary.txt'
-SOURCE_PATH = ROOT / 'data' / 'oxford_merged.jsonl'
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+ROOT = paths.root
+DECK_PATH = paths.anki_notes_txt
+SOURCE_PATH = paths.oxford_jsonl
 OUT_DIR = ROOT / 'data' / 'cefr_audit'
 
 UNCLASSIFIED = 'UNCLASSIFIED'

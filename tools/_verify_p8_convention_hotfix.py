@@ -2,8 +2,8 @@
 
 Reads:
   - `data/convention_p8_decisions.jsonl` (457 P8 decisions)
-  - `data/audit_full_deck_v2.jsonl` (post-apply)
-  - `English Academic Vocabulary.txt` (post-apply)
+  - `data/curated/deck_audit.jsonl` (post-apply)
+  - `data/build/anki_notes.txt` (post-apply)
 
 Required checks:
 
@@ -42,8 +42,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 DECISIONS_PATH = PROJECT_ROOT / 'data' / 'convention_p8_decisions.jsonl'
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
 
 # New convention taxonomy rules. Includes pre-P8 rules that were not
 # deprecated by P8.

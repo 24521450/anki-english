@@ -2,9 +2,9 @@
 
 Reads:
   - `data/multisense_harddrop_p6_decisions.jsonl` (117 P6 decisions)
-  - `data/audit_full_deck_v2.jsonl` (post-apply)
-  - `English Academic Vocabulary.txt` (post-apply)
-  - `data/anki_notes.jsonl` (post-rebuild)
+  - `data/curated/deck_audit.jsonl` (post-apply)
+  - `data/build/anki_notes.txt` (post-apply)
+  - `data/build/anki_notes.jsonl` (post-rebuild)
 
 Asserts structural invariants. Idempotent — re-runnable any time after
 P6 apply to validate the patch is fully reflected in the deck.
@@ -50,8 +50,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 DECISIONS_PATH = PROJECT_ROOT / 'data' / 'multisense_harddrop_p6_decisions.jsonl'
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
 
 EXPECTED_DEFERRED_KEYS: set[tuple[str, str, str]] = {
     ('harbor', 'verb', 'UNCLASSIFIED'),

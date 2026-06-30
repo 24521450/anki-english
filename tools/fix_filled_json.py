@@ -1,7 +1,10 @@
 import json
 from pathlib import Path
 
-json_path = Path(r"C:\Users\admin\Downloads\missing_oxford_5000_cards_filled.json")
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+json_path = paths.manual_card_fills
 
 # Load filled cards
 with json_path.open(encoding="utf-8") as f:

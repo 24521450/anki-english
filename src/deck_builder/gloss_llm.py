@@ -28,9 +28,12 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Literal
 
-PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
-JOBS_PATH = PROJECT_ROOT / 'data' / 'simplify_diff' / 'gloss_jobs.jsonl'
-VERDICTS_PATH = PROJECT_ROOT / 'data' / 'simplify_diff' / 'gloss_all_verdicts.json'
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
+JOBS_PATH = paths.root / 'data' / 'simplify_diff' / 'gloss_jobs.jsonl'
+VERDICTS_PATH = paths.root / 'data' / 'simplify_diff' / 'gloss_all_verdicts.json'
 
 
 # Abstract-def signal phrases (cheap heuristic — no M3)

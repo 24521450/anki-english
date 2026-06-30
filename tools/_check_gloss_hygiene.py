@@ -16,9 +16,9 @@ Per user plan (2026-06-21, "P0 Gloss Hygiene Cleanup"):
   the user knows the scope of remaining work.
 
 Touches (read-only):
-  - ``data/audit_full_deck_v2.jsonl``
+  - ``data/curated/deck_audit.jsonl``
   - ``data/audit_expanded_needs_gloss_filled.jsonl``
-  - ``English Academic Vocabulary.txt`` (Definition column)
+  - ``data/build/anki_notes.txt`` (Definition column)
 
 Usage:
   python -m tools._check_gloss_hygiene           # fail on hard issues
@@ -34,15 +34,17 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.deck_builder.gloss_hygiene import normalize_gloss  # noqa: E402
 from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
 
-MASTER_AUDIT = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
+MASTER_AUDIT = paths.deck_audit_jsonl
 EXPANDED_FILLED = PROJECT_ROOT / 'data' / 'audit_expanded_needs_gloss_filled.jsonl'
-DECK_TXT = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+DECK_TXT = paths.anki_notes_txt
 
 CANONICAL_FIELDS = (
     'word', 'pos', 'cefr', 'def_before', 'gloss_after', 'separator',

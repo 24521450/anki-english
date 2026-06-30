@@ -1,11 +1,11 @@
 """P9A: Broader def_before separator normalization -- guarded apply.
 
 Reads:
-  - `data/audit_full_deck_v2.jsonl` (current state, 2487 rows)
-  - `data/oxford_merged.jsonl` (Oxford source, for sense-text matching)
+  - `data/curated/deck_audit.jsonl` (current state, 2487 rows)
+  - `data/sources/oxford.jsonl` (Oxford source, for sense-text matching)
 
 Writes (with --apply; otherwise dry-run):
-  - `data/audit_full_deck_v2.jsonl` -- only `def_before` is changed on
+  - `data/curated/deck_audit.jsonl` -- only `def_before` is changed on
     exactly 66 rows. All other fields (gloss_after, rule_applied,
     separator, gloss_word_count, fix_status, gate_status, source,
     review_needed, review_reason) are byte-identical to pre-apply.
@@ -37,8 +37,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-OXF_PATH = PROJECT_ROOT / 'data' / 'oxford_merged.jsonl'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+OXF_PATH = paths.oxford_jsonl
 
 MULTI_SENSE_RULES = {
     '2sense_distinct', '3sense_distinct', '4sense_distinct', '5sense_distinct',

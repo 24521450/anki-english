@@ -1,8 +1,7 @@
 """One-shot script: tag 13 duplicate cards with `delete` + merge POS for kept cards.
 
 Per plan (2026-06-20):
-- 13 dup `(word, pos, cefr)` keys exist in anki_notes.jsonl + English Academic
-  Vocabulary.txt from a pre-existing build_notes Type A POS remap bug.
+- 13 dup `(word, pos, cefr)` keys exist in anki_notes.jsonl + anki_notes.txt from a pre-existing build_notes Type A POS remap bug.
 - For each dup pair:
   - Keep the card with the FULL definition (def from jsonl, not the short gloss
     from filled.json inject).
@@ -14,9 +13,9 @@ Per plan (2026-06-20):
 
 Workflow:
   1. python -m tools.tag_duplicates_for_deletion    # this script
-  2. (user) Import English Academic Vocabulary.txt into Anki
+  2. (user) Import anki_notes.txt into Anki
   3. (user) Filter for `delete` tag, delete those cards in Anki
-  4. (user) Export deck back to English Academic Vocabulary.txt
+  4. (user) Export deck back to anki_notes.txt
   5. python -m tools.build_notes                    # verify no dups re-created
   6. python -m tools._inject_missing_cards          # verify inject doesn't recreate dups
 
@@ -31,9 +30,12 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(r"C:\Users\admin\Downloads\ankideck")
-JSONL_PATH = ROOT / "data" / "anki_notes.jsonl"
-TXT_PATH = ROOT / "English Academic Vocabulary.txt"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+ROOT = paths.root
+JSONL_PATH = paths.anki_notes_jsonl
+TXT_PATH = paths.anki_notes_txt
 
 # (word, pos, cefr, keep_guid, delete_guid, new_pos_for_kept_card_or_None)
 #
@@ -133,7 +135,7 @@ def tag_jsonl() -> tuple[int, int, int, list[str]]:
 
 
 def tag_txt() -> tuple[int, int, int, list[str]]:
-    """Apply actions to English Academic Vocabulary.txt (17-col tab-separated).
+    """Apply actions to anki_notes.txt (17-col tab-separated).
 
     txt schema (per build_notes.BuiltCard.to_tsv):
       idx 0: guid, 1: notetype, 2: deck, 3: word, 4: pos, 5: ipa,
@@ -245,7 +247,7 @@ def main() -> int:
 
     # Apply to txt
     kept_t, deleted_t, missing_t, warns_t = tag_txt()
-    print(f"English Academic Vocabulary.txt:")
+    print(f"anki_notes.txt:")
     print(f"  kept POS updated: {kept_t}")
     print(f"  delete-tagged:    {deleted_t}")
     print(f"  missing GUIDs:    {missing_t}")
@@ -259,9 +261,9 @@ def main() -> int:
 
     print()
     print("NEXT STEPS (manual):")
-    print("  1. Import English Academic Vocabulary.txt into Anki")
+    print("  1. Import anki_notes.txt into Anki")
     print("  2. Filter cards with tag 'delete', delete them")
-    print("  3. Export deck back to English Academic Vocabulary.txt")
+    print("  3. Export deck back to anki_notes.txt")
     print("  4. Run python -m tools.build_notes")
     print("  5. Run python -m tools._inject_missing_cards")
     print("  6. Verify no duplicate (word, pos, cefr) keys re-appear")

@@ -18,8 +18,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-DECK_TXT = PROJECT_ROOT / 'English Academic Vocabulary.txt'
-MASTER_AUDIT = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+DECK_TXT = paths.anki_notes_txt
+MASTER_AUDIT = paths.deck_audit_jsonl
 
 # Primary list priority — highest first. Used by primary_list_from_tags
 # to collapse a tag set (which may carry multiple corpus list tags) into
@@ -342,9 +344,9 @@ def extract_type_a_keys(stdout: str) -> list[tuple[str, str, str]]:
     
     existing = _parse_existing_txt(DECK_TXT)
     
-    # Load oxford_merged.jsonl words and POS data
+    # Load oxford.jsonl words and POS data
     by_word = {}
-    with (PROJECT_ROOT / 'data' / 'oxford_merged.jsonl').open(encoding='utf-8') as f:
+    with (paths.oxford_jsonl).open(encoding='utf-8') as f:
         for line in f:
             r = json.loads(line)
             w = (r.get('word') or '').lower()
@@ -364,7 +366,7 @@ def extract_type_a_keys(stdout: str) -> list[tuple[str, str, str]]:
     type_a_keys = []
     
     # Filter out filled keys to match build_notes logic
-    FILLED_PATH = PROJECT_ROOT / 'data' / 'missing_oxford_5000_cards_filled.json'
+    FILLED_PATH = paths.manual_card_fills
     filled_keys = set()
     if FILLED_PATH.exists():
         try:

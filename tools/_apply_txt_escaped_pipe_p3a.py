@@ -10,13 +10,16 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+
 from src.deck_builder.gloss_hygiene import compact_pipe_in_text
 
-DECK_TXT = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+DECK_TXT = paths.anki_notes_txt
 
 
 def process_line(line: str) -> tuple[str, bool]:
-    """Process a single line of English Academic Vocabulary.txt.
+    """Process a single line of anki_notes.txt.
     
     If the line starts with '#' or has fewer than 7 fields, returns it unchanged.
     Otherwise, applies compact_pipe_in_text (which handles un-escaping and compacting)

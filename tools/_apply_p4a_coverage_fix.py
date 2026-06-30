@@ -12,10 +12,10 @@ using `|` separator, with paired TXT definition sync and audit metadata
 update.
 
 Scope (locked):
-  - 26 rows in `data/audit_full_deck_v2.jsonl`
-  - 26 def cells in `English Academic Vocabulary.txt`
+  - 26 rows in `data/curated/deck_audit.jsonl`
+  - 26 def cells in `data/build/anki_notes.txt`
   - After apply, run `python -m tools.build_notes` to regenerate
-    `data/anki_notes.jsonl` from the synced TXT.
+    `data/build/anki_notes.jsonl` from the synced TXT.
 
 NOT in scope (per P4A plan):
   - 76 remaining coverage-loss rows (require a separate policy pass)
@@ -37,9 +37,11 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
-JSONL_PATH = PROJECT_ROOT / 'data' / 'anki_notes.jsonl'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
+JSONL_PATH = paths.anki_notes_jsonl
 
 # Guarded key = (word, pos, cefr) + the exact OLD gloss_after + the exact
 # def_before fingerprint. The def_before fingerprint is a short prefix

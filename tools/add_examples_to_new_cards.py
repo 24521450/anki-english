@@ -1,7 +1,7 @@
 """
 tools/add_examples_to_new_cards.py
 ==================================
-Enriches the newly added 10 cards with examples from oxford_merged.jsonl
+Enriches the newly added 10 cards with examples from sources/oxford.jsonl
 (using the first matching CEFR sense) and tags deposit noun C2 as 'Delete'.
 """
 
@@ -11,9 +11,12 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
-DECK_FILE = ROOT / "English Academic Vocabulary.txt"
-OXFORD_FILE = ROOT / "data" / "oxford_merged.jsonl"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+ROOT = paths.root
+DECK_FILE = paths.anki_notes_txt
+OXFORD_FILE = paths.oxford_jsonl
 BACKUP_SUFFIX = f".bak_pre_examples_sync_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
 DRY_RUN = "--dry-run" in sys.argv

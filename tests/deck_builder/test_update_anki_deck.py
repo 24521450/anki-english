@@ -5,7 +5,10 @@ from pathlib import Path
 import pytest
 import genanki
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
 sys.path.insert(0, str(PROJECT_ROOT))
 
 import update_anki_deck

@@ -17,9 +17,12 @@ from typing import Optional
 import nltk
 from nltk.stem import WordNetLemmatizer
 
-ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
-DECK_PATH = ROOT / 'English Academic Vocabulary.txt'
-SOURCE_PATH = ROOT / 'data' / 'oxford_merged.jsonl'
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+ROOT = paths.root
+DECK_PATH = paths.anki_notes_txt
+SOURCE_PATH = paths.oxford_jsonl
 AUDIT_DIR = ROOT / 'data' / 'cefr_audit'
 
 lemmatizer = WordNetLemmatizer()

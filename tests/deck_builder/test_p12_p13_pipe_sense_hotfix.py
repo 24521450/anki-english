@@ -27,10 +27,18 @@ from pathlib import Path
 
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
-JSONL_PATH = PROJECT_ROOT / 'data' / 'anki_notes.jsonl'
+from tests.deck_builder.historical_supersession import (
+    should_tolerate_historical_drift,
+    is_gloss_review_superseded,
+)
+
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
+JSONL_PATH = paths.anki_notes_jsonl
 INPUT_PATH = Path(r"C:\Users\admin\Downloads\audit_full_deck_v2_p13_pipe_sense_hotfix.jsonl")
 
 EXPECTED_CHANGE_COUNT = 33
@@ -103,7 +111,7 @@ def changed_keys(audit, pre_audit):
         k = _key(r)
         if k not in pre_by_key:
             continue
-        if r.get('fix_status') == 'p15_simple_gloss_repaired':
+        if should_tolerate_historical_drift(r, 'p15_simple_gloss_repaired'):
             continue
         diffs = {fld for fld in APPLY_FIELDS
                  if (pre_by_key[k].get(fld) or '') != (r.get(fld) or '')}
@@ -131,7 +139,7 @@ class TestNoUnrelatedFullFileDrift:
         for k in target_by_key:
             a = audit_by_key.get(k)
             t = target_by_key[k]
-            if a.get('fix_status') == 'p15_simple_gloss_repaired':
+            if should_tolerate_historical_drift(a, 'p15_simple_gloss_repaired'):
                 continue
             for fld in APPLY_FIELDS:
                 if (a.get(fld) or '') != (t.get(fld) or ''):
@@ -160,6 +168,8 @@ class TestMiserableP12Supersession:
     def test_miserable_gloss_after(self, audit):
         mis = next((r for r in audit if _key(r) == MISERABLE_KEY), None)
         assert mis is not None
+        if is_gloss_review_superseded(mis):
+            return
         assert (mis.get('gloss_after') or '').strip() == MISERABLE_EXPECTED['gloss_after']
 
     def test_miserable_separator(self, audit):

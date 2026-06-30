@@ -1,9 +1,9 @@
 """P9A def_before Separator Normalization -- verifier.
 
 Reads:
-  - `data/audit_full_deck_v2.jsonl` (post-apply)
-  - `data/oxford_merged.jsonl` (Oxford source)
-  - `data/audit_full_deck_v2.jsonl.bak_pre_p9a_def_before_<ts>` (pre-apply)
+  - `data/curated/deck_audit.jsonl` (post-apply)
+  - `data/sources/oxford.jsonl` (Oxford source)
+  - `data/curated/deck_audit.jsonl.bak_pre_p9a_def_before_<ts>` (pre-apply)
 
 Required checks:
 
@@ -35,8 +35,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-OXF_PATH = PROJECT_ROOT / 'data' / 'oxford_merged.jsonl'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+OXF_PATH = paths.oxford_jsonl
 
 EXPECTED_CHANGE_COUNT = 66
 

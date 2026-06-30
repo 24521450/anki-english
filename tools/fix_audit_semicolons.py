@@ -2,7 +2,7 @@
 tools/fix_audit_semicolons.py
 =============================
 Fixes the bug where semicolon ';' is incorrectly used as a sense separator
-instead of '|' in both audit_full_deck_v2.jsonl and English Academic Vocabulary.txt.
+instead of '|' in both deck_audit.jsonl and anki_notes.txt.
 
 Only applies when the original def_before has multiple senses (contains '|').
 """
@@ -13,9 +13,12 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
-AUDIT_FILE = ROOT / "data" / "audit_full_deck_v2.jsonl"
-DECK_FILE = ROOT / "English Academic Vocabulary.txt"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+ROOT = paths.root
+AUDIT_FILE = paths.deck_audit_jsonl
+DECK_FILE = paths.anki_notes_txt
 TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 DRY_RUN = "--dry-run" in sys.argv

@@ -1,13 +1,18 @@
 """Inspect phrasal verb files (deprive-of, derive-from).
 
-Reads the canonical builder input (oxford_merged.jsonl) and locates the
+Reads the canonical builder input (oxford.jsonl) and locates the
 phrasal-verb record by matching `fname in record.source_files` (merged
 records preserve the full source_files list of contributing HTML files).
 """
+import sys
 import lxml.html
+from pathlib import Path
+from src.config import ProjectPaths
+
+paths = ProjectPaths(Path(__file__).resolve().parents[1])
 
 for fname in ["oxford_deprive-of_(phrasal_verb).html", "oxford_derive-from_(phrasal_verb).html"]:
-    path = rf"C:\Users\admin\Downloads\ankideck\data\.cache_html\oxford\{fname}"
+    path = paths.root / "data" / ".cache_html" / "oxford" / fname
     try:
         with open(path, "rb") as f:
             tree = lxml.html.fromstring(f.read())
@@ -29,7 +34,7 @@ for fname in ["oxford_deprive-of_(phrasal_verb).html", "oxford_derive-from_(phra
     # What does the merged record say for this? Match by source_files (any
     # record that lists this HTML as one of its contributing files).
     import json
-    with open(r"C:\Users\admin\Downloads\ankideck\data\oxford_merged.jsonl", encoding="utf-8") as f:
+    with open(paths.oxford_jsonl, encoding="utf-8") as f:
         for line in f:
             rec = json.loads(line)
             if fname in rec.get("source_files", []):

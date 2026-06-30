@@ -12,8 +12,11 @@ import json
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-NOTES_JSONL = PROJECT_ROOT / "data" / "anki_notes.jsonl"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
+NOTES_JSONL = paths.anki_notes_jsonl
 
 ALL_STAGES = ["scrape", "build", "split", "deck"]
 DEFAULT_STAGES = ["build", "split", "deck"]

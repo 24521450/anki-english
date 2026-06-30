@@ -6,8 +6,8 @@ Usage:
 
 Reads every *.html in data/.cache_html/oxford/ and data/.cache_html/cambridge/,
 parses with lxml, writes one JSON object per line to:
-    data/oxford_merged.jsonl     (Phase 7b: 1 record per unique word, merged)
-    data/cambridge_full.jsonl    (unmerged, 1 record per source file — Cambridge
+    data/sources/oxford.jsonl     (Phase 7b: 1 record per unique word, merged)
+    data/sources/cambridge.jsonl    (unmerged, 1 record per source file — Cambridge
                                   has no multi-file words so merge would be a
                                   no-op)
 
@@ -16,7 +16,7 @@ is no longer written — Oxford records go straight from the parser into the
 merge layer (in-memory pass) and only the merged output is persisted. This
 removes a ~17MB duplicate and the redundant Oxford-only determinism check
 flag (use tools/_check_determinism.py instead — it SHA-256-compares two
-consecutive oxford_merged.jsonl builds).
+consecutive oxford.jsonl builds).
 
 Oxford is a 2-stage pipeline: parse → merge (groups by word, dedupes pos_data).
 Cambridge stays unmerged (per source) — only Oxford has multi-file words.
@@ -35,8 +35,14 @@ import traceback
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-PROJECT_ROOT = r"C:\Users\admin\Downloads\ankideck"
+from pathlib import Path
+
+PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
 sys.path.insert(0, PROJECT_ROOT)
+
+from src.config import ProjectPaths
+
+paths = ProjectPaths(Path(PROJECT_ROOT))
 
 from src.scraper.oxford import parse_oxford  # noqa: E402
 from src.scraper.cambridge import parse_cambridge  # noqa: E402
@@ -44,8 +50,8 @@ from src.scraper.merge import merge_word_records, fold_phrasal_verb_records  # n
 
 OXFORD_DIR = os.path.join(PROJECT_ROOT, "data", ".cache_html", "oxford")
 CAMBRIDGE_DIR = os.path.join(PROJECT_ROOT, "data", ".cache_html", "cambridge")
-OXFORD_MERGED_OUT = os.path.join(PROJECT_ROOT, "data", "oxford_merged.jsonl")
-CAMBRIDGE_OUT = os.path.join(PROJECT_ROOT, "data", "cambridge_full.jsonl")
+OXFORD_MERGED_OUT = str(paths.oxford_jsonl)
+CAMBRIDGE_OUT = str(paths.cambridge_jsonl)
 LOG_PATH = os.path.join(PROJECT_ROOT, "data", ".cache_html", "_run_full_cache.log")
 ERROR_THRESHOLD = 0.01  # 1% — abort if exceeded
 

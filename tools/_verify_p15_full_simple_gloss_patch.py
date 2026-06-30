@@ -24,9 +24,11 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
-JSONL_PATH = PROJECT_ROOT / 'data' / 'anki_notes.jsonl'
+from src.config import ProjectPaths
+paths = ProjectPaths(PROJECT_ROOT)
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
+JSONL_PATH = paths.anki_notes_jsonl
 INPUT_PATH = Path(r"C:\Users\admin\Downloads\audit_full_deck_v2_p15_full_simple_gloss_patch_v2.jsonl")
 
 EXPECTED_CHANGE_COUNT = 51
@@ -61,7 +63,7 @@ def main() -> int:
     print('=' * 72)
 
     if not AUDIT_PATH.exists():
-        print('FATAL: audit_full_deck_v2.jsonl does not exist')
+        print('FATAL: curated/deck_audit.jsonl does not exist')
         return 1
 
     audit = _load_jsonl(AUDIT_PATH)

@@ -1,7 +1,7 @@
 """
 tools/sync_audit_to_deck.py
 ===========================
-Syncs English Academic Vocabulary.txt with audit_full_deck_v2.jsonl.
+Syncs anki_notes.txt with deck_audit.jsonl.
 
 Task A: Insert 11 new cards (CEFR discrepancies found in audit but missing in deck).
 Task B: Update 521 definition mismatches (overwrite col 6 with gloss_after).
@@ -19,9 +19,12 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent
-AUDIT_FILE = ROOT / "data" / "audit_full_deck_v2.jsonl"
-DECK_FILE = ROOT / "English Academic Vocabulary.txt"
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+ROOT = paths.root
+AUDIT_FILE = paths.deck_audit_jsonl
+DECK_FILE = paths.anki_notes_txt
 BACKUP_SUFFIX = f".bak_pre_audit_sync_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
 DRY_RUN = "--dry-run" in sys.argv

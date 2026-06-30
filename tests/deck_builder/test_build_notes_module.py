@@ -18,8 +18,8 @@ import tools.build_notes
 
 
 def _setup_fixtures(tmp_path: Path):
-    # oxford_merged.jsonl
-    jsonl_file = tmp_path / "oxford_merged.jsonl"
+    # Canonical Oxford source JSONL
+    jsonl_file = tmp_path / "oxford.jsonl"
     jsonl_data = [
         {
             "word": "conquer",
@@ -89,14 +89,14 @@ def _setup_fixtures(tmp_path: Path):
     audio_dir.mkdir()
 
     return BuildNotesPaths(
-        jsonl_path=jsonl_file,
-        txt_path=txt_file,
-        audit_jsonl_path=audit_file,
+        oxford_jsonl_path=jsonl_file,
+        notes_txt_path=txt_file,
+        deck_audit_jsonl_path=audit_file,
         gamma_verdicts_path=gamma_file,
         oxford_3000_md=ox3,
         oxford_5000_md=ox5,
         awl_md=awl,
-        filled_path=filled_file,
+        manual_card_fills_path=filled_file,
         audio_dir=audio_dir
     )
 
@@ -139,7 +139,7 @@ def test_duplicate_emit_keys_skipped_first_wins(tmp_path):
         "\t".join(["guid_first", "Model", "Deck Oxford", "conquer", "adjective", "/ˈkɒŋkə(r)/", "defn1", "ex1", "", "", "", "", "Oxford", "Oxford", "C1", "", "Source::Oxford CEFR::C1"]),
         "\t".join(["guid_second", "Model", "Deck Oxford", "conquer", "verb", "/ˈkɒŋkə(r)/", "defn2", "ex2", "", "", "", "", "Oxford", "Oxford", "C1", "", "Source::Oxford CEFR::C1"])
     ]
-    paths.txt_path.write_text(header + "\n".join(rows) + "\n", encoding="utf-8")
+    paths.notes_txt_path.write_text(header + "\n".join(rows) + "\n", encoding="utf-8")
 
     res = build_notes(paths)
     # First-wins: built cards should contain guid_first, not guid_second.
@@ -153,7 +153,7 @@ def test_filled_cards_preserved_verbatim(tmp_path):
     
     # Setup filled.json with conquer
     filled_data = [{"word": "conquer", "pos": "verb", "cefr": "C1"}]
-    paths.filled_path.write_text(json.dumps(filled_data), encoding="utf-8")
+    paths.manual_card_fills_path.write_text(json.dumps(filled_data), encoding="utf-8")
 
     # Run build
     res = build_notes(paths)
@@ -185,19 +185,43 @@ def test_generated_outputs_are_deterministic(tmp_path):
     assert res1.txt_text == res2.txt_text
 
 
+def test_audit_can_override_example_and_collocations(tmp_path):
+    paths = _setup_fixtures(tmp_path)
+    audit_data = [
+        {
+            "word": "conquer",
+            "pos": "verb",
+            "cefr": "C1",
+            "gloss_after": "take control",
+            "example_after": "The army conquered the city.",
+            "collocations_after": "conquer city/territory|conquer fear",
+        }
+    ]
+    paths.deck_audit_jsonl_path.write_text(
+        "\n".join(json.dumps(r) for r in audit_data) + "\n",
+        encoding="utf-8",
+    )
+
+    res = build_notes(paths)
+    card = [c for c in res.built_cards if c.word == "conquer"][0]
+
+    assert card.example == "The army conquered the city."
+    assert card.collocations == "conquer city/territory|conquer fear"
+
+
 def test_tools_build_notes_cli_dry_run(tmp_path, monkeypatch):
     paths = _setup_fixtures(tmp_path)
     
     # Overwrite tools constants to use tmp_path values
-    monkeypatch.setattr(tools.build_notes, "JSONL_PATH", paths.jsonl_path)
+    monkeypatch.setattr(tools.build_notes, "JSONL_PATH", paths.oxford_jsonl_path)
     monkeypatch.setattr(tools.build_notes, "GAMMA_VERDICTS_PATH", paths.gamma_verdicts_path)
-    monkeypatch.setattr(tools.build_notes, "TXT_PATH", paths.txt_path)
+    monkeypatch.setattr(tools.build_notes, "TXT_PATH", paths.notes_txt_path)
     monkeypatch.setattr(tools.build_notes, "OUT_JSONL", tmp_path / "anki_notes.jsonl")
     monkeypatch.setattr(tools.build_notes, "OXFORD_3000_MD", paths.oxford_3000_md)
     monkeypatch.setattr(tools.build_notes, "OXFORD_5000_MD", paths.oxford_5000_md)
     monkeypatch.setattr(tools.build_notes, "AWL_MD", paths.awl_md)
-    monkeypatch.setattr(tools.build_notes, "AUDIT_JSONL_PATH", paths.audit_jsonl_path)
-    monkeypatch.setattr(tools.build_notes, "FILLED_PATH", paths.filled_path)
+    monkeypatch.setattr(tools.build_notes, "AUDIT_JSONL_PATH", paths.deck_audit_jsonl_path)
+    monkeypatch.setattr(tools.build_notes, "FILLED_PATH", paths.manual_card_fills_path)
     monkeypatch.setattr(tools.build_notes, "AUDIO_DIR", paths.audio_dir)
 
     out_jsonl = tmp_path / "anki_notes.jsonl"
@@ -217,5 +241,5 @@ def test_tools_build_notes_cli_dry_run(tmp_path, monkeypatch):
     assert out_jsonl.exists()
     
     # Check that backup file exists
-    backups = list(paths.txt_path.parent.glob("vocab.txt.bak_pre_build_*"))
+    backups = list(paths.notes_txt_path.parent.glob("vocab.txt.bak_pre_build_*"))
     assert len(backups) == 1

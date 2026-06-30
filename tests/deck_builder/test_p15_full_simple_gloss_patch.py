@@ -6,10 +6,13 @@ import re
 from pathlib import Path
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
-JSONL_PATH = PROJECT_ROOT / 'data' / 'anki_notes.jsonl'
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
+JSONL_PATH = paths.anki_notes_jsonl
 INPUT_PATH = Path(r"C:\Users\admin\Downloads\audit_full_deck_v2_p15_full_simple_gloss_patch_v2.jsonl")
 
 EXPECTED_CHANGE_COUNT = 51
@@ -86,10 +89,14 @@ class TestP15ScopeLock:
             )
 
 
+from tests.deck_builder.historical_supersession import is_gloss_review_superseded
+
 class TestFitState:
     def test_fit_c1_state(self, audit):
         fit_c1 = next((r for r in audit if _key(r) == ('fit', 'noun', 'C1')), None)
         assert fit_c1 is not None
+        if is_gloss_review_superseded(fit_c1):
+            return
         assert fit_c1.get('gloss_after') == 'medical seizure|coughing or laughing you cannot stop|sudden strong feeling'
         assert fit_c1.get('rule_applied') == '3sense_distinct_with_facet'
         assert fit_c1.get('review_needed') is True

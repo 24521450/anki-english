@@ -1,18 +1,18 @@
-"""Verify oxford_merged.jsonl rebuild determinism via SHA-256.
+"""Verify oxford.jsonl rebuild determinism via SHA-256.
 
 v3.1 contract (replaces the v3.0 --oxford-only flag's pre-merge check):
-    Rebuilding data/oxford_merged.jsonl MUST be byte-identical across runs,
+    Rebuilding data/sources/oxford.jsonl MUST be byte-identical across runs,
     given the same HTML cache. Verified by SHA-256 of two consecutive builds.
 
 This tool provides two modes:
 
 1. compare_two_runs (default):
-       Compare two pre-built oxford_merged.jsonl files. Useful when you've
+       Compare two pre-built oxford.jsonl files. Useful when you've
        run the pipeline twice and saved the first build to a backup.
 
 2. build_and_compare (--build):
        Run _run_full_cache.py twice with --oxford-only, then compare the
-       two output oxford_merged.jsonl files. This is the full determinism
+       two output oxford.jsonl files. This is the full determinism
        test (~6 minutes for Oxford only).
 
 Usage:
@@ -28,9 +28,13 @@ import shutil
 import subprocess
 import sys
 
-PROJECT_ROOT = r"C:\Users\admin\Downloads\ankideck"
-MERGED_PATH = os.path.join(PROJECT_ROOT, "data", "oxford_merged.jsonl")
-RUN1_BACKUP = os.path.join(PROJECT_ROOT, "data", ".cache_html", "_oxford_merged_run1.jsonl")
+from pathlib import Path
+from src.config import ProjectPaths
+
+paths = ProjectPaths(Path(__file__).resolve().parents[1])
+PROJECT_ROOT = str(paths.root)
+MERGED_PATH = str(paths.oxford_jsonl)
+RUN1_BACKUP = str(paths.root / "data" / ".cache_html" / "_oxford_run1.jsonl")
 
 
 def sha256_of_file(path: str) -> str:
@@ -77,7 +81,7 @@ def compare_two_runs(run1: str, run2: str) -> int:
 
 def build_and_compare() -> int:
     """Run _run_full_cache --oxford-only twice, then compare outputs."""
-    # Move current oxford_merged.jsonl aside as run1 baseline
+    # Move current oxford.jsonl aside as run1 baseline
     if os.path.exists(RUN1_BACKUP):
         os.unlink(RUN1_BACKUP)
     if os.path.exists(MERGED_PATH):
@@ -105,7 +109,7 @@ def build_and_compare() -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify oxford_merged.jsonl rebuild determinism via SHA-256.")
+    parser = argparse.ArgumentParser(description="Verify oxford.jsonl rebuild determinism via SHA-256.")
     parser.add_argument(
         "--build",
         action="store_true",

@@ -9,9 +9,9 @@ Per user plan (2026-06-21, "P0 Gloss Hygiene Cleanup"):
      preserving first occurrence / file order.
 
 Touches:
-  - ``data/audit_full_deck_v2.jsonl``
+  - ``data/curated/deck_audit.jsonl``
   - ``data/audit_expanded_needs_gloss_filled.jsonl``
-  - ``English Academic Vocabulary.txt`` — only Definition column (col index 6).
+  - ``data/build/anki_notes.txt`` — only Definition column (col index 6).
 
 Backups:
   - Each target gets a ``.bak_pre_gloss_hygiene_<timestamp>`` next to it.
@@ -32,17 +32,21 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
-PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.config import ProjectPaths
+
+paths = ProjectPaths(PROJECT_ROOT)
 
 from src.deck_builder.gloss_hygiene import (  # noqa: E402
     normalize_gloss,
     compact_pipe_in_text,
 )
 
-MASTER_AUDIT = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
+MASTER_AUDIT = paths.deck_audit_jsonl
 EXPANDED_FILLED = PROJECT_ROOT / 'data' / 'audit_expanded_needs_gloss_filled.jsonl'
-DECK_TXT = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+DECK_TXT = paths.anki_notes_txt
 
 # Field names in canonical order used for "exact duplicate" detection.
 CANONICAL_FIELDS = (

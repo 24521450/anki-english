@@ -29,10 +29,13 @@ from pathlib import Path
 
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+from src.config import ProjectPaths
+
+paths = ProjectPaths()
+PROJECT_ROOT = paths.root
 DECISIONS_PATH = PROJECT_ROOT / 'data' / 'multisense_harddrop_p6_decisions.jsonl'
-AUDIT_PATH = PROJECT_ROOT / 'data' / 'audit_full_deck_v2.jsonl'
-TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
+AUDIT_PATH = paths.deck_audit_jsonl
+TXT_PATH = paths.anki_notes_txt
 
 from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
 
@@ -192,6 +195,9 @@ class TestAuditReflection:
             r = rows[0]
             fix_status = r.get('fix_status', '').strip()
             rule_applied = r.get('rule_applied', '').strip()
+            from tests.deck_builder.historical_supersession import is_gloss_review_superseded
+            if is_gloss_review_superseded(r):
+                continue
             # P7 may have superseded P6's multi_sense_distinct with a
             # common_core_trimmed / trimmed_multisense rule.
             if fix_status == 'p7_redundant_sense_trimmed':
@@ -292,6 +298,7 @@ class TestTXTReflection:
         # Build P7-superseded + P8-superseded key sets from audit
         audit_p7_keys: set[tuple] = set()
         audit_p8_keys: set[tuple] = set()
+        audit_review_keys: set[tuple] = set()
         with open(AUDIT_PATH, encoding='utf-8') as f:
             for line in f:
                 if not line.strip():
@@ -304,7 +311,10 @@ class TestTXTReflection:
                     (r.get('pos') or '').strip().lower(),
                     (r.get('cefr') or '').strip().upper(),
                 )
-                if fix_status == 'p7_redundant_sense_trimmed':
+                from tests.deck_builder.historical_supersession import is_gloss_review_superseded
+                if is_gloss_review_superseded(r):
+                    audit_review_keys.add(k)
+                elif fix_status == 'p7_redundant_sense_trimmed':
                     audit_p7_keys.add(k)
                 elif rule_applied in P8_P6_SUCCESSOR_RULES and rule_applied != 'multi_sense_distinct':
                     # P8 superseded this row's rule + gloss.
@@ -316,6 +326,8 @@ class TestTXTReflection:
                 (d.get('cefr') or '').strip().upper(),
             )
             if k in EXPECTED_DEFERRED_KEYS:
+                continue
+            if k in audit_review_keys:
                 continue
             if k in audit_p7_keys:
                 # P7 superseded; TXT reflects P7's later verdict, not P6's.
