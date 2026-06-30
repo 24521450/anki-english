@@ -185,6 +185,30 @@ def test_generated_outputs_are_deterministic(tmp_path):
     assert res1.txt_text == res2.txt_text
 
 
+def test_audit_can_override_example_and_collocations(tmp_path):
+    paths = _setup_fixtures(tmp_path)
+    audit_data = [
+        {
+            "word": "conquer",
+            "pos": "verb",
+            "cefr": "C1",
+            "gloss_after": "take control",
+            "example_after": "The army conquered the city.",
+            "collocations_after": "conquer city/territory|conquer fear",
+        }
+    ]
+    paths.audit_jsonl_path.write_text(
+        "\n".join(json.dumps(r) for r in audit_data) + "\n",
+        encoding="utf-8",
+    )
+
+    res = build_notes(paths)
+    card = [c for c in res.built_cards if c.word == "conquer"][0]
+
+    assert card.example == "The army conquered the city."
+    assert card.collocations == "conquer city/territory|conquer fear"
+
+
 def test_tools_build_notes_cli_dry_run(tmp_path, monkeypatch):
     paths = _setup_fixtures(tmp_path)
     

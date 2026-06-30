@@ -192,6 +192,8 @@ class TestAuditReflection:
             r = rows[0]
             fix_status = r.get('fix_status', '').strip()
             rule_applied = r.get('rule_applied', '').strip()
+            if fix_status == 'gloss_review_log_20260630':
+                continue
             # P7 may have superseded P6's multi_sense_distinct with a
             # common_core_trimmed / trimmed_multisense rule.
             if fix_status == 'p7_redundant_sense_trimmed':
@@ -292,6 +294,7 @@ class TestTXTReflection:
         # Build P7-superseded + P8-superseded key sets from audit
         audit_p7_keys: set[tuple] = set()
         audit_p8_keys: set[tuple] = set()
+        audit_review_keys: set[tuple] = set()
         with open(AUDIT_PATH, encoding='utf-8') as f:
             for line in f:
                 if not line.strip():
@@ -309,6 +312,8 @@ class TestTXTReflection:
                 elif rule_applied in P8_P6_SUCCESSOR_RULES and rule_applied != 'multi_sense_distinct':
                     # P8 superseded this row's rule + gloss.
                     audit_p8_keys.add(k)
+                elif fix_status == 'gloss_review_log_20260630':
+                    audit_review_keys.add(k)
         for d in decisions:
             k = (
                 (d.get('word') or '').strip().lower(),
@@ -316,6 +321,8 @@ class TestTXTReflection:
                 (d.get('cefr') or '').strip().upper(),
             )
             if k in EXPECTED_DEFERRED_KEYS:
+                continue
+            if k in audit_review_keys:
                 continue
             if k in audit_p7_keys:
                 # P7 superseded; TXT reflects P7's later verdict, not P6's.

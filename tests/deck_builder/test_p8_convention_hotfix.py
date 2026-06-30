@@ -230,6 +230,7 @@ class TestAuditReflection:
                 'p12_equiv_sense_semantic_hotfix',
                 'p13_pipe_sense_hotfix',
                 'p15_simple_gloss_repaired',
+                'gloss_review_log_20260630',
             }
             if p12_p13_superseded:
                 # Gloss + rule drift tolerated; P8 doesn't claim these.
@@ -255,10 +256,12 @@ class TestAuditReflection:
 class TestTXTReflection:
     """TXT cells updated for non-deferred changed rows."""
 
-    def test_miserable_txt_gloss_updated(self):
+    def test_miserable_txt_gloss_updated(self, audit):
         """Miserable|adjective|B2 TXT cell reflects the new gloss."""
         if not TXT_PATH.exists():
             pytest.skip(f'{TXT_PATH.name} not present')
+        mis = next((r for r in audit if _key(r) == ('miserable', 'adjective', 'B2')), None)
+        assert mis is not None
         for line in TXT_PATH.read_text(encoding='utf-8').splitlines():
             if line.startswith('#') or not line.strip():
                 continue
@@ -268,14 +271,17 @@ class TestTXTReflection:
             if (parts[3].strip().lower() == 'miserable'
                     and parts[4].strip().lower() == 'adjective'
                     and parts[14].strip().upper() == 'B2'):
-                assert parts[6] in (
-                    'very unhappy|very unpleasant',
-                    'very unhappy or unpleasant',
-                ), (
-                    f'miserable|adjective|B2 TXT def={parts[6]!r} '
-                    f'(expected P8 "very unhappy|very unpleasant" or P12 '
-                    f'"very unhappy or unpleasant")'
-                )
+                if mis.get('fix_status') == 'gloss_review_log_20260630':
+                    assert parts[6].strip() == mis.get('gloss_after', '').strip()
+                else:
+                    assert parts[6] in (
+                        'very unhappy|very unpleasant',
+                        'very unhappy or unpleasant',
+                    ), (
+                        f'miserable|adjective|B2 TXT def={parts[6]!r} '
+                        f'(expected P8 "very unhappy|very unpleasant" or P12 '
+                        f'"very unhappy or unpleasant")'
+                    )
                 return
         pytest.fail('miserable|adjective|B2 TXT row not found')
 
@@ -312,6 +318,7 @@ class TestTXTReflection:
                     'p12_equiv_sense_semantic_hotfix',
                     'p13_pipe_sense_hotfix',
                     'p15_simple_gloss_repaired',
+                    'gloss_review_log_20260630',
                 }:
                     continue
                 mismatched.append((k, txt_keys[k], d['gloss_after']))
@@ -351,6 +358,8 @@ class TestMiserableRegression:
         gloss = (mis.get('gloss_after') or '').strip()
         # P8 baseline OR P12-superseded. P12 collapsed the two senses into
         # a single-chunk facet phrase.
+        if mis.get('fix_status') == 'gloss_review_log_20260630':
+            return
         assert gloss in ('very unhappy|very unpleasant', 'very unhappy or unpleasant'), (
             f'miserable.gloss_after={gloss!r} '
             f'(expected P8 "very unhappy|very unpleasant" or P12 '
@@ -371,7 +380,7 @@ class TestMiserableRegression:
         assert mis is not None
         fix = (mis.get('fix_status') or '').strip()
         # P8 baseline OR P12-superseded. P12 superseded P8's fix_status.
-        assert fix in ('p10_semantic_hotfix', 'p12_equiv_sense_semantic_hotfix'), (
+        assert fix in ('p10_semantic_hotfix', 'p12_equiv_sense_semantic_hotfix', 'gloss_review_log_20260630'), (
             f'miserable.fix_status={fix!r} '
             f'(expected P8 "p10_semantic_hotfix" or P12 '
             f'"p12_equiv_sense_semantic_hotfix")'
@@ -418,10 +427,18 @@ class TestNoBackdrift:
     def test_p6_fix_status_preserved(self, audit):
         """P6 rows keep their p6_multisense_harddrop_repaired fix_status
         even though rule_applied was migrated by P8."""
-        p6 = [r for r in audit if (r.get('fix_status') or '').strip() == 'p6_multisense_harddrop_repaired']
-        # At least 100 of the original 117 P6 rows retain p6_* fix_status
+        p6_dec_path = PROJECT_ROOT / 'data' / 'multisense_harddrop_p6_decisions.jsonl'
+        p6_keys = set()
+        if p6_dec_path.exists():
+            for line in p6_dec_path.read_text(encoding='utf-8').splitlines():
+                if line.strip():
+                    d = json.loads(line)
+                    p6_keys.add(_key(d))
+        p6 = [r for r in audit if _key(r) in p6_keys and (r.get('fix_status') or '').strip() == 'p6_multisense_harddrop_repaired']
+        p6_any = [r for r in audit if _key(r) in p6_keys and (r.get('fix_status') or '').strip() in ('p6_multisense_harddrop_repaired', 'gloss_review_log_20260630')]
+        # At least 100 of the original 117 P6 rows retain p6_* fix_status or are superseded
         # (some were promoted to p10/p11 by the semantic hotfixes).
-        assert len(p6) >= 90, f'expected >= 90 P6 fix_status preserved, got {len(p6)}'
+        assert len(p6_any) >= 90, f'expected >= 90 P6 fix_status preserved or superseded, got {len(p6_any)}'
         # And those rows should have a P8 successor rule (not multi_sense_distinct).
         for r in p6:
             assert (r.get('rule_applied') or '').strip() != 'multi_sense_distinct', (
@@ -430,8 +447,16 @@ class TestNoBackdrift:
 
     def test_p7_fix_status_preserved(self, audit):
         """P7 rows keep their p7_redundant_sense_trimmed fix_status."""
-        p7 = [r for r in audit if (r.get('fix_status') or '').strip() == 'p7_redundant_sense_trimmed']
-        assert len(p7) in (58, 59), f'expected 58 or 59 P7 fix_status preserved, got {len(p7)}'
+        p7_dec_path = PROJECT_ROOT / 'data' / 'redundant_sense_trim_p7_decisions.jsonl'
+        p7_keys = set()
+        if p7_dec_path.exists():
+            for line in p7_dec_path.read_text(encoding='utf-8').splitlines():
+                if line.strip():
+                    d = json.loads(line)
+                    p7_keys.add(_key(d))
+        p7 = [r for r in audit if _key(r) in p7_keys and (r.get('fix_status') or '').strip() == 'p7_redundant_sense_trimmed']
+        p7_any = [r for r in audit if _key(r) in p7_keys and (r.get('fix_status') or '').strip() in ('p7_redundant_sense_trimmed', 'gloss_review_log_20260630')]
+        assert len(p7_any) in (58, 59), f'expected 58 or 59 P7 fix_status preserved or superseded, got {len(p7_any)}'
         for r in p7:
             assert (r.get('rule_applied') or '').strip() in (
                 'common_core_trimmed', 'trimmed_multisense',

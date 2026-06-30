@@ -44,6 +44,8 @@ def _key(r: dict) -> tuple[str, str, str]:
 
 
 def _is_candidate(r: dict) -> bool:
+    if r.get('fix_status') == 'gloss_review_log_20260630':
+        return False
     db = (r.get('def_before') or '')
     ga = (r.get('gloss_after') or '')
     rule = (r.get('rule_applied') or '').strip()

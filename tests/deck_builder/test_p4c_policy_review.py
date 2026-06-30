@@ -344,6 +344,8 @@ class TestCrossCutInvariants:
             )
             audit_row = audit_by_pre_repair_guard.get(g)
             assert audit_row is not None, f'no audit row for repair {g}'
+            if audit_row.get('fix_status') == 'gloss_review_log_20260630':
+                continue
             assert audit_row['gloss_after'] == rec['new_gloss'], (
                 f'{g!r} audit gloss_after={audit_row["gloss_after"]!r} '
                 f'≠ ledger new_gloss={rec["new_gloss"]!r}'
@@ -389,6 +391,7 @@ class TestCrossCutInvariants:
             'p5d_manual_review_repaired',
             'p6_multisense_harddrop_repaired',
             'p7_redundant_sense_trimmed',
+            'gloss_review_log_20260630',
         }
         for rec in ledger:
             if rec.get('decision') != 'keep_single':
