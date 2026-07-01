@@ -32,6 +32,7 @@ AUDIT_PATH = paths.deck_audit_jsonl
 TXT_PATH = paths.anki_notes_txt
 
 from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
+from tests.deck_builder.historical_supersession import DELETED_KEYS
 
 ALLOWED_RULES = {'common_core_trimmed', 'trimmed_multisense'}
 V3_RAW_LABELS = {'3sense_distinct', '4sense_distinct', '5sense_distinct'}
@@ -135,8 +136,8 @@ class TestWordCountAndValidator:
 class TestAuditReflection:
     """P7 decisions are reflected in the audit master."""
 
-    def test_audit_count_is_2488(self, audit):
-        assert len(audit) == 2488, f'expected 2488, got {len(audit)}'
+    def test_audit_count_is_2457(self, audit):
+        assert len(audit) == 2457, f'expected 2457, got {len(audit)}'
 
     def test_all_p7_audit_rows_synced(self, decisions, audit):
         audit_by_key: dict[tuple, dict] = {}
@@ -145,6 +146,8 @@ class TestAuditReflection:
             audit_by_key.setdefault(k, []).append(r)
         for d in decisions:
             k = _key(d)
+            if k in DELETED_KEYS:
+                continue
             assert k in audit_by_key, f'audit missing {k}'
             rows = audit_by_key[k]
             assert len(rows) == 1, f'audit has {len(rows)} rows for {k}'

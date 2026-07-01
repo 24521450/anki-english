@@ -38,6 +38,7 @@ AUDIT_PATH = paths.deck_audit_jsonl
 TXT_PATH = paths.anki_notes_txt
 
 from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
+from tests.deck_builder.historical_supersession import DELETED_KEYS
 
 EXPECTED_DEFERRED_KEYS = {
     ('harbor', 'verb', 'UNCLASSIFIED'),
@@ -161,8 +162,8 @@ class TestQAHeadwordLeakFixes:
 class TestAuditReflection:
     """P6 decisions are reflected in the audit master."""
 
-    def test_audit_count_is_2488(self, audit):
-        assert len(audit) == 2488, f'expected 2488 audit rows, got {len(audit)}'
+    def test_audit_count_is_2457(self, audit):
+        assert len(audit) == 2457, f'expected 2457 audit rows, got {len(audit)}'
 
     def test_all_p6_audit_rows_synced(self, decisions, audit):
         """Every P6 decision's (word, pos, cefr) audit row reflects the new gloss.
@@ -189,6 +190,8 @@ class TestAuditReflection:
                 (d.get('pos') or '').strip().lower(),
                 (d.get('cefr') or '').strip().upper(),
             )
+            if k in DELETED_KEYS:
+                continue
             assert k in audit_by_key, f'audit missing {k}'
             rows = audit_by_key[k]
             assert len(rows) == 1, f'audit has {len(rows)} rows for {k}'

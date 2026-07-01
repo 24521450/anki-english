@@ -40,6 +40,7 @@ AUDIT_PATH = paths.deck_audit_jsonl
 TXT_PATH = paths.anki_notes_txt
 
 from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
+from tests.deck_builder.historical_supersession import DELETED_KEYS
 
 NEW_TAXONOMY = {
     '', 'rule_b_pick1', 'rule_b_pick2', 'rule_b_pick2_addendum',
@@ -188,8 +189,8 @@ class TestRuleCodeMigration:
 class TestAuditReflection:
     """P8 decisions are reflected in the audit master."""
 
-    def test_audit_count_is_2488(self, audit):
-        assert len(audit) == 2488, f'expected 2488, got {len(audit)}'
+    def test_audit_count_is_2457(self, audit):
+        assert len(audit) == 2457, f'expected 2457, got {len(audit)}'
 
     def test_no_deprecated_rule_in_audit(self, audit):
         """`precision_phrase` and `multi_sense_distinct` must NOT appear in audit post-P8."""
@@ -225,6 +226,8 @@ class TestAuditReflection:
             audit_by_key.setdefault(_key(r), r)
         for d in decisions:
             k = _key(d)
+            if k in DELETED_KEYS:
+                continue
             assert k in audit_by_key, f'audit missing {k}'
             r = audit_by_key[k]
             # P12/P13/P15 may have superseded this P8 row.

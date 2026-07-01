@@ -31,6 +31,9 @@ from tests.deck_builder.historical_supersession import (
     DEF_BEFORE_SYNC_FIX_STATUS,
     should_tolerate_historical_drift,
     is_gloss_review_superseded,
+    DELETED_KEYS,
+    REPLACED_KEYS,
+    SPLIT_KEYS,
 )
 
 from src.config import ProjectPaths
@@ -143,6 +146,25 @@ class TestNoUnrelatedFullFileDrift:
         target_by_key = {_key(r): r for r in target}
         diffs = 0
         for k in target_by_key:
+            if k in DELETED_KEYS:
+                continue
+            if k in REPLACED_KEYS:
+                successor_key = REPLACED_KEYS[k]
+                assert successor_key in audit_by_key, f"Successor for replaced key {k} -> {successor_key} is missing in audit!"
+                successor_row = audit_by_key[successor_key]
+                assert successor_row.get("word") == successor_key[0]
+                assert successor_row.get("pos") == successor_key[1]
+                assert successor_row.get("cefr") == successor_key[2]
+                continue
+            if k in SPLIT_KEYS:
+                successor_keys = SPLIT_KEYS[k]
+                for sk in successor_keys:
+                    assert sk in audit_by_key, f"Successor for split key {k} -> {sk} is missing in audit!"
+                    successor_row = audit_by_key[sk]
+                    assert successor_row.get("word") == sk[0]
+                    assert successor_row.get("pos") == sk[1]
+                    assert successor_row.get("cefr") == sk[2]
+                continue
             a = audit_by_key.get(k)
             t = target_by_key[k]
             if a is None and k == OVERLAP_COMBINED_KEY:
@@ -153,6 +175,8 @@ class TestNoUnrelatedFullFileDrift:
                     for row in split_rows
                 )
                 continue
+            if a is None:
+                assert False, f"Key {k} is missing in audit!"
             if should_tolerate_historical_drift(a, 'p15_simple_gloss_repaired'):
                 continue
             for fld in APPLY_FIELDS:

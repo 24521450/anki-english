@@ -147,6 +147,26 @@ def get_word_candidates(word: str) -> list[str]:
     return deduped
 
 
+def resolve_primary_record(
+    matched_records: list[dict],
+    contributing_records: list[dict],
+) -> dict:
+    if not matched_records:
+        raise ValueError("matched_records cannot be empty")
+
+    unique_contributors: list[dict] = []
+    seen_ids: set[int] = set()
+    for record in contributing_records:
+        record_id = id(record)
+        if record_id not in seen_ids:
+            seen_ids.add(record_id)
+            unique_contributors.append(record)
+
+    if len(unique_contributors) == 1:
+        return unique_contributors[0]
+    return matched_records[0]
+
+
 def find_idioms_for_word(word_clean: str, idioms_db: dict) -> list[tuple[dict, dict]]:
     if word_clean in idioms_db:
         return idioms_db[word_clean]
@@ -538,7 +558,7 @@ def _load_audit_overrides(
 
 def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     audio_files = _audio_dir_filenames(paths.audio_dir)
-    
+
     vocab_3000 = _parse_vocab_list(paths.oxford_3000_md)
     vocab_5000 = _parse_vocab_list(paths.oxford_5000_md)
     vocab_awl = _parse_vocab_list(paths.awl_md)
@@ -667,7 +687,7 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
                 matched_records = by_word[cand]
                 resolved_word = cand
                 break
-        
+
         avail = word_pos_set.get(resolved_word, set())
 
         has_overlap = any(p in avail for p in pos_parts)
@@ -691,24 +711,27 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             type_b_count += 1
         elif resolved_pos_parts != pos_parts:
             type_a_count += 1
-            
+
         all_senses_for_row: list = []
         primary_record: dict | None = None
         used_fallback_cefr: str | None = None
-        
+        contributing_records: list[dict] = []
+
         if matched_records:
-            primary_record = matched_records[0]
             for p in resolved_pos_parts:
                 sense_key = (resolved_word, p, cefr)
                 if sense_key in senses_index:
                     all_senses_for_row.extend(senses_index[sense_key])
+                    contributing_records.append(sense_source_record[sense_key])
                 else:
                     for (w, pos, c), senses in senses_index.items():
                         if w == resolved_word and pos == p:
                             all_senses_for_row.extend(senses)
+                            contributing_records.append(sense_source_record[(w, pos, c)])
                             used_fallback_cefr = c
                             break
-                            
+            primary_record = resolve_primary_record(matched_records, contributing_records)
+
         if not all_senses_for_row:
             word_clean = cands[0]
             matched_idioms = find_idioms_for_word(word_clean, idioms_db)
@@ -796,7 +819,7 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
         source1 = _source_label(rec.get('source_files') or [])
         is_awl = any(sf.startswith('awl_') for sf in (rec.get('source_files') or []))
         resolved_pos = resolved_pos_parts[0] if resolved_pos_parts else pos_parts[0]
-        
+
         word_lower_base = re.sub(r"\s*\(.*?\)\s*", "", word_lower).strip()
         if word_lower_base == resolved_word:
             card_word = old['word_orig']

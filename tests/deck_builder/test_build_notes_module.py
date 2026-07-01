@@ -12,7 +12,8 @@ from src.deck_builder.build_notes import (
     build_notes,
     lookup_gloss,
     _resolve_audio_filename,
-    _parse_existing_txt
+    _parse_existing_txt,
+    resolve_primary_record
 )
 import tools.build_notes
 
@@ -73,7 +74,7 @@ def _setup_fixtures(tmp_path: Path):
     # oxford_3000, 5000, awl targets
     ox3 = tmp_path / "oxford_3000.md"
     ox3.write_text("| **conquer** | verb | C1 |\n", encoding="utf-8")
-    
+
     ox5 = tmp_path / "oxford_5000.md"
     ox5.write_text("| **counter (argue against)** | verb | C1 |\n", encoding="utf-8")
 
@@ -106,7 +107,7 @@ def test_build_notes_preserves_guid_and_deck(tmp_path):
     res = build_notes(paths)
     assert res.built_cards_count == 2
     cards = {c.word: c for c in res.built_cards}
-    
+
     # conquer card
     assert "conquer" in cards
     assert cards["conquer"].guid == "guid_conq"
@@ -150,7 +151,7 @@ def test_duplicate_emit_keys_skipped_first_wins(tmp_path):
 
 def test_filled_cards_preserved_verbatim(tmp_path):
     paths = _setup_fixtures(tmp_path)
-    
+
     # Setup filled.json with conquer
     filled_data = [{"word": "conquer", "pos": "verb", "cefr": "C1"}]
     paths.manual_card_fills_path.write_text(json.dumps(filled_data), encoding="utf-8")
@@ -165,7 +166,7 @@ def test_filled_cards_preserved_verbatim(tmp_path):
 
 def test_audio_resolution_remains_unchanged(tmp_path):
     paths = _setup_fixtures(tmp_path)
-    
+
     # Verify that lookup helper checks the set
     available = { "cambridge_uk_conquer.mp3" }
     res = _resolve_audio_filename("conquer", "uk", available)
@@ -211,7 +212,7 @@ def test_audit_can_override_example_and_collocations(tmp_path):
 
 def test_tools_build_notes_cli_dry_run(tmp_path, monkeypatch):
     paths = _setup_fixtures(tmp_path)
-    
+
     # Overwrite tools constants to use tmp_path values
     monkeypatch.setattr(tools.build_notes, "JSONL_PATH", paths.oxford_jsonl_path)
     monkeypatch.setattr(tools.build_notes, "GAMMA_VERDICTS_PATH", paths.gamma_verdicts_path)
@@ -226,10 +227,10 @@ def test_tools_build_notes_cli_dry_run(tmp_path, monkeypatch):
 
     out_jsonl = tmp_path / "anki_notes.jsonl"
     argv = ["--dry-run", "--out-jsonl", str(out_jsonl)]
-    
+
     # Let's monkeypatch sys.argv before calling main()
     monkeypatch.setattr(sys, "argv", ["build_notes.py"] + argv)
-    
+
     code = tools.build_notes.main()
     assert code == 0
     assert not out_jsonl.exists()
@@ -239,7 +240,98 @@ def test_tools_build_notes_cli_dry_run(tmp_path, monkeypatch):
     code = tools.build_notes.main()
     assert code == 0
     assert out_jsonl.exists()
-    
+
     # Check that backup file exists
     backups = list(paths.notes_txt_path.parent.glob("vocab.txt.bak_pre_build_*"))
     assert len(backups) == 1
+
+
+def test_resolve_primary_record_prefers_sole_contributor():
+    recs = [
+        {"word": "curate", "pos": ["noun"]},
+        {"word": "curate", "pos": ["verb"]}
+    ]
+    res = resolve_primary_record(recs, [recs[1]])
+    assert res == recs[1]
+
+    res2 = resolve_primary_record(recs, [recs[0]])
+    assert res2 == recs[0]
+
+
+def test_resolve_primary_record_preserves_first_for_multiple_contributors():
+    verb = {"word": "converse", "pos": ["verb"]}
+    nominal = {"word": "converse", "pos": ["adjective", "noun"]}
+
+    assert resolve_primary_record([verb, nominal], [verb, nominal]) is verb
+
+
+def test_resolve_primary_record_defaults_to_first_without_contributors():
+    first = {"word": "test", "pos": ["noun"]}
+    second = {"word": "test", "pos": ["verb"]}
+
+    assert resolve_primary_record([first, second], []) is first
+
+
+def test_incline_verb_unclassified_example_override(tmp_path):
+    paths = _setup_fixtures(tmp_path)
+
+    # Setup record for incline
+    jsonl_data = [
+        {
+            "word": "incline",
+            "pos_data": [
+                {
+                    "pos": "verb",
+                    "definitions": [
+                        {
+                            "text": "tend towards",
+                            "cefr": None,
+                            "examples": [{"text": "C2 example that should be overridden"}]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+    paths.oxford_jsonl_path.write_text(json.dumps(jsonl_data[0]) + "\n", encoding="utf-8")
+
+    # Setup audit row with example_after override
+    audit_data = [
+        {
+            "word": "incline",
+            "pos": "verb",
+            "cefr": "UNCLASSIFIED",
+            "def_before": "tend towards",
+            "gloss_after": "tend",
+            "example_after": "I incline to the view that we should take no action at this stage.|The land inclined gently towards the shore.",
+            "rule_applied": "2sense_distinct",
+            "gloss_word_count": 5,
+            "gate_status": "pass",
+            "source": "rerun_v2_streamA"
+        }
+    ]
+    paths.deck_audit_jsonl_path.write_text(json.dumps(audit_data[0]) + "\n", encoding="utf-8")
+
+    # Card in existing txt
+    header = (
+        "#separator:tab\n"
+        "#html:true\n"
+        "#guid column:1\n"
+        "#notetype column:2\n"
+        "#deck column:3\n"
+        "#tags column:17\n"
+    )
+    card_row = "guid_inc\tModel\tDeck Oxford\tincline\tverb\t/ipa/\ttend towards\told example\t\t\t\t\tOxford\tOxford\tUNCLASSIFIED\t\tSource::Oxford CEFR::UNCLASSIFIED"
+    paths.notes_txt_path.write_text(header + card_row + "\n", encoding="utf-8")
+
+    # Target keys
+    paths.oxford_3000_md.write_text("", encoding="utf-8")
+    paths.oxford_5000_md.write_text("", encoding="utf-8")
+    paths.awl_md.write_text("| **incline** | verb | UNCLASSIFIED |\n", encoding="utf-8")
+
+    res = build_notes(paths)
+    assert res.built_cards_count == 1
+    card = res.built_cards[0]
+
+    # Verify that the override took effect and C2/old example is NOT in the card
+    assert card.example == "I incline to the view that we should take no action at this stage.|The land inclined gently towards the shore."

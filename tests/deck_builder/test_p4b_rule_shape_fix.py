@@ -28,6 +28,12 @@ from tools._apply_p4b_rule_shape_fix import (
 )
 from src.deck_builder.gloss_llm import validate_verdict
 from tools._audit_gloss_policy_coverage import _classify_row, _is_multi_def_one_gloss
+from tests.deck_builder.historical_supersession import REPLACED_KEYS
+
+
+def _current_key(word: str, pos: str, cefr: str) -> tuple[str, str, str]:
+    historical_key = (word.lower(), pos.lower(), cefr.upper())
+    return REPLACED_KEYS.get(historical_key, historical_key)
 
 
 # === Apply-tool guard tests =================================================
@@ -107,7 +113,7 @@ class TestVerifierFailures:
         txt = _load_txt()
         txt_keys = {(r['word'].lower(), r['pos'].lower(), r['cefr'].upper()) for r in txt}
         for word, pos, cefr, _o, _r, _n in P4B_FIXES:
-            key = (word, pos.lower(), cefr.upper())
+            key = _current_key(word, pos, cefr)
             assert key in txt_keys, f'TXT missing key {key}'
 
     def test_jsonl_contains_all_24_p4b_keys(self):
@@ -115,7 +121,7 @@ class TestVerifierFailures:
         jsonl = _load_jsonl()
         keys = {(r['word'], r['pos'].lower(), r['cefr'].upper()) for r in jsonl}
         for word, pos, cefr, _o, _r, _n in P4B_FIXES:
-            key = (word, pos.lower(), cefr.upper())
+            key = _current_key(word, pos, cefr)
             assert key in keys, f'JSONL missing key {key}'
 
     def test_one_unsynced_txt_definition_is_detectable(self):
@@ -123,7 +129,7 @@ class TestVerifierFailures:
         notices the mismatch."""
         from tools._apply_p4b_rule_shape_fix import _apply_txt
         new_gloss_by_key = {
-            (w.lower(), p.lower(), c.upper()): n
+            _current_key(w, p, c): n
             for (w, p, c, _o, _r, n) in P4B_FIXES
         }
         new_lines = _apply_txt(new_gloss_by_key)
