@@ -71,7 +71,7 @@ def test_converse_homonyms_are_separate_cards():
     verb = converse[("verb", "UNCLASSIFIED")]
     assert verb["guid"] == "hu-nITV:EB"
     assert verb["ipa"] == "UK: /kənˈvɜːs/ | US: /kənˈvɜːrs/"
-    assert verb["definition"] == "have a conversation"
+    assert verb["definition"] == "talk with sb (trò chuyện/đàm thoại)"
     assert verb["example"] == "She conversed with the Romanians in French."
     assert verb["source2"] == "AWL"
     assert verb["uk_audio"] == "[sound:cambridge_uk_converse_verb.mp3]"
@@ -80,7 +80,7 @@ def test_converse_homonyms_are_separate_cards():
     nominal = converse[("adjective, noun", "UNCLASSIFIED")]
     assert nominal["guid"] == "dI;xOQZ.Jd"
     assert nominal["ipa"] == "UK: /ˈkɒnvɜːs/ | US: /ˈkɑːnvɜːrs/"
-    assert nominal["definition"] == "opposite"
+    assert nominal["definition"] == "opposite of a fact or statement (điều ngược lại/mặt trái)"
     assert nominal["example"].startswith("the converse effect|")
     assert nominal["source2"] == "AWL"
     assert nominal["uk_audio"] == "[sound:cambridge_uk_converse_adjective_noun.mp3]"

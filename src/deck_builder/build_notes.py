@@ -16,6 +16,7 @@ from typing import NamedTuple
 
 from src.deck_builder.simplify_senses import simplify_record, TEXT_JOIN_SEPARATOR, _resolve_def
 from src.scraper.cambridge_audio import resolve_audio_pos
+from src.deck_builder.review_overrides import load_review_overrides, apply_review_overrides
 
 POS_NORM = {
     'n': 'noun', 'v': 'verb', 'adj': 'adjective', 'adv': 'adverb',
@@ -41,6 +42,7 @@ class BuildNotesPaths(NamedTuple):
     awl_md: Path
     manual_card_fills_path: Path
     audio_dir: Path
+    review_overrides_path: Path | None = None
 
 class BuiltCard(NamedTuple):
     """One Anki Note, encoded as 17-col Anki txt row."""
@@ -581,6 +583,8 @@ def _load_audit_overrides(
 
 def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     audio_files = _audio_dir_filenames(paths.audio_dir)
+    review_overrides_file = getattr(paths, 'review_overrides_path', None)
+    review_overrides = load_review_overrides(review_overrides_file)
 
     vocab_3000 = _parse_vocab_list(paths.oxford_3000_md)
     vocab_5000 = _parse_vocab_list(paths.oxford_5000_md)
@@ -908,6 +912,9 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             tags=tags,
         ))
         seen_keys.add(key)
+
+    # Apply review overrides by GUID
+    all_cards = apply_review_overrides(all_cards, review_overrides)
 
     # Serialize outputs to string
     jsonl_lines = []

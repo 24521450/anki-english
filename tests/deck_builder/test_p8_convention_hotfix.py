@@ -308,6 +308,22 @@ class TestTXTReflection:
                 parts[14].strip().upper(),
             )
             txt_keys[k] = parts[6]
+        # Load review overrides
+        from src.config import ProjectPaths
+        review_file = ProjectPaths().non_oxford_non_c2_overrides
+        review_keys = set()
+        if review_file.exists():
+            import json
+            with review_file.open(encoding='utf-8') as f:
+                for line in f:
+                    if line.strip():
+                        item = json.loads(line)
+                        review_keys.add((
+                            item.get("word", "").strip().lower(),
+                            item.get("input_pos", "").strip().lower(),
+                            item.get("cefr", "").strip().upper()
+                        ))
+
         # Build audit key -> row map for P12/P13 supersession tolerance.
         audit_row_by_key: dict[tuple, dict] = {}
         for r in audit:
@@ -317,6 +333,8 @@ class TestTXTReflection:
             k = _key(d)
             if k not in txt_keys:
                 continue  # deferred
+            if k in review_keys:
+                continue
             if txt_keys[k].strip() != (d['gloss_after'] or '').strip():
                 # Drift tolerance: P12/P13/P15 may have superseded this row.
                 r_row = audit_row_by_key.get(k)

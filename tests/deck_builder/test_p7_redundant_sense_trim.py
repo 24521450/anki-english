@@ -181,11 +181,29 @@ class TestTXTReflection:
                 parts[14].strip().upper(),
             )
             txt_keys[k] = parts[6]
+        # Load review overrides
+        from src.config import ProjectPaths
+        review_file = ProjectPaths().non_oxford_non_c2_overrides
+        review_keys = set()
+        if review_file.exists():
+            import json
+            with review_file.open(encoding='utf-8') as f:
+                for line in f:
+                    if line.strip():
+                        item = json.loads(line)
+                        review_keys.add((
+                            item.get("word", "").strip().lower(),
+                            item.get("input_pos", "").strip().lower(),
+                            item.get("cefr", "").strip().upper()
+                        ))
+
         missing = []
         for d in decisions:
             k = _key(d)
             if k not in txt_keys:
                 missing.append(k)
+                continue
+            if k in review_keys:
                 continue
             r = next((x for x in audit if _key(x) == k), None)
             from tests.deck_builder.historical_supersession import should_tolerate_historical_drift

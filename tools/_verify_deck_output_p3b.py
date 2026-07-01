@@ -259,6 +259,20 @@ def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
         k = (r['word'].strip().lower(), r['pos'].strip().lower(), r['cefr'].strip().upper())
         audit_gloss_map[k] = r.get('gloss_after') or ''
 
+    # Load review overrides by GUID
+    from src.config import ProjectPaths
+    paths_reg = ProjectPaths()
+    review_file = paths_reg.non_oxford_non_c2_overrides
+    review_overrides = {}
+    if review_file.exists():
+        with review_file.open(encoding='utf-8') as f:
+            for line in f:
+                if line.strip():
+                    item = json.loads(line)
+                    guid = item.get("guid")
+                    if guid:
+                        review_overrides[guid] = item
+
     synced_count = 0
     not_in_audit_count = 0
     mismatches = []
@@ -290,12 +304,17 @@ def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
         return None
 
     for parts in data_rows:
+        guid = parts[0]
         word = parts[3].strip().lower()
         pos = parts[4].strip().lower()
         cefr = parts[14].strip().upper()
         txt_def = parts[6]
 
-        expected_def = resolve_expected_definition(word, pos, cefr)
+        if guid in review_overrides:
+            expected_def = review_overrides[guid]["Definition"]
+        else:
+            expected_def = resolve_expected_definition(word, pos, cefr)
+
         if expected_def is None:
             not_in_audit_count += 1
             continue

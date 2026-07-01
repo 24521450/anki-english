@@ -13,6 +13,7 @@ or embedding machine-specific repository roots.
 | `curated/deck_audit.jsonl` | Production gloss, example, and collocation overrides consumed during note building. This is production data, not review state. |
 | `review/gamma_verdicts.json` | Cached gamma decisions used by sense simplification. |
 | `review/manual_card_fills.json` | Reviewed manual fills that require preservation during rebuilds. |
+| `review/non_oxford_non_c2_overrides.jsonl` | Review overrides for 381 non-Oxford / non-C2 cards. |
 | `build/anki_notes.jsonl` | Generated structured notes consumed by the deck packager. |
 | `build/anki_notes.txt` | Generated tab-separated Anki notes and the source used to preserve GUIDs across rebuilds. |
 
