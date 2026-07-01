@@ -66,7 +66,14 @@ def main() -> int:
     ap.add_argument('--txt', type=Path, default=TXT_PATH)
     ap.add_argument('--out-jsonl', type=Path, default=OUT_JSONL)
     ap.add_argument('--gamma', type=Path, default=GAMMA_VERDICTS_PATH)
+
+    canonical_review_path = paths_registry.non_oxford_non_c2_overrides
+    ap.add_argument('--review-overrides', type=Path, default=canonical_review_path)
     args = ap.parse_args()
+
+    if not args.review_overrides.exists():
+        print(f"Error: Review overrides file missing: {args.review_overrides}", file=sys.stderr)
+        return 1
 
     paths = BuildNotesPaths(
         oxford_jsonl_path=args.jsonl,
@@ -77,7 +84,8 @@ def main() -> int:
         oxford_5000_md=OXFORD_5000_MD,
         awl_md=AWL_MD,
         manual_card_fills_path=FILLED_PATH,
-        audio_dir=AUDIO_DIR
+        audio_dir=AUDIO_DIR,
+        review_overrides_path=args.review_overrides
     )
 
     sys.path.insert(0, str(PROJECT_ROOT))

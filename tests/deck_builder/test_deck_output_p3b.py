@@ -18,10 +18,10 @@ from tools._verify_deck_output_p3b import (
 
 def test_txt_parser_skips_headers_and_preserves_field_count():
     # 6 header lines starting with # + 1 blank line + 2 valid lines
-    # (Since total lines must be 2450 to pass structure check, we mock with 2450 valid rows)
+    # Match the current production baseline enforced by the verifier.
     valid_row = "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags"
     lines = ["#separator:tab", "#html:true", "#guid:1", "#notetype:2", "#deck:3", "#tags:4", ""]
-    lines.extend([valid_row] * 2450)
+    lines.extend([valid_row] * 2452)
     
     # Change GUIDs to make them unique
     for i in range(7, len(lines)):
@@ -30,13 +30,13 @@ def test_txt_parser_skips_headers_and_preserves_field_count():
         lines[i] = '\t'.join(parts)
 
     data_rows = verify_txt_structure(lines)
-    assert len(data_rows) == 2450
+    assert len(data_rows) == 2452
     assert all(len(row) == 17 for row in data_rows)
 
 
 def test_txt_parser_fails_on_duplicate_guid():
     valid_row = "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags"
-    lines = [valid_row] * 2450
+    lines = [valid_row] * 2452
     # Duplicate GUIDs present, so verify_txt_structure should exit 1
     with pytest.raises(SystemExit):
         verify_txt_structure(lines)
@@ -44,9 +44,9 @@ def test_txt_parser_fails_on_duplicate_guid():
 
 def test_txt_parser_fails_on_escaped_pipe():
     valid_row = "G\tnotetype\tdeck\tword\tpos\tipa\tdefn\\|escaped\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags"
-    lines = [valid_row] * 2450
+    lines = [valid_row] * 2452
     # Make GUIDs unique
-    for i in range(2450):
+    for i in range(2452):
         parts = lines[i].split('\t')
         parts[0] = f"G{i}"
         lines[i] = '\t'.join(parts)
@@ -92,6 +92,27 @@ def test_card_identity_word_cefr_list_duplicate_fails():
     audit_rows = []
     with pytest.raises(SystemExit):
         verify_card_identity(data_rows, audit_rows)
+
+
+def test_card_identity_allows_reviewed_converse_homonym_split():
+    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford"
+    data_rows = [
+        ["G1", "M", "English Academic Vocabulary::AWL 50 Academic Words", "converse", "verb", "ipa", "talk", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
+        ["G2", "M", "English Academic Vocabulary::AWL 50 Academic Words", "converse", "adjective, noun", "ipa", "opposite", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
+    ]
+
+    verify_card_identity(data_rows, [])
+
+
+def test_card_identity_rejects_wrong_converse_split_shape():
+    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford"
+    data_rows = [
+        ["G1", "M", "D", "converse", "verb", "ipa", "talk", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
+        ["G2", "M", "D", "converse", "noun", "ipa", "opposite", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
+    ]
+
+    with pytest.raises(SystemExit):
+        verify_card_identity(data_rows, [])
 
 
 def test_card_identity_word_pos_cefr_duplicate_still_fails():
@@ -162,7 +183,7 @@ def test_build_output_parser():
       AWL:  715 entries
       total target keys: 6100
     Loading existing txt: anki_notes.txt
-      existing cards: 2450
+      existing cards: 2452
     Loading gamma verdicts: gamma_verdicts.json
       gamma verdicts: 548
       audit glosses loaded: 2487
@@ -173,7 +194,7 @@ def test_build_output_parser():
     === Building cards (existing txt scope) ===
       Pre-computing simplified senses for all jsonl records...
       words with simplified data: 5307
-      Iterating 2450 existing txt rows (3-type POS fix)...
+      Iterating 2452 existing txt rows (3-type POS fix)...
       Type A (POS fix): 4
       Type B (lemmatize): 0
       Type C (drop, no data): 0
@@ -181,12 +202,12 @@ def test_build_output_parser():
       UNCLASSIFIED drop: 0
       POS-fixed keys: 4
       Dropped keys: 0
-      built cards: 2450
+      built cards: 2452
       missing in jsonl: 0
     """
     metrics = parse_build_output(mock_stdout)
-    assert metrics['existing_cards'] == 2450
-    assert metrics['built_cards'] == 2450
+    assert metrics['existing_cards'] == 2452
+    assert metrics['built_cards'] == 2452
     assert metrics['missing_in_jsonl'] == 0
     assert metrics['dup_emit_skipped'] == 0
     assert metrics['audit_glosses'] == 2487

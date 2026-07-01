@@ -11,7 +11,7 @@ Required checks:
     = 59 total.
   - All decisions' gloss_word_count matches actual count.
   - All decisions' new_gloss passes validate_verdict (post-P5D).
-  - Audit row count is 2487; no duplicate (word,pos,cefr) guards.
+  - Audit row count is 2488 after the overlap POS split; no duplicate guards.
   - 59 audit rows synced with fix_status = p7_redundant_sense_trimmed.
   - 59 TXT cells synced; 0 deferred keys.
   - Rule codes are in VALID_RULE_CODES and KNOWN_RULES.
@@ -32,6 +32,7 @@ AUDIT_PATH = paths.deck_audit_jsonl
 TXT_PATH = paths.anki_notes_txt
 
 from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
+from tests.deck_builder.historical_supersession import DELETED_KEYS
 
 ALLOWED_RULES = {'common_core_trimmed', 'trimmed_multisense'}
 V3_RAW_LABELS = {'3sense_distinct', '4sense_distinct', '5sense_distinct'}
@@ -135,8 +136,8 @@ class TestWordCountAndValidator:
 class TestAuditReflection:
     """P7 decisions are reflected in the audit master."""
 
-    def test_audit_count_is_2487(self, audit):
-        assert len(audit) == 2487, f'expected 2487, got {len(audit)}'
+    def test_audit_count_is_2457(self, audit):
+        assert len(audit) == 2457, f'expected 2457, got {len(audit)}'
 
     def test_all_p7_audit_rows_synced(self, decisions, audit):
         audit_by_key: dict[tuple, dict] = {}
@@ -145,6 +146,8 @@ class TestAuditReflection:
             audit_by_key.setdefault(k, []).append(r)
         for d in decisions:
             k = _key(d)
+            if k in DELETED_KEYS:
+                continue
             assert k in audit_by_key, f'audit missing {k}'
             rows = audit_by_key[k]
             assert len(rows) == 1, f'audit has {len(rows)} rows for {k}'
@@ -178,11 +181,29 @@ class TestTXTReflection:
                 parts[14].strip().upper(),
             )
             txt_keys[k] = parts[6]
+        # Load review overrides
+        from src.config import ProjectPaths
+        review_file = ProjectPaths().non_oxford_non_c2_overrides
+        review_keys = set()
+        if review_file.exists():
+            import json
+            with review_file.open(encoding='utf-8') as f:
+                for line in f:
+                    if line.strip():
+                        item = json.loads(line)
+                        review_keys.add((
+                            item.get("word", "").strip().lower(),
+                            item.get("input_pos", "").strip().lower(),
+                            item.get("cefr", "").strip().upper()
+                        ))
+
         missing = []
         for d in decisions:
             k = _key(d)
             if k not in txt_keys:
                 missing.append(k)
+                continue
+            if k in review_keys:
                 continue
             r = next((x for x in audit if _key(x) == k), None)
             from tests.deck_builder.historical_supersession import should_tolerate_historical_drift

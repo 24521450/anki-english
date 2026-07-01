@@ -15,6 +15,8 @@ from pathlib import Path
 from typing import NamedTuple
 
 from src.deck_builder.simplify_senses import simplify_record, TEXT_JOIN_SEPARATOR, _resolve_def
+from src.scraper.cambridge_audio import resolve_audio_pos
+from src.deck_builder.review_overrides import load_review_overrides, apply_review_overrides
 
 POS_NORM = {
     'n': 'noun', 'v': 'verb', 'adj': 'adjective', 'adv': 'adverb',
@@ -40,6 +42,7 @@ class BuildNotesPaths(NamedTuple):
     awl_md: Path
     manual_card_fills_path: Path
     audio_dir: Path
+    review_overrides_path: Path | None = None
 
 class BuiltCard(NamedTuple):
     """One Anki Note, encoded as 17-col Anki txt row."""
@@ -145,6 +148,26 @@ def get_word_candidates(word: str) -> list[str]:
             seen.add(c)
             deduped.append(c)
     return deduped
+
+
+def resolve_primary_record(
+    matched_records: list[dict],
+    contributing_records: list[dict],
+) -> dict:
+    if not matched_records:
+        raise ValueError("matched_records cannot be empty")
+
+    unique_contributors: list[dict] = []
+    seen_ids: set[int] = set()
+    for record in contributing_records:
+        record_id = id(record)
+        if record_id not in seen_ids:
+            seen_ids.add(record_id)
+            unique_contributors.append(record)
+
+    if len(unique_contributors) == 1:
+        return unique_contributors[0]
+    return matched_records[0]
 
 
 def find_idioms_for_word(word_clean: str, idioms_db: dict) -> list[tuple[dict, dict]]:
@@ -342,14 +365,36 @@ def _audio_dir_filenames(audio_dir: Path) -> set[str]:
     return {p.name for p in audio_dir.glob('*.mp3')}
 
 
-def _resolve_audio_filename(word: str, accent: str, available: set[str]) -> str:
-    candidates = [
+def _resolve_audio_filename(word: str, pos_or_accent: str, accent_or_available: str | set[str], available: set[str] = None) -> str:
+    if available is None:
+        # Called with 3 arguments: (word, accent, available)
+        pos = ""
+        accent = pos_or_accent
+        avail = accent_or_available
+    else:
+        # Called with 4 arguments: (word, pos, accent, available)
+        pos = pos_or_accent
+        accent = accent_or_available
+        avail = available
+
+    word_clean = re.sub(r"\s*\(.*?\)\s*", "", word).strip().lower()
+    candidates = []
+
+    if pos:
+        pos = resolve_audio_pos(word, pos)
+        pos_slug = "_".join([p.strip().lower() for p in pos.replace(",", " ").replace("/", " ").split() if p.strip()])
+        if word_clean == 'sake' and pos_slug == 'noun':
+            candidates.append(f'cambridge_{accent}_sake_noun_2.mp3')
+        candidates.append(f'cambridge_{accent}_{word_clean}_{pos_slug}.mp3')
+
+    candidates.extend([
         f'cambridge_{accent}_{word}.mp3',
         f'cambridge_{accent}_{word.replace(" ", "_")}.mp3',
         f'cambridge_{accent}_{word.replace("-", "")}.mp3',
-    ]
+    ])
+
     for c in candidates:
-        if c in available:
+        if c in avail:
             return f'[sound:{c}]'
     return ''
 
@@ -538,7 +583,9 @@ def _load_audit_overrides(
 
 def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     audio_files = _audio_dir_filenames(paths.audio_dir)
-    
+    review_overrides_file = getattr(paths, 'review_overrides_path', None)
+    review_overrides = load_review_overrides(review_overrides_file)
+
     vocab_3000 = _parse_vocab_list(paths.oxford_3000_md)
     vocab_5000 = _parse_vocab_list(paths.oxford_5000_md)
     vocab_awl = _parse_vocab_list(paths.awl_md)
@@ -633,6 +680,10 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             ex_override = lookup_gloss(audit_examples, word_lower, old['pos'], cefr, word_lower, filled_pos_parts, cefr)
             coll_override = lookup_gloss(audit_collocations, word_lower, old['pos'], cefr, word_lower, filled_pos_parts, cefr)
             defn_override = g if g is not None else old['definition_orig']
+            uk_res = _resolve_audio_filename(word_lower, old['pos'], 'uk', audio_files)
+            us_res = _resolve_audio_filename(word_lower, old['pos'], 'us', audio_files)
+            uk_audio = uk_res if uk_res else old['uk_audio']
+            us_audio = us_res if us_res else old['us_audio']
             card = BuiltCard(
                 guid=old['guid'],
                 notetype=old['notetype'],
@@ -644,8 +695,8 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
                 example=ex_override if ex_override is not None else old['example_orig'],
                 collocations=coll_override if coll_override is not None else old['collocations_orig'],
                 wordfamily=old['wordfamily_orig'],
-                uk_audio=old['uk_audio'],
-                us_audio=old['us_audio'],
+                uk_audio=uk_audio,
+                us_audio=us_audio,
                 source1=old['source1'],
                 source2=old['source2'],
                 cefr=old['cefr'],
@@ -667,7 +718,7 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
                 matched_records = by_word[cand]
                 resolved_word = cand
                 break
-        
+
         avail = word_pos_set.get(resolved_word, set())
 
         has_overlap = any(p in avail for p in pos_parts)
@@ -691,24 +742,27 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             type_b_count += 1
         elif resolved_pos_parts != pos_parts:
             type_a_count += 1
-            
+
         all_senses_for_row: list = []
         primary_record: dict | None = None
         used_fallback_cefr: str | None = None
-        
+        contributing_records: list[dict] = []
+
         if matched_records:
-            primary_record = matched_records[0]
             for p in resolved_pos_parts:
                 sense_key = (resolved_word, p, cefr)
                 if sense_key in senses_index:
                     all_senses_for_row.extend(senses_index[sense_key])
+                    contributing_records.append(sense_source_record[sense_key])
                 else:
                     for (w, pos, c), senses in senses_index.items():
                         if w == resolved_word and pos == p:
                             all_senses_for_row.extend(senses)
+                            contributing_records.append(sense_source_record[(w, pos, c)])
                             used_fallback_cefr = c
                             break
-                            
+            primary_record = resolve_primary_record(matched_records, contributing_records)
+
         if not all_senses_for_row:
             word_clean = cands[0]
             matched_idioms = find_idioms_for_word(word_clean, idioms_db)
@@ -787,8 +841,8 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
                     break
 
         audio_word = resolved_word
-        uk = _resolve_audio_filename(audio_word, 'uk', audio_files)
-        us = _resolve_audio_filename(audio_word, 'us', audio_files)
+        uk = _resolve_audio_filename(audio_word, pos_str, 'uk', audio_files)
+        us = _resolve_audio_filename(audio_word, pos_str, 'us', audio_files)
         if not uk and old.get('uk_audio'):
             uk = old['uk_audio']
         if not us and old.get('us_audio'):
@@ -796,7 +850,7 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
         source1 = _source_label(rec.get('source_files') or [])
         is_awl = any(sf.startswith('awl_') for sf in (rec.get('source_files') or []))
         resolved_pos = resolved_pos_parts[0] if resolved_pos_parts else pos_parts[0]
-        
+
         word_lower_base = re.sub(r"\s*\(.*?\)\s*", "", word_lower).strip()
         if word_lower_base == resolved_word:
             card_word = old['word_orig']
@@ -805,7 +859,14 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
 
         is_in_3000 = (resolved_word, resolved_pos, new_cefr) in vocab_3000
         is_in_5000 = (resolved_word, resolved_pos, new_cefr) in vocab_5000
-        is_in_awl = (resolved_word, resolved_pos, new_cefr) in vocab_awl
+        is_in_awl = (
+            (resolved_word, resolved_pos, new_cefr) in vocab_awl
+            or (
+                resolved_word == 'converse'
+                and new_cefr == 'UNCLASSIFIED'
+                and old['deck'] == 'English Academic Vocabulary::AWL 50 Academic Words'
+            )
+        )
         opal = rec.get('opal')
         audio_source = source1
         for accent in ('uk', 'us'):
@@ -851,6 +912,9 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             tags=tags,
         ))
         seen_keys.add(key)
+
+    # Apply review overrides by GUID
+    all_cards = apply_review_overrides(all_cards, review_overrides)
 
     # Serialize outputs to string
     jsonl_lines = []

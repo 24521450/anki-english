@@ -321,8 +321,9 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **impose** | v. | B2 | 4 |  |
 | **incentive** | n. | B2 | 6 |  |
 | **incidence** | n. | C1 | 6 |  |
+| **incline** | n. | C2 | 10 |  |
 | **incline** | v. | C2 | 10 |  |
-| **incline** | n. | UNCLASSIFIED | 10 |  |
+| **incline** | v. | UNCLASSIFIED | 10 |  |
 | **income** | n. | B2 | 1 |  |
 | **incorporate** | v. | B2 | 6 |  |
 | **index** | n., v. | B2 | 6 |  |

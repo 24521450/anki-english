@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from tests.deck_builder.historical_supersession import (
+    DEF_BEFORE_SYNC_FIX_STATUS,
+    HOMONYM_SPLIT_FIX_STATUS,
     fix_status,
     is_gloss_review_superseded,
     is_superseded_by,
@@ -8,6 +10,7 @@ from tests.deck_builder.historical_supersession import (
 )
 
 def test_fix_status():
+    assert fix_status(None) == ""
     assert fix_status({}) == ""
     assert fix_status({"fix_status": None}) == ""
     assert fix_status({"fix_status": "  my_status  "}) == "my_status"
@@ -29,6 +32,8 @@ def test_should_tolerate_historical_drift():
     
     # Tolerated because it's the latest review log
     assert should_tolerate_historical_drift({"fix_status": "gloss_review_log_20260630"})
+    assert should_tolerate_historical_drift({"fix_status": DEF_BEFORE_SYNC_FIX_STATUS})
+    assert should_tolerate_historical_drift({"fix_status": HOMONYM_SPLIT_FIX_STATUS})
     
     # Tolerated because it matches extra_statuses
     assert should_tolerate_historical_drift({"fix_status": "status1"}, "status1")

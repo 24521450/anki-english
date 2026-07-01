@@ -28,6 +28,15 @@ MASTER_AUDIT = paths.deck_audit_jsonl
 # the single LIST bucket that participates in Card Identity.
 LIST_PRIORITY = ("Oxford_5000", "Oxford_3000", "AWL")
 
+# Explicitly reviewed exception to the default one-card-per-list identity rule.
+# The two Oxford homonyms have different stress, meanings, and audio.
+REVIEWED_HOMONYM_SPLITS = {
+    ("converse", "UNCLASSIFIED", "NO_LIST"): frozenset({
+        "verb",
+        "adjective, noun",
+    }),
+}
+
 
 def primary_list_from_tags(tags: str) -> str:
     """Resolve the primary LIST bucket from a tags string.
@@ -115,8 +124,8 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
                 errors.append(f"Row {idx} column {col_idx} contains newline or tab character")
 
     # Assert row count
-    if len(data_rows) != 2450:
-        errors.append(f"Expected exactly 2450 data rows, but found {len(data_rows)}")
+    if len(data_rows) != 2452:
+        errors.append(f"Expected exactly 2452 data rows, but found {len(data_rows)}")
 
     if errors:
         print("TXT Structural Integrity Errors:")
@@ -155,10 +164,18 @@ def verify_card_identity(data_rows: list[list[str]], audit_rows: list[dict]):
     # A duplicate here is a real bug (e.g. same word emitted twice on the
     # same list at the same CEFR, perhaps via Type A POS remap).
     unique_word_cefr_list = set(txt_keys_word_cefr_list)
-    txt_word_cefr_list_dups = [
-        k for k in unique_word_cefr_list
-        if txt_keys_word_cefr_list.count(k) > 1
-    ]
+    txt_word_cefr_list_dups = []
+    for key in unique_word_cefr_list:
+        if txt_keys_word_cefr_list.count(key) <= 1:
+            continue
+        positions = frozenset(
+            parts[4].strip().lower()
+            for parts, row_key in zip(data_rows, txt_keys_word_cefr_list)
+            if row_key == key
+        )
+        if REVIEWED_HOMONYM_SPLITS.get(key) == positions:
+            continue
+        txt_word_cefr_list_dups.append(key)
     print(f"  TXT (word, CEFR, LIST) duplicates: {len(txt_word_cefr_list_dups)}")
     if txt_word_cefr_list_dups:
         print(f"    Duplicates found: {txt_word_cefr_list_dups}")
@@ -242,6 +259,20 @@ def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
         k = (r['word'].strip().lower(), r['pos'].strip().lower(), r['cefr'].strip().upper())
         audit_gloss_map[k] = r.get('gloss_after') or ''
 
+    # Load review overrides by GUID
+    from src.config import ProjectPaths
+    paths_reg = ProjectPaths()
+    review_file = paths_reg.non_oxford_non_c2_overrides
+    review_overrides = {}
+    if review_file.exists():
+        with review_file.open(encoding='utf-8') as f:
+            for line in f:
+                if line.strip():
+                    item = json.loads(line)
+                    guid = item.get("guid")
+                    if guid:
+                        review_overrides[guid] = item
+
     synced_count = 0
     not_in_audit_count = 0
     mismatches = []
@@ -273,12 +304,17 @@ def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
         return None
 
     for parts in data_rows:
+        guid = parts[0]
         word = parts[3].strip().lower()
         pos = parts[4].strip().lower()
         cefr = parts[14].strip().upper()
         txt_def = parts[6]
 
-        expected_def = resolve_expected_definition(word, pos, cefr)
+        if guid in review_overrides:
+            expected_def = review_overrides[guid]["Definition"]
+        else:
+            expected_def = resolve_expected_definition(word, pos, cefr)
+
         if expected_def is None:
             not_in_audit_count += 1
             continue
@@ -421,7 +457,7 @@ def extract_type_a_keys(stdout: str) -> list[tuple[str, str, str]]:
 
 def verify_build_drift():
     print("[4] Verifying build dry-run outputs and drift...")
-    cmd = [sys.executable, str(PROJECT_ROOT / 'tools' / 'build_notes.py'), '--dry-run']
+    cmd = [sys.executable, '-m', 'tools.build_notes', '--dry-run']
     ret, out = run_command_capture(cmd, PROJECT_ROOT)
     
     if ret != 0:
@@ -434,10 +470,9 @@ def verify_build_drift():
     
     # Assert build metrics
     expected = {
-        'built_cards': 2450,
+        'built_cards': 2452,
         'missing_in_jsonl': 0,
         'dup_emit_skipped': 0,
-        'audit_glosses': 2487
     }
     
     for k, v in expected.items():

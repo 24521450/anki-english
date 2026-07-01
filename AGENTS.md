@@ -146,10 +146,11 @@ entries — filtering happens at build, not at scrape.
    by `sensenum_local` (ascending, Oxford's frequency proxy), then by example
    count (descending) as tie-breaker. **No per-card def limit** — every sense
    the (word, CEFR) group carries is kept.
-2. **Card Identity**: 1 CEFR level = 1 card. Multi-POS words (e.g.
+2. **Card Identity**: 1 CEFR level = 1 card by default. Multi-POS words (e.g.
    `absent` = adjective/verb/preposition) live in a single card per CEFR, with
    all POS chips listed in the top-bar. Same word with different CEFR levels
-   produces multiple cards.
+   produces multiple cards. The reviewed `converse|UNCLASSIFIED` homonyms are
+   the sole POS split exception; see `CONTEXT.md`.
 
 See `design/README.md § Card design rules` for the full rationale.
 
@@ -171,8 +172,8 @@ multiple cards.
   drawing conclusions from the data.
 - Sense Sorting's worked example is in CONTEXT.md § Sense Sorting — read it
   FIRST before writing audit scripts that look for "pagination patterns".
-- Card Identity is strict: **exactly one** card per `(Word, CEFRLevel)` pair.
-  Multiple cards with the same key = bug, always.
+- Card Identity is strict: **exactly one** card per identity unless the key is
+  an explicitly documented homonym exception. Unreviewed duplicates are bugs.
 
 ### Data freshness
 `vocab_list/` is the seed. The scraper re-validates against live pages to catch

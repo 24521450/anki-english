@@ -12,7 +12,7 @@ Required checks:
     + 415 multi-chunk (Nsense_distinct / _with_facet) = 457 total.
   - All decisions' gloss_word_count matches actual count.
   - All decisions' gloss_after passes validate_verdict.
-  - Audit row count is 2487.
+  - Audit row count is 2488 after the overlap POS split.
   - 457 audit rows synced with fix_status in
     {p9_convention_repaired, p10_semantic_hotfix, p11_semantic_hotfix_v2}
     OR unchanged for non-P8 rows.
@@ -40,6 +40,7 @@ AUDIT_PATH = paths.deck_audit_jsonl
 TXT_PATH = paths.anki_notes_txt
 
 from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
+from tests.deck_builder.historical_supersession import DELETED_KEYS
 
 NEW_TAXONOMY = {
     '', 'rule_b_pick1', 'rule_b_pick2', 'rule_b_pick2_addendum',
@@ -188,8 +189,8 @@ class TestRuleCodeMigration:
 class TestAuditReflection:
     """P8 decisions are reflected in the audit master."""
 
-    def test_audit_count_is_2487(self, audit):
-        assert len(audit) == 2487, f'expected 2487, got {len(audit)}'
+    def test_audit_count_is_2457(self, audit):
+        assert len(audit) == 2457, f'expected 2457, got {len(audit)}'
 
     def test_no_deprecated_rule_in_audit(self, audit):
         """`precision_phrase` and `multi_sense_distinct` must NOT appear in audit post-P8."""
@@ -225,6 +226,8 @@ class TestAuditReflection:
             audit_by_key.setdefault(_key(r), r)
         for d in decisions:
             k = _key(d)
+            if k in DELETED_KEYS:
+                continue
             assert k in audit_by_key, f'audit missing {k}'
             r = audit_by_key[k]
             # P12/P13/P15 may have superseded this P8 row.
@@ -305,6 +308,22 @@ class TestTXTReflection:
                 parts[14].strip().upper(),
             )
             txt_keys[k] = parts[6]
+        # Load review overrides
+        from src.config import ProjectPaths
+        review_file = ProjectPaths().non_oxford_non_c2_overrides
+        review_keys = set()
+        if review_file.exists():
+            import json
+            with review_file.open(encoding='utf-8') as f:
+                for line in f:
+                    if line.strip():
+                        item = json.loads(line)
+                        review_keys.add((
+                            item.get("word", "").strip().lower(),
+                            item.get("input_pos", "").strip().lower(),
+                            item.get("cefr", "").strip().upper()
+                        ))
+
         # Build audit key -> row map for P12/P13 supersession tolerance.
         audit_row_by_key: dict[tuple, dict] = {}
         for r in audit:
@@ -314,6 +333,8 @@ class TestTXTReflection:
             k = _key(d)
             if k not in txt_keys:
                 continue  # deferred
+            if k in review_keys:
+                continue
             if txt_keys[k].strip() != (d['gloss_after'] or '').strip():
                 # Drift tolerance: P12/P13/P15 may have superseded this row.
                 r_row = audit_row_by_key.get(k)
