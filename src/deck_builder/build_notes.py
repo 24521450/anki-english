@@ -362,14 +362,35 @@ def _audio_dir_filenames(audio_dir: Path) -> set[str]:
     return {p.name for p in audio_dir.glob('*.mp3')}
 
 
-def _resolve_audio_filename(word: str, accent: str, available: set[str]) -> str:
-    candidates = [
+def _resolve_audio_filename(word: str, pos_or_accent: str, accent_or_available: str | set[str], available: set[str] = None) -> str:
+    if available is None:
+        # Called with 3 arguments: (word, accent, available)
+        pos = ""
+        accent = pos_or_accent
+        avail = accent_or_available
+    else:
+        # Called with 4 arguments: (word, pos, accent, available)
+        pos = pos_or_accent
+        accent = accent_or_available
+        avail = available
+
+    word_clean = re.sub(r"\s*\(.*?\)\s*", "", word).strip().lower()
+    candidates = []
+
+    if pos:
+        pos_slug = "_".join([p.strip().lower() for p in pos.replace(",", " ").replace("/", " ").split() if p.strip()])
+        if word_clean == 'sake' and pos_slug == 'noun':
+            candidates.append(f'cambridge_{accent}_sake_noun_2.mp3')
+        candidates.append(f'cambridge_{accent}_{word_clean}_{pos_slug}.mp3')
+
+    candidates.extend([
         f'cambridge_{accent}_{word}.mp3',
         f'cambridge_{accent}_{word.replace(" ", "_")}.mp3',
         f'cambridge_{accent}_{word.replace("-", "")}.mp3',
-    ]
+    ])
+
     for c in candidates:
-        if c in available:
+        if c in avail:
             return f'[sound:{c}]'
     return ''
 
@@ -653,6 +674,10 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             ex_override = lookup_gloss(audit_examples, word_lower, old['pos'], cefr, word_lower, filled_pos_parts, cefr)
             coll_override = lookup_gloss(audit_collocations, word_lower, old['pos'], cefr, word_lower, filled_pos_parts, cefr)
             defn_override = g if g is not None else old['definition_orig']
+            uk_res = _resolve_audio_filename(word_lower, old['pos'], 'uk', audio_files)
+            us_res = _resolve_audio_filename(word_lower, old['pos'], 'us', audio_files)
+            uk_audio = uk_res if uk_res else old['uk_audio']
+            us_audio = us_res if us_res else old['us_audio']
             card = BuiltCard(
                 guid=old['guid'],
                 notetype=old['notetype'],
@@ -664,8 +689,8 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
                 example=ex_override if ex_override is not None else old['example_orig'],
                 collocations=coll_override if coll_override is not None else old['collocations_orig'],
                 wordfamily=old['wordfamily_orig'],
-                uk_audio=old['uk_audio'],
-                us_audio=old['us_audio'],
+                uk_audio=uk_audio,
+                us_audio=us_audio,
                 source1=old['source1'],
                 source2=old['source2'],
                 cefr=old['cefr'],
@@ -810,8 +835,8 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
                     break
 
         audio_word = resolved_word
-        uk = _resolve_audio_filename(audio_word, 'uk', audio_files)
-        us = _resolve_audio_filename(audio_word, 'us', audio_files)
+        uk = _resolve_audio_filename(audio_word, pos_str, 'uk', audio_files)
+        us = _resolve_audio_filename(audio_word, pos_str, 'us', audio_files)
         if not uk and old.get('uk_audio'):
             uk = old['uk_audio']
         if not us and old.get('us_audio'):

@@ -43,8 +43,8 @@ def test_corrected_cards_preserve_guids_and_homonym_metadata():
     sake = by_key[("sake", "noun", "C1")]
     assert sake["guid"] == "cU3J}]?X.%"
     assert sake["ipa"] == "/ˈsɑːki/"
-    assert sake["uk_audio"] == "[sound:oxford_uk_sake.mp3]"
-    assert sake["us_audio"] == "[sound:oxford_us_sake.mp3]"
+    assert sake["uk_audio"] == "[sound:cambridge_uk_sake_noun_2.mp3]"
+    assert sake["us_audio"] == "[sound:cambridge_us_sake_noun_2.mp3]"
     assert sake["idioms"] == ""
 
     strip = by_key[("strip", "noun", "C2")]
