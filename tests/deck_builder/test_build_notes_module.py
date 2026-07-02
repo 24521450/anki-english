@@ -13,9 +13,22 @@ from src.deck_builder.build_notes import (
     lookup_gloss,
     _resolve_audio_filename,
     _parse_existing_txt,
+    _parse_vocab_list,
     resolve_primary_record
 )
 import tools.build_notes
+
+
+def test_build_vocab_parser_normalizes_phrasal_verb(tmp_path: Path):
+    path = tmp_path / "awl.md"
+    path.write_text(
+        "| **derive** | phrasal v., v. | B2 | 1 |  |\n",
+        encoding="utf-8",
+    )
+    assert _parse_vocab_list(path) == {
+        ("derive", "phrasal verb", "B2"),
+        ("derive", "verb", "B2"),
+    }
 
 
 def _setup_fixtures(tmp_path: Path):

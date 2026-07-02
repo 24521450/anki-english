@@ -104,6 +104,15 @@ _Avoid_: Level badge, difficulty chip
 A `.corpus-badge` chip with `.corpus-oxf` (Oxford 3000/5000), `.corpus-opal` (OPAL W/S), or `.corpus-awl` (AWL) variant. Sits in the top-bar-left, after `.top-bar-sep`.
 _Avoid_: List badge, frequency chip
 
+**AWL Enrichment Row**:
+One row in `vocab_list/AWL/AWL.md`. Coxhead's Academic Word List owns the
+headword and sublist; POS and CEFR are project enrichment. Oxford is the
+primary POS/CEFR source, with Cambridge used only when Oxford lacks a usable
+entry, POS, or CEFR. POS values may share a row only when both CEFR and source
+match; otherwise they must be split. A Cambridge-derived row carries
+`Cambridge` in the Note column.
+_Avoid_: AWL word row, combined mixed-CEFR row
+
 **Divider**:
 A horizontal `.divider` rule. Per-CEFR variants (`.divider-A1` ... `.divider-UNCLASSIFIED`) use a gradient line tinted to the CEFR color.
 _Avoid_: Separator, rule

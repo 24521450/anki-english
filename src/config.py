@@ -70,5 +70,13 @@ class ProjectPaths:
         return self.root / "vocab_list" / "AWL" / "AWL.md"
 
     @property
+    def cambridge_cache_dir(self) -> Path:
+        return self.root / "data" / ".cache_html" / "cambridge"
+
+    @property
+    def awl_cambridge_fallbacks(self) -> Path:
+        return self.root / "vocab_list" / "AWL" / "cambridge_fallbacks.json"
+
+    @property
     def audio_dir(self) -> Path:
         return self.root / "audio"

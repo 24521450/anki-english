@@ -29,6 +29,7 @@ POS_NORM = {
     'conj': 'conjunction', 'num': 'number', 'modal': 'modal',
     'predet': 'predeterminer', 'aux': 'auxiliary', 'exclam': 'exclamation',
     'abbr': 'abbreviation', 'exclamation': 'exclamation',
+    'phrasal v': 'phrasal verb', 'phrasal verb': 'phrasal verb',
     'indefinite article': 'indefinite article', 'definite article': 'definite article',
     'number': 'number',
 }

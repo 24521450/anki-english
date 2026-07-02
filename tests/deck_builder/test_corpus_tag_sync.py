@@ -80,6 +80,16 @@ class TestParseVocabList:
         # arm (verb) C1 in 5000
         assert ('arm', 'verb', 'C1') in result
 
+    def test_normalizes_phrasal_verb_abbreviation(self, tmp_path):
+        path = tmp_path / "awl.md"
+        path.write_text(
+            "| **derive** | phrasal v., v. | B2 | 1 |  |\n",
+            encoding="utf-8",
+        )
+        result = _parse_vocab_list(path)
+        assert ('derive', 'phrasal verb', 'B2') in result
+        assert ('derive', 'verb', 'B2') in result
+
 
 class TestCardShouldHaveCorpusTag:
     """Pure: card dict + vocab_set + cefr -> bool."""
