@@ -68,7 +68,7 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 ## B
 | Word | POS | CEFR | Sublist | Note |
 |------|-----|------|---------|------|
-| **behalf** | n. | B2 | 9 | Cambridge |
+| **behalf** | n. | C1 | 9 |  |
 | **benefit** | n. | A2 | 1 |  |
 | **bias** | n. | B2 | 8 |  |
 | **bias** | v. | C1 | 8 |  |

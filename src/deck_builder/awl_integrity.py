@@ -204,7 +204,14 @@ def _load_oxford_facts(path: Path) -> dict[str, _OxfordFacts]:
         raw_pos: set[str] = set()
         unbadged_pos: set[str] = set()
         for record in word_records:
-            for pos_data in record.get("pos_data") or []:
+            pos_data_list = record.get("pos_data") or []
+            badge = (record.get("oxford_badge") or "").strip().upper()
+            record_poses = [normalize_pos(p) for p in (record.get("pos") or []) if p]
+            if not pos_data_list and badge in CEFR_LEVELS and record_poses:
+                for p in record_poses:
+                    raw_pos.add(p)
+                    assigned[p].add(badge)
+            for pos_data in pos_data_list:
                 pos = normalize_pos(pos_data.get("pos") or "")
                 definitions = pos_data.get("definitions") or []
                 if pos and definitions:

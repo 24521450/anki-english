@@ -175,7 +175,7 @@
     'Oxford_5000':['corpus-badge corpus-oxf','Oxford 5000'],
     'OPAL_W':     ['corpus-badge corpus-opal','OPAL W'],
     'OPAL_S':     ['corpus-badge corpus-opal','OPAL S'],
-    'AWL':        ['corpus-badge corpus-awl','AWL']
+    'AWL_Coxhead':['corpus-badge corpus-awl','AWL Coxhead']
   };
   var addedSep = false;
   if (topBarLeft && rawTags) {

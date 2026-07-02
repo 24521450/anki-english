@@ -26,12 +26,12 @@ MASTER_AUDIT = paths.deck_audit_jsonl
 # Primary list priority — highest first. Used by primary_list_from_tags
 # to collapse a tag set (which may carry multiple corpus list tags) into
 # the single LIST bucket that participates in Card Identity.
-LIST_PRIORITY = ("Oxford_5000", "Oxford_3000", "AWL")
+LIST_PRIORITY = ("Oxford_5000", "Oxford_3000", "AWL_Coxhead")
 
 # Explicitly reviewed exception to the default one-card-per-list identity rule.
 # The two Oxford homonyms have different stress, meanings, and audio.
 REVIEWED_HOMONYM_SPLITS = {
-    ("converse", "UNCLASSIFIED", "NO_LIST"): frozenset({
+    ("converse", "UNCLASSIFIED", "AWL_Coxhead"): frozenset({
         "verb",
         "adjective, noun",
     }),

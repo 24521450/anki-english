@@ -327,9 +327,73 @@ class TestNewRoutingAndTagContracts:
         deck = route_deck("English Academic Vocabulary::Oxford", is_in_3000=True, is_in_5000=False, word="test", pos_str="noun", cefr="A2")
         assert deck == "English Academic Vocabulary::Oxford::Oxford 3000 Basic"
 
-        # Not in either list -> keep current deck
+        # AWL Coxhead routing
+        deck = route_deck("English Academic Vocabulary::TED YT", is_in_3000=False, is_in_5000=False, word="criterion", pos_str="noun", cefr="UNCLASSIFIED", is_in_awl_coxhead=True)
+        assert deck == "English Academic Vocabulary::AWL 50 Academic Words"
+
+        # Not in either list -> keep current deck (unless in AWL deck -> move to Oxford)
         deck = route_deck("English Academic Vocabulary::TED YT", is_in_3000=False, is_in_5000=False, word="test", pos_str="noun", cefr="C1")
         assert deck == "English Academic Vocabulary::TED YT"
+
+        deck = route_deck("English Academic Vocabulary::AWL 50 Academic Words", is_in_3000=False, is_in_5000=False, word="rover", pos_str="noun", cefr="C2")
+        assert deck == "English Academic Vocabulary::Oxford"
+
+    def test_awl_coxhead_membership_rules_and_routing(self):
+        from src.config import ProjectPaths
+        from src.deck_builder.build_notes import _parse_existing_txt
+        from src.deck_builder.corpus_tag_sync import apply_corpus_routing_and_tags
+
+        proj = ProjectPaths()
+        v3 = _parse_vocab_list(proj.oxford_3000_md)
+        v5 = _parse_vocab_list(proj.oxford_5000_md)
+        v_awl = _parse_vocab_list(proj.awl_md)
+        cards_dict = _parse_existing_txt(proj.anki_notes_txt)
+
+        cards = []
+        from collections import namedtuple
+        CardMock = namedtuple('CardMock', ['word', 'pos', 'cefr', 'tags', 'deck'])
+        for (w_orig, pos, cefr), c in cards_dict.items():
+            cards.append(CardMock(c['word_orig'], pos, cefr, c['tags'], c['deck']))
+
+        updated = apply_corpus_routing_and_tags(cards, v3, v5, v_awl)
+
+        by_word = {}
+        for c in updated:
+            w_clean = c.word.split(' (')[0].strip().lower()
+            by_word.setdefault(w_clean, []).append(c)
+
+        # 1. criterion and labor cards get AWL_Coxhead
+        assert any('AWL_Coxhead' in c.tags for c in by_word['criterion'])
+        assert any('AWL_Coxhead' in c.tags for c in by_word['labor'])
+        for c in by_word['labor']:
+            assert c.deck == 'English Academic Vocabulary::AWL 50 Academic Words'
+
+        # 2. trigger|verb|C2 gets NO AWL_Coxhead tag because headword trigger belongs to Oxford 5000
+        for c in by_word['trigger']:
+            assert 'AWL_Coxhead' not in c.tags
+
+        # 3. rover gets NO list tag and moves to Oxford deck
+        for c in by_word['rover']:
+            tags_set = set(c.tags.split())
+            assert not (tags_set & {'Oxford_3000', 'Oxford_5000', 'AWL_Coxhead'})
+            assert c.deck == 'English Academic Vocabulary::Oxford'
+
+        # 4. Every Oxford card has NO AWL_Coxhead
+        for c in updated:
+            tags_set = set(c.tags.split())
+            if 'Oxford_3000' in tags_set or 'Oxford_5000' in tags_set:
+                assert 'AWL_Coxhead' not in tags_set
+
+    def test_behalf_oxford_idiom_c1(self):
+        from src.config import ProjectPaths
+        from src.deck_builder.awl_integrity import AwlIntegrityPaths, _load_oxford_facts
+        proj = ProjectPaths()
+        paths = AwlIntegrityPaths(awl_md=proj.awl_md, oxford_jsonl=proj.oxford_jsonl, cambridge_fallbacks_json=proj.awl_cambridge_fallbacks)
+        facts = _load_oxford_facts(paths.oxford_jsonl)
+        behalf_facts = facts.get('behalf')
+        assert behalf_facts is not None
+        assert 'noun' in behalf_facts.assigned
+        assert 'C1' in behalf_facts.assigned['noun']
 
     def test_export_content_drift_rejection(self):
         from tools.check_corpus_tags import validate_export_consistency

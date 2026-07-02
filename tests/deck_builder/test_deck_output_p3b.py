@@ -97,7 +97,7 @@ def test_card_identity_word_cefr_list_duplicate_fails():
 
 
 def test_card_identity_allows_reviewed_converse_homonym_split():
-    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford"
+    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford AWL_Coxhead"
     data_rows = [
         ["G1", "M", "English Academic Vocabulary::AWL 50 Academic Words", "converse", "verb", "ipa", "talk", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
         ["G2", "M", "English Academic Vocabulary::AWL 50 Academic Words", "converse", "adjective, noun", "ipa", "opposite", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
@@ -107,7 +107,7 @@ def test_card_identity_allows_reviewed_converse_homonym_split():
 
 
 def test_card_identity_rejects_wrong_converse_split_shape():
-    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford"
+    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford AWL_Coxhead"
     data_rows = [
         ["G1", "M", "D", "converse", "verb", "ipa", "talk", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
         ["G2", "M", "D", "converse", "noun", "ipa", "opposite", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
@@ -132,16 +132,16 @@ def test_card_identity_word_pos_cefr_duplicate_still_fails():
 class TestPrimaryListFromTags:
     """Card Identity = (Word, CEFR, LIST). LIST is resolved from the card's
     tags via `primary_list_from_tags` per the fixed priority
-    Oxford_5000 > Oxford_3000 > AWL > NO_LIST."""
+    Oxford_5000 > Oxford_3000 > AWL_Coxhead > NO_LIST."""
 
     def test_priority_5000_wins_when_all_present(self):
-        assert primary_list_from_tags("Oxford_5000 Oxford_3000 AWL") == "Oxford_5000"
+        assert primary_list_from_tags("Oxford_5000 Oxford_3000 AWL_Coxhead") == "Oxford_5000"
 
     def test_3000_wins_over_AWL(self):
-        assert primary_list_from_tags("Oxford_3000 AWL") == "Oxford_3000"
+        assert primary_list_from_tags("Oxford_3000 AWL_Coxhead") == "Oxford_3000"
 
-    def test_only_AWL_returns_AWL(self):
-        assert primary_list_from_tags("AWL") == "AWL"
+    def test_only_AWL_returns_AWL_Coxhead(self):
+        assert primary_list_from_tags("AWL_Coxhead") == "AWL_Coxhead"
 
     def test_no_list_tokens_returns_NO_LIST(self):
         assert primary_list_from_tags("") == "NO_LIST"
@@ -150,9 +150,9 @@ class TestPrimaryListFromTags:
         assert primary_list_from_tags("Source::Oxford CEFR::B2 CEFR::oxford") == "NO_LIST"
 
     def test_priority_order_is_fixed(self):
-        """LIST_PRIORITY must remain Oxford_5000 > Oxford_3000 > AWL so
+        """LIST_PRIORITY must remain Oxford_5000 > Oxford_3000 > AWL_Coxhead so
         identity stays stable across runs and rebuilds."""
-        assert LIST_PRIORITY == ("Oxford_5000", "Oxford_3000", "AWL")
+        assert LIST_PRIORITY == ("Oxford_5000", "Oxford_3000", "AWL_Coxhead")
 
     def test_full_firm_tags_resolve_correctly(self):
         """Regression: the `firm` worked example — Oxford_5000 and Oxford_3000

@@ -12,15 +12,29 @@ from typing import NamedTuple
 HEADER_LINES = 6
 OXFORD_3000 = "Oxford 3000"
 OXFORD_5000 = "Oxford 5000"
+AWL_COXHEAD = "AWL Coxhead"
+
 TOKEN_3000 = "Oxford_3000"
 TOKEN_5000 = "Oxford_5000"
-CORPUS_TOKENS = {TOKEN_3000, TOKEN_5000}
+TOKEN_AWL = "AWL_Coxhead"
+LEGACY_TOKEN_AWL = "AWL"
+CORPUS_TOKENS = {TOKEN_3000, TOKEN_5000, TOKEN_AWL, LEGACY_TOKEN_AWL}
+
+HEADWORD_ALIASES = {
+    "criteria": "criterion",
+    "labour": "labor",
+    "maximise": "maximize",
+    "minimise": "minimize",
+    "utilise": "utilize",
+}
 
 DECK_OXFORD_5000 = "English Academic Vocabulary::Oxford::Oxford 5000"
 DECK_OXFORD_3000_ADVANCED = (
     "English Academic Vocabulary::Oxford::Oxford 3000 Advanced"
 )
 DECK_OXFORD_3000_BASIC = "English Academic Vocabulary::Oxford::Oxford 3000 Basic"
+DECK_AWL = "English Academic Vocabulary::AWL 50 Academic Words"
+DECK_OXFORD = "English Academic Vocabulary::Oxford"
 
 
 class TagUpdate(NamedTuple):
@@ -63,7 +77,7 @@ def parse_header(path: Path) -> int:
 
 
 def _parse_vocab_list(path: Path) -> set[tuple[str, str, str]]:
-    """Parse vocab_list/Oxford/*.md. Returns (word_lower, pos, cefr) tuples."""
+    """Parse vocab_list/Oxford/*.md or AWL.md. Returns (word_lower, pos, cefr) tuples."""
     out = set()
     for line in path.read_text(encoding='utf-8').splitlines():
         if not line.startswith('| **'):
@@ -169,13 +183,15 @@ def route_deck(
     word: str,
     pos_str: str,
     cefr: str,
+    is_in_awl_coxhead: bool = False,
 ) -> str:
-    """Apply Task 3 deck routing logic:
+    """Apply deck routing logic:
 
     1. Oxford_5000 or nursing exception -> nested Oxford 5000 deck.
     2. Oxford_3000 + B2 -> nested Oxford 3000 Advanced deck.
     3. Oxford_3000 + A1/A2/B1 -> nested Oxford 3000 Basic deck.
-    4. Not in either list -> keep current deck.
+    4. AWL_Coxhead -> AWL 50 Academic Words deck.
+    5. Not in any list -> keep current deck (if AWL deck, move to Oxford).
     """
     word_clean = word.split(' (')[0].strip().lower()
     cefr_upper = cefr.strip().upper()
@@ -191,6 +207,11 @@ def route_deck(
             return DECK_OXFORD_3000_ADVANCED
         elif cefr_upper in ('A1', 'A2', 'B1'):
             return DECK_OXFORD_3000_BASIC
+    elif is_in_awl_coxhead:
+        return DECK_AWL
+
+    if current_deck == DECK_AWL:
+        return DECK_OXFORD
 
     return current_deck
 
@@ -199,25 +220,60 @@ def apply_corpus_routing_and_tags(
     cards: list,
     vocab_3000: set[tuple[str, str, str]],
     vocab_5000: set[tuple[str, str, str]],
+    vocab_awl: set[tuple[str, str, str]] | None = None,
 ) -> list:
-    """Post-process built cards to update tags and route decks."""
+    """Post-process built cards to update tags and route decks.
+
+    Rules:
+    1. Oxford tags assigned first per (word, any POS, CEFR).
+    2. Oxford headwords identified (any headword with Oxford_3000 or Oxford_5000).
+    3. AWL_Coxhead assigned ONLY to Coxhead headwords that have NO Oxford tag across all cards of the headword.
+    4. Each card gets AT MOST ONE list tag (Oxford_5000 > Oxford_3000 > AWL_Coxhead > NO_LIST).
+    5. Remove legacy AWL tag if present.
+    6. Card with AWL_Coxhead routes to English Academic Vocabulary::AWL 50 Academic Words.
+    7. Card without list tag in wrong deck (e.g. rover) routes to English Academic Vocabulary::Oxford.
+    """
+    awl_headwords = set()
+    if vocab_awl:
+        for w, _, _ in vocab_awl:
+            awl_headwords.add(HEADWORD_ALIASES.get(w, w))
+    awl_headwords.update({"criterion", "labor", "maximize", "minimize", "utilize"})
+
+    # Pass 1: Identify all headwords that possess an Oxford tag
+    oxford_headwords = set()
+    for c in cards:
+        w_clean = c.word.split(" (")[0].strip().lower()
+        hw = HEADWORD_ALIASES.get(w_clean, w_clean)
+        is_in_3000, is_in_5000 = get_vocab_membership(c.word, c.pos, c.cefr, vocab_3000, vocab_5000)
+        tags_set = set(c.tags.split())
+        if is_in_3000 or is_in_5000 or "Oxford_3000" in tags_set or "Oxford_5000" in tags_set:
+            oxford_headwords.add(hw)
+
+    # Pass 2: Assign tags and route decks
     updated_cards = []
     for c in cards:
-        is_in_3000, is_in_5000 = get_vocab_membership(
-            c.word, c.pos, c.cefr, vocab_3000, vocab_5000
-        )
+        w_clean = c.word.split(" (")[0].strip().lower()
+        hw = HEADWORD_ALIASES.get(w_clean, w_clean)
+        is_in_3000, is_in_5000 = get_vocab_membership(c.word, c.pos, c.cefr, vocab_3000, vocab_5000)
 
-        # Update tags: "Không xóa tag nào." -> We do not remove any existing tags.
-        tags_list = c.tags.split()
-        tags_set = set(tags_list)
-        if is_in_3000 and 'Oxford_3000' not in tags_set:
-            tags_list.append('Oxford_3000')
-        if is_in_5000 and 'Oxford_5000' not in tags_set:
-            tags_list.append('Oxford_5000')
-        new_tags = ' '.join(tags_list)
+        assigned_tag = None
+        if is_in_5000:
+            assigned_tag = TOKEN_5000
+        elif is_in_3000:
+            assigned_tag = TOKEN_3000
+        elif hw in awl_headwords and hw not in oxford_headwords:
+            assigned_tag = TOKEN_AWL
+
+        tags_list = [t for t in c.tags.split() if t not in CORPUS_TOKENS]
+        if assigned_tag:
+            tags_list.append(assigned_tag)
+        new_tags = " ".join(tags_list)
 
         # Route deck
-        new_deck = route_deck(c.deck, is_in_3000, is_in_5000, c.word, c.pos, c.cefr)
+        new_deck = route_deck(
+            c.deck, is_in_3000, is_in_5000, c.word, c.pos, c.cefr,
+            is_in_awl_coxhead=(assigned_tag == TOKEN_AWL)
+        )
 
         c_new = c._replace(tags=new_tags, deck=new_deck)
         updated_cards.append(c_new)

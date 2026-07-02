@@ -18,6 +18,10 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import ProjectPaths
 from src.deck_builder.corpus_tag_sync import (
     DECK_OXFORD_5000,
+    DECK_OXFORD_3000_ADVANCED,
+    DECK_OXFORD_3000_BASIC,
+    DECK_AWL,
+    HEADWORD_ALIASES,
     _parse_vocab_list,
     get_vocab_membership,
     route_deck,
@@ -108,29 +112,25 @@ def audit_file(
         actual_deck = c['deck']
         actual_tags_set = set(c['tags'].split())
 
-        # Clean word for vocab check
         word_clean = word.split(' (')[0].strip().lower()
-
-        # Determine expected membership
         should_have_3000, should_have_5000 = get_vocab_membership(word, pos_str, cefr, vocab_3000, vocab_5000)
 
-        # Handle nursing exception explicitly
         is_nursing_exception = (word_clean == 'nursing' and cefr.upper() == 'B2' and 'noun' in pos_str.lower())
 
-        # Build expected tags
         expected_tags_set = set()
         if should_have_3000:
             expected_tags_set.add('Oxford_3000')
         if should_have_5000 or is_nursing_exception:
             expected_tags_set.add('Oxford_5000')
 
-        # Check tag differences
         actual_corpus_tags = actual_tags_set & {'Oxford_3000', 'Oxford_5000'}
 
-        # Determine expected deck
-        expected_deck = route_deck(actual_deck, should_have_3000, should_have_5000, word, pos_str, cefr)
+        is_in_awl_coxhead = ('AWL_Coxhead' in actual_tags_set)
+        expected_deck = route_deck(
+            actual_deck, should_have_3000, should_have_5000, word, pos_str, cefr,
+            is_in_awl_coxhead=is_in_awl_coxhead
+        )
 
-        # Check for accepted nursing exception
         if is_nursing_exception:
             if 'Oxford_5000' in actual_corpus_tags and actual_deck == DECK_OXFORD_5000:
                 accepted_nursing_exceptions += 1
@@ -144,7 +144,6 @@ def audit_file(
                     )
             continue
 
-        # Check standard tags
         missing = expected_tags_set - actual_corpus_tags
         extra = actual_corpus_tags - expected_tags_set
 
@@ -153,7 +152,6 @@ def audit_file(
         if extra:
             extra_tags.append(f"{word} ({guid}): extra tags {sorted(extra)}")
 
-        # Check deck routing
         if actual_deck != expected_deck:
             deck_mismatches.append(
                 f"{word} ({guid}) [CEFR: {cefr}]: deck mismatch. Got '{actual_deck}', expected '{expected_deck}'"
@@ -193,6 +191,63 @@ def audit_file(
         print(f"  [{label}] FAILED: Mismatches detected.")
 
     return clean
+
+
+def audit_awl_coxhead_rules(cards: list[dict], vocab_awl: set[tuple[str, str, str]]) -> bool:
+    """Audit AWL_Coxhead contract rules:
+    1. Exactly 54 cards carry AWL_Coxhead tag.
+    2. No headword possesses both an Oxford tag (Oxford_3000 / Oxford_5000) and AWL_Coxhead.
+    3. converse|UNCLASSIFIED homonym split cards exist in AWL_Coxhead.
+    4. Deck routing matches tag.
+    """
+    print("\n=== Auditing AWL_Coxhead contract rules ===")
+
+    awl_coxhead_cards = [c for c in cards if "AWL_Coxhead" in c["tags"].split()]
+    print(f"  AWL_Coxhead tag count: {len(awl_coxhead_cards)} / 54")
+
+    errors = []
+    if len(awl_coxhead_cards) != 54:
+        errors.append(f"Expected exactly 54 AWL_Coxhead cards, found {len(awl_coxhead_cards)}")
+
+    headword_tags: dict[str, set[str]] = {}
+    for c in cards:
+        w_clean = c["word"].split(" (")[0].strip().lower()
+        hw = HEADWORD_ALIASES.get(w_clean, w_clean)
+        tags = set(c["tags"].split())
+        list_tags = tags & {"Oxford_3000", "Oxford_5000", "AWL_Coxhead"}
+        headword_tags.setdefault(hw, set()).update(list_tags)
+
+    for hw, tags in headword_tags.items():
+        has_oxford = bool(tags & {"Oxford_3000", "Oxford_5000"})
+        has_awl = "AWL_Coxhead" in tags
+        if has_oxford and has_awl:
+            errors.append(f"Headword '{hw}' has both Oxford ({tags & {'Oxford_3000', 'Oxford_5000'}}) and AWL_Coxhead")
+
+    converse_cards = [c for c in cards if c["word"].startswith("converse") and "AWL_Coxhead" in c["tags"].split()]
+    if len(converse_cards) != 2:
+        errors.append(f"Expected 2 converse homonym cards in AWL_Coxhead, found {len(converse_cards)}")
+
+    for c in cards:
+        tags = set(c["tags"].split())
+        deck = c["deck"]
+        if "AWL_Coxhead" in tags and deck != DECK_AWL:
+            errors.append(f"Card {c['word']} has AWL_Coxhead tag but deck is '{deck}', expected '{DECK_AWL}'")
+        elif "Oxford_5000" in tags and deck != DECK_OXFORD_5000:
+            errors.append(f"Card {c['word']} has Oxford_5000 tag but deck is '{deck}', expected '{DECK_OXFORD_5000}'")
+        elif "Oxford_3000" in tags:
+            cefr = c["cefr"].strip().upper()
+            expected = DECK_OXFORD_3000_ADVANCED if cefr == "B2" else DECK_OXFORD_3000_BASIC
+            if deck != expected:
+                errors.append(f"Card {c['word']} has Oxford_3000 tag but deck is '{deck}', expected '{expected}'")
+
+    if errors:
+        print(f"  [AWL_Coxhead] FAILED ({len(errors)} errors):")
+        for err in errors[:10]:
+            print(f"    - {err}")
+        return False
+
+    print("  [AWL_Coxhead] SUCCESS: All 54 AWL_Coxhead cards and routing rules verified.")
+    return True
 
 
 def audit_target_coverage(cards: list[dict], vocab_5000: set[tuple[str, str, str]]) -> bool:
@@ -296,9 +351,12 @@ def main() -> int:
         print(f"Error: Oxford_5000.md not found at {paths.oxford_5000_md}", file=sys.stderr)
         return 1
 
+    database_only = "--database-only" in sys.argv
+
     # Load vocab lists
     vocab_3000 = _parse_vocab_list(paths.oxford_3000_md)
     vocab_5000 = _parse_vocab_list(paths.oxford_5000_md)
+    vocab_awl = _parse_vocab_list(paths.awl_md)
 
     # 1. Audit canonical txt
     db_clean = audit_file(paths.anki_notes_txt, vocab_3000, vocab_5000, "database")
@@ -307,12 +365,15 @@ def main() -> int:
     _, db_cards = load_cards_from_file(paths.anki_notes_txt)
     coverage_clean = audit_target_coverage(db_cards, vocab_5000)
 
-    # 3. Verify database vs export snapshot consistency if export exists
+    # 3. Audit AWL_Coxhead rules (54 cards)
+    awl_clean = audit_awl_coxhead_rules(db_cards, vocab_awl)
+
+    # 4. Verify database vs export snapshot consistency if export exists and not --database-only
     export_path = paths.anki_notes_txt.parent / "English Academic Vocabulary.txt"
     export_clean = True
     export_routing_clean = True
 
-    if export_path.exists():
+    if not database_only and export_path.exists():
         export_routing_clean = audit_file(
             export_path, vocab_3000, vocab_5000, "export"
         )
@@ -330,7 +391,7 @@ def main() -> int:
         else:
             print("  Consistency check PASSED. Database and Export metadata are consistent.")
 
-    if not db_clean or not coverage_clean or not export_clean or not export_routing_clean:
+    if not db_clean or not coverage_clean or not awl_clean or not export_clean or not export_routing_clean:
         return 1
 
     return 0
