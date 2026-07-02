@@ -31,3 +31,6 @@ data/**/*_backup/
 # Local secrets/env files
 .env
 .env.*
+
+# Anki Export Snapshot
+/data/build/English Academic Vocabulary.txt

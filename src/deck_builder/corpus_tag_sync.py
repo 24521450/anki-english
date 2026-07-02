@@ -2,20 +2,7 @@
 
 Source of truth: vocab_list/Oxford/{Oxford_3000,Oxford_5000}.md
 The vocab_list is keyed on (word, POS, CEFR) — which is the right granularity
-for our cards. The jsonl `oxford_lists` field is coarser (per-word, no CEFR
-discrimination), so we use vocab_list directly.
-
-For each card with Oxford_3000 / Oxford_5000 tag:
-  1. Look up vocab_3000 for (word, ANY_POS_IN_CARD, card.cefr)
-     - "ANY_POS_IN_CARD" means: any POS value in the card's pos list appears
-       in the vocab entry at this CEFR
-  2. If found -> card SHOULD have Oxford_3000 tag
-     Else -> card should NOT have Oxford_3000 tag
-  3. Same for Oxford_5000
-
-A card's pos is comma-separated like "adjective, noun". For the lookup we
-need at least ONE of the card's POS values to match a vocab entry at the
-card's CEFR.
+for our cards.
 """
 from __future__ import annotations
 from pathlib import Path
@@ -28,6 +15,12 @@ OXFORD_5000 = "Oxford 5000"
 TOKEN_3000 = "Oxford_3000"
 TOKEN_5000 = "Oxford_5000"
 CORPUS_TOKENS = {TOKEN_3000, TOKEN_5000}
+
+DECK_OXFORD_5000 = "English Academic Vocabulary::Oxford::Oxford 5000"
+DECK_OXFORD_3000_ADVANCED = (
+    "English Academic Vocabulary::Oxford::Oxford 3000 Advanced"
+)
+DECK_OXFORD_3000_BASIC = "English Academic Vocabulary::Oxford::Oxford 3000 Basic"
 
 
 class TagUpdate(NamedTuple):
@@ -51,6 +44,21 @@ POS_NORM = {
     'indefinite article': 'indefinite article', 'definite article': 'definite article',
     'number': 'number',
 }
+
+
+def parse_header(path: Path) -> int:
+    """Read the first few lines of a file to find the `#tags column:` value.
+    Defaults to 17 if not found.
+    """
+    if not path.exists():
+        return 17
+    for line in path.read_text(encoding='utf-8').splitlines()[:10]:
+        if line.startswith('#tags column:'):
+            try:
+                return int(line.split(':')[1].strip())
+            except ValueError:
+                pass
+    return 17
 
 
 def _parse_vocab_list(path: Path) -> set[tuple[str, str, str]]:
@@ -89,16 +97,27 @@ def _parse_deck_pos(pos_str: str) -> list[str]:
     return [p.strip() for p in pos_str.split(",") if p.strip()]
 
 
-def _parse_txt_card(line: str) -> dict | None:
-    parts = line.split("\t")
+def _parse_txt_card(line: str, tags_col: int = 16) -> dict | None:
+    parts = line.rstrip('\r\n').split("\t")
     if len(parts) < 16:
         return None
-    guid, _nt, _deck, word, pos, *_rest, tags = parts
+    # Pad to 19 columns
+    if len(parts) < 19:
+        parts = parts + [''] * (19 - len(parts))
+
+    # Extract tags depending on tags_col index
+    if tags_col == 19:
+        tags = parts[18]
+    elif tags_col == 17:
+        tags = parts[16]
+    else:
+        tags = parts[tags_col - 1]
+
     return {
-        "guid": guid,
-        "word": word.split(" (")[0].strip().lower(),
-        "pos_str": pos,
-        "pos_list": _parse_deck_pos(pos),
+        "guid": parts[0],
+        "word": parts[3].split(" (")[0].strip().lower(),
+        "pos_str": parts[4],
+        "pos_list": _parse_deck_pos(parts[4]),
         "source": parts[12],
         "tags": tags,
     }
@@ -114,34 +133,121 @@ def _card_should_have_corpus_tag(
     return False
 
 
+def get_vocab_membership(
+    word: str,
+    pos_str: str,
+    cefr: str,
+    vocab_3000: set[tuple[str, str, str]],
+    vocab_5000: set[tuple[str, str, str]],
+) -> tuple[bool, bool]:
+    """Determine list membership by (word, any POS, CEFR), including exceptions."""
+    word_clean = word.split(' (')[0].strip().lower()
+    cefr_upper = cefr.strip().upper()
+    pos_parts = [p.strip().lower() for p in pos_str.split(',') if p.strip()]
+
+    is_in_3000 = False
+    is_in_5000 = False
+
+    for pos_part in pos_parts:
+        if (word_clean, pos_part, cefr_upper) in vocab_3000:
+            is_in_3000 = True
+        if (word_clean, pos_part, cefr_upper) in vocab_5000:
+            is_in_5000 = True
+
+    # Sole explicit exception: nursing|noun|B2 (vocab list has adj., card has noun)
+    if word_clean == 'nursing' and cefr_upper == 'B2' and 'noun' in pos_parts:
+        is_in_5000 = True
+
+    return is_in_3000, is_in_5000
+
+
+def route_deck(
+    current_deck: str,
+    is_in_3000: bool,
+    is_in_5000: bool,
+    word: str,
+    pos_str: str,
+    cefr: str,
+) -> str:
+    """Apply Task 3 deck routing logic:
+
+    1. Oxford_5000 or nursing exception -> nested Oxford 5000 deck.
+    2. Oxford_3000 + B2 -> nested Oxford 3000 Advanced deck.
+    3. Oxford_3000 + A1/A2/B1 -> nested Oxford 3000 Basic deck.
+    4. Not in either list -> keep current deck.
+    """
+    word_clean = word.split(' (')[0].strip().lower()
+    cefr_upper = cefr.strip().upper()
+    pos_parts = [p.strip().lower() for p in pos_str.split(',') if p.strip()]
+
+    # nursing exception for Oxford_5000 routing
+    is_nursing_exception = (word_clean == 'nursing' and cefr_upper == 'B2' and 'noun' in pos_parts)
+
+    if is_in_5000 or is_nursing_exception:
+        return DECK_OXFORD_5000
+    elif is_in_3000:
+        if cefr_upper == 'B2':
+            return DECK_OXFORD_3000_ADVANCED
+        elif cefr_upper in ('A1', 'A2', 'B1'):
+            return DECK_OXFORD_3000_BASIC
+
+    return current_deck
+
+
+def apply_corpus_routing_and_tags(
+    cards: list,
+    vocab_3000: set[tuple[str, str, str]],
+    vocab_5000: set[tuple[str, str, str]],
+) -> list:
+    """Post-process built cards to update tags and route decks."""
+    updated_cards = []
+    for c in cards:
+        is_in_3000, is_in_5000 = get_vocab_membership(
+            c.word, c.pos, c.cefr, vocab_3000, vocab_5000
+        )
+
+        # Update tags: "Không xóa tag nào." -> We do not remove any existing tags.
+        tags_list = c.tags.split()
+        tags_set = set(tags_list)
+        if is_in_3000 and 'Oxford_3000' not in tags_set:
+            tags_list.append('Oxford_3000')
+        if is_in_5000 and 'Oxford_5000' not in tags_set:
+            tags_list.append('Oxford_5000')
+        new_tags = ' '.join(tags_list)
+
+        # Route deck
+        new_deck = route_deck(c.deck, is_in_3000, is_in_5000, c.word, c.pos, c.cefr)
+
+        c_new = c._replace(tags=new_tags, deck=new_deck)
+        updated_cards.append(c_new)
+
+    return updated_cards
+
+
 def compute_tag_updates(
     txt_lines: list[str],
     vocab_3000: set[tuple[str, str, str]],
     vocab_5000: set[tuple[str, str, str]],
 ) -> list[TagUpdate]:
-    """Compute corpus-tag deltas. Pure function.
+    """Compute corpus-tag deltas. Pure function."""
+    tags_col = 17
+    for line in txt_lines[:HEADER_LINES]:
+        if line.startswith('#tags column:'):
+            try:
+                tags_col = int(line.split(':')[1].strip())
+            except ValueError:
+                pass
 
-    For EVERY card (not just those with corpus tags), decide per vocab_list
-    whether Oxford_3000 / Oxford_5000 should be present. Add or remove as
-    needed to converge to vocab_list as the source of truth.
-
-    Why scan all cards (not just ones with corpus tags)? Because vocab_list
-    edits (e.g. user adds 'striking adj. C1' to 5000.md) should propagate to
-    cards that currently lack the tag.
-    """
     updates = []
     for line in txt_lines[HEADER_LINES:]:
-        card = _parse_txt_card(line)
+        card = _parse_txt_card(line, tags_col)
         if not card:
             continue
         parts = line.split("\t")
         cefr = parts[14] if len(parts) > 14 else None
         if cefr is None:
             continue
-        # Skip cards that have NO corpus signal in either direction
-        # (we don't want to add corpus tags to cards that were never in any list)
-        # Heuristic: only update if either (a) card already has a corpus tag,
-        # or (b) vocab_list has the card at ANY CEFR (in either list).
+
         tag_set = set(card["tags"].split())
         has_corpus = bool(tag_set & CORPUS_TOKENS)
         in_any_vocab = (
@@ -150,17 +256,20 @@ def compute_tag_updates(
         )
         if not has_corpus and not in_any_vocab:
             continue
+
         # Decide what tags SHOULD be present (per vocab_list at this card's CEFR)
+        # Note: here we also use get_vocab_membership to align with new logic
+        is_in_3000, is_in_5000 = get_vocab_membership(card["word"], card["pos_str"], cefr, vocab_3000, vocab_5000)
         new_tokens: set[str] = set()
-        if _card_should_have_corpus_tag(card, vocab_3000, cefr):
+        if is_in_3000:
             new_tokens.add(TOKEN_3000)
-        if _card_should_have_corpus_tag(card, vocab_5000, cefr):
+        if is_in_5000:
             new_tokens.add(TOKEN_5000)
-        # Diff
+
         old_tokens = tag_set & CORPUS_TOKENS
         if old_tokens == new_tokens:
             continue
-        # Build new tag string
+
         kept_tags = [t for t in card["tags"].split() if t not in CORPUS_TOKENS]
         new_tag_list = kept_tags + sorted(new_tokens)
         new_tags_str = " ".join(new_tag_list)
@@ -179,6 +288,14 @@ def compute_tag_updates(
 
 def apply_updates(txt_lines: list[str], updates: list[TagUpdate]) -> list[str]:
     """Apply updates to txt_lines. Pure: does not mutate input."""
+    tags_col = 17
+    for line in txt_lines[:HEADER_LINES]:
+        if line.startswith('#tags column:'):
+            try:
+                tags_col = int(line.split(':')[1].strip())
+            except ValueError:
+                pass
+
     guid_to_update = {u.guid: u for u in updates}
     out = list(txt_lines)
     for i, line in enumerate(out[HEADER_LINES:], start=HEADER_LINES):
@@ -187,6 +304,9 @@ def apply_updates(txt_lines: list[str], updates: list[TagUpdate]) -> list[str]:
             continue
         guid = parts[0]
         if guid in guid_to_update:
-            parts[15] = guid_to_update[guid].new_tags
+            # Pad if needed
+            if len(parts) < tags_col:
+                parts = parts + [''] * (tags_col - len(parts))
+            parts[tags_col - 1] = guid_to_update[guid].new_tags
             out[i] = "\t".join(parts)
     return out

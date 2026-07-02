@@ -57,9 +57,17 @@ def test_no_old_paths_or_hardcoded_root_in_maintained_code():
 
             for basename in OLD_BASENAMES:
                 if basename in content:
-                    violations.append(
-                        f"{f.relative_to(project_root)}: contains old basename '{basename}'"
-                    )
+                    if basename == "English Academic Vocabulary.txt":
+                        # Require path to be anchored under data/build/ or notes_txt_path.parent
+                        for line in content.splitlines():
+                            if basename in line and "data/build" not in line and "parent /" not in line and "parent/" not in line:
+                                violations.append(
+                                    f"{f.relative_to(project_root)}: contains unanchored basename '{basename}'"
+                                )
+                    else:
+                        violations.append(
+                            f"{f.relative_to(project_root)}: contains old basename '{basename}'"
+                        )
 
             for old_path in OLD_RELATIVE_PATHS:
                 if old_path in content or old_path.replace("/", "\\") in content:

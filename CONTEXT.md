@@ -136,6 +136,14 @@ Implications:
 - The legacy `(Word, CEFR)` only rule was retired 2026-06-21 because it incorrectly forced merges across genuine list boundaries (e.g. it would have collapsed `firm|adjective|B2|Oxford_5000` into `firm|noun|B2|Oxford_3000` even though they are distinct vocabulary entries from different curricula).
 _Avoid_: Card key, card ID, `(word, CEFR)` only (legacy)
 
+**Corpus Deck Routing**:
+Corpus-list cards are routed under the nested `English Academic Vocabulary::Oxford`
+deck. `Oxford_5000` has highest priority and routes to `Oxford::Oxford 5000`.
+Otherwise, `Oxford_3000` cards route to `Oxford::Oxford 3000 Advanced` at B2
+or `Oxford::Oxford 3000 Basic` at A1/A2/B1. Cards without either corpus tag
+keep their existing TED YT, AWL, or plain Oxford deck.
+_Avoid_: flat Oxford 5000 deck, flat Oxford 3000 deck
+
 **Sense Sorting**:
 All CEFR-matching definitions per **card** (per `(Word, CEFRLevel, LIST)` unit) are retained — there is **no per-card def limit**. (The legacy "Sense Cap" of ≤3 defs/card was removed on 2026-06-21 after audit feedback showed high-frequency words were losing critical senses.) Senses are **logically ordered**: first by Oxford's `sensenum_local` (ascending — Oxford's own frequency proxy, lower number = more common), then by example count (descending) as tie-breaker. Idiom defs (sensenum_local=None) sort last. Scraped records keep all senses; sorting is applied only at build.
 

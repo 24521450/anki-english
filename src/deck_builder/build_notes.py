@@ -1033,6 +1033,10 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             )
     all_cards = annotated_cards
 
+    # Apply corpus routing and tag updates
+    from src.deck_builder.corpus_tag_sync import apply_corpus_routing_and_tags
+    all_cards = apply_corpus_routing_and_tags(all_cards, vocab_3000, vocab_5000)
+
     # Serialize outputs to string
     jsonl_lines = []
     for c in all_cards:
