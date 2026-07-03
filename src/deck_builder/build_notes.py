@@ -51,6 +51,7 @@ class BuildNotesPaths(NamedTuple):
     review_overrides_path: Path | None = None
     synonym_example_overrides_path: Path | None = None
     antonym_example_overrides_path: Path | None = None
+    sense_label_overrides_path: Path | None = None
 
 class BuiltCard(NamedTuple):
     """One Anki Note, encoded as 19-col Anki txt row.
@@ -630,6 +631,31 @@ def _load_audit_overrides(
     return audit_glosses, audit_examples, audit_collocations
 
 
+def _get_senses_for_card(card: BuiltCard, senses_index: dict) -> list:
+    word_clean = card.word.split(" (")[0].strip().lower()
+    cands = get_word_candidates(word_clean)
+    pos_parts = [p.strip().lower() for p in card.pos.split(",") if p.strip()]
+    card_cefr = card.cefr.strip().upper() if card.cefr else "UNCLASSIFIED"
+
+    senses = []
+    for cand in cands:
+        for p in pos_parts:
+            key = (cand, p, card_cefr)
+            if key in senses_index:
+                senses.extend(senses_index[key])
+        if senses:
+            break
+
+    if not senses:
+        for cand in cands:
+            for (w, p, _), s_list in senses_index.items():
+                if w == cand and p in pos_parts:
+                    senses.extend(s_list)
+            if senses:
+                break
+    return senses
+
+
 def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     audio_files = _audio_dir_filenames(paths.audio_dir)
     review_overrides_file = getattr(paths, 'review_overrides_path', None)
@@ -977,6 +1003,29 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
 
     # Apply review overrides by GUID
     all_cards = apply_review_overrides(all_cards, review_overrides)
+
+    # Load and apply sense label prefixes (register_tags & domain).
+    from src.deck_builder.sense_labels import apply_sense_labels, load_sense_label_overrides
+    sense_label_overrides_file = getattr(paths, 'sense_label_overrides_path', None)
+    sense_label_overrides = load_sense_label_overrides(sense_label_overrides_file)
+
+    guid_to_senses: dict[str, list] = {}
+    for c in all_cards:
+        guid_to_senses[c.guid] = _get_senses_for_card(c, senses_index)
+
+    all_cards, sense_label_errors = apply_sense_labels(all_cards, guid_to_senses, sense_label_overrides)
+    if sense_label_errors:
+        import sys
+        print(
+            f"Sense label annotation has {len(sense_label_errors)} warnings/errors:\n" +
+            "\n".join(sense_label_errors),
+            file=sys.stderr
+        )
+        if sense_label_overrides_file is not None:
+            raise ValueError(
+                f"Sense label annotation failed with {len(sense_label_errors)} errors:\n" +
+                "\n".join(sense_label_errors)
+            )
 
     # Load and apply relation annotations (synonyms AND antonyms).
     synonym_overrides_file = getattr(paths, 'synonym_example_overrides_path', None)

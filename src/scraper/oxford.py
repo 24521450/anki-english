@@ -12,6 +12,7 @@ from typing import Any, Optional
 from lxml import html as lxml_html
 
 from ._selectors import OXFORD
+from src.scraper.oxford_labels import extract_labels_for_sense
 
 # -----------------------------------------------------------------------------
 # Helpers
@@ -585,11 +586,13 @@ def _find_pos_for_ol(ol_el) -> str:
 
 def _build_definition(n: int, sense_el) -> dict:
     """Build a single Definition dict from a li.sense element."""
+    labels = extract_labels_for_sense(sense_el)
     return {
         "n": n,
         "sensenum_local": _extract_sensenum(sense_el),
         "text": _extract_def_text(sense_el),
-        "register_tags": _extract_register_tags_def(sense_el),
+        "register_tags": labels["register_tags"],
+        "domain": labels["domain"],
         "cefr": _extract_cefr(sense_el),
         "topics": _extract_topics(sense_el),
         "collocations": _extract_collocations(sense_el),

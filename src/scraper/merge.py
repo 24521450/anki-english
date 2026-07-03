@@ -329,12 +329,36 @@ def merge_word_records(records: list[dict]) -> dict:
                     existing_syns = d_existing.get("synonyms") or []
                     new_syns = d.get("synonyms") or []
                     d_existing["synonyms"] = _dedup_preserve_order(existing_syns + new_syns)
+
                     # Union antonyms (same strategy — Oxford often splits the
                     # same sense across files; opposite headwords vary slightly
                     # between scrapes and we want all of them.)
                     existing_ants = d_existing.get("antonyms") or []
                     new_ants = d.get("antonyms") or []
                     d_existing["antonyms"] = _dedup_preserve_order(existing_ants + new_ants)
+
+                    # Union register_tags (preserves source order, rejects conflicts)
+                    existing_regs = d_existing.get("register_tags") or []
+                    new_regs = d.get("register_tags") or []
+                    merged_regs = list(existing_regs)
+                    for r in new_regs:
+                        if r and r not in merged_regs:
+                            cand = merged_regs + [r]
+                            has_conflict = any(t1 in cand and t2 in cand for t1, t2 in [("formal", "informal"), ("formal", "slang"), ("approving", "disapproving")])
+                            if not has_conflict:
+                                merged_regs.append(r)
+                    d_existing["register_tags"] = merged_regs
+
+                    # Domain: pick non-null domain; raise ValueError if two different non-null domains exist
+                    existing_dom = d_existing.get("domain")
+                    new_dom = d.get("domain")
+                    if existing_dom is None:
+                        d_existing["domain"] = new_dom
+                    elif new_dom is not None and new_dom != existing_dom:
+                        raise ValueError(
+                            f"Conflicting domains for definition '{d.get('text')}': "
+                            f"'{existing_dom}' vs '{new_dom}'"
+                        )
             if new_defs:
                 # Re-number n: 1-based within each pos_data entry
                 for n, d_item in enumerate(new_defs, start=1):

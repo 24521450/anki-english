@@ -65,6 +65,10 @@ class MergedSense(NamedTuple):
     # annotator in src/deck_builder/synonym_annotator.py.
     # Each entry: {"text": ex_text, "synonyms": [...], "antonyms": [...]}.
     relation_specs: list[dict] | None = None
+    # Sense label specs — source definition text and labels contributing to this sense.
+    # Consumed by the sense label annotator in src/deck_builder/sense_labels.py.
+    # Each entry: {"source_definition": str, "register_tags": list[str], "domain": str | None}.
+    label_specs: list[dict] | None = None
 
 
 class FlatSense(NamedTuple):
@@ -189,14 +193,18 @@ def _merge_texts(texts: list[str]) -> str:
     return TEXT_JOIN_SEPARATOR.join(parts)
 
 
+CONFLICT_PAIRS = [("formal", "informal"), ("formal", "slang"), ("approving", "disapproving")]
+
+
 def _merge_register_tags(sources: list[list[str]]) -> list[str]:
-    seen = set()
     out = []
     for src in sources:
         for t in src or []:
-            if t and t not in seen:
-                seen.add(t)
-                out.append(t)
+            if t and t not in out:
+                cand = out + [t]
+                has_conflict = any(t1 in cand and t2 in cand for t1, t2 in CONFLICT_PAIRS)
+                if not has_conflict:
+                    out.append(t)
     return out
 
 
@@ -438,6 +446,18 @@ def merge_cluster(
                     "antonyms": ants,
                 })
 
+    # Collect sense label specs from source definitions in this cluster.
+    label_specs = []
+    for d in src_defs:
+        def_text = (d.get("text") or "").strip()
+        reg_tags = d.get("register_tags") or []
+        dom = d.get("domain")
+        label_specs.append({
+            "source_definition": def_text,
+            "register_tags": list(reg_tags),
+            "domain": dom,
+        })
+
     bm = beta_meta or {}
     return MergedSense(
         pos=pos,
@@ -460,6 +480,7 @@ def merge_cluster(
         review_needed=bm.get('review_needed', False),
         split_reason=bm.get('split_reason'),
         relation_specs=relation_specs,
+        label_specs=label_specs,
     )
 
 

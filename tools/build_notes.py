@@ -73,6 +73,8 @@ def main() -> int:
     ap.add_argument('--synonym-overrides', type=Path, default=canonical_synonym_overrides)
     canonical_antonym_overrides = paths_registry.antonym_example_overrides
     ap.add_argument('--antonym-overrides', type=Path, default=canonical_antonym_overrides)
+    canonical_sense_label_overrides = paths_registry.sense_label_overrides
+    ap.add_argument('--sense-label-overrides', type=Path, default=canonical_sense_label_overrides)
     args = ap.parse_args()
 
     if not args.review_overrides.exists():
@@ -92,6 +94,7 @@ def main() -> int:
         review_overrides_path=args.review_overrides,
         synonym_example_overrides_path=args.synonym_overrides,
         antonym_example_overrides_path=args.antonym_overrides,
+        sense_label_overrides_path=args.sense_label_overrides,
     )
 
     sys.path.insert(0, str(PROJECT_ROOT))

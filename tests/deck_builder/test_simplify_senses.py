@@ -1,4 +1,4 @@
-﻿"""Tests for simplify_senses (pure functions)."""
+"""Tests for simplify_senses (pure functions)."""
 import pytest
 from src.deck_builder.simplify_senses import (
     resolve_sense_cefr,
@@ -97,8 +97,8 @@ class TestMergeTexts:
 
 class TestMergeRegisterTags:
     def test_union_preserving_order(self):
-        out = _merge_register_tags([['informal', 'slang'], ['formal', 'slang']])
-        assert out == ['informal', 'slang', 'formal']
+        out = _merge_register_tags([['informal', 'disapproving'], ['literary', 'disapproving']])
+        assert out == ['informal', 'disapproving', 'literary']
 
     def test_empty(self):
         assert _merge_register_tags([]) == []

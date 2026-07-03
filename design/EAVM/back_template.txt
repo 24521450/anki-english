@@ -98,11 +98,11 @@
     'offensive':'rt-red','taboo':'rt-red'
   };
   var subjects = {
-    'biology':1,'computing':1,'economics':1,'law':1,'linguistics':1,
-    'mathematics':1,'medical':1,'physics':1,'psychology':1,
-    'architecture':1,'art':1,'business':1,'chemistry':1,'finance':1,
-    'history':1,'literature':1,'military':1,'music':1,'politics':1,
-    'religion':1,'science':1,'sociology':1
+    'anatomy':1,'biochemistry':1,'biology':1,'business':1,'chemistry':1,
+    'computing':1,'earth science':1,'ecology':1,'economics':1,'engineering':1,
+    'finance':1,'geometry':1,'grammar':1,'law':1,'linguistics':1,
+    'mathematics':1,'medical':1,'philosophy':1,'phonetics':1,'physics':1,
+    'politics':1,'psychology':1,'statistics':1
   };
 
   function parseDef(text) {
