@@ -12,6 +12,7 @@ from typing import Any, Optional
 from lxml import html as lxml_html
 
 from ._selectors import OXFORD
+from src.scraper.oxford_labels import extract_labels_for_sense
 
 # -----------------------------------------------------------------------------
 # Helpers
@@ -242,6 +243,67 @@ def _extract_see_also(root) -> list[str]:
 
 
 # Per-sense extractors ----------------------------------------------------
+
+def _extract_synonyms(sense_el) -> list[str]:
+    """Extract sense-level synonyms from span.xrefs[xt='syn' or xt='nsyn'] span.xh.
+
+    Oxford uses two relation codes for synonyms:
+      - xt="syn": standard synonym blocks
+      - xt="nsyn": note/new synonym blocks (e.g. vicious -> brutal)
+
+    Iterates relation blocks in DOM order, accepting both 'syn' and 'nsyn',
+    extracts headwords from .xh spans, and deduplicates preserving first occurrence order.
+    """
+    out: list[str] = []
+    for xrefs in sense_el.cssselect("span[xt='syn'], span[xt='nsyn']"):
+        cls = xrefs.get("class") or ""
+        hcls = xrefs.get("hclass") or ""
+        if "xrefs" not in cls.split() and hcls != "xrefs":
+            continue
+        for xh in xrefs.cssselect("span"):
+            x_cls = xh.get("class") or ""
+            x_hcls = xh.get("hclass") or ""
+            if "xh" in x_cls.split() or x_hcls == "xh":
+                txt = (xh.text or "").strip()
+                if txt:
+                    out.append(txt)
+    return _dedup_preserve_order(out)
+
+
+def _extract_antonyms(sense_el) -> list[str]:
+    """Extract sense-level antonyms from span.xrefs[xt='opp'] span.xh.
+
+    Mirrors `_extract_synonyms` — same xh-class filter, same dedup, but reads
+    `xt="opp"` blocks only. Oxford's opposite blocks look like:
+        <span class="xrefs" hclass="xrefs" xt="opp">
+            <span class="prefix">opposite</span>
+            <a class="Ref"><span class="xr-g"><span class="xh">opaque</span></span></a>
+        </span>
+
+    Why `xt="opp"` is filtered separately: it's a different semantic relation
+    (antonym, not synonym) and is rendered as a distinct UI prefix
+    ("opposite" vs "synonym"). Mixing them in the same field would confuse
+    learners ("is this a synonym or an antonym?"). See CONTEXT.md § Antonym
+    for the data contract.
+
+    Returns: list of headword strings, dedup'd, source-order preserved.
+    Empty list when the sense has no opposite block.
+    """
+    out: list[str] = []
+    for xrefs in sense_el.cssselect("span[xt='opp']"):
+        cls = xrefs.get("class") or ""
+        hcls = xrefs.get("hclass") or ""
+        if "xrefs" not in cls.split() and hcls != "xrefs":
+            continue
+        for xh in xrefs.cssselect("span"):
+            x_cls = xh.get("class") or ""
+            x_hcls = xh.get("hclass") or ""
+            if "xh" in x_cls.split() or x_hcls == "xh":
+                txt = (xh.text or "").strip()
+                if txt:
+                    out.append(txt)
+    return _dedup_preserve_order(out)
+
 
 def _extract_sensenum(sense_el) -> Optional[str]:
     """sensenum attribute on <li class='sense'> — nullable for idioms."""
@@ -524,17 +586,21 @@ def _find_pos_for_ol(ol_el) -> str:
 
 def _build_definition(n: int, sense_el) -> dict:
     """Build a single Definition dict from a li.sense element."""
+    labels = extract_labels_for_sense(sense_el)
     return {
         "n": n,
         "sensenum_local": _extract_sensenum(sense_el),
         "text": _extract_def_text(sense_el),
-        "register_tags": _extract_register_tags_def(sense_el),
+        "register_tags": labels["register_tags"],
+        "domain": labels["domain"],
         "cefr": _extract_cefr(sense_el),
         "topics": _extract_topics(sense_el),
         "collocations": _extract_collocations(sense_el),
         "examples": _extract_examples(sense_el),
         "is_phrase": False,    # not detected in v1
         "is_idiom": _is_idiom(sense_el),
+        "synonyms": _extract_synonyms(sense_el),
+        "antonyms": _extract_antonyms(sense_el),
     }
 
 

@@ -89,6 +89,7 @@ def test_oxford_parser_consistent(record, oxford_golden):
     if parsed is None:
         pytest.skip(f"Oxford file {filename} is a non-word page (no h1.headword); parser correctly returned None")
     expected = {k: v for k, v in record.items() if k not in ("file", "polymorphic_form")}
+
     parsed_norm = _normalize_ws(parsed)
     expected_norm = _normalize_ws(expected)
     if parsed_norm != expected_norm:

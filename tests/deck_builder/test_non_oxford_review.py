@@ -12,10 +12,34 @@ from src.deck_builder.review_overrides import load_review_overrides
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 REVIEW_PATH = ProjectPaths(PROJECT_ROOT).non_oxford_non_c2_overrides
 
+
 def _load_jsonl_rows(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
+
+def _override_guids(path: Path) -> set[str]:
+    """Return the set of GUIDs referenced by a relation-override JSONL file.
+
+    The override JSONL's `guid` field uses the same `"..."` wrapper as
+    Anki's TXT format (matches `c.guid`), so we just return the raw value
+    after stripping outer whitespace.
+    """
+    guids: set[str] = set()
+    for row in _load_jsonl_rows(path):
+        g = row.get("guid", "").strip()
+        if g:
+            guids.add(g)
+    return guids
+
+
 def get_cards_without_overrides():
+    """Build the baseline (no overrides of any kind).
+
+    The only thing `get_cards_with_overrides` should do *differently* is
+    apply the non-oxford-non-c2 review overrides (and synonym/antonym
+    annotations). To measure that delta cleanly, we strip ALL overrides
+    here so each build path is independent.
+    """
     paths_reg = ProjectPaths(PROJECT_ROOT)
     paths = BuildNotesPaths(
         oxford_jsonl_path=paths_reg.oxford_jsonl,
@@ -27,12 +51,14 @@ def get_cards_without_overrides():
         deck_audit_jsonl_path=paths_reg.deck_audit_jsonl,
         manual_card_fills_path=paths_reg.manual_card_fills,
         audio_dir=paths_reg.audio_dir,
-        review_overrides_path=None
+        review_overrides_path=None,
     )
     res = build_notes(paths)
     return res.built_cards
 
+
 def get_cards_with_overrides():
+    """Build with non-oxford AND synonym/antonym overrides applied."""
     paths_reg = ProjectPaths(PROJECT_ROOT)
     paths = BuildNotesPaths(
         oxford_jsonl_path=paths_reg.oxford_jsonl,
@@ -44,7 +70,9 @@ def get_cards_with_overrides():
         deck_audit_jsonl_path=paths_reg.deck_audit_jsonl,
         manual_card_fills_path=paths_reg.manual_card_fills,
         audio_dir=paths_reg.audio_dir,
-        review_overrides_path=paths_reg.non_oxford_non_c2_overrides
+        review_overrides_path=paths_reg.non_oxford_non_c2_overrides,
+        synonym_example_overrides_path=paths_reg.synonym_example_overrides,
+        antonym_example_overrides_path=paths_reg.antonym_example_overrides,
     )
     res = build_notes(paths)
     return res.built_cards
@@ -52,6 +80,11 @@ def get_cards_with_overrides():
 def test_non_oxford_review_in_memory_metrics_and_scope():
     overrides = load_review_overrides(REVIEW_PATH)
     assert len(overrides) == 381
+
+    paths_reg = ProjectPaths(PROJECT_ROOT)
+    syn_guids = _override_guids(paths_reg.synonym_example_overrides)
+    ant_guids = _override_guids(paths_reg.antonym_example_overrides)
+    relation_override_guids = syn_guids | ant_guids
 
     baseline_cards = get_cards_without_overrides()
     overridden_cards = get_cards_with_overrides()
@@ -93,9 +126,36 @@ def test_non_oxford_review_in_memory_metrics_and_scope():
                 if base.word == "nursing":
                     assert overridden.pos == "noun"
         else:
-            # Cards outside the scope must be completely identical
-            for field in ("guid", "notetype", "deck", "word", "pos", "ipa", "definition", "example", "collocations", "wordfamily", "uk_audio", "us_audio", "source1", "source2", "cefr", "idioms", "tags"):
-                assert getattr(base, field) == getattr(overridden, field), f"Card outside scope {base.word} was modified!"
+            # Cards outside the non-oxford scope. The synonym/antonym
+            # override may legitimately change `example`/`synonyms`/`antonyms`
+            # for cards it annotates. Definition/collocation/etc. must
+            # still be completely identical.
+            relation_overridden = guid in relation_override_guids
+            immutable_fields = (
+                "guid", "notetype", "deck", "word", "pos", "ipa",
+                "definition", "collocations", "wordfamily",
+                "uk_audio", "us_audio", "source1", "source2", "cefr",
+                "idioms", "tags",
+            )
+            if relation_overridden:
+                # example/synonyms/antonyms may differ
+                relation_fields = ("example", "synonyms", "antonyms")
+            else:
+                # nothing should differ at all
+                relation_fields = immutable_fields
+                immutable_fields = (  # type: ignore[assignment]
+                    "guid", "notetype", "deck", "word", "pos", "ipa",
+                    "definition", "example", "collocations", "wordfamily",
+                    "uk_audio", "us_audio", "source1", "source2", "cefr",
+                    "idioms", "tags", "synonyms", "antonyms",
+                )
+
+            for field in immutable_fields:
+                assert getattr(base, field) == getattr(overridden, field), (
+                    f"Card outside scope {base.word} ({guid}) field {field!r} "
+                    f"was modified! base={getattr(base, field)!r} "
+                    f"overridden={getattr(overridden, field)!r}"
+                )
 
     # Verification of exact modification counts
     assert def_changed == 381
@@ -136,7 +196,9 @@ def test_build_determinism():
         deck_audit_jsonl_path=paths_reg.deck_audit_jsonl,
         manual_card_fills_path=paths_reg.manual_card_fills,
         audio_dir=paths_reg.audio_dir,
-        review_overrides_path=paths_reg.non_oxford_non_c2_overrides
+        review_overrides_path=paths_reg.non_oxford_non_c2_overrides,
+        synonym_example_overrides_path=paths_reg.synonym_example_overrides,
+        antonym_example_overrides_path=paths_reg.antonym_example_overrides,
     )
     
     # First build

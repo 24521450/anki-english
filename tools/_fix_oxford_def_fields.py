@@ -39,17 +39,12 @@ from typing import Optional
 
 from lxml import html as lxml_html
 
-# 17 register_tags = 12 from register_labels + 5 from usage_restrictions
-# (data/oxford_labels.json). The user explicitly chose B1 (both lists).
-# This covers the full set of "register/style" markers Oxford uses in
-# span.labels — not just the academic register_labels subset.
-REGISTER_TAGS = frozenset({
-    # From register_labels (12)
-    "approving", "disapproving", "figurative", "formal", "humorous",
-    "informal", "ironic", "literary", "offensive", "slang", "specialist", "taboo",
-    # From usage_restrictions (5)
-    "dialect", "old-fashioned", "old use", "saying", "trademark",
-})
+from src.scraper.oxford_labels import (
+    REGISTER_LABELS,
+    SUBJECT_LABELS,
+    parse_label_compound as _parse_label_compound_core,
+    extract_labels_for_sense as _extract_labels_for_sense_core,
+)
 
 # Countability regex patterns
 COUNTABILITY_PATTERNS = [
@@ -62,86 +57,18 @@ COUNTABILITY_PATTERNS = [
     (re.compile(r"\[\s*countable\s*\]", re.IGNORECASE), "countable"),
 ]
 
-# Pre-compiled for fast label parsing
-_LABEL_RE = re.compile(r"\s*,\s*")
-_PAREN_RE = re.compile(r"^\(|\)$")
-
 
 # ── Pure functions (testable) ─────────────────────────────────────────────────
 
 
-def parse_label_compound(label_text: str, subject_labels: set[str]) -> dict:
-    """Parse a span.labels text value into structured register_tags and domain.
-
-    Strategy:
-      1. Strip outer parens
-      2. Split on "," (compound handling — 10.7% of labels are compound)
-      3. For each part: strip whitespace, lowercase
-      4. Classify:
-         - if part ∈ REGISTER_TAGS → add to register_tags
-         - if part ∈ subject_labels → set domain (first match wins, single value)
-         - else → drop (regional variants, qualifiers, multi-word combos)
-
-    Returns:
-        {"register_tags": list[str], "domain": str | None}
-    """
-    out = {"register_tags": [], "domain": None}
-    if not label_text:
-        return out
-    # Strip outer parens
-    text = label_text.strip()
-    text = _PAREN_RE.sub("", text).strip()
-    if not text:
-        return out
-    # Split compound
-    parts = _LABEL_RE.split(text)
-    for part in parts:
-        p = part.strip().lower()
-        if not p:
-            continue
-        if p in REGISTER_TAGS and p not in out["register_tags"]:
-            out["register_tags"].append(p)
-        if p in subject_labels and out["domain"] is None:
-            out["domain"] = p
-    return out
+def parse_label_compound(label_text: str, subject_labels: set[str] | None = None) -> dict:
+    """Parse a span.labels text value into structured register_tags and domain."""
+    return _parse_label_compound_core(label_text)
 
 
-def extract_labels_for_def(html, sense_el, subject_labels: set[str]) -> dict:
-    """Extract register_tags and domain from a sense element.
-
-    Returns:
-        {"register_tags": list[str], "domain": str | None}
-    """
-    out = {"register_tags": [], "domain": None}
-    for lbl in sense_el.cssselect("span.labels"):
-        t = (lbl.text_content() or "").strip()
-        if t:
-            parsed = parse_label_compound(t, subject_labels)
-            for r in parsed["register_tags"]:
-                if r not in out["register_tags"]:
-                    out["register_tags"].append(r)
-            if out["domain"] is None and parsed["domain"]:
-                out["domain"] = parsed["domain"]
-    return out
-
-
-def extract_labels_for_def(html, sense_el, subject_labels: set[str]) -> dict:
-    """Extract register_tags and domain from a sense element.
-
-    Returns:
-        {"register_tags": list[str], "domain": str | None}
-    """
-    out = {"register_tags": [], "domain": None}
-    for lbl in sense_el.cssselect("span.labels"):
-        t = (lbl.text_content() or "").strip()
-        if t:
-            parsed = parse_label_compound(t, subject_labels)
-            for r in parsed["register_tags"]:
-                if r not in out["register_tags"]:
-                    out["register_tags"].append(r)
-            if out["domain"] is None and parsed["domain"]:
-                out["domain"] = parsed["domain"]
-    return out
+def extract_labels_for_def(html, sense_el, subject_labels: set[str] | None = None) -> dict:
+    """Extract register_tags and domain from a sense element."""
+    return _extract_labels_for_sense_core(sense_el)
 
 
 def extract_grammar_for_def(grammar_text: str, pos: str) -> Optional[str]:
@@ -355,7 +282,7 @@ def fix_record(
             # ── Fix 3: domain (new field) ──────────────────────────────────
             # ALWAYS set domain (to null if no match) so downstream consumers
             # can rely on the key being present.
-            if "domain" not in defn:
+            if "domain" not in defn or defn["domain"] is None:
                 parsed_d = extract_labels_for_def(root, matching_sense, subject_labels)
                 defn["domain"] = parsed_d["domain"]  # may be None
                 if parsed_d["domain"]:

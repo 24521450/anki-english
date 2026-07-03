@@ -24,6 +24,7 @@ from pathlib import Path
 import pytest
 
 from src.config import ProjectPaths
+from src.deck_builder.sense_labels import parse_existing_prefix
 
 paths = ProjectPaths()
 PROJECT_ROOT = paths.root
@@ -209,7 +210,12 @@ class TestTXTReflection:
             from tests.deck_builder.historical_supersession import should_tolerate_historical_drift
             if r and should_tolerate_historical_drift(r, 'p15_simple_gloss_repaired'):
                 continue
-            assert txt_keys[k].strip() == (d.get('new_gloss') or '').strip()
+            actual_chunks = [
+                parse_existing_prefix(chunk.strip())[1]
+                for chunk in txt_keys[k].split('|')
+            ]
+            actual_gloss = '|'.join(actual_chunks)
+            assert actual_gloss == (d.get('new_gloss') or '').strip()
         assert missing == [], f'missing TXT keys: {missing}'
 
 

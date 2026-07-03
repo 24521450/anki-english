@@ -196,7 +196,9 @@
                 "collocations",
                 "examples",
                 "is_phrase",
-                "is_idiom"
+                "is_idiom",
+                "synonyms",
+                "antonyms"
               ],
               "properties": {
                 "n": {
@@ -339,6 +341,20 @@
                 "is_idiom": {
                   "type": "boolean",
                   "description": "True if idiom (detected via span.idm-g ancestor walk)"
+                },
+                "synonyms": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Sense-level synonyms (extract from span.xrefs[xt='syn'] span.xh)"
+                },
+                "antonyms": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Sense-level antonyms (extract from span.xrefs[xt='opp'] span.xh). Always [] for senses without an opposite block; never null."
                 }
               }
             }

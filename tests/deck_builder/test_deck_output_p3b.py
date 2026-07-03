@@ -19,10 +19,12 @@ from tools._verify_deck_output_p3b import (
 def test_txt_parser_skips_headers_and_preserves_field_count():
     # 6 header lines starting with # + 1 blank line + 2 valid lines
     # Match the current production baseline enforced by the verifier.
-    valid_row = "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags"
+    # 19-col layout (1-indexed): guid, notetype, deck, word, pos, ipa, defn,
+    # ex, coll, wf, uk, us, src1, src2, cefr, idioms, tags, synonyms, antonyms.
+    valid_row = "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms"
     lines = ["#separator:tab", "#html:true", "#guid:1", "#notetype:2", "#deck:3", "#tags:4", ""]
     lines.extend([valid_row] * 2452)
-    
+
     # Change GUIDs to make them unique
     for i in range(7, len(lines)):
         parts = lines[i].split('\t')
@@ -31,11 +33,11 @@ def test_txt_parser_skips_headers_and_preserves_field_count():
 
     data_rows = verify_txt_structure(lines)
     assert len(data_rows) == 2452
-    assert all(len(row) == 17 for row in data_rows)
+    assert all(len(row) == 19 for row in data_rows)
 
 
 def test_txt_parser_fails_on_duplicate_guid():
-    valid_row = "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags"
+    valid_row = "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms"
     lines = [valid_row] * 2452
     # Duplicate GUIDs present, so verify_txt_structure should exit 1
     with pytest.raises(SystemExit):
@@ -43,7 +45,7 @@ def test_txt_parser_fails_on_duplicate_guid():
 
 
 def test_txt_parser_fails_on_escaped_pipe():
-    valid_row = "G\tnotetype\tdeck\tword\tpos\tipa\tdefn\\|escaped\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags"
+    valid_row = "G\tnotetype\tdeck\tword\tpos\tipa\tdefn\\|escaped\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms"
     lines = [valid_row] * 2452
     # Make GUIDs unique
     for i in range(2452):
@@ -95,7 +97,7 @@ def test_card_identity_word_cefr_list_duplicate_fails():
 
 
 def test_card_identity_allows_reviewed_converse_homonym_split():
-    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford"
+    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford AWL_Coxhead"
     data_rows = [
         ["G1", "M", "English Academic Vocabulary::AWL 50 Academic Words", "converse", "verb", "ipa", "talk", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
         ["G2", "M", "English Academic Vocabulary::AWL 50 Academic Words", "converse", "adjective, noun", "ipa", "opposite", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
@@ -105,7 +107,7 @@ def test_card_identity_allows_reviewed_converse_homonym_split():
 
 
 def test_card_identity_rejects_wrong_converse_split_shape():
-    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford"
+    tags = "Source::Oxford CEFR::UNCLASSIFIED CEFR::oxford AWL_Coxhead"
     data_rows = [
         ["G1", "M", "D", "converse", "verb", "ipa", "talk", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
         ["G2", "M", "D", "converse", "noun", "ipa", "opposite", "ex", "c", "wf", "uk", "us", "Oxford", "AWL", "UNCLASSIFIED", "", tags],
@@ -130,16 +132,16 @@ def test_card_identity_word_pos_cefr_duplicate_still_fails():
 class TestPrimaryListFromTags:
     """Card Identity = (Word, CEFR, LIST). LIST is resolved from the card's
     tags via `primary_list_from_tags` per the fixed priority
-    Oxford_5000 > Oxford_3000 > AWL > NO_LIST."""
+    Oxford_5000 > Oxford_3000 > AWL_Coxhead > NO_LIST."""
 
     def test_priority_5000_wins_when_all_present(self):
-        assert primary_list_from_tags("Oxford_5000 Oxford_3000 AWL") == "Oxford_5000"
+        assert primary_list_from_tags("Oxford_5000 Oxford_3000 AWL_Coxhead") == "Oxford_5000"
 
     def test_3000_wins_over_AWL(self):
-        assert primary_list_from_tags("Oxford_3000 AWL") == "Oxford_3000"
+        assert primary_list_from_tags("Oxford_3000 AWL_Coxhead") == "Oxford_3000"
 
-    def test_only_AWL_returns_AWL(self):
-        assert primary_list_from_tags("AWL") == "AWL"
+    def test_only_AWL_returns_AWL_Coxhead(self):
+        assert primary_list_from_tags("AWL_Coxhead") == "AWL_Coxhead"
 
     def test_no_list_tokens_returns_NO_LIST(self):
         assert primary_list_from_tags("") == "NO_LIST"
@@ -148,9 +150,9 @@ class TestPrimaryListFromTags:
         assert primary_list_from_tags("Source::Oxford CEFR::B2 CEFR::oxford") == "NO_LIST"
 
     def test_priority_order_is_fixed(self):
-        """LIST_PRIORITY must remain Oxford_5000 > Oxford_3000 > AWL so
+        """LIST_PRIORITY must remain Oxford_5000 > Oxford_3000 > AWL_Coxhead so
         identity stays stable across runs and rebuilds."""
-        assert LIST_PRIORITY == ("Oxford_5000", "Oxford_3000", "AWL")
+        assert LIST_PRIORITY == ("Oxford_5000", "Oxford_3000", "AWL_Coxhead")
 
     def test_full_firm_tags_resolve_correctly(self):
         """Regression: the `firm` worked example — Oxford_5000 and Oxford_3000

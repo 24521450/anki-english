@@ -558,3 +558,91 @@ def test_fold_phrasal_verb_handles_3_particle():
     main_out = [r for r in out if r["word"] == "look"][0]
     assert len(main_out["pos_data"]) == 1
     assert main_out["pos_data"][0]["pos"] == "phrasal verb"
+
+
+# ---------------------------------------------------------------------------
+# Register conflict detection (strict raise, not silent drop)
+# ---------------------------------------------------------------------------
+
+def _def_with_rt(text: str, sn: str, rt: list) -> dict:
+    """Minimal definition dict with register_tags."""
+    return {
+        "n": 1, "sensenum_local": sn, "text": text,
+        "register_tags": rt,
+        "cefr": None, "topics": [], "collocations": {},
+        "examples": [], "is_phrase": False, "is_idiom": False,
+        "synonyms": [], "antonyms": [],
+    }
+
+
+def test_merge_register_tags_non_conflicting_union():
+    """Two records with non-conflicting register_tags are merged cleanly."""
+    rec1 = _rec("foo", "noun", pos_data=[
+        {"pos": "noun", "register_tags": [], "definitions": [
+            _def_with_rt("a thing", "1", ["informal"]),
+        ]},
+    ])
+    rec2 = _rec("foo", "noun", pos_data=[
+        {"pos": "noun", "register_tags": [], "definitions": [
+            _def_with_rt("a thing", "1", ["humorous"]),
+        ]},
+    ])
+    result = merge_word_records([rec1, rec2])
+    rt = result["pos_data"][0]["definitions"][0]["register_tags"]
+    assert "informal" in rt
+    assert "humorous" in rt
+
+
+def test_merge_per_def_register_conflict_raises():
+    """Two records with formal+informal on SAME definition raise ValueError."""
+    rec1 = _rec("spectacle", "noun", pos_data=[
+        {"pos": "noun", "register_tags": [], "definitions": [
+            _def_with_rt("two lenses in a frame", "1", ["formal"]),
+        ]},
+    ])
+    rec2 = _rec("spectacle", "noun", pos_data=[
+        {"pos": "noun", "register_tags": [], "definitions": [
+            _def_with_rt("two lenses in a frame", "1", ["informal"]),
+        ]},
+    ])
+    with pytest.raises(ValueError, match="Conflicting register tags"):
+        merge_word_records([rec1, rec2])
+
+
+def test_merge_top_level_register_conflict_raises():
+    """Two records with formal+informal at top-level register_tags raise ValueError."""
+    rec1 = _rec("someword", "noun", **{"register_tags": ["formal"]})
+    rec2 = _rec("someword", "noun", **{"register_tags": ["informal"]})
+    with pytest.raises(ValueError, match="Conflicting register tags"):
+        merge_word_records([rec1, rec2])
+
+
+def test_merge_approving_disapproving_conflict_raises():
+    """approving+disapproving on same definition raises ValueError."""
+    rec1 = _rec("brave", "adjective", pos_data=[
+        {"pos": "adjective", "register_tags": [], "definitions": [
+            _def_with_rt("showing courage", "1", ["approving"]),
+        ]},
+    ])
+    rec2 = _rec("brave", "adjective", pos_data=[
+        {"pos": "adjective", "register_tags": [], "definitions": [
+            _def_with_rt("showing courage", "1", ["disapproving"]),
+        ]},
+    ])
+    with pytest.raises(ValueError, match="Conflicting register tags"):
+        merge_word_records([rec1, rec2])
+
+
+def test_merge_single_record_with_conflict_passes_through():
+    """A single-file record with pre-existing conflict in register_tags is passed through
+    unchanged — merge raises only when two records conflict during the union step.
+    Pre-existing single-file conflicts are caught by the source audit layer."""
+    rec = _rec("bad", "noun", pos_data=[
+        {"pos": "noun", "register_tags": [], "definitions": [
+            _def_with_rt("something bad", "1", ["formal", "informal"]),
+        ]},
+    ])
+    # single-record passthrough: no merge, no raise
+    result = merge_word_records([rec])
+    rt = result["pos_data"][0]["definitions"][0]["register_tags"]
+    assert rt == ["formal", "informal"]

@@ -19,6 +19,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import ProjectPaths
+from src.deck_builder.sense_labels import parse_existing_prefix
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 paths = ProjectPaths(PROJECT_ROOT)
 DECK_TXT = paths.anki_notes_txt
 MASTER_AUDIT = paths.deck_audit_jsonl
@@ -26,12 +33,12 @@ MASTER_AUDIT = paths.deck_audit_jsonl
 # Primary list priority — highest first. Used by primary_list_from_tags
 # to collapse a tag set (which may carry multiple corpus list tags) into
 # the single LIST bucket that participates in Card Identity.
-LIST_PRIORITY = ("Oxford_5000", "Oxford_3000", "AWL")
+LIST_PRIORITY = ("Oxford_5000", "Oxford_3000", "AWL_Coxhead")
 
 # Explicitly reviewed exception to the default one-card-per-list identity rule.
 # The two Oxford homonyms have different stress, meanings, and audio.
 REVIEWED_HOMONYM_SPLITS = {
-    ("converse", "UNCLASSIFIED", "NO_LIST"): frozenset({
+    ("converse", "UNCLASSIFIED", "AWL_Coxhead"): frozenset({
         "verb",
         "adjective, noun",
     }),
@@ -92,8 +99,8 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
         data_rows.append(parts)
         
         # Check tab column count
-        if len(parts) != 17:
-            errors.append(f"Row {idx} does not have exactly 17 columns (found {len(parts)})")
+        if len(parts) != 19:
+            errors.append(f"Row {idx} does not have exactly 19 columns (found {len(parts)})")
             
         # Check critical fields non-empty
         # 0: GUID, 1: notetype, 2: deck, 3: word, 4: pos, 6: definition, 14: cefr, 16: tags
@@ -149,7 +156,7 @@ def verify_card_identity(data_rows: list[list[str]], audit_rows: list[dict]):
     txt_keys_word_cefr = []
     txt_keys_word_pos_cefr = []
     txt_keys_word_cefr_list = []
-    
+
     for parts in data_rows:
         word = parts[3].strip().lower()
         pos = parts[4].strip().lower()
@@ -319,8 +326,12 @@ def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
             not_in_audit_count += 1
             continue
 
-        # Normalize both for comparison
-        txt_norm = normalize_gloss(txt_def).gloss
+        # Strip sense label prefixes before gloss normalization
+        txt_chunks = [ch.strip() for ch in txt_def.split("|") if ch.strip()]
+        clean_txt_chunks = [parse_existing_prefix(ch)[1] for ch in txt_chunks]
+        txt_def_clean = " | ".join(clean_txt_chunks)
+
+        txt_norm = normalize_gloss(txt_def_clean).gloss
         expected_norm = normalize_gloss(expected_def).gloss
         
         if txt_norm != expected_norm:

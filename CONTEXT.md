@@ -34,6 +34,18 @@ _Avoid_: Register chip, inline label, marker
 A specific type of Register Tag (`.rt-subject`) that names the academic domain of a sense (biology, law, medicine, etc.). 23 subject labels total — see `data/oxford_labels.json` and `design/index.html` vùng 5.
 _Avoid_: Topic chip, domain tag
 
+**Sense Synonym**:
+A list of synonyms (`definitions[].synonyms`) extracted at the individual sense level from the Oxford corpus. Sourced as dictionary metadata and annotated directly in parentheses inside Anki card examples at the build stage (e.g. `Fish are abundant (plentiful) in the lake.`), mapped to their respective senses and verified via manual overrides in `synonym_example_overrides.jsonl`. Rendered on the back card with the `.relation-synonym` class (color `#5DCAA5`).
+_Avoid_: definition synonym, word synonym
+
+**Sense Antonym**:
+A list of antonyms (`definitions[].antonyms`) extracted at the individual sense level from the Oxford corpus. Mirrors the **Sense Synonym** structure but reads Oxford's `xt="opp"` block. Annotates the matching Anki card example with a pink parenthetical (e.g. `The insect's wings are almost transparent (opaque).`) and is rendered with the `.relation-antonym` class (color `#D4537E`). Manual overrides live in `antonym_example_overrides.jsonl`. Only ~3% of Oxford senses carry a non-empty antonym list (652/21687 defs as of 2026-07-02).
+_Avoid_: opposite word, contrast word
+
+**Lexical Relation Metadata**:
+The two raw Anki fields `Synonyms` and `Antonyms` (note-type columns 13 and 14, TXT columns 18 and 19) that drive the `.relation-synonym` / `.relation-antonym` colorization in the back card. Each field is pipe-aligned with the `Example` field — one cell per example chunk, empty when the chunk has no relation. The build stage populates them from `get_relation_specs_for_card` (per-Oxford-example synonyms and antonyms) and the per-chunk override JSONL files. The back template reads them via `{{Synonyms}}` / `{{Antonyms}}` (hidden raw `<div>`s) and the JS wraps the matching parenthetical in the example text with the relation class — supporting both `(word)` and `(= word)` Oxford paren forms. Empty cells render as no-op (no inference, no fake wrap).
+_Avoid_: relation column, synonym field (singular), pair metadata
+
 ### Word-level labels (in the meta-row)
 
 **Usage Tag**:
@@ -92,6 +104,15 @@ _Avoid_: Level badge, difficulty chip
 A `.corpus-badge` chip with `.corpus-oxf` (Oxford 3000/5000), `.corpus-opal` (OPAL W/S), or `.corpus-awl` (AWL) variant. Sits in the top-bar-left, after `.top-bar-sep`.
 _Avoid_: List badge, frequency chip
 
+**AWL Enrichment Row**:
+One row in `vocab_list/AWL/AWL.md`. Coxhead's Academic Word List owns the
+headword and sublist; POS and CEFR are project enrichment. Oxford is the
+primary POS/CEFR source, with Cambridge used only when Oxford lacks a usable
+entry, POS, or CEFR. POS values may share a row only when both CEFR and source
+match; otherwise they must be split. A Cambridge-derived row carries
+`Cambridge` in the Note column.
+_Avoid_: AWL word row, combined mixed-CEFR row
+
 **Divider**:
 A horizontal `.divider` rule. Per-CEFR variants (`.divider-A1` ... `.divider-UNCLASSIFIED`) use a gradient line tinted to the CEFR color.
 _Avoid_: Separator, rule
@@ -123,6 +144,14 @@ Implications:
 - `NO_LIST` is a valid identity bucket for cards with no corpus list tag (e.g. Oxford proper nouns not on any curated list). The identity rule applies uniformly.
 - The legacy `(Word, CEFR)` only rule was retired 2026-06-21 because it incorrectly forced merges across genuine list boundaries (e.g. it would have collapsed `firm|adjective|B2|Oxford_5000` into `firm|noun|B2|Oxford_3000` even though they are distinct vocabulary entries from different curricula).
 _Avoid_: Card key, card ID, `(word, CEFR)` only (legacy)
+
+**Corpus Deck Routing**:
+Corpus-list cards are routed under the nested `English Academic Vocabulary::Oxford`
+deck. `Oxford_5000` has highest priority and routes to `Oxford::Oxford 5000`.
+Otherwise, `Oxford_3000` cards route to `Oxford::Oxford 3000 Advanced` at B2
+or `Oxford::Oxford 3000 Basic` at A1/A2/B1. Cards without either corpus tag
+keep their existing TED YT, AWL, or plain Oxford deck.
+_Avoid_: flat Oxford 5000 deck, flat Oxford 3000 deck
 
 **Sense Sorting**:
 All CEFR-matching definitions per **card** (per `(Word, CEFRLevel, LIST)` unit) are retained — there is **no per-card def limit**. (The legacy "Sense Cap" of ≤3 defs/card was removed on 2026-06-21 after audit feedback showed high-frequency words were losing critical senses.) Senses are **logically ordered**: first by Oxford's `sensenum_local` (ascending — Oxford's own frequency proxy, lower number = more common), then by example count (descending) as tie-breaker. Idiom defs (sensenum_local=None) sort last. Scraped records keep all senses; sorting is applied only at build.

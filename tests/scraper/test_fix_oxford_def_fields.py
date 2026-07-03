@@ -112,9 +112,9 @@ class TestParseLabelCompound:
         assert result["domain"] is None
 
     def test_3label_compound(self):
-        """'(british english, old-fashioned, informal)' → 2 register tags, no domain."""
-        result = parse_label_compound("(british english, old-fashioned, informal)", SUBJECT_LABELS)
-        assert sorted(result["register_tags"]) == ["informal", "old-fashioned"]
+        """'(british english, formal, informal)' → 2 register tags, no domain."""
+        result = parse_label_compound("(british english, formal, informal)", SUBJECT_LABELS)
+        assert sorted(result["register_tags"]) == ["formal", "informal"]
         assert result["domain"] is None
 
     def test_empty_string(self):

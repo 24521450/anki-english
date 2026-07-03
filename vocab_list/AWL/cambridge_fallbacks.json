@@ -1,0 +1,28 @@
+{
+  "source": "Cambridge Dictionary",
+  "source_url": "https://dictionary.cambridge.org/dictionary/english/",
+  "verified": "2026-07-02",
+  "entries": [
+    {"word": "ambiguous", "pos": "adjective", "cefr": "C2"},
+    {"word": "approximate", "pos": "adjective", "cefr": "B2"},
+    {"word": "constrain", "pos": "verb", "cefr": "C2"},
+    {"word": "equate", "pos": "verb", "cefr": "C2"},
+    {"word": "finite", "pos": "adjective", "cefr": "C2"},
+    {"word": "initial", "pos": "noun", "cefr": "B1"},
+    {"word": "intrinsic", "pos": "adjective", "cefr": "C2"},
+    {"word": "notwithstanding", "pos": "adverb", "cefr": "C1"},
+    {"word": "notwithstanding", "pos": "preposition", "cefr": "C1"},
+    {"word": "offset", "pos": "verb", "cefr": "C2"},
+    {"word": "overlap", "pos": "verb", "cefr": "C2"},
+    {"word": "paradigm", "pos": "noun", "cefr": "C2"},
+    {"word": "percent", "pos": "noun", "cefr": "UNCLASSIFIED"},
+    {"word": "percent", "pos": "adjective", "cefr": "B1"},
+    {"word": "percent", "pos": "adverb", "cefr": "B1"},
+    {"word": "plus", "pos": "preposition", "cefr": "B1"},
+    {"word": "plus", "pos": "adjective", "cefr": "UNCLASSIFIED"},
+    {"word": "plus", "pos": "conjunction", "cefr": "B1"},
+    {"word": "plus", "pos": "noun", "cefr": "B2"},
+    {"word": "predominant", "pos": "adjective", "cefr": "C2"},
+    {"word": "restrain", "pos": "verb", "cefr": "C1"}
+  ]
+}

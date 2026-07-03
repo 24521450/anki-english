@@ -42,6 +42,18 @@ class ProjectPaths:
         return self.root / "data" / "review" / "non_oxford_non_c2_overrides.jsonl"
 
     @property
+    def synonym_example_overrides(self) -> Path:
+        return self.root / "data" / "review" / "synonym_example_overrides.jsonl"
+
+    @property
+    def antonym_example_overrides(self) -> Path:
+        return self.root / "data" / "review" / "antonym_example_overrides.jsonl"
+
+    @property
+    def sense_label_overrides(self) -> Path:
+        return self.root / "data" / "review" / "sense_label_overrides.jsonl"
+
+    @property
     def anki_notes_jsonl(self) -> Path:
         return self.root / "data" / "build" / "anki_notes.jsonl"
 
@@ -60,6 +72,14 @@ class ProjectPaths:
     @property
     def awl_md(self) -> Path:
         return self.root / "vocab_list" / "AWL" / "AWL.md"
+
+    @property
+    def cambridge_cache_dir(self) -> Path:
+        return self.root / "data" / ".cache_html" / "cambridge"
+
+    @property
+    def awl_cambridge_fallbacks(self) -> Path:
+        return self.root / "vocab_list" / "AWL" / "cambridge_fallbacks.json"
 
     @property
     def audio_dir(self) -> Path:

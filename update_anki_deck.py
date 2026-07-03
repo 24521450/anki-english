@@ -78,7 +78,8 @@ def main(argv: list[str] | None = None) -> int:
     model_name = "English Academic Vocabulary Model"
     model_id = generate_deterministic_id(model_name)
     
-    # 12-field mapping expected by templates
+    # 14-field mapping expected by templates (12 base + Synonyms + Antonyms).
+    # Missing JSON keys default to empty so legacy 12-field rows stay valid.
     fields_schema = [
         {"name": "Word"},
         {"name": "CEFRLevel"},
@@ -92,6 +93,8 @@ def main(argv: list[str] | None = None) -> int:
         {"name": "Collocations"},
         {"name": "WordFamily"},
         {"name": "Idioms"},
+        {"name": "Synonyms"},
+        {"name": "Antonyms"},
     ]
 
     model = genanki.Model(
@@ -133,7 +136,8 @@ def main(argv: list[str] | None = None) -> int:
                 deck_id = generate_deterministic_id(deck_name)
                 decks[deck_name] = genanki.Deck(deck_id, deck_name)
 
-            # Map JSONL keys to genanki fields order
+            # Map JSONL keys to genanki fields order. Missing keys default
+            # to empty string so legacy 12-field JSONL rows still validate.
             note_fields = [
                 r.get("word") or "",
                 r.get("cefr") or "",
@@ -147,6 +151,8 @@ def main(argv: list[str] | None = None) -> int:
                 r.get("collocations") or "",
                 r.get("wordfamily") or "",
                 r.get("idioms") or "",
+                r.get("synonyms") or "",
+                r.get("antonyms") or "",
             ]
 
             # Validate audio files

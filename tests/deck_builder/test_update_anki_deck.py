@@ -336,7 +336,7 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
     assert len(notes_created) == 1
     created = notes_created[0]
     
-    # Assert fields in order:
+    # Assert fields in order (14-field model: 12 base + Synonyms + Antonyms):
     # 0: Word ("conquer")
     # 1: CEFRLevel ("C1")
     # 2: PartOfSpeech ("verb")
@@ -349,6 +349,8 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
     # 9: Collocations ("colloc")
     # 10: WordFamily ("family")
     # 11: Idioms ("idiom")
+    # 12: Synonyms ("" when missing)
+    # 13: Antonyms ("" when missing)
     assert created["fields"] == [
         "conquer",
         "C1",
@@ -361,7 +363,9 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "C1 verb academic",
         "colloc",
         "family",
-        "idiom"
+        "idiom",
+        "",
+        "",
     ]
     
     # Assert guid is preserved

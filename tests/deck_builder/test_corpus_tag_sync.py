@@ -13,6 +13,8 @@ from src.deck_builder.corpus_tag_sync import (
     _card_should_have_corpus_tag,
     OXFORD_3000,
     OXFORD_5000,
+    get_vocab_membership,
+    route_deck,
 )
 
 HEADER = [
@@ -77,6 +79,16 @@ class TestParseVocabList:
         result = _parse_vocab_list(path)
         # arm (verb) C1 in 5000
         assert ('arm', 'verb', 'C1') in result
+
+    def test_normalizes_phrasal_verb_abbreviation(self, tmp_path):
+        path = tmp_path / "awl.md"
+        path.write_text(
+            "| **derive** | phrasal v., v. | B2 | 1 |  |\n",
+            encoding="utf-8",
+        )
+        result = _parse_vocab_list(path)
+        assert ('derive', 'phrasal verb', 'B2') in result
+        assert ('derive', 'verb', 'B2') in result
 
 
 class TestCardShouldHaveCorpusTag:
@@ -244,3 +256,179 @@ class TestApplyUpdates:
         txt = HEADER + [make_txt_line('g1', 'arm', 'noun', 'Oxford', 'Audio::Cambridge', cefr='A1')]
         out = apply_updates(txt, [])
         assert out == txt
+class TestNewRoutingAndTagContracts:
+    def test_meantime_and_phrasal_cards_get_tag_from_non_first_pos(self):
+        v3000 = set()
+        v5000 = {
+            ('meantime', 'noun', 'C1'),
+            ('deposit', 'verb', 'C1'),
+            ('deprive', 'verb', 'C1'),
+            ('derive', 'verb', 'B2'),
+            ('devote', 'verb', 'B2'),
+        }
+
+        # meantime: pos = "adverb, noun" (noun is second)
+        in_3000, in_5000 = get_vocab_membership('meantime', 'adverb, noun', 'C1', v3000, v5000)
+        assert in_5000 is True
+
+        # deposit: pos = "noun, verb" (verb is second)
+        in_3000, in_5000 = get_vocab_membership('deposit', 'noun, verb', 'C1', v3000, v5000)
+        assert in_5000 is True
+
+        # deprive: pos = "phrasal verb, verb" (verb is second)
+        in_3000, in_5000 = get_vocab_membership('deprive', 'phrasal verb, verb', 'C1', v3000, v5000)
+        assert in_5000 is True
+
+        # derive: pos = "phrasal verb, verb" (verb is second)
+        in_3000, in_5000 = get_vocab_membership('derive', 'phrasal verb, verb', 'B2', v3000, v5000)
+        assert in_5000 is True
+
+        # devote: pos = "phrasal verb, verb" (verb is second)
+        in_3000, in_5000 = get_vocab_membership('devote', 'phrasal verb, verb', 'B2', v3000, v5000)
+        assert in_5000 is True
+
+    def test_mainland_manual_fill_branch_gets_tag(self):
+        v3000 = set()
+        v5000 = {('mainland', 'noun', 'C1')}
+        in_3000, in_5000 = get_vocab_membership('mainland', 'noun', 'C1', v3000, v5000)
+        assert in_5000 is True
+
+    def test_nursing_exception_tagged_and_routed(self):
+        v3000 = set()
+        v5000 = set()  # nursing is adj. in 5000.md, not noun
+        in_3000, in_5000 = get_vocab_membership('nursing', 'noun', 'B2', v3000, v5000)
+        assert in_5000 is True
+        deck = route_deck('English Academic Vocabulary::Oxford', in_3000, in_5000, 'nursing', 'noun', 'B2')
+        assert deck == 'English Academic Vocabulary::Oxford::Oxford 5000'
+
+    def test_tags_column_17_and_19_parsing(self):
+        # col 17 line (17th item is tags)
+        line17 = "\t".join(["g1", "model", "deck", "word", "pos", "ipa", "def", "ex", "coll", "wf", "uk", "us", "src1", "src2", "C1", "idioms", "Tag17", "Syn18", "Ant19"])
+        card17 = _parse_txt_card(line17, tags_col=17)
+        assert card17["tags"] == "Tag17"
+
+        # col 19 line (19th item is tags)
+        line19 = "\t".join(["g1", "model", "deck", "word", "pos", "ipa", "def", "ex", "coll", "wf", "uk", "us", "src1", "src2", "C1", "idioms", "Syn17", "Ant18", "Tag19"])
+        card19 = _parse_txt_card(line19, tags_col=19)
+        assert card19["tags"] == "Tag19"
+
+    def test_basic_advanced_5000_routing_and_priority(self):
+        # Oxford 5000 priority wins
+        deck = route_deck("English Academic Vocabulary::Oxford", is_in_3000=True, is_in_5000=True, word="test", pos_str="noun", cefr="B2")
+        assert deck == "English Academic Vocabulary::Oxford::Oxford 5000"
+
+        # Oxford 3000 + B2 -> Advanced
+        deck = route_deck("English Academic Vocabulary::Oxford", is_in_3000=True, is_in_5000=False, word="test", pos_str="noun", cefr="B2")
+        assert deck == "English Academic Vocabulary::Oxford::Oxford 3000 Advanced"
+
+        # Oxford 3000 + A2/B1 -> Basic
+        deck = route_deck("English Academic Vocabulary::Oxford", is_in_3000=True, is_in_5000=False, word="test", pos_str="noun", cefr="B1")
+        assert deck == "English Academic Vocabulary::Oxford::Oxford 3000 Basic"
+        deck = route_deck("English Academic Vocabulary::Oxford", is_in_3000=True, is_in_5000=False, word="test", pos_str="noun", cefr="A2")
+        assert deck == "English Academic Vocabulary::Oxford::Oxford 3000 Basic"
+
+        # AWL Coxhead routing
+        deck = route_deck("English Academic Vocabulary::TED YT", is_in_3000=False, is_in_5000=False, word="criterion", pos_str="noun", cefr="UNCLASSIFIED", is_in_awl_coxhead=True)
+        assert deck == "English Academic Vocabulary::AWL 50 Academic Words"
+
+        # Not in either list -> keep current deck (unless in AWL deck -> move to Oxford)
+        deck = route_deck("English Academic Vocabulary::TED YT", is_in_3000=False, is_in_5000=False, word="test", pos_str="noun", cefr="C1")
+        assert deck == "English Academic Vocabulary::TED YT"
+
+        deck = route_deck("English Academic Vocabulary::AWL 50 Academic Words", is_in_3000=False, is_in_5000=False, word="rover", pos_str="noun", cefr="C2")
+        assert deck == "English Academic Vocabulary::Oxford"
+
+    def test_awl_coxhead_membership_rules_and_routing(self):
+        from src.config import ProjectPaths
+        from src.deck_builder.build_notes import _parse_existing_txt
+        from src.deck_builder.corpus_tag_sync import apply_corpus_routing_and_tags
+
+        proj = ProjectPaths()
+        v3 = _parse_vocab_list(proj.oxford_3000_md)
+        v5 = _parse_vocab_list(proj.oxford_5000_md)
+        v_awl = _parse_vocab_list(proj.awl_md)
+        cards_dict = _parse_existing_txt(proj.anki_notes_txt)
+
+        cards = []
+        from collections import namedtuple
+        CardMock = namedtuple('CardMock', ['word', 'pos', 'cefr', 'tags', 'deck'])
+        for (w_orig, pos, cefr), c in cards_dict.items():
+            cards.append(CardMock(c['word_orig'], pos, cefr, c['tags'], c['deck']))
+
+        updated = apply_corpus_routing_and_tags(cards, v3, v5, v_awl)
+
+        by_word = {}
+        for c in updated:
+            w_clean = c.word.split(' (')[0].strip().lower()
+            by_word.setdefault(w_clean, []).append(c)
+
+        # 1. criterion and labor cards get AWL_Coxhead
+        assert any('AWL_Coxhead' in c.tags for c in by_word['criterion'])
+        assert any('AWL_Coxhead' in c.tags for c in by_word['labor'])
+        for c in by_word['labor']:
+            assert c.deck == 'English Academic Vocabulary::AWL 50 Academic Words'
+
+        # 2. trigger|verb|C2 gets NO AWL_Coxhead tag because headword trigger belongs to Oxford 5000
+        for c in by_word['trigger']:
+            assert 'AWL_Coxhead' not in c.tags
+
+        # 3. rover gets NO list tag and moves to Oxford deck
+        for c in by_word['rover']:
+            tags_set = set(c.tags.split())
+            assert not (tags_set & {'Oxford_3000', 'Oxford_5000', 'AWL_Coxhead'})
+            assert c.deck == 'English Academic Vocabulary::Oxford'
+
+        # 4. Every Oxford card has NO AWL_Coxhead
+        for c in updated:
+            tags_set = set(c.tags.split())
+            if 'Oxford_3000' in tags_set or 'Oxford_5000' in tags_set:
+                assert 'AWL_Coxhead' not in tags_set
+
+    def test_behalf_oxford_idiom_c1(self):
+        from src.config import ProjectPaths
+        from src.deck_builder.awl_integrity import AwlIntegrityPaths, _load_oxford_facts
+        proj = ProjectPaths()
+        paths = AwlIntegrityPaths(awl_md=proj.awl_md, oxford_jsonl=proj.oxford_jsonl, cambridge_fallbacks_json=proj.awl_cambridge_fallbacks)
+        facts = _load_oxford_facts(paths.oxford_jsonl)
+        behalf_facts = facts.get('behalf')
+        assert behalf_facts is not None
+        assert 'noun' in behalf_facts.assigned
+        assert 'C1' in behalf_facts.assigned['noun']
+
+    def test_export_content_drift_rejection(self):
+        from tools.check_corpus_tags import validate_export_consistency
+
+        db_cards = [
+            {
+                'guid': 'g1',
+                'notetype': 'model',
+                'word': 'test',
+                'pos': 'noun',
+                'ipa': '/t/',
+                'definition': 'canonical def',
+                'example': 'ex',
+                'collocations': '',
+                'wordfamily': '',
+                'uk_audio': '',
+                'us_audio': '',
+                'source1': 'Oxford',
+                'source2': 'Oxford',
+                'cefr': 'B2',
+                'idioms': '',
+                'synonyms': '',
+                'antonyms': '',
+                'tags': 'Oxford_3000',
+            }
+        ]
+
+        # Case 1: Identical cards -> 0 errors
+        exp_cards_clean = [dict(db_cards[0])]
+        errors = validate_export_consistency(db_cards, exp_cards_clean, expected_count=1)
+        assert errors == []
+
+        # Case 2: Definition drift -> returns error
+        exp_cards_drift = [dict(db_cards[0], definition='DRIFTED DEFINITION')]
+        errors_drift = validate_export_consistency(db_cards, exp_cards_drift, expected_count=1)
+        assert len(errors_drift) == 1
+        assert "Field mismatch for card 'test'" in errors_drift[0]
+        assert "DRIFTED DEFINITION" in errors_drift[0]

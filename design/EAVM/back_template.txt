@@ -76,6 +76,8 @@
   <div id="raw-tags-back">{{Tags}}</div>
   <div id="raw-word-back">{{Word}}</div>
   <div id="raw-idioms-back">{{Idioms}}</div>
+  <div id="raw-synonyms-back">{{Synonyms}}</div>
+  <div id="raw-antonyms-back">{{Antonyms}}</div>
 </div>
 
 <script>
@@ -96,11 +98,11 @@
     'offensive':'rt-red','taboo':'rt-red'
   };
   var subjects = {
-    'biology':1,'computing':1,'economics':1,'law':1,'linguistics':1,
-    'mathematics':1,'medical':1,'physics':1,'psychology':1,
-    'architecture':1,'art':1,'business':1,'chemistry':1,'finance':1,
-    'history':1,'literature':1,'military':1,'music':1,'politics':1,
-    'religion':1,'science':1,'sociology':1
+    'anatomy':1,'biochemistry':1,'biology':1,'business':1,'chemistry':1,
+    'computing':1,'earth science':1,'ecology':1,'economics':1,'engineering':1,
+    'finance':1,'geometry':1,'grammar':1,'law':1,'linguistics':1,
+    'mathematics':1,'medical':1,'philosophy':1,'phonetics':1,'physics':1,
+    'politics':1,'psychology':1,'statistics':1
   };
 
   function parseDef(text) {
@@ -137,14 +139,16 @@
     return html + '</span>';
   }
 
-  function hasVietnameseChars(text) {
-    return /[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(text);
-  }
-
   function hideVietnameseGloss(html) {
+    // Structural rule: every non-empty trailing parenthesis at the end of a
+    // Definition chunk is a Vietnamese gloss. We do NOT try to detect
+    // Vietnamese by diacritic characters — the data contract guarantees the
+    // trailing-paren position is the gloss (either diacritic-rich like
+    // "(đặc điểm)" or ASCII-only like "(gan)").
+    // Parens in the middle of a chunk are not touched.
     return html.replace(/\s*\(([^()]*)\)\s*$/g, function(match, gloss) {
       var clean = trim(gloss);
-      if (!hasVietnameseChars(clean)) return match;
+      if (!clean) return match;
       return ' <button type="button" class="vi-reveal" onclick="this.className+=\' is-open\'; this.disabled=true;"><span class="vi-reveal-label">Hiện nghĩa Việt</span><span class="vi-reveal-text">(' + clean + ')</span></button>';
     });
   }
@@ -171,7 +175,7 @@
     'Oxford_5000':['corpus-badge corpus-oxf','Oxford 5000'],
     'OPAL_W':     ['corpus-badge corpus-opal','OPAL W'],
     'OPAL_S':     ['corpus-badge corpus-opal','OPAL S'],
-    'AWL':        ['corpus-badge corpus-awl','AWL']
+    'AWL_Coxhead':['corpus-badge corpus-awl','AWL Coxhead']
   };
   var addedSep = false;
   if (topBarLeft && rawTags) {
@@ -216,10 +220,14 @@
   var rawDef  = getRaw('raw-definition-back');
   var rawEx   = getRaw('raw-example-back');
   var rawWord = getRaw('raw-word-back');
+  var rawSyns = getRaw('raw-synonyms-back');
+  var rawAnts = getRaw('raw-antonyms-back');
   var sensesEl = document.getElementById('senses-container');
 
   if (sensesEl && rawDef) {
     var defParts = rawDef.split('|'), exParts = rawEx ? rawEx.split('|') : [];
+    var synParts = rawSyns ? rawSyns.split('|') : [];
+    var antParts = rawAnts ? rawAnts.split('|') : [];
     var defs = [];
     for (var d = 0; d < defParts.length; d++) { if (trim(defParts[d])) defs.push({i:d, t:trim(defParts[d])}); }
 
@@ -228,11 +236,85 @@
     var multi = defs.length > 1;
     var sHtml = '';
 
+    // Render synonym/antonym parentheticals with their colored class.
+    // Render synonym/antonym parentheticals with their colored class.
+    // Wrap each paren whose items match an entire relation channel (synonym or antonym) via set equality.
+    // Supports single words `(word)`, `(= word)` and grouped lists `(w1, w2)`, `(= w1, w2)`.
+    function renderRelations(exHtml, synWords, antWords) {
+      if (!exHtml) return exHtml;
+      var synList = [];
+      if (synWords) {
+        for (var s = 0; s < synWords.length; s++) {
+          var sw = trim(synWords[s]).toLowerCase();
+          if (sw && synList.indexOf(sw) === -1) synList.push(sw);
+        }
+      }
+      var antList = [];
+      if (antWords) {
+        for (var a = 0; a < antWords.length; a++) {
+          var aw = trim(antWords[a]).toLowerCase();
+          if (aw && antList.indexOf(aw) === -1) antList.push(aw);
+        }
+      }
+      if (!synList.length && !antList.length) return exHtml;
+
+      return exHtml.replace(/\(([^()]*)\)/g, function(match, inner) {
+        var trimmed = trim(inner).replace(/^=\s*/, '').trim();
+        if (!trimmed) return match;
+        var parts = trimmed.split(',');
+        var cleanSet = [];
+        for (var i = 0; i < parts.length; i++) {
+          var item = trim(parts[i]).toLowerCase();
+          if (!item || cleanSet.indexOf(item) !== -1) return match;
+          cleanSet.push(item);
+        }
+        if (!cleanSet.length) return match;
+
+        var isExactSyn = synList.length > 0 && cleanSet.length === synList.length;
+        if (isExactSyn) {
+          for (var j = 0; j < cleanSet.length; j++) {
+            if (synList.indexOf(cleanSet[j]) === -1) {
+              isExactSyn = false;
+              break;
+            }
+          }
+        }
+
+        var isExactAnt = antList.length > 0 && cleanSet.length === antList.length;
+        if (isExactAnt) {
+          for (var k = 0; k < cleanSet.length; k++) {
+            if (antList.indexOf(cleanSet[k]) === -1) {
+              isExactAnt = false;
+              break;
+            }
+          }
+        }
+
+        if (isExactSyn && isExactAnt) return match;
+        if (isExactSyn) return '<span class="relation-synonym">' + match + '</span>';
+        if (isExactAnt) return '<span class="relation-antonym">' + match + '</span>';
+        return match;
+      });
+    }
+
     for (var di = 0; di < defs.length; di++) {
       var idx = defs[di].i;
       var def = defs[di].t;
       var ex  = (idx < exParts.length) ? trim(exParts[idx]) : '';
       if (ex && wordRe) ex = ex.replace(wordRe, function(m) { return '<span class="word-highlight">' + m + '</span>'; });
+      var synWords = (idx < synParts.length) ? trim(synParts[idx]).split(',') : [];
+      var antWords = (idx < antParts.length) ? trim(antParts[idx]).split(',') : [];
+      for (var sw = 0; sw < synWords.length; sw++) synWords[sw] = trim(synWords[sw]);
+      for (var aw = 0; aw < antWords.length; aw++) antWords[aw] = trim(antWords[aw]);
+      // Only render relations if the per-chunk metadata has entries;
+      // otherwise leave the example untouched (no inference from
+      // sense-level metadata without per-chunk evidence).
+      var hasRelationMeta = false;
+      for (var sw2 = 0; sw2 < synWords.length; sw2++) { if (synWords[sw2]) { hasRelationMeta = true; break; } }
+      if (!hasRelationMeta) {
+        for (var aw2 = 0; aw2 < antWords.length; aw2++) { if (antWords[aw2]) { hasRelationMeta = true; break; } }
+      }
+      if (hasRelationMeta) ex = renderRelations(ex, synWords, antWords);
       var badge = multi ? '<span class="sense-num">' + badges[di] + '</span>' : '';
       sHtml += '<div class="sense-row">'
              + '<div class="sense-def">' + badge + hideVietnameseGloss(parseDef(def)) + '</div>'

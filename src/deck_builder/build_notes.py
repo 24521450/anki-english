@@ -17,6 +17,11 @@ from typing import NamedTuple
 from src.deck_builder.simplify_senses import simplify_record, TEXT_JOIN_SEPARATOR, _resolve_def
 from src.scraper.cambridge_audio import resolve_audio_pos
 from src.deck_builder.review_overrides import load_review_overrides, apply_review_overrides
+from src.deck_builder.synonym_annotator import (
+    load_relation_overrides,
+    annotate_card_examples,
+    get_relation_specs_for_card,
+)
 
 POS_NORM = {
     'n': 'noun', 'v': 'verb', 'adj': 'adjective', 'adv': 'adverb',
@@ -24,6 +29,7 @@ POS_NORM = {
     'conj': 'conjunction', 'num': 'number', 'modal': 'modal',
     'predet': 'predeterminer', 'aux': 'auxiliary', 'exclam': 'exclamation',
     'abbr': 'abbreviation', 'exclamation': 'exclamation',
+    'phrasal v': 'phrasal verb', 'phrasal verb': 'phrasal verb',
     'indefinite article': 'indefinite article', 'definite article': 'definite article',
     'number': 'number',
 }
@@ -43,9 +49,23 @@ class BuildNotesPaths(NamedTuple):
     manual_card_fills_path: Path
     audio_dir: Path
     review_overrides_path: Path | None = None
+    synonym_example_overrides_path: Path | None = None
+    antonym_example_overrides_path: Path | None = None
+    sense_label_overrides_path: Path | None = None
 
 class BuiltCard(NamedTuple):
-    """One Anki Note, encoded as 17-col Anki txt row."""
+    """One Anki Note, encoded as 19-col Anki txt row.
+
+    Column layout (1-indexed):
+        1 guid, 2 notetype, 3 deck, 4 word, 5 pos, 6 ipa, 7 definition,
+        8 example, 9 collocations, 10 wordfamily, 11 uk_audio, 12 us_audio,
+        13 source1, 14 source2, 15 cefr, 16 idioms, 17 tags,
+        18 synonyms, 19 antonyms.
+
+    `synonyms` and `antonyms` are pipe-aligned with `example` chunks
+    (one cell per chunk, empty when no relation). The back template reads
+    these to color the corresponding parentheticals.
+    """
     guid: str
     notetype: str
     deck: str
@@ -63,13 +83,15 @@ class BuiltCard(NamedTuple):
     cefr: str
     idioms: str
     tags: str
+    synonyms: str
+    antonyms: str
 
     def to_tsv(self) -> str:
         return '\t'.join([
             self.guid, self.notetype, self.deck, self.word, self.pos, self.ipa,
             self.definition, self.example, self.collocations, self.wordfamily,
             self.uk_audio, self.us_audio, self.source1, self.source2, self.cefr,
-            self.idioms, self.tags,
+            self.idioms, self.tags, self.synonyms, self.antonyms,
         ])
 
     def to_dict(self) -> dict:
@@ -92,6 +114,8 @@ class BuiltCard(NamedTuple):
             'cefr': self.cefr,
             'idioms': self.idioms,
             'tags': self.tags,
+            'synonyms': self.synonyms,
+            'antonyms': self.antonyms,
         }
 
 class BuildNotesResult(NamedTuple):
@@ -209,6 +233,18 @@ def _parse_vocab_list(path: Path) -> set[tuple[str, str, str]]:
 
 
 def _parse_existing_txt(path: Path) -> dict[tuple[str, str, str], dict]:
+    """Parse the existing notes TXT, accepting both legacy 17-col and current 19-col rows.
+
+    Column layout (1-indexed):
+        1 guid, 2 notetype, 3 deck, 4 word, 5 pos, 6 ipa, 7 definition,
+        8 example, 9 collocations, 10 wordfamily, 11 uk_audio, 12 us_audio,
+        13 source1, 14 source2, 15 cefr, 16 idioms, 17 tags,
+        18 synonyms, 19 antonyms.
+
+    Legacy 17-col rows have no Synonyms/Antonyms columns; we normalize them
+    to empty strings so downstream code can always read `synonyms_orig` and
+    `antonyms_orig`.
+    """
     by_key: dict[tuple[str, str, str], dict] = {}
     for line in path.read_text(encoding='utf-8').splitlines():
         if line.startswith('#') or not line.strip():
@@ -216,11 +252,23 @@ def _parse_existing_txt(path: Path) -> dict[tuple[str, str, str], dict]:
         parts = line.split('\t')
         if len(parts) < 16:
             continue
-        if len(parts) >= 17:
+
+        # 19-col layout: take the new fields directly.
+        if len(parts) >= 19:
+            (guid, notetype, deck, word, pos, ipa, defn, ex, coll, wf,
+             uk, us, src1, src2, cefr, idioms, tags, synonyms, antonyms) = parts[:19]
+        # 17-col layout: Tags still at column 17; Synonyms/Antonyms empty.
+        elif len(parts) >= 17:
             guid, notetype, deck, word, pos, ipa, defn, ex, coll, wf, uk, us, src1, src2, cefr, idioms, tags = parts[:17]
+            synonyms = ''
+            antonyms = ''
+        # 16-col legacy layout (no idioms column).
         else:
             guid, notetype, deck, word, pos, ipa, defn, ex, coll, wf, uk, us, src1, src2, cefr, tags = parts[:16]
             idioms = ''
+            synonyms = ''
+            antonyms = ''
+
         word_lower = word.strip().lower()
         word_base = word_lower.split(' (')[0].strip()
         by_key[(word_lower, pos, cefr)] = {
@@ -242,7 +290,9 @@ def _parse_existing_txt(path: Path) -> dict[tuple[str, str, str], dict]:
             'cefr': cefr,
             'idioms_orig': idioms,
             'tags': tags,
-            'all_16': parts,
+            'synonyms_orig': synonyms,
+            'antonyms_orig': antonyms,
+            'all_19': parts,
         }
     return by_key
 
@@ -581,6 +631,76 @@ def _load_audit_overrides(
     return audit_glosses, audit_examples, audit_collocations
 
 
+def _get_senses_for_card(card: BuiltCard, senses_index: dict) -> list:
+    word_clean = card.word.split(" (")[0].strip().lower()
+    cands = get_word_candidates(word_clean)
+    pos_parts = [p.strip().lower() for p in card.pos.split(",") if p.strip()]
+    card_cefr = card.cefr.strip().upper() if card.cefr else "UNCLASSIFIED"
+
+    senses = []
+    for cand in cands:
+        for p in pos_parts:
+            key = (cand, p, card_cefr)
+            if key in senses_index:
+                senses.extend(senses_index[key])
+        if senses:
+            break
+
+    if not senses:
+        for cand in cands:
+            for (w, p, _), s_list in senses_index.items():
+                if w == cand and p in pos_parts:
+                    senses.extend(s_list)
+            if senses:
+                break
+    return senses
+
+
+def _build_source_label_specs_index(
+    by_word: dict[str, list[dict]],
+) -> dict[tuple[str, str], list[dict]]:
+    """Index raw Oxford definition provenance independently of CEFR filtering."""
+    index: dict[tuple[str, str], list[dict]] = {}
+    for word, records in by_word.items():
+        for record in records:
+            for pos_data in record.get("pos_data") or []:
+                pos = (pos_data.get("pos") or "").strip().lower()
+                if not pos:
+                    continue
+                for definition in pos_data.get("definitions") or []:
+                    source_definition = (definition.get("text") or "").strip()
+                    if not source_definition:
+                        continue
+                    index.setdefault((word, pos), []).append({
+                        "source_definition": source_definition,
+                        "register_tags": list(definition.get("register_tags") or []),
+                        "domain": definition.get("domain"),
+                        "examples": [
+                            (example.get("text") or "").strip()
+                            for example in (definition.get("examples") or [])
+                            if (example.get("text") or "").strip()
+                        ],
+                        "synonyms": list(definition.get("synonyms") or []),
+                        "antonyms": list(definition.get("antonyms") or []),
+                    })
+    return index
+
+
+def _get_source_label_specs_for_card(
+    card: BuiltCard,
+    source_label_specs_index: dict[tuple[str, str], list[dict]],
+) -> list[dict]:
+    word_clean = card.word.split(" (")[0].strip().lower()
+    positions = [part.strip().lower() for part in card.pos.split(",") if part.strip()]
+    for candidate in get_word_candidates(word_clean):
+        specs: list[dict] = []
+        for pos in positions:
+            specs.extend(source_label_specs_index.get((candidate, pos), []))
+        if specs:
+            return specs
+    return []
+
+
 def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     audio_files = _audio_dir_filenames(paths.audio_dir)
     review_overrides_file = getattr(paths, 'review_overrides_path', None)
@@ -638,6 +758,8 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
         if items:
             by_word_simplified[word_lower] = items
 
+    source_label_specs_index = _build_source_label_specs_index(by_word)
+
     senses_index: dict[tuple[str, str, str], list] = {}
     sense_source_record: dict[tuple[str, str, str], dict] = {}
     for word_lower, items in by_word_simplified.items():
@@ -668,6 +790,8 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     type_c_count = 0
     dup_emit_skip_count = 0
     unclassified_drop_count = 0
+
+    guid_to_synonyms_spec: dict[str, list[dict]] = {}
 
     for key in sorted(existing.keys()):
         word_lower, pos_str, cefr = key
@@ -701,8 +825,11 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
                 source2=old['source2'],
                 cefr=old['cefr'],
                 idioms=old['idioms_orig'],
-                tags=old['tags']
+                tags=old['tags'],
+                synonyms=old.get('synonyms_orig', ''),
+                antonyms=old.get('antonyms_orig', ''),
             )
+            guid_to_synonyms_spec[old['guid']] = get_relation_specs_for_card(card, senses_index)
             all_cards.append(card)
             emitted_keys.add(key)
             seen_keys.add(key)
@@ -892,6 +1019,12 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             continue
         emitted_keys.add(emit_key)
 
+        specs = []
+        for s in capped:
+            if getattr(s, "relation_specs", None):
+                specs.extend(s.relation_specs)
+        guid_to_synonyms_spec[guid] = specs
+
         all_cards.append(BuiltCard(
             guid=guid,
             notetype='English Academic Vocabulary Model',
@@ -910,11 +1043,105 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             cefr=new_cefr,
             idioms=_format_idioms(rec.get('idioms') or []),
             tags=tags,
+            synonyms='',  # populated by the relation annotator below
+            antonyms='',  # populated by the relation annotator below
         ))
         seen_keys.add(key)
 
     # Apply review overrides by GUID
     all_cards = apply_review_overrides(all_cards, review_overrides)
+
+    # Load and apply sense label prefixes (register_tags & domain).
+    from src.deck_builder.sense_labels import apply_sense_labels, load_sense_label_overrides
+    sense_label_overrides_file = getattr(paths, 'sense_label_overrides_path', None)
+    sense_label_overrides = load_sense_label_overrides(sense_label_overrides_file)
+
+    guid_to_senses: dict[str, list] = {}
+    guid_to_source_label_specs: dict[str, list[dict]] = {}
+    for c in all_cards:
+        guid_to_senses[c.guid] = _get_senses_for_card(c, senses_index)
+        guid_to_source_label_specs[c.guid] = _get_source_label_specs_for_card(
+            c, source_label_specs_index
+        )
+
+    all_cards, sense_label_errors = apply_sense_labels(
+        all_cards,
+        guid_to_senses,
+        sense_label_overrides,
+        guid_to_source_label_specs,
+    )
+    if sense_label_errors:
+        import sys
+        print(
+            f"Sense label annotation has {len(sense_label_errors)} warnings/errors:\n" +
+            "\n".join(sense_label_errors),
+            file=sys.stderr
+        )
+        if sense_label_overrides_file is not None:
+            raise ValueError(
+                f"Sense label annotation failed with {len(sense_label_errors)} errors:\n" +
+                "\n".join(sense_label_errors)
+            )
+
+    # Load and apply relation annotations (synonyms AND antonyms).
+    synonym_overrides_file = getattr(paths, 'synonym_example_overrides_path', None)
+    antonym_overrides_file = getattr(paths, 'antonym_example_overrides_path', None)
+    synonym_overrides = load_relation_overrides(synonym_overrides_file)
+    antonym_overrides = load_relation_overrides(antonym_overrides_file)
+    annotated_cards = []
+    all_annotation_errors = []
+
+    for c in all_cards:
+        specs = guid_to_synonyms_spec.get(c.guid)
+        if specs is None:
+            specs = get_relation_specs_for_card(c, senses_index)
+
+        annotated_ex, syn_meta, ant_meta, errors = annotate_card_examples(
+            c, specs, synonym_overrides, antonym_overrides,
+        )
+        if errors:
+            all_annotation_errors.extend(errors)
+
+        c_new = c._replace(
+            example=annotated_ex,
+            synonyms=syn_meta,
+            antonyms=ant_meta,
+        )
+        annotated_cards.append(c_new)
+
+    # Validate unknown GUIDs in either override file (unknown GUIDs fail on all builds)
+    built_guids = {c.guid for c in all_cards}
+    for label, ov_map in (
+        ("synonym", synonym_overrides),
+        ("antonym", antonym_overrides),
+    ):
+        unknown_guids = set(ov_map.keys()) - built_guids
+        if unknown_guids:
+            all_annotation_errors.append(
+                f"Unknown card GUIDs defined in {label} overrides: {sorted(unknown_guids)}"
+            )
+
+    if all_annotation_errors:
+        import sys
+        print(
+            f"Relation example annotation has {len(all_annotation_errors)} warnings/errors:\n" +
+            "\n".join(all_annotation_errors),
+            file=sys.stderr
+        )
+        # Match legacy semantics: only raise when an overrides file was
+        # actually loaded. A bare build (no overrides) gets warnings but
+        # does not fail — the override is the user's explicit opt-in to
+        # strict validation.
+        if synonym_overrides_file is not None or antonym_overrides_file is not None:
+            raise ValueError(
+                f"Relation example annotation failed with {len(all_annotation_errors)} errors:\n" +
+                "\n".join(all_annotation_errors)
+            )
+    all_cards = annotated_cards
+
+    # Apply corpus routing and tag updates
+    from src.deck_builder.corpus_tag_sync import apply_corpus_routing_and_tags
+    all_cards = apply_corpus_routing_and_tags(all_cards, vocab_3000, vocab_5000, vocab_awl)
 
     # Serialize outputs to string
     jsonl_lines = []
@@ -923,12 +1150,13 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     jsonl_text = '\n'.join(jsonl_lines) + '\n'
 
     header_lines = []
-    # Read headers if existing notes_txt_path exists
+    # Read headers if existing notes_txt_path exists, then upgrade tags column
+    # to 17 (unchanged) and append synonym/antonym column hints for Anki importer.
     if paths.notes_txt_path.exists():
         for line in paths.notes_txt_path.read_text(encoding='utf-8').splitlines()[:6]:
             if line.startswith('#tags column:'):
                 header_lines.append('#tags column:17')
-            else:
+            elif line.startswith('#'):
                 header_lines.append(line)
     else:
         # Fallback default headers
@@ -938,7 +1166,7 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
             "#guid column:1",
             "#notetype column:2",
             "#deck column:3",
-            "#tags column:17"
+            "#tags column:17",
         ]
     body = [c.to_tsv() for c in all_cards]
     txt_text = '\n'.join(header_lines + body) + '\n'

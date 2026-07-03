@@ -613,3 +613,19 @@
   padding-left: 10px;
   border-left: 1px solid #2a2929;
 }
+
+/* ── Lexical relation parentheticals (sense synonyms / antonyms) ── */
+/* Applied to a parenthesized relation token in the example, e.g.
+ * `(plentiful)` rendered after the headword `abundant`, or
+ * `(opaque)` rendered after `transparent`. The annotator in
+ * `src/deck_builder/synonym_annotator.py` decides which parens get
+ * wrapped; the back template reads per-chunk `Synonyms` / `Antonyms`
+ * metadata to drive the wrap. */
+.relation-synonym {
+  color: #5DCAA5;
+  font-weight: 600;
+}
+.relation-antonym {
+  color: #D4537E;
+  font-weight: 600;
+}

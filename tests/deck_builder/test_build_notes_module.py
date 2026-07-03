@@ -13,9 +13,22 @@ from src.deck_builder.build_notes import (
     lookup_gloss,
     _resolve_audio_filename,
     _parse_existing_txt,
+    _parse_vocab_list,
     resolve_primary_record
 )
 import tools.build_notes
+
+
+def test_build_vocab_parser_normalizes_phrasal_verb(tmp_path: Path):
+    path = tmp_path / "awl.md"
+    path.write_text(
+        "| **derive** | phrasal v., v. | B2 | 1 |  |\n",
+        encoding="utf-8",
+    )
+    assert _parse_vocab_list(path) == {
+        ("derive", "phrasal verb", "B2"),
+        ("derive", "verb", "B2"),
+    }
 
 
 def _setup_fixtures(tmp_path: Path):
@@ -226,7 +239,15 @@ def test_tools_build_notes_cli_dry_run(tmp_path, monkeypatch):
     monkeypatch.setattr(tools.build_notes, "AUDIO_DIR", paths.audio_dir)
 
     out_jsonl = tmp_path / "anki_notes.jsonl"
-    argv = ["--dry-run", "--out-jsonl", str(out_jsonl)]
+    syn_overrides = tmp_path / "synonyms.jsonl"
+    ant_overrides = tmp_path / "antonyms.jsonl"
+    syn_overrides.write_text("", encoding="utf-8")
+    ant_overrides.write_text("", encoding="utf-8")
+    argv = [
+        "--dry-run", "--out-jsonl", str(out_jsonl),
+        "--synonym-overrides", str(syn_overrides),
+        "--antonym-overrides", str(ant_overrides),
+    ]
 
     # Let's monkeypatch sys.argv before calling main()
     monkeypatch.setattr(sys, "argv", ["build_notes.py"] + argv)
@@ -236,7 +257,11 @@ def test_tools_build_notes_cli_dry_run(tmp_path, monkeypatch):
     assert not out_jsonl.exists()
 
     # Non-dry-run: should write files and backups
-    monkeypatch.setattr(sys, "argv", ["build_notes.py", "--out-jsonl", str(out_jsonl)])
+    monkeypatch.setattr(sys, "argv", [
+        "build_notes.py", "--out-jsonl", str(out_jsonl),
+        "--synonym-overrides", str(syn_overrides),
+        "--antonym-overrides", str(ant_overrides),
+    ])
     code = tools.build_notes.main()
     assert code == 0
     assert out_jsonl.exists()

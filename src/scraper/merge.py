@@ -16,6 +16,8 @@ from __future__ import annotations
 import copy
 from typing import Any, Optional
 
+from src.scraper.oxford_labels import CONFLICT_PAIRS
+
 
 # Canonical POS ordering for stable output (pinned Phase 7b: adj before noun before verb)
 POS_ORDER = [
@@ -38,6 +40,38 @@ _POS_RANK = {p: i for i, p in enumerate(POS_ORDER)}
 def _dedup_preserve_order(items: list) -> list:
     """Remove duplicates while keeping first occurrence's order."""
     return list(dict.fromkeys(items))
+
+
+def _merge_register_tags_strict(
+    records: list[dict],
+    field: str,
+    context: str,
+) -> list[str]:
+    """Union register tags from multiple records; raise ValueError on forbidden conflict.
+
+    Args:
+        records: source records (each has a `field` key with a list[str]).
+        field: the key to read from each record (e.g. 'register_tags').
+        context: human-readable context string for the error message.
+    """
+    out: list[str] = []
+    for r in records:
+        for tag in (r.get(field) or []):
+            if tag and tag not in out:
+                cand = out + [tag]
+                conflict = next(
+                    ((t1, t2) for t1, t2 in CONFLICT_PAIRS if t1 in cand and t2 in cand),
+                    None,
+                )
+                if conflict:
+                    raise ValueError(
+                        f"Conflicting register tags {conflict!r} in '{field}' "
+                        f"({context})"
+                    )
+                out.append(tag)
+    return out
+
+
 
 
 def _stable_pos_order(pos_list: list[str]) -> list[str]:
@@ -210,8 +244,20 @@ def merge_word_records(records: list[dict]) -> dict:
     if not records:
         raise ValueError("merge_word_records requires at least 1 record")
     if len(records) == 1:
-        # Deep copy so caller can mutate without affecting input
+        # Deep copy so caller can mutate without affecting input.
+        # Backfill required fields on every def so downstream consumers
+        # (schema validator, builder) can assume they always exist.
+        # This handles 3 cases:
+        #   1. Synthetic records from older fixers that predate the field.
+        #   2. Hand-crafted test fixtures that omit the field.
+        #   3. Old parser outputs preserved in audit JSONL.
         result = copy.deepcopy(records[0])
+        for pd in result.get("pos_data", []):
+            for d in pd.get("definitions", []):
+                if "synonyms" not in d:
+                    d["synonyms"] = []
+                if "antonyms" not in d:
+                    d["antonyms"] = []
         # Apply skip flag rules
         _apply_skip_flags(result)
         return result
@@ -283,9 +329,10 @@ def merge_word_records(records: list[dict]) -> dict:
         [w for r in records for w in r.get("see_also", [])]
     )
 
-    # register_tags (top): union
-    base["register_tags"] = _dedup_preserve_order(
-        [t for r in records for t in r.get("register_tags", [])]
+    # register_tags (top-level): union, raise on forbidden conflict
+    base["register_tags"] = _merge_register_tags_strict(
+        records, field="register_tags",
+        context=f"word='{base.get('word')}' source_files={base.get('source_files')}",
     )
 
     # verb_forms: first non-null
@@ -296,7 +343,7 @@ def merge_word_records(records: list[dict]) -> dict:
 
     # pos_data: concatenate from all records, dedupe by (pos, sensenum_local, text)
     pos_data_merged: list[dict] = []
-    seen_defs: set = set()
+    seen_defs: dict[tuple, dict] = {}
     for r in records:
         for pd in r.get("pos_data", []):
             # Within a single record, dedupe defs by key
@@ -304,12 +351,64 @@ def merge_word_records(records: list[dict]) -> dict:
             for d in pd.get("definitions", []):
                 key = (pd["pos"], d.get("sensenum_local"), d.get("text"))
                 if key not in seen_defs:
-                    seen_defs.add(key)
-                    new_defs.append(d)
+                    d_copy = copy.deepcopy(d)
+                    if "synonyms" not in d_copy:
+                        d_copy["synonyms"] = []
+                    if "antonyms" not in d_copy:
+                        d_copy["antonyms"] = []
+                    seen_defs[key] = d_copy
+                    new_defs.append(d_copy)
+                else:
+                    d_existing = seen_defs[key]
+                    # Union synonyms (preserves first-appearance order)
+                    existing_syns = d_existing.get("synonyms") or []
+                    new_syns = d.get("synonyms") or []
+                    d_existing["synonyms"] = _dedup_preserve_order(existing_syns + new_syns)
+
+                    # Union antonyms (same strategy — Oxford often splits the
+                    # same sense across files; opposite headwords vary slightly
+                    # between scrapes and we want all of them.)
+                    existing_ants = d_existing.get("antonyms") or []
+                    new_ants = d.get("antonyms") or []
+                    d_existing["antonyms"] = _dedup_preserve_order(existing_ants + new_ants)
+
+                    # Union register_tags (raise on forbidden conflict)
+                    existing_regs = d_existing.get("register_tags") or []
+                    new_regs = d.get("register_tags") or []
+                    merged_regs = list(existing_regs)
+                    for tag in new_regs:
+                        if tag and tag not in merged_regs:
+                            cand = merged_regs + [tag]
+                            conflict = next(
+                                (t1, t2)
+                                for t1, t2 in CONFLICT_PAIRS
+                                if t1 in cand and t2 in cand
+                            ) if any(t1 in cand and t2 in cand for t1, t2 in CONFLICT_PAIRS) else None
+                            if conflict:
+                                raise ValueError(
+                                    f"Conflicting register tags {conflict!r} for "
+                                    f"definition '{d.get('text')}' "
+                                    f"(word='{base.get('word')}' pos='{key[0]}' "
+                                    f"sensenum='{key[1]}' "
+                                    f"source_files={base.get('source_files')})"
+                                )
+                            merged_regs.append(tag)
+                    d_existing["register_tags"] = merged_regs
+
+                    # Domain: pick non-null domain; raise ValueError if two different non-null domains exist
+                    existing_dom = d_existing.get("domain")
+                    new_dom = d.get("domain")
+                    if existing_dom is None:
+                        d_existing["domain"] = new_dom
+                    elif new_dom is not None and new_dom != existing_dom:
+                        raise ValueError(
+                            f"Conflicting domains for definition '{d.get('text')}': "
+                            f"'{existing_dom}' vs '{new_dom}'"
+                        )
             if new_defs:
                 # Re-number n: 1-based within each pos_data entry
-                for n, d in enumerate(new_defs, start=1):
-                    d["n"] = n
+                for n, d_item in enumerate(new_defs, start=1):
+                    d_item["n"] = n
                 pos_data_merged.append({
                     "pos": pd["pos"],
                     "register_tags": _dedup_preserve_order(pd.get("register_tags", [])),

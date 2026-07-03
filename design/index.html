@@ -683,6 +683,22 @@
   border-left: 1px solid #2a2929;
 }
 
+/* ── Lexical relation parentheticals (sense synonyms / antonyms) ── */
+/* Applied to a parenthesized relation token in the example, e.g.
+ * `(plentiful)` rendered after the headword `abundant`, or
+ * `(opaque)` rendered after `transparent`. The annotator in
+ * `src/deck_builder/synonym_annotator.py` decides which parens get
+ * wrapped; the back template reads per-chunk `Synonyms` / `Antonyms`
+ * metadata to drive the wrap. */
+.relation-synonym {
+  color: #5DCAA5;
+  font-weight: 600;
+}
+.relation-antonym {
+  color: #D4537E;
+  font-weight: 600;
+}
+
 /* END ANKI CARD STYLES */
   </style>
   <!-- END ANKI CARD STYLES -->
@@ -810,6 +826,7 @@
         <li><code style="color:#fbbf24">.audio-row</code> + <code style="color:#fbbf24">.audio-btn-wrapper</code> + <code style="color:#fbbf24">.audio-btn-uk</code> + <code style="color:#fbbf24">.audio-btn-us</code> + <code style="color:#fbbf24">.no-audio</code></li>
         <li><code style="color:#fbbf24">.section-box</code> + <code style="color:#fbbf24">.section-title</code></li>
         <li><code style="color:#fbbf24">.word-highlight</code> (used in examples)</li>
+        <li><code style="color:#fbbf24">.relation-synonym</code> + <code style="color:#fbbf24">.relation-antonym</code> (sense-level synonym/antonym parentheticals)</li>
         <li><code style="color:#fbbf24">.collocations-list</code> + <code style="color:#fbbf24">.collocation-chip</code></li>
         <li><code style="color:#fbbf24">.word-family-content</code> + <code style="color:#fbbf24">.wf-chip</code> + <code style="color:#fbbf24">.wf-chip-word</code> + <code style="color:#fbbf24">.wf-chip-pos</code> + <code style="color:#fbbf24">.wf-pos-n/v/adj/adv/phr/prep</code> + <code style="color:#fbbf24">.word-family-box</code></li>
         <li><code style="color:#fbbf24">.corpus-badge</code> + <code style="color:#fbbf24">.corpus-opal</code> + <code style="color:#fbbf24">.corpus-oxf</code> + <code style="color:#fbbf24">.corpus-awl</code></li>
@@ -864,7 +881,7 @@
         <span class="corpus-badge corpus-oxf">Oxford 5000</span>
         <span class="corpus-badge corpus-opal">OPAL W</span>
         <span class="corpus-badge corpus-opal">OPAL S</span>
-        <span class="corpus-badge corpus-awl">AWL</span>
+        <span class="corpus-badge corpus-awl">AWL Coxhead</span>
       </div>
     </div>
 
@@ -1006,6 +1023,15 @@
             <div class="idiom-explanation">used to say that when you are away from somebody that you love, you love them even more</div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="demo-block">
+      <div class="demo-label">Lexical relation parentheticals (sense synonym / antonym)</div>
+      <div class="demo-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="font-size:14.5px;color:#94a3b8">"Fish are <span class="word-highlight">abundant</span> <span class="relation-synonym">(plentiful)</span> in the lake."</div>
+        <div style="font-size:14.5px;color:#94a3b8">"The insect's wings are almost <span class="word-highlight">transparent</span> <span class="relation-antonym">(opaque)</span>."</div>
+        <div style="font-size:14.5px;color:#94a3b8">"a <span class="word-highlight">cheap</span> <span class="relation-synonym">(inexpensive)</span> <span class="relation-antonym">(expensive)</span> car"</div>
       </div>
     </div>
 
@@ -1246,7 +1272,7 @@
                 <span class="pos-chip">noun</span>
                 <span class="top-bar-sep"></span>
                 <span class="corpus-badge corpus-oxf">Oxford 5000</span>
-                <span class="corpus-badge corpus-awl">AWL</span>
+                <span class="corpus-badge corpus-awl">AWL Coxhead</span>
               </div>
             </div>
             <div class="top-bar-right"><span class="top-badge cefr-badge-C2">C2</span></div>
@@ -1304,7 +1330,7 @@
               <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
                 <span class="pos-chip">noun</span>
                 <span class="top-bar-sep"></span>
-                <span class="corpus-badge corpus-awl">AWL</span>
+                <span class="corpus-badge corpus-awl">AWL Coxhead</span>
               </div>
             </div>
             <div class="top-bar-right"><span class="top-badge cefr-badge-UNCLASSIFIED">UNCLASSIFIED</span></div>
@@ -1325,7 +1351,7 @@
               <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
                 <span class="pos-chip">noun</span>
                 <span class="top-bar-sep"></span>
-                <span class="corpus-badge corpus-awl">AWL</span>
+                <span class="corpus-badge corpus-awl">AWL Coxhead</span>
               </div>
             </div>
             <div class="top-bar-right"><span class="top-badge cefr-badge-UNCLASSIFIED">UNCLASSIFIED</span></div>
@@ -1463,7 +1489,7 @@
                 <span class="pos-chip">verb</span>
                 <span class="top-bar-sep"></span>
                 <span class="corpus-badge corpus-oxf">Oxford 3000</span>
-                <span class="corpus-badge corpus-awl">AWL</span>
+                <span class="corpus-badge corpus-awl">AWL Coxhead</span>
               </div>
             </div>
             <div class="top-bar-right"><span class="top-badge cefr-badge-B2">B2</span></div>
@@ -1605,7 +1631,7 @@
         <span class="corpus-badge corpus-opal">OPAL S</span>
         <span class="corpus-badge corpus-oxf">Oxford 3000</span>
         <span class="corpus-badge corpus-oxf">Oxford 5000</span>
-        <span class="corpus-badge corpus-awl">AWL</span>
+        <span class="corpus-badge corpus-awl">AWL Coxhead</span>
         <span class="top-badge cefr-badge-C1">CEFR</span>
       </div>
       <div style="font-size:11px;color:#71717a;margin-top:10px;font-style:italic">→ Placed in top-bar (separated from POS by <code>.top-bar-sep</code>). Word-level information, not sense-level.</div>

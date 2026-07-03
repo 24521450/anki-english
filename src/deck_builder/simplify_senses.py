@@ -29,6 +29,7 @@ from collections import Counter
 from typing import NamedTuple
 
 from src.deck_builder.beta_score import evaluate_pair
+from src.scraper.oxford_labels import CONFLICT_PAIRS  # noqa: F401 — re-exported for back-compat
 
 # Separator for merged text fields. Use ' ; ' (semicolon, not ' | ') per user preference.
 # Risk: Oxford defs may contain ';' mid-sentence, so we keep spaces around to make the
@@ -60,6 +61,16 @@ class MergedSense(NamedTuple):
     split_reason: str | None = None  # human-readable: which pair triggered split
     # CEFR rule label (per CONTEXT.md)
     rule_label: str | None = None  # e.g. 'Rule 1+3: surviving senses all have own CEFR (dropped 1 unlisted)'
+    # Lexical relation specs — paired sense-level synonyms and antonyms
+    # for each example in this merged sense. Consumed by the relation
+    # annotator in src/deck_builder/synonym_annotator.py.
+    # Each entry: {"text": ex_text, "synonyms": [...], "antonyms": [...]}.
+    relation_specs: list[dict] | None = None
+    # Sense label specs — source definition text and labels contributing to this sense.
+    # Consumed by the sense label annotator in src/deck_builder/sense_labels.py.
+    # Each entry owns its source definition, labels, examples, and lexical
+    # relations so downstream code can map curated chunks by exact provenance.
+    label_specs: list[dict] | None = None
 
 
 class FlatSense(NamedTuple):
@@ -185,12 +196,16 @@ def _merge_texts(texts: list[str]) -> str:
 
 
 def _merge_register_tags(sources: list[list[str]]) -> list[str]:
-    seen = set()
+    """Union register_tags from multiple source definitions (first-appearance order).
+
+    Conflicts (formal+informal etc.) are passed through intact so that
+    sense_labels.py can detect them and require an explicit override.
+    Silent suppression here would hide corruption in the source data.
+    """
     out = []
     for src in sources:
         for t in src or []:
-            if t and t not in seen:
-                seen.add(t)
+            if t and t not in out:
                 out.append(t)
     return out
 
@@ -399,12 +414,58 @@ def merge_cluster(
     src_register = [d.get("register_tags") or [] for d in src_defs]
     src_topics = [d.get("topics") or [] for d in src_defs]
     src_collocations = [d.get("collocations") or {} for d in src_defs]
-    src_examples = [d.get("examples") or [] for d in src_defs]
+    src_examples = []
+    for d in src_defs:
+        syns = d.get("synonyms") or []
+        exs = []
+        for ex in d.get("examples") or []:
+            if isinstance(ex, dict):
+                ex_copy = dict(ex)
+                ex_copy["synonyms"] = syns
+                exs.append(ex_copy)
+        src_examples.append(exs)
     src_countability = [d.get("countability") for d in src_defs]
     src_domain = [d.get("domain") for d in src_defs]
     src_phrase = [bool(d.get("is_phrase")) for d in src_defs]
     src_idiom = [bool(d.get("is_idiom")) for d in src_defs]
     cefr_originals = [d.get("cefr") for d in src_defs]
+
+    # Collect lexical relation specs from original uncapped examples of the
+    # senses in this cluster. Each example gets the paired (synonyms, antonyms)
+    # of its source def. When the cluster merged multiple defs, we attach one
+    # spec per (example, source def) pair so the annotator can pick the exact
+    # Oxford sense that owns the example.
+    relation_specs = []
+    for d in src_defs:
+        syns = d.get("synonyms") or []
+        ants = d.get("antonyms") or []
+        for ex in d.get("examples") or []:
+            ex_text = (ex.get("text") or "").strip()
+            if ex_text:
+                relation_specs.append({
+                    "text": ex_text,
+                    "synonyms": syns,
+                    "antonyms": ants,
+                })
+
+    # Collect sense label specs from source definitions in this cluster.
+    label_specs = []
+    for d in src_defs:
+        def_text = (d.get("text") or "").strip()
+        reg_tags = d.get("register_tags") or []
+        dom = d.get("domain")
+        label_specs.append({
+            "source_definition": def_text,
+            "register_tags": list(reg_tags),
+            "domain": dom,
+            "examples": [
+                (example.get("text") or "").strip()
+                for example in (d.get("examples") or [])
+                if (example.get("text") or "").strip()
+            ],
+            "synonyms": list(d.get("synonyms") or []),
+            "antonyms": list(d.get("antonyms") or []),
+        })
 
     bm = beta_meta or {}
     return MergedSense(
@@ -427,6 +488,8 @@ def merge_cluster(
         beta_decision=bm.get('beta_decision'),
         review_needed=bm.get('review_needed', False),
         split_reason=bm.get('split_reason'),
+        relation_specs=relation_specs,
+        label_specs=label_specs,
     )
 
 

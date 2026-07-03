@@ -6,7 +6,8 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | Word | POS | CEFR | Sublist | Note |
 |------|-----|------|---------|------|
 | **abandon** | v. | B2 | 8 |  |
-| **abstract** | adj., v. | B2 | 6 |  |
+| **abstract** | adj. | B2 | 6 |  |
+| **abstract** | v. | UNCLASSIFIED | 6 |  |
 | **abstract** | n. | C2 | 6 |  |
 | **academy** | n. | C1 | 5 |  |
 | **access** | n. | B1 | 4 |  |
@@ -43,7 +44,8 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **appreciate** | v. | B1 | 8 |  |
 | **approach** | n. | B2 | 1 |  |
 | **appropriate** | adj. | B2 | 2 |  |
-| **approximate** | adj., v. | B2 | 4 | Cambridge |
+| **approximate** | adj. | B2 | 4 | Cambridge |
+| **approximate** | v. | UNCLASSIFIED | 4 |  |
 | **arbitrary** | adj. | C1 | 8 |  |
 | **area** | n. | A1 | 1 |  |
 | **aspect** | n. | B2 | 2 |  |
@@ -112,9 +114,12 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **complement** | n. | B2 | 8 |  |
 | **complement** | v. | C1 | 8 |  |
 | **complex** | adj. | B1 | 2 |  |
-| **component** | adj., n. | B2 | 3 |  |
-| **compound** | adj., n., v. | B2 | 5 |  |
-| **comprehensive** | adj., n. | B2 | 7 |  |
+| **component** | adj. | UNCLASSIFIED | 3 |  |
+| **component** | n. | B2 | 3 |  |
+| **compound** | adj., n. | B2 | 5 |  |
+| **compound** | v. | UNCLASSIFIED | 5 |  |
+| **comprehensive** | adj. | B2 | 7 |  |
+| **comprehensive** | n. | C2 | 7 |  |
 | **comprise** | v. | B2 | 7 |  |
 | **compute** | v. | C1 | 2 |  |
 | **conceive** | v. | C1 | 10 |  |
@@ -129,13 +134,14 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **conflict** | n. | B2 | 5 |  |
 | **conform** | v. | C1 | 8 |  |
 | **consent** | n., v. | C1 | 3 |  |
-| **consequent** | adj. | UNCLASSIFIED | 2 |  |
+| **consequent** | adj. | C1 | 2 |  |
 | **considerable** | adj. | B2 | 3 |  |
 | **consist** | v. | B1 | 1 |  |
 | **constant** | adj. | B2 | 3 |  |
 | **constitute** | v. | C1 | 1 |  |
 | **constrain** | v. | C2 | 3 | Cambridge |
-| **construct** | n., v. | B2 | 2 |  |
+| **construct** | n. | UNCLASSIFIED | 2 |  |
+| **construct** | v. | B2 | 2 |  |
 | **consult** | v. | B2 | 5 |  |
 | **consume** | v. | B1 | 2 |  |
 | **contact** | n. | B1 | 5 |  |
@@ -143,7 +149,7 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **context** | n. | A2 | 1 |  |
 | **contract** | n., v. | B2 | 1 |  |
 | **contradict** | v. | C1 | 8 |  |
-| **contrary** | adj. | B2 | 7 | Cambridge |
+| **contrary** | adj. | C1 | 7 |  |
 | **contrast** | n., v. | B1 | 4 |  |
 | **contribute** | v. | B2 | 3 |  |
 | **controversy** | n. | B2 | 9 |  |
@@ -173,7 +179,7 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **debate** | n. | B2 | 4 |  |
 | **decade** | n. | B1 | 7 |  |
 | **decline** | n., v. | B2 | 5 |  |
-| **deduce** | v. | C2 | 3 | Cambridge |
+| **deduce** | v. | C1 | 3 |  |
 | **define** | v. | B1 | 1 |  |
 | **definite** | adj. | B1 | 7 |  |
 | **demonstrate** | v. | B2 | 3 |  |
@@ -201,7 +207,8 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **diverse** | adj. | B2 | 6 |  |
 | **document** | n. | A2 | 3 |  |
 | **domain** | n. | C1 | 6 |  |
-| **domestic** | adj., n. | B2 | 4 |  |
+| **domestic** | adj. | B2 | 4 |  |
+| **domestic** | n. | UNCLASSIFIED | 4 |  |
 | **dominate** | v. | B2 | 3 |  |
 | **draft** | n. | B2 | 5 |  |
 | **drama** | n. | A2 | 8 |  |
@@ -213,7 +220,7 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | Word | POS | CEFR | Sublist | Note |
 |------|-----|------|---------|------|
 | **economy** | n. | B1 | 1 |  |
-| **edit** | n. | B2 | 6 | Cambridge |
+| **edit** | n. | UNCLASSIFIED | 6 |  |
 | **element** | n. | B1 | 2 |  |
 | **eliminate** | v. | B2 | 7 |  |
 | **emerge** | v. | B2 | 4 |  |
@@ -237,9 +244,10 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **estate** | n. | B2 | 6 |  |
 | **estimate** | n., v. | B2 | 1 |  |
 | **ethic** | n. | B2 | 9 |  |
-| **ethnic** | adj., n. | B2 | 4 |  |
+| **ethnic** | adj. | B2 | 4 |  |
+| **ethnic** | n. | C2 | 4 |  |
 | **evaluate** | v. | B2 | 2 |  |
-| **eventual** | adj. | C2 | 8 | Cambridge |
+| **eventual** | adj. | C1 | 8 |  |
 | **evident** | adj. | B2 | 1 |  |
 | **evolve** | v. | B2 | 5 |  |
 | **exceed** | v. | B2 | 6 |  |
@@ -248,7 +256,8 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **expand** | v. | B1 | 5 |  |
 | **expert** | n. | A2 | 6 |  |
 | **explicit** | adj. | C1 | 6 |  |
-| **exploit** | n., v. | B2 | 8 |  |
+| **exploit** | n. | UNCLASSIFIED | 8 |  |
+| **exploit** | v. | B2 | 8 |  |
 | **export** | n. | B1 | 1 |  |
 | **expose** | v. | B2 | 5 |  |
 | **external** | adj. | B2 | 5 |  |
@@ -268,7 +277,7 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **finance** | n. | B2 | 1 |  |
 | **finite** | adj. | C2 | 7 | Cambridge |
 | **flexible** | adj. | B2 | 6 |  |
-| **fluctuate** | v. | C2 | 8 | Cambridge |
+| **fluctuate** | v. | C1 | 8 |  |
 | **focus** | v. | A2 | 2 |  |
 | **format** | n. | B2 | 9 |  |
 | **format** | v. | C1 | 9 |  |
@@ -312,9 +321,10 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **ignorance** | n. | C1 | 6 |  |
 | **illustrate** | v. | B2 | 3 |  |
 | **image** | n. | A2 | 5 |  |
-| **immigrate** | v. | UNCLASSIFIED | 3 |  |
+| **immigrate** | v. | C1 | 3 |  |
 | **impact** | n., v. | B1 | 2 |  |
-| **implement** | n., v. | B2 | 4 |  |
+| **implement** | n. | UNCLASSIFIED | 4 |  |
+| **implement** | v. | B2 | 4 |  |
 | **implicate** | v. | UNCLASSIFIED | 4 |  |
 | **implicit** | adj. | C1 | 8 |  |
 | **imply** | v. | B2 | 3 |  |
@@ -326,7 +336,8 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **incline** | v. | UNCLASSIFIED | 10 |  |
 | **income** | n. | B2 | 1 |  |
 | **incorporate** | v. | B2 | 6 |  |
-| **index** | n., v. | B2 | 6 |  |
+| **index** | n. | B2 | 6 |  |
+| **index** | v. | UNCLASSIFIED | 6 |  |
 | **indicate** | v. | B1 | 1 |  |
 | **individual** | adj., n. | A2 | 1 |  |
 | **induce** | v. | C1 | 8 |  |
@@ -335,16 +346,22 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **infrastructure** | n. | B2 | 8 |  |
 | **inherent** | adj. | C1 | 9 |  |
 | **inhibit** | v. | C1 | 6 |  |
-| **initial** | adj., n., v. | B2 | 3 |  |
-| **initiate** | n., v. | C1 | 6 |  |
+| **initial** | adj. | B2 | 3 |  |
+| **initial** | n. | B1 | 3 | Cambridge |
+| **initial** | v. | UNCLASSIFIED | 3 |  |
+| **initiate** | n. | UNCLASSIFIED | 6 |  |
+| **initiate** | v. | C1 | 6 |  |
 | **injure** | v. | B1 | 2 |  |
 | **innovate** | v. | UNCLASSIFIED | 7 |  |
 | **input** | n., v. | B2 | 6 |  |
-| **insert** | n., v. | B2 | 7 |  |
+| **insert** | n. | UNCLASSIFIED | 7 |  |
+| **insert** | v. | B2 | 7 |  |
 | **insight** | n. | B2 | 9 |  |
 | **inspect** | v. | C1 | 8 |  |
-| **instance** | n., v. | B2 | 3 |  |
-| **institute** | n., v. | B2 | 2 |  |
+| **instance** | n. | B2 | 3 |  |
+| **instance** | v. | UNCLASSIFIED | 3 |  |
+| **institute** | n. | B2 | 2 |  |
+| **institute** | v. | UNCLASSIFIED | 2 |  |
 | **instruct** | v. | C1 | 6 |  |
 | **integral** | adj. | C1 | 9 |  |
 | **integrate** | v. | B2 | 4 |  |
@@ -352,7 +369,8 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **intelligence** | n. | B1 | 6 |  |
 | **intense** | adj. | B2 | 8 |  |
 | **interact** | v. | B2 | 3 |  |
-| **intermediate** | adj., n. | C1 | 9 |  |
+| **intermediate** | adj. | C1 | 9 |  |
+| **intermediate** | n. | B2 | 9 |  |
 | **internal** | adj. | B2 | 4 |  |
 | **interpret** | v. | B2 | 1 |  |
 | **interval** | n. | B2 | 6 |  |
@@ -378,12 +396,13 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | Word | POS | CEFR | Sublist | Note |
 |------|-----|------|---------|------|
 | **label** | n., v. | B1 | 4 |  |
-| **labour** | n., v. | B2 | 1 |  |
+| **labour** | n. | B2 | 1 |  |
+| **labour** | v. | UNCLASSIFIED | 1 |  |
 | **layer** | n. | B1 | 3 |  |
 | **layer** | v. | C2 | 3 |  |
 | **lecture** | n., v. | A2 | 6 |  |
 | **legal** | adj. | B1 | 1 |  |
-| **legislate** | v. | UNCLASSIFIED | 1 |  |
+| **legislate** | v. | C1 | 1 |  |
 | **levy** | n., v. | UNCLASSIFIED | 10 |  |
 | **liberal** | adj., n. | C1 | 5 |  |
 | **licence** | n. | B2 | 5 |  |
@@ -407,7 +426,8 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **mechanism** | n. | B2 | 4 |  |
 | **media** | n. | A2 | 7 |  |
 | **mediate** | v. | C2 | 9 |  |
-| **medical** | adj., n. | A2 | 5 |  |
+| **medical** | adj. | A2 | 5 |  |
+| **medical** | n. | B2 | 5 |  |
 | **medium** | adj. | B1 | 9 |  |
 | **medium** | n. | B2 | 9 |  |
 | **mental** | adj. | B1 | 5 |  |
@@ -416,14 +436,16 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **military** | adj., n. | B2 | 9 |  |
 | **minimal** | adj. | C1 | 9 |  |
 | **minimise** | v. | C1 | 8 |  |
-| **minimum** | adj., n., adv. | B2 | 6 |  |
+| **minimum** | adj., n. | B2 | 6 |  |
+| **minimum** | adv. | UNCLASSIFIED | 6 |  |
 | **ministry** | n. | C1 | 6 |  |
 | **minor** | adj. | B2 | 3 |  |
 | **minor** | n. | C1 | 3 |  |
 | **mode** | n. | B2 | 7 |  |
 | **modify** | v. | B2 | 5 |  |
 | **monitor** | n., v. | B2 | 5 |  |
-| **motive** | adj., n. | C1 | 6 |  |
+| **motive** | adj. | UNCLASSIFIED | 6 |  |
+| **motive** | n. | C1 | 6 |  |
 | **mutual** | adj. | C1 | 9 |  |
 
 ## N
@@ -432,14 +454,17 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **negate** | v. | UNCLASSIFIED | 3 |  |
 | **network** | n. | A2 | 5 |  |
 | **network** | v. | B2 | 5 |  |
-| **neutral** | adj., n. | B2 | 6 |  |
+| **neutral** | adj. | B2 | 6 |  |
+| **neutral** | n. | UNCLASSIFIED | 6 |  |
 | **nevertheless** | adv. | B2 | 6 |  |
 | **nonetheless** | adv. | C1 | 10 |  |
-| **norm** | n., v. | B2 | 9 |  |
+| **norm** | n. | B2 | 9 |  |
+| **norm** | v. | UNCLASSIFIED | 9 |  |
 | **normal** | adj. | A2 | 2 |  |
 | **normal** | n. | B1 | 2 |  |
 | **notion** | n. | B2 | 5 |  |
-| **notwithstanding** | adv., prep., conj. | C1 | 10 | Cambridge |
+| **notwithstanding** | adv., prep. | C1 | 10 | Cambridge |
+| **notwithstanding** | conj. | UNCLASSIFIED | 10 |  |
 | **nuclear** | adj. | B1 | 8 |  |
 
 ## O
@@ -451,42 +476,54 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **occupy** | v. | B2 | 4 |  |
 | **occur** | v. | B1 | 1 |  |
 | **odd** | adj. | B1 | 10 |  |
-| **offset** | adj., v. | C2 | 8 | Cambridge |
+| **offset** | adj. | UNCLASSIFIED | 8 |  |
+| **offset** | v. | C2 | 8 | Cambridge |
 | **ongoing** | adj. | B2 | 10 |  |
-| **option** | n., v. | A2 | 4 |  |
+| **option** | n. | A2 | 4 |  |
+| **option** | v. | UNCLASSIFIED | 4 |  |
 | **orient** | v. | UNCLASSIFIED | 5 |  |
 | **outcome** | n. | B2 | 3 |  |
 | **output** | n., v. | B2 | 4 |  |
 | **overall** | adj., adv. | B2 | 4 |  |
 | **overall** | n. | C1 | 4 |  |
-| **overlap** | n., v. | C2 | 9 | Cambridge |
+| **overlap** | n. | UNCLASSIFIED | 9 |  |
+| **overlap** | v. | C2 | 9 | Cambridge |
 | **overseas** | adj., adv. | B2 | 6 |  |
 
 ## P
 | Word | POS | CEFR | Sublist | Note |
 |------|-----|------|---------|------|
-| **panel** | n., v. | B2 | 10 |  |
+| **panel** | n. | B2 | 10 |  |
+| **panel** | v. | UNCLASSIFIED | 10 |  |
 | **paradigm** | n. | C2 | 7 | Cambridge |
 | **paragraph** | n. | A1 | 8 |  |
-| **parallel** | adj., n., v., adv. | B2 | 4 |  |
+| **parallel** | adj., n. | B2 | 4 |  |
+| **parallel** | v., adv. | UNCLASSIFIED | 4 |  |
 | **parameter** | n. | C1 | 4 |  |
 | **participate** | v. | B1 | 2 |  |
-| **partner** | n., v. | A1 | 3 |  |
+| **partner** | n. | A1 | 3 |  |
+| **partner** | v. | UNCLASSIFIED | 3 |  |
 | **passive** | adj. | B1 | 9 |  |
-| **passive** | n. | C1 | 9 |  |
+| **passive** | n. | B1 | 9 |  |
 | **perceive** | v. | B2 | 2 |  |
-| **percent** | n., adj./adv. | A2 | 1 |  |
-| **period** | adj., n., adv. | A1 | 1 |  |
+| **percent** | n. | UNCLASSIFIED | 1 | Cambridge |
+| **percent** | adj., adv. | B1 | 1 | Cambridge |
+| **period** | adj. | C2 | 1 |  |
+| **period** | n. | A1 | 1 |  |
+| **period** | adv. | UNCLASSIFIED | 1 |  |
 | **persist** | v. | C1 | 10 |  |
 | **perspective** | n. | B2 | 5 |  |
 | **phase** | n. | B2 | 4 |  |
 | **phenomenon** | n. | B2 | 7 |  |
 | **philosophy** | n. | B2 | 3 |  |
 | **physical** | adj. | A2 | 3 |  |
-| **plus** | prep. | B1 | 8 |  |
-| **plus** | adj., conj., n. | B2 | 8 |  |
+| **plus** | prep. | B1 | 8 | Cambridge |
+| **plus** | adj. | UNCLASSIFIED | 8 | Cambridge |
+| **plus** | conj. | B1 | 8 | Cambridge |
+| **plus** | n. | B2 | 8 | Cambridge |
 | **policy** | n. | B1 | 1 |  |
-| **portion** | n., v. | B2 | 9 |  |
+| **portion** | n. | B2 | 9 |  |
+| **portion** | v. | UNCLASSIFIED | 9 |  |
 | **pose** | v. | B2 | 10 |  |
 | **positive** | adj. | A1 | 2 |  |
 | **potential** | adj., n. | B2 | 2 |  |
@@ -495,17 +532,20 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **precise** | adj. | B2 | 5 |  |
 | **predict** | v. | A2 | 4 |  |
 | **predominant** | adj. | C2 | 8 | Cambridge |
-| **preliminary** | adj., n. | C1 | 9 |  |
+| **preliminary** | adj. | C1 | 9 |  |
+| **preliminary** | n. | UNCLASSIFIED | 9 |  |
 | **presume** | v. | C1 | 6 |  |
 | **previous** | adj. | B1 | 2 |  |
 | **primary** | adj. | B1 | 2 |  |
 | **prime** | adj. | B2 | 5 |  |
-| **principal** | adj., n. | C1 | 4 |  |
+| **principal** | adj. | B2 | 4 |  |
+| **principal** | n. | C1 | 4 |  |
 | **principle** | n. | B2 | 1 |  |
-| **prior** | adj., n. | B2 | 4 |  |
+| **prior** | adj. | B2 | 4 |  |
+| **prior** | n. | UNCLASSIFIED | 4 |  |
 | **priority** | n. | B2 | 7 |  |
 | **proceed** | v. | B2 | 1 |  |
-| **process** | v. | B2 | 1 | Cambridge |
+| **process** | v. | B2 | 1 |  |
 | **professional** | adj. | A2 | 4 |  |
 | **prohibit** | v. | B2 | 7 |  |
 | **project** | n. | A1 | 4 |  |
@@ -542,31 +582,37 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **register** | n., v. | B2 | 3 |  |
 | **regulate** | v. | B2 | 2 |  |
 | **reinforce** | v. | B2 | 8 |  |
-| **reject** | n., v. | B1 | 5 |  |
+| **reject** | n. | UNCLASSIFIED | 5 |  |
+| **reject** | v. | B1 | 5 |  |
 | **relax** | v. | A1 | 9 |  |
 | **release** | n., v. | B1 | 7 |  |
 | **relevant** | adj. | B2 | 2 |  |
 | **reluctance** | n. | UNCLASSIFIED | 10 |  |
 | **rely** | phrasal v. | B2 | 3 |  |
-| **remove** | n., v. | A2 | 3 |  |
+| **remove** | n. | UNCLASSIFIED | 3 |  |
+| **remove** | v. | A2 | 3 |  |
 | **require** | v. | B1 | 1 |  |
 | **research** | n., v. | A2 | 1 |  |
 | **reside** | v. | C1 | 2 |  |
-| **resolve** | n., v. | B2 | 4 |  |
-| **resource** | n., v. | B1 | 2 |  |
+| **resolve** | n. | C1 | 4 |  |
+| **resolve** | v. | B2 | 4 |  |
+| **resource** | n. | B1 | 2 |  |
+| **resource** | v. | UNCLASSIFIED | 2 |  |
 | **respond** | v. | A2 | 1 |  |
 | **restore** | v. | B2 | 8 |  |
 | **restrain** | v. | C1 | 9 | Cambridge |
 | **restrict** | v. | B2 | 2 |  |
 | **retain** | v. | B2 | 4 |  |
-| **reveal** | n., v. | B2 | 6 |  |
+| **reveal** | n. | UNCLASSIFIED | 6 |  |
+| **reveal** | v. | B2 | 6 |  |
 | **revenue** | n. | B2 | 5 |  |
 | **reverse** | adj., n., v. | C1 | 7 |  |
 | **revise** | v. | B1 | 8 |  |
 | **revolution** | n. | B2 | 9 |  |
 | **rigid** | adj. | C1 | 9 |  |
 | **role** | n. | A2 | 1 |  |
-| **route** | n., v. | A2 | 9 |  |
+| **route** | n. | A2 | 9 |  |
+| **route** | v. | UNCLASSIFIED | 9 |  |
 
 ## S
 | Word | POS | CEFR | Sublist | Note |
@@ -574,7 +620,8 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **scenario** | n. | B2 | 9 |  |
 | **schedule** | n. | A2 | 8 |  |
 | **scheme** | n. | B2 | 3 |  |
-| **scope** | n., v. | C1 | 6 |  |
+| **scope** | n. | C1 | 6 |  |
+| **scope** | v. | UNCLASSIFIED | 6 |  |
 | **section** | n. | A1 | 1 |  |
 | **sector** | n. | B2 | 1 |  |
 | **secure** | v. | B2 | 2 |  |
@@ -588,32 +635,40 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **significant** | adj. | B2 | 1 |  |
 | **similar** | adj. | A1 | 1 |  |
 | **simulate** | v. | C1 | 7 |  |
-| **site** | n., v. | A2 | 2 |  |
+| **site** | n. | A2 | 2 |  |
+| **site** | v. | UNCLASSIFIED | 2 |  |
 | **so-called** | adj. | B2 | 10 |  |
-| **sole** | adj., n., v. | C1 | 7 |  |
+| **sole** | adj., n. | C1 | 7 |  |
+| **sole** | v. | UNCLASSIFIED | 7 |  |
 | **somewhat** | adv. | B2 | 7 |  |
-| **source** | n., v. | A2 | 1 |  |
+| **source** | n. | A2 | 1 |  |
+| **source** | v. | UNCLASSIFIED | 1 |  |
 | **specific** | adj. | A2 | 1 |  |
 | **specify** | v. | B2 | 3 |  |
 | **sphere** | n. | C1 | 9 |  |
-| **stable** | adj., v. | B2 | 5 |  |
+| **stable** | adj. | B2 | 5 |  |
+| **stable** | v. | UNCLASSIFIED | 5 |  |
 | **stable** | n. | C1 | 5 |  |
 | **statistic** | n. | B1 | 4 |  |
 | **status** | n. | B2 | 4 |  |
 | **straightforward** | adj. | C1 | 10 |  |
 | **strategy** | n. | A2 | 2 |  |
 | **stress** | n., v. | A2 | 4 |  |
-| **structure** | n., v. | A2 | 1 |  |
-| **style** | n., v. | A1 | 5 |  |
+| **structure** | n. | A2 | 1 |  |
+| **structure** | v. | B2 | 1 |  |
+| **style** | n. | A1 | 5 |  |
+| **style** | v. | UNCLASSIFIED | 5 |  |
 | **submit** | v. | B2 | 7 |  |
-| **subordinate** | adj., n., v. | UNCLASSIFIED | 9 |  |
+| **subordinate** | adj., v. | UNCLASSIFIED | 9 |  |
+| **subordinate** | n. | C2 | 9 |  |
 | **subsequent** | adj. | B2 | 4 |  |
 | **subsidy** | n. | C1 | 6 |  |
 | **substitute** | n., v. | C1 | 5 |  |
 | **successor** | n. | C1 | 7 |  |
 | **sufficient** | adj. | B2 | 3 |  |
 | **sum** | n. | B2 | 4 |  |
-| **summary** | adj., n. | B1 | 4 |  |
+| **summary** | adj. | UNCLASSIFIED | 4 |  |
+| **summary** | n. | B1 | 4 |  |
 | **supplement** | n., v. | C1 | 9 |  |
 | **survey** | n. | A2 | 2 |  |
 | **survey** | v. | B2 | 2 |  |
@@ -628,17 +683,22 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **tape** | n., v. | B1 | 6 |  |
 | **target** | n. | A2 | 5 |  |
 | **target** | v. | B2 | 5 |  |
-| **task** | n., v. | A2 | 3 |  |
-| **team** | n., v. | A1 | 9 |  |
+| **task** | n. | A2 | 3 |  |
+| **task** | v. | UNCLASSIFIED | 3 |  |
+| **team** | n. | A1 | 9 |  |
+| **team** | v. | UNCLASSIFIED | 9 |  |
 | **technical** | adj. | B1 | 3 |  |
 | **technique** | n. | B1 | 3 |  |
 | **technology** | n. | A2 | 3 |  |
 | **temporary** | adj. | B2 | 9 |  |
 | **tense** | adj. | C1 | 8 |  |
-| **tense** | n., v. | B1 | 8 | Cambridge |
+| **tense** | n. | A1 | 8 |  |
+| **tense** | v. | UNCLASSIFIED | 8 |  |
 | **terminate** | v. | C1 | 8 |  |
-| **text** | n., v. | A1 | 2 |  |
-| **theme** | adj., n. | B1 | 8 |  |
+| **text** | n. | A1 | 2 |  |
+| **text** | v. | A2 | 2 |  |
+| **theme** | adj. | UNCLASSIFIED | 8 |  |
+| **theme** | n. | B1 | 8 |  |
 | **theory** | n. | B1 | 1 |  |
 | **thereby** | adv. | C1 | 8 |  |
 | **thesis** | n. | B2 | 7 |  |
@@ -648,22 +708,26 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **tradition** | n. | A2 | 2 |  |
 | **transfer** | n., v. | B2 | 2 |  |
 | **transform** | v. | B2 | 6 |  |
-| **transit** | n., v. | C1 | 5 |  |
+| **transit** | n. | C1 | 5 |  |
+| **transit** | v. | UNCLASSIFIED | 5 |  |
 | **transmit** | v. | B2 | 7 |  |
 | **transport** | n. | A2 | 6 |  |
 | **transport** | v. | B1 | 6 |  |
-| **trend** | n., v. | B1 | 5 |  |
+| **trend** | n. | B1 | 5 |  |
+| **trend** | v. | UNCLASSIFIED | 5 |  |
 | **trigger** | v. | B2 | 9 |  |
 | **trigger** | n. | C1 | 9 |  |
 
 ## U
 | Word | POS | CEFR | Sublist | Note |
 |------|-----|------|---------|------|
-| **ultimate** | adj., n. | B2 | 7 |  |
+| **ultimate** | adj. | B2 | 7 |  |
+| **ultimate** | n. | UNCLASSIFIED | 7 |  |
 | **undergo** | v. | B2 | 10 |  |
-| **underlie** | v. | UNCLASSIFIED | 6 |  |
+| **underlie** | v. | C1 | 6 |  |
 | **undertake** | v. | B2 | 4 |  |
-| **uniform** | adj., n. | A2 | 8 |  |
+| **uniform** | adj. | UNCLASSIFIED | 8 |  |
+| **uniform** | n. | A2 | 8 |  |
 | **unify** | v. | C1 | 9 |  |
 | **unique** | adj. | B2 | 7 |  |
 | **utilise** | v. | C1 | 6 |  |
@@ -680,9 +744,11 @@ The Academic Word List (AWL) contains 570 headwords of word families that occur 
 | **virtual** | adj. | B2 | 8 |  |
 | **visible** | adj. | B2 | 7 |  |
 | **vision** | n. | B2 | 9 |  |
-| **visual** | adj., n. | B2 | 8 |  |
+| **visual** | adj. | B2 | 8 |  |
+| **visual** | n. | UNCLASSIFIED | 8 |  |
 | **volume** | n. | B2 | 3 |  |
-| **voluntary** | adj., n. | B2 | 7 |  |
+| **voluntary** | adj. | B2 | 7 |  |
+| **voluntary** | n. | C2 | 7 |  |
 
 ## W
 | Word | POS | CEFR | Sublist | Note |
