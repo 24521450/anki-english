@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from src.scraper.oxford_labels import CONFLICT_PAIRS, REGISTER_LABELS, SUBJECT_LABELS
 
@@ -20,6 +20,13 @@ ALL_VALID_LABELS: frozenset[str] = REGISTER_LABELS | SUBJECT_LABELS
 # CONFLICT_PAIRS is re-exported from oxford_labels (canonical location)
 
 _PREFIX_RE = re.compile(r"^\[([^\]]+)\]\s*")
+
+
+class _SourceLabelSpec(NamedTuple):
+    source_definition: str
+    labels: tuple[str, ...]
+    examples: tuple[str, ...]
+    relation_words: tuple[str, ...]
 
 
 
@@ -130,50 +137,133 @@ def check_register_conflicts(register_tags: list[str]) -> str | None:
     return None
 
 
-def _source_label_specs(senses: list[MergedSense]) -> list[tuple[str, frozenset[str]]]:
+def _normalize_example(text: str) -> str:
+    normalized = (
+        text.replace("\u2019", "'")
+        .replace("\u2018", "'")
+        .replace("\u201c", '"')
+        .replace("\u201d", '"')
+    )
+    return " ".join(normalized.lower().split())
+
+
+def _strip_known_relation_annotations(text: str, relation_words: tuple[str, ...]) -> str:
+    """Remove only parentheticals fully explained by known lexical relations."""
+    known = {word.strip().lower() for word in relation_words if word.strip()}
+    if not known:
+        return text
+
+    def replace_match(match: re.Match[str]) -> str:
+        items = [item.strip().lower() for item in match.group(1).split(",") if item.strip()]
+        return "" if items and all(item in known for item in items) else match.group(0)
+
+    return re.sub(r"\s+\(([^)]+)\)", replace_match, text)
+
+
+def _normalize_source_label_specs(raw_specs: list[dict]) -> list[_SourceLabelSpec]:
+    specs: list[_SourceLabelSpec] = []
+    for spec in raw_specs:
+        source_definition = (spec.get("source_definition") or "").strip().lower()
+        if not source_definition:
+            continue
+        labels = list(dict.fromkeys(spec.get("register_tags") or []))
+        domain = spec.get("domain")
+        if domain and domain not in labels:
+            labels.append(domain)
+        examples = tuple(
+            example.strip()
+            for example in (spec.get("examples") or [])
+            if isinstance(example, str) and example.strip()
+        )
+        relation_words = tuple(dict.fromkeys(
+            list(spec.get("synonyms") or []) + list(spec.get("antonyms") or [])
+        ))
+        specs.append(_SourceLabelSpec(
+            source_definition=source_definition,
+            labels=tuple(labels),
+            examples=examples,
+            relation_words=relation_words,
+        ))
+    return specs
+
+
+def _source_label_specs(senses: list[MergedSense]) -> list[_SourceLabelSpec]:
     """Return normalized source definitions paired with their owned labels.
 
     Production senses carry ``label_specs`` from the exact Oxford definitions.
     The fallback keeps older callers and focused tests compatible without
     weakening source-definition ownership in production builds.
     """
-    specs: list[tuple[str, frozenset[str]]] = []
+    raw_specs_for_senses: list[dict] = []
     for sense in senses:
         if sense.label_specs is not None:
             raw_specs = sense.label_specs
         else:
+            relation_words: list[str] = []
+            for relation_spec in sense.relation_specs or []:
+                relation_words.extend(relation_spec.get("synonyms") or [])
+                relation_words.extend(relation_spec.get("antonyms") or [])
             raw_specs = [
                 {
                     "source_definition": part,
                     "register_tags": sense.register_tags or [],
                     "domain": sense.domain,
+                    "examples": [
+                        (example.get("text") or "").strip()
+                        for example in (sense.examples or [])
+                        if (example.get("text") or "").strip()
+                    ],
+                    "synonyms": relation_words,
+                    "antonyms": [],
                 }
                 for part in sense.text.split(" ; ")
                 if part.strip()
             ]
 
-        for spec in raw_specs:
-            source_definition = (spec.get("source_definition") or "").strip().lower()
-            if not source_definition:
-                continue
-            labels = set(spec.get("register_tags") or [])
-            domain = spec.get("domain")
-            if domain:
-                labels.add(domain)
-            specs.append((source_definition, frozenset(labels)))
-    return specs
+        raw_specs_for_senses.extend(raw_specs)
+    return _normalize_source_label_specs(raw_specs_for_senses)
+
+
+def _matching_example_specs(
+    example_chunk: str,
+    source_specs: list[_SourceLabelSpec],
+) -> list[_SourceLabelSpec]:
+    if not example_chunk.strip():
+        return []
+
+    matches: list[_SourceLabelSpec] = []
+    for spec in source_specs:
+        cleaned_chunk = _strip_known_relation_annotations(example_chunk, spec.relation_words)
+        chunk_key = _normalize_example(cleaned_chunk)
+        if any(chunk_key == _normalize_example(source_example) for source_example in spec.examples):
+            matches.append(spec)
+    return matches
+
+
+def _resolve_matching_labels(
+    matching_specs: list[_SourceLabelSpec],
+) -> tuple[tuple[str, ...] | None, list[list[str]] | None]:
+    """Resolve label ownership, returning ambiguity candidates when unsafe."""
+    if not matching_specs:
+        return None, None
+    distinct_sets = {frozenset(spec.labels) for spec in matching_specs}
+    if len(distinct_sets) > 1:
+        return None, sorted(sorted(labels) for labels in distinct_sets)
+    return matching_specs[0].labels, None
 
 
 def apply_sense_labels(
     all_cards: list[BuiltCard],
     guid_to_senses: dict[str, list[MergedSense]],
     overrides: dict[str, list[dict[str, Any]]] | None = None,
+    guid_to_source_label_specs: dict[str, list[dict]] | None = None,
 ) -> tuple[list[BuiltCard], list[str]]:
     """Apply sense label prefixes to definition chunks of cards.
 
     Returns (annotated_cards, errors).
     """
     overrides = overrides or {}
+    guid_to_source_label_specs = guid_to_source_label_specs or {}
     annotated_cards: list[BuiltCard] = []
     errors: list[str] = []
     used_override_keys: set[tuple[str, str]] = set()
@@ -192,7 +282,12 @@ def apply_sense_labels(
 
         senses = guid_to_senses.get(card.guid) or []
         card_overrides = overrides.get(card.guid) or []
-        source_label_specs = _source_label_specs(senses)
+        raw_source_specs = guid_to_source_label_specs.get(card.guid)
+        source_label_specs = (
+            _normalize_source_label_specs(raw_source_specs)
+            if raw_source_specs is not None
+            else _source_label_specs(senses)
+        )
 
         # Card identity & source definition validation on overrides
         card_word_clean = card.word.split(" (")[0].strip().lower()
@@ -214,24 +309,22 @@ def apply_sense_labels(
             if not ov_src_def:
                 errors.append(f"Missing 'source_definition' in sense label override for GUID '{card.guid}'")
             else:
-                matching_label_sets = [
-                    labels for source_definition, labels in source_label_specs
-                    if source_definition == ov_src_def
+                matching_specs = [
+                    spec for spec in source_label_specs
+                    if spec.source_definition == ov_src_def
                 ]
-                distinct_label_sets = set(matching_label_sets)
-                if not matching_label_sets:
+                matched_source_labels, ambiguous_candidates = _resolve_matching_labels(matching_specs)
+                if not matching_specs:
                     errors.append(
                         f"Source definition mismatch in sense label override for GUID '{card.guid}': "
                         f"source_definition '{ov.get('source_definition')}' does not exact-match any source definition of card '{card.word}'"
                     )
-                elif len(distinct_label_sets) > 1:
-                    candidates = sorted(sorted(labels) for labels in distinct_label_sets)
+                elif ambiguous_candidates is not None:
                     errors.append(
                         f"Ambiguous source definition in sense label override for GUID '{card.guid}': "
-                        f"source_definition '{ov.get('source_definition')}' has conflicting source label sets {candidates}"
+                        f"source_definition '{ov.get('source_definition')}' has conflicting source label sets "
+                        f"{ambiguous_candidates}"
                     )
-                else:
-                    matched_source_labels = matching_label_sets[0]
 
             if matched_source_labels is not None and action == "skip":
                 if not matched_source_labels:
@@ -248,7 +341,7 @@ def apply_sense_labels(
                         f"{conflict_err}"
                     )
                 for lbl in ov_labels:
-                    if lbl not in matched_source_labels:
+                    if lbl not in set(matched_source_labels):
                         errors.append(
                             f"Invalid label '{lbl}' in override for GUID '{card.guid}' chunk '{ov_chunk}': "
                             f"label is not present on source definition "
@@ -258,6 +351,7 @@ def apply_sense_labels(
         # Map def chunks to senses
         # Rule: auto-map 1:1 if counts match
         is_one_to_one = (len(def_chunks) == len(senses))
+        example_chunks = [chunk.strip() for chunk in card.example.split("|")]
         new_chunks: list[str] = []
 
         for idx, chunk in enumerate(def_chunks):
@@ -281,17 +375,48 @@ def apply_sense_labels(
                     new_chunks.append(f"{prefix}{clean_chunk}" if prefix else clean_chunk)
                 continue
 
+            example_chunk = example_chunks[idx] if idx < len(example_chunks) else ""
+            example_specs = _matching_example_specs(example_chunk, source_label_specs)
+            matched_labels, ambiguous_candidates = _resolve_matching_labels(example_specs)
+            if ambiguous_candidates is not None:
+                errors.append(
+                    f"Card {card.word} ({card.guid}) chunk {idx+1}: exact source example "
+                    f"matches conflicting source label sets {ambiguous_candidates}. "
+                    f"Requires manual override."
+                )
+                new_chunks.append(clean_chunk)
+                continue
+            if matched_labels is not None:
+                conflict_err = check_register_conflicts(list(matched_labels))
+                if conflict_err:
+                    errors.append(
+                        f"Card {card.word} ({card.guid}) chunk {idx+1}: {conflict_err}. "
+                        f"Requires manual override."
+                    )
+                prefix = format_label_prefix(list(matched_labels), None)
+                new_chunks.append(f"{prefix}{clean_chunk}" if prefix else clean_chunk)
+                continue
+
             # Auto-mapping path
             if is_one_to_one:
                 sense = senses[idx]
-                reg_tags = list(sense.register_tags or [])
-                dom = sense.domain
+                sense_specs = _source_label_specs([sense])
+                matched_labels, ambiguous_candidates = _resolve_matching_labels(sense_specs)
+                if ambiguous_candidates is not None:
+                    errors.append(
+                        f"Card {card.word} ({card.guid}) chunk {idx+1}: source definitions "
+                        f"have conflicting label ownership {ambiguous_candidates} and no exact "
+                        f"example match. Requires manual override."
+                    )
+                    new_chunks.append(clean_chunk)
+                    continue
+                reg_tags = list(matched_labels or ())
 
                 conflict_err = check_register_conflicts(reg_tags)
                 if conflict_err:
                     errors.append(f"Card {card.word} ({card.guid}) chunk {idx+1}: {conflict_err}. Requires manual override.")
 
-                prefix = format_label_prefix(reg_tags, dom)
+                prefix = format_label_prefix(reg_tags, None)
                 new_chunks.append(f"{prefix}{clean_chunk}" if prefix else clean_chunk)
             else:
                 # Chunk counts differ -> check internal conflict per individual sense

@@ -656,6 +656,51 @@ def _get_senses_for_card(card: BuiltCard, senses_index: dict) -> list:
     return senses
 
 
+def _build_source_label_specs_index(
+    by_word: dict[str, list[dict]],
+) -> dict[tuple[str, str], list[dict]]:
+    """Index raw Oxford definition provenance independently of CEFR filtering."""
+    index: dict[tuple[str, str], list[dict]] = {}
+    for word, records in by_word.items():
+        for record in records:
+            for pos_data in record.get("pos_data") or []:
+                pos = (pos_data.get("pos") or "").strip().lower()
+                if not pos:
+                    continue
+                for definition in pos_data.get("definitions") or []:
+                    source_definition = (definition.get("text") or "").strip()
+                    if not source_definition:
+                        continue
+                    index.setdefault((word, pos), []).append({
+                        "source_definition": source_definition,
+                        "register_tags": list(definition.get("register_tags") or []),
+                        "domain": definition.get("domain"),
+                        "examples": [
+                            (example.get("text") or "").strip()
+                            for example in (definition.get("examples") or [])
+                            if (example.get("text") or "").strip()
+                        ],
+                        "synonyms": list(definition.get("synonyms") or []),
+                        "antonyms": list(definition.get("antonyms") or []),
+                    })
+    return index
+
+
+def _get_source_label_specs_for_card(
+    card: BuiltCard,
+    source_label_specs_index: dict[tuple[str, str], list[dict]],
+) -> list[dict]:
+    word_clean = card.word.split(" (")[0].strip().lower()
+    positions = [part.strip().lower() for part in card.pos.split(",") if part.strip()]
+    for candidate in get_word_candidates(word_clean):
+        specs: list[dict] = []
+        for pos in positions:
+            specs.extend(source_label_specs_index.get((candidate, pos), []))
+        if specs:
+            return specs
+    return []
+
+
 def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     audio_files = _audio_dir_filenames(paths.audio_dir)
     review_overrides_file = getattr(paths, 'review_overrides_path', None)
@@ -712,6 +757,8 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
                 pass
         if items:
             by_word_simplified[word_lower] = items
+
+    source_label_specs_index = _build_source_label_specs_index(by_word)
 
     senses_index: dict[tuple[str, str, str], list] = {}
     sense_source_record: dict[tuple[str, str, str], dict] = {}
@@ -1010,10 +1057,19 @@ def build_notes(paths: BuildNotesPaths) -> BuildNotesResult:
     sense_label_overrides = load_sense_label_overrides(sense_label_overrides_file)
 
     guid_to_senses: dict[str, list] = {}
+    guid_to_source_label_specs: dict[str, list[dict]] = {}
     for c in all_cards:
         guid_to_senses[c.guid] = _get_senses_for_card(c, senses_index)
+        guid_to_source_label_specs[c.guid] = _get_source_label_specs_for_card(
+            c, source_label_specs_index
+        )
 
-    all_cards, sense_label_errors = apply_sense_labels(all_cards, guid_to_senses, sense_label_overrides)
+    all_cards, sense_label_errors = apply_sense_labels(
+        all_cards,
+        guid_to_senses,
+        sense_label_overrides,
+        guid_to_source_label_specs,
+    )
     if sense_label_errors:
         import sys
         print(

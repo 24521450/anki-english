@@ -68,7 +68,8 @@ class MergedSense(NamedTuple):
     relation_specs: list[dict] | None = None
     # Sense label specs — source definition text and labels contributing to this sense.
     # Consumed by the sense label annotator in src/deck_builder/sense_labels.py.
-    # Each entry: {"source_definition": str, "register_tags": list[str], "domain": str | None}.
+    # Each entry owns its source definition, labels, examples, and lexical
+    # relations so downstream code can map curated chunks by exact provenance.
     label_specs: list[dict] | None = None
 
 
@@ -457,6 +458,13 @@ def merge_cluster(
             "source_definition": def_text,
             "register_tags": list(reg_tags),
             "domain": dom,
+            "examples": [
+                (example.get("text") or "").strip()
+                for example in (d.get("examples") or [])
+                if (example.get("text") or "").strip()
+            ],
+            "synonyms": list(d.get("synonyms") or []),
+            "antonyms": list(d.get("antonyms") or []),
         })
 
     bm = beta_meta or {}

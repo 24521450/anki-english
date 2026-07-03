@@ -1,6 +1,6 @@
 """CLI tool to validate sense label prefixes in built Anki notes.
 
-Three audit layers:
+Four audit layers:
 
 Layer 1 — Source audit (data/sources/oxford.jsonl):
   - No definition has a forbidden register conflict pair.
@@ -13,15 +13,17 @@ Layer 2 — Built-note audit (data/build/anki_notes.jsonl):
   - No duplicate labels within a single prefix.
   - Correct ordering (register tags before subject domain).
 
-Layer 3 — Source-to-build staleness audit:
-  - Verify that the build timestamp is not older than the source timestamp.
-  - Report if anki_notes.jsonl may be stale relative to oxford.jsonl.
-  Note: full round-trip comparison requires a complete rebuild; staleness check
-  is a lightweight proxy. Run `python -m src.pipeline build` to refresh.
+Layer 3 — Exact-example label completeness:
+  - Match built examples to Oxford source examples independently.
+  - Require the built prefix to equal the source definition labels.
+
+Layer 4 — Source-to-build round-trip audit:
+  - Run the production build in memory and compare every stored definition.
 """
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -180,7 +182,127 @@ def validate_sense_labels_in_notes(
 
 
 # ---------------------------------------------------------------------------
-# Layer 3: Source-to-build round-trip audit
+# Layer 3: Independent exact-example label completeness
+# ---------------------------------------------------------------------------
+
+def _normalize_example(text: str) -> str:
+    normalized = (
+        text.replace("\u2019", "'")
+        .replace("\u2018", "'")
+        .replace("\u201c", '"')
+        .replace("\u201d", '"')
+    )
+    return " ".join(normalized.lower().split())
+
+
+def _strip_known_relations(text: str, relation_words: tuple[str, ...]) -> str:
+    known = {word.strip().lower() for word in relation_words if word.strip()}
+    if not known:
+        return text
+
+    def replace_match(match: re.Match[str]) -> str:
+        items = [item.strip().lower() for item in match.group(1).split(",") if item.strip()]
+        return "" if items and all(item in known for item in items) else match.group(0)
+
+    return re.sub(r"\s+\(([^)]+)\)", replace_match, text)
+
+
+def validate_exact_example_label_completeness(
+    oxford_jsonl_path: Path | str,
+    notes_jsonl_path: Path | str,
+) -> list[str]:
+    """Independently compare built prefixes with exact Oxford examples."""
+    source_path = Path(oxford_jsonl_path)
+    notes_path = Path(notes_jsonl_path)
+    if not source_path.exists():
+        return [f"Oxford source file not found: {source_path}"]
+    if not notes_path.exists():
+        return [f"Notes file not found: {notes_path}"]
+
+    source_specs: dict[tuple[str, str], list[dict]] = {}
+    with source_path.open(encoding="utf-8") as source_file:
+        for line_num, line in enumerate(source_file, start=1):
+            if not line.strip():
+                continue
+            try:
+                record = json.loads(line)
+            except Exception as err:
+                return [f"Oxford source line {line_num}: Invalid JSON: {err}"]
+            word = (record.get("word") or "").strip().lower()
+            for pos_data in record.get("pos_data") or []:
+                pos = (pos_data.get("pos") or "").strip().lower()
+                for definition in pos_data.get("definitions") or []:
+                    labels = list(dict.fromkeys(definition.get("register_tags") or []))
+                    domain = definition.get("domain")
+                    if domain and domain not in labels:
+                        labels.append(domain)
+                    relation_words = tuple(dict.fromkeys(
+                        list(definition.get("synonyms") or [])
+                        + list(definition.get("antonyms") or [])
+                    ))
+                    for example in definition.get("examples") or []:
+                        example_text = (example.get("text") or "").strip()
+                        if example_text:
+                            source_specs.setdefault((word, pos), []).append({
+                                "example": example_text,
+                                "labels": tuple(labels),
+                                "relation_words": relation_words,
+                            })
+
+    errors: list[str] = []
+    with notes_path.open(encoding="utf-8") as notes_file:
+        for line_num, line in enumerate(notes_file, start=1):
+            if not line.strip():
+                continue
+            try:
+                card = json.loads(line)
+            except Exception as err:
+                errors.append(f"Notes line {line_num}: Invalid JSON: {err}")
+                continue
+
+            word = (card.get("word") or "").split(" (")[0].strip().lower()
+            positions = [
+                part.strip().lower()
+                for part in (card.get("pos") or "").split(",")
+                if part.strip()
+            ]
+            definitions = (card.get("definition") or "").split("|")
+            examples = (card.get("example") or "").split("|")
+
+            for chunk_index, (definition, example) in enumerate(
+                zip(definitions, examples), start=1
+            ):
+                matching_labels: list[tuple[str, ...]] = []
+                for pos in positions:
+                    for spec in source_specs.get((word, pos), []):
+                        cleaned = _strip_known_relations(example, spec["relation_words"])
+                        if _normalize_example(cleaned) == _normalize_example(spec["example"]):
+                            matching_labels.append(spec["labels"])
+
+                if not matching_labels:
+                    continue
+                distinct_sets = {frozenset(labels) for labels in matching_labels}
+                if len(distinct_sets) > 1:
+                    errors.append(
+                        f"Card {card.get('word')} ({card.get('guid')}) chunk {chunk_index}: "
+                        f"exact source example has ambiguous label sets "
+                        f"{sorted(sorted(labels) for labels in distinct_sets)}"
+                    )
+                    continue
+
+                expected = matching_labels[0]
+                actual, _ = parse_existing_prefix(definition.strip())
+                if tuple(actual) != expected:
+                    errors.append(
+                        f"Card {card.get('word')} ({card.get('guid')}) chunk {chunk_index}: "
+                        f"expected exact-source labels {list(expected)}, found {actual}"
+                    )
+
+    return errors
+
+
+# ---------------------------------------------------------------------------
+# Layer 4: Source-to-build round-trip audit
 # ---------------------------------------------------------------------------
 
 def validate_source_to_build_roundtrip(
@@ -294,14 +416,25 @@ def main() -> None:
     else:
         print("  [PASS] All sense labels in built notes are valid.")
 
-    # Layer 3: Source-to-build round-trip audit
-    print("[Layer 3] Auditing source-to-build round-trip in-memory...")
-    l3_errors = validate_source_to_build_roundtrip(notes_jsonl)
+    # Layer 3: independent exact-example completeness audit
+    print("[Layer 3] Auditing exact-example label completeness...")
+    l3_errors = validate_exact_example_label_completeness(oxford_jsonl, notes_jsonl)
     if l3_errors:
-        print(f"  [FAIL] {len(l3_errors)} round-trip error(s):", file=sys.stderr)
+        print(f"  [FAIL] {len(l3_errors)} completeness error(s):", file=sys.stderr)
         for err in l3_errors:
             print(f"    - {err}", file=sys.stderr)
         all_errors.extend(l3_errors)
+    else:
+        print("  [PASS] Exact source examples have complete, correctly owned labels.")
+
+    # Layer 4: Source-to-build round-trip audit
+    print("[Layer 4] Auditing source-to-build round-trip in-memory...")
+    l4_errors = validate_source_to_build_roundtrip(notes_jsonl)
+    if l4_errors:
+        print(f"  [FAIL] {len(l4_errors)} round-trip error(s):", file=sys.stderr)
+        for err in l4_errors:
+            print(f"    - {err}", file=sys.stderr)
+        all_errors.extend(l4_errors)
     else:
         print("  [PASS] Stored notes match fresh in-memory build 100%.")
 
@@ -312,7 +445,7 @@ def main() -> None:
         )
         sys.exit(1)
 
-    print("\n[PASS] check_sense_labels: all 3 layers clean.")
+    print("\n[PASS] check_sense_labels: all 4 layers clean.")
 
 
 if __name__ == "__main__":

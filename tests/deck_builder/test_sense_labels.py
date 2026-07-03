@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from src.deck_builder.build_notes import BuiltCard
 from src.deck_builder.simplify_senses import MergedSense
@@ -8,6 +10,7 @@ from src.deck_builder.sense_labels import (
     apply_sense_labels,
     load_sense_label_overrides,
 )
+from tools.check_sense_labels import validate_exact_example_label_completeness
 
 
 def _card(
@@ -15,6 +18,7 @@ def _card(
     pos: str = "verb",
     cefr: str = "C1",
     definition: str = "cut violently (rạch/chém)|cut greatly (cắt giảm mạnh)",
+    example: str = "...",
     guid: str = "12345",
 ) -> BuiltCard:
     return BuiltCard(
@@ -25,7 +29,7 @@ def _card(
         pos=pos,
         ipa="...",
         definition=definition,
-        example="...",
+        example=example,
         collocations="...",
         wordfamily="...",
         uk_audio="...",
@@ -116,6 +120,146 @@ def test_apply_sense_labels_slash_one_to_one():
     assert errors == []
     assert len(cards) == 1
     assert cards[0].definition == "cut violently (rạch/chém)|[informal]cut greatly (cắt giảm mạnh)"
+
+
+def test_count_mismatch_maps_spectacle_formal_by_exact_source_example():
+    card = _card(
+        word="spectacle",
+        pos="noun",
+        cefr="C1",
+        definition="glasses (kính mắt)|impressive sight/show (cảnh tượng/màn trình diễn)",
+        example="a pair of spectacles|The carnival parade was a magnificent spectacle.",
+        guid="spectacle_guid",
+    )
+    senses = [
+        _sense(
+            "two lenses in a frame",
+            register_tags=["formal"],
+            label_specs=[{
+                "source_definition": "two lenses in a frame",
+                "register_tags": ["formal"],
+                "domain": None,
+                "examples": ["a pair of spectacles"],
+                "synonyms": [],
+                "antonyms": [],
+            }],
+        ),
+        _sense(
+            "an impressive performance",
+            label_specs=[{
+                "source_definition": "an impressive performance",
+                "register_tags": [],
+                "domain": None,
+                "examples": ["The carnival parade was a magnificent spectacle."],
+                "synonyms": [],
+                "antonyms": [],
+            }],
+        ),
+        _sense("an impressive sight"),
+        _sense("an unusual sight"),
+    ]
+
+    cards, errors = apply_sense_labels([card], {"spectacle_guid": senses}, {})
+
+    assert errors == []
+    assert cards[0].definition == (
+        "[formal]glasses (kính mắt)|impressive sight/show (cảnh tượng/màn trình diễn)"
+    )
+
+
+def test_exact_source_example_removes_stale_merged_label():
+    card = _card(
+        definition="[formal]general meaning",
+        example="the selected source example",
+        guid="stale_guid",
+    )
+    sense = _sense(
+        "general meaning",
+        register_tags=["formal"],
+        label_specs=[{
+            "source_definition": "general meaning",
+            "register_tags": [],
+            "domain": None,
+            "examples": ["the selected source example"],
+            "synonyms": [],
+            "antonyms": [],
+        }],
+    )
+
+    cards, errors = apply_sense_labels([card], {"stale_guid": [sense]}, {})
+
+    assert errors == []
+    assert cards[0].definition == "general meaning"
+
+
+def test_exact_source_example_ignores_known_relation_annotation():
+    card = _card(
+        definition="deadly",
+        example="She had been given a lethal (deadly, fatal) dose of poison.",
+        guid="relation_guid",
+    )
+    sense = _sense(
+        "able to cause death",
+        register_tags=["informal"],
+        label_specs=[{
+            "source_definition": "able to cause death",
+            "register_tags": ["informal"],
+            "domain": None,
+            "examples": ["She had been given a lethal dose of poison."],
+            "synonyms": ["deadly", "fatal"],
+            "antonyms": [],
+        }],
+    )
+
+    cards, errors = apply_sense_labels([card], {"relation_guid": [sense]}, {})
+
+    assert errors == []
+    assert cards[0].definition == "[informal]deadly"
+
+
+def test_raw_source_specs_cover_sense_dropped_by_cefr_simplification():
+    card = _card(
+        word="integrity",
+        pos="noun",
+        cefr="C1",
+        definition="honesty and strong principles|being whole",
+        example=(
+            "personal/professional/artistic integrity|"
+            "to respect the territorial integrity of the nation"
+        ),
+        guid="integrity_guid",
+    )
+    simplified_senses = [_sense("the quality of being honest", register_tags=[])]
+    raw_specs = {
+        "integrity_guid": [
+            {
+                "source_definition": "the quality of being honest",
+                "register_tags": [],
+                "domain": None,
+                "examples": ["personal/professional/artistic integrity"],
+                "synonyms": [],
+                "antonyms": [],
+            },
+            {
+                "source_definition": "the state of being whole and not divided",
+                "register_tags": ["formal"],
+                "domain": None,
+                "examples": ["to respect the territorial integrity of the nation"],
+                "synonyms": [],
+                "antonyms": [],
+            },
+        ]
+    }
+
+    cards, errors = apply_sense_labels(
+        [card],
+        {"integrity_guid": simplified_senses},
+        {},
+        raw_specs,
+    )
+
+    assert errors == []
+    assert cards[0].definition == "honesty and strong principles|[formal]being whole"
 
 
 def test_apply_sense_labels_idempotency():
@@ -434,3 +578,69 @@ def test_override_unnecessary_skip_raises_error():
     cards, errors = apply_sense_labels([card], {"slash_guid": senses}, overrides)
     assert len(errors) == 1
     assert "Unnecessary 'skip' override" in errors[0]
+
+
+def test_completeness_checker_detects_and_accepts_spectacle_formal(tmp_path):
+    source_path = tmp_path / "oxford.jsonl"
+    notes_path = tmp_path / "notes.jsonl"
+    source_record = {
+        "word": "spectacle",
+        "pos_data": [{
+            "pos": "noun",
+            "definitions": [{
+                "text": "two lenses in a frame",
+                "register_tags": ["formal"],
+                "domain": None,
+                "synonyms": [],
+                "antonyms": [],
+                "examples": [{"text": "a pair of spectacles"}],
+            }],
+        }],
+    }
+    card = {
+        "guid": "spectacle_guid",
+        "word": "spectacle",
+        "pos": "noun",
+        "definition": "glasses (kính mắt)",
+        "example": "a pair of spectacles",
+    }
+    source_path.write_text(json.dumps(source_record, ensure_ascii=False) + "\n", encoding="utf-8")
+    notes_path.write_text(json.dumps(card, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    errors = validate_exact_example_label_completeness(source_path, notes_path)
+    assert len(errors) == 1
+    assert "expected exact-source labels ['formal'], found []" in errors[0]
+
+    card["definition"] = "[formal]glasses (kính mắt)"
+    notes_path.write_text(json.dumps(card, ensure_ascii=False) + "\n", encoding="utf-8")
+    assert validate_exact_example_label_completeness(source_path, notes_path) == []
+
+
+def test_completeness_checker_strips_known_relation_annotation(tmp_path):
+    source_path = tmp_path / "oxford.jsonl"
+    notes_path = tmp_path / "notes.jsonl"
+    source_record = {
+        "word": "vicious",
+        "pos_data": [{
+            "pos": "adjective",
+            "definitions": [{
+                "text": "violent and cruel",
+                "register_tags": ["formal"],
+                "domain": None,
+                "synonyms": ["brutal"],
+                "antonyms": [],
+                "examples": [{"text": "a vicious attack"}],
+            }],
+        }],
+    }
+    card = {
+        "guid": "vicious_guid",
+        "word": "vicious",
+        "pos": "adjective",
+        "definition": "[formal]violent and cruel",
+        "example": "a vicious (brutal) attack",
+    }
+    source_path.write_text(json.dumps(source_record) + "\n", encoding="utf-8")
+    notes_path.write_text(json.dumps(card) + "\n", encoding="utf-8")
+
+    assert validate_exact_example_label_completeness(source_path, notes_path) == []
