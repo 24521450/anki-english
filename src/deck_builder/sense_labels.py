@@ -10,22 +10,17 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from src.scraper.oxford_labels import REGISTER_LABELS, SUBJECT_LABELS
+from src.scraper.oxford_labels import CONFLICT_PAIRS, REGISTER_LABELS, SUBJECT_LABELS
 
 if TYPE_CHECKING:
     from src.deck_builder.build_notes import BuiltCard
     from src.deck_builder.simplify_senses import MergedSense
 
 ALL_VALID_LABELS: frozenset[str] = REGISTER_LABELS | SUBJECT_LABELS
-
-# Hard conflicts forbidden unless explicitly handled / overridden
-CONFLICT_PAIRS: list[tuple[str, str]] = [
-    ("formal", "informal"),
-    ("formal", "slang"),
-    ("approving", "disapproving"),
-]
+# CONFLICT_PAIRS is re-exported from oxford_labels (canonical location)
 
 _PREFIX_RE = re.compile(r"^\[([^\]]+)\]\s*")
+
 
 
 def load_sense_label_overrides(path: Path | str | None) -> dict[str, list[dict[str, Any]]]:
@@ -64,6 +59,14 @@ def load_sense_label_overrides(path: Path | str | None) -> dict[str, list[dict[s
             guid = rec.get("guid")
             if not guid:
                 raise ValueError(f"Missing 'guid' in override {p}:{line_num}")
+
+            chunk = (rec.get("definition_chunk") or "").strip()
+            if not chunk:
+                raise ValueError(f"Missing 'definition_chunk' in override {p}:{line_num}")
+
+            seen_chunks = {(o.get("definition_chunk") or "").strip() for o in overrides.get(guid, [])}
+            if chunk in seen_chunks:
+                raise ValueError(f"Duplicate override for GUID '{guid}' chunk '{chunk}' in {p}:{line_num}")
 
             action = rec.get("action")
             if action not in ("apply", "skip"):
@@ -127,6 +130,40 @@ def check_register_conflicts(register_tags: list[str]) -> str | None:
     return None
 
 
+def _source_label_specs(senses: list[MergedSense]) -> list[tuple[str, frozenset[str]]]:
+    """Return normalized source definitions paired with their owned labels.
+
+    Production senses carry ``label_specs`` from the exact Oxford definitions.
+    The fallback keeps older callers and focused tests compatible without
+    weakening source-definition ownership in production builds.
+    """
+    specs: list[tuple[str, frozenset[str]]] = []
+    for sense in senses:
+        if sense.label_specs is not None:
+            raw_specs = sense.label_specs
+        else:
+            raw_specs = [
+                {
+                    "source_definition": part,
+                    "register_tags": sense.register_tags or [],
+                    "domain": sense.domain,
+                }
+                for part in sense.text.split(" ; ")
+                if part.strip()
+            ]
+
+        for spec in raw_specs:
+            source_definition = (spec.get("source_definition") or "").strip().lower()
+            if not source_definition:
+                continue
+            labels = set(spec.get("register_tags") or [])
+            domain = spec.get("domain")
+            if domain:
+                labels.add(domain)
+            specs.append((source_definition, frozenset(labels)))
+    return specs
+
+
 def apply_sense_labels(
     all_cards: list[BuiltCard],
     guid_to_senses: dict[str, list[MergedSense]],
@@ -142,10 +179,10 @@ def apply_sense_labels(
     used_override_keys: set[tuple[str, str]] = set()
 
     built_guids = {c.guid for c in all_cards}
-    if len(built_guids) > 50:
-        for g in overrides:
-            if g not in built_guids:
-                errors.append(f"Unknown card GUID in sense label overrides: '{g}'")
+    for g in overrides:
+        if g not in built_guids:
+            errors.append(f"Unknown card GUID in sense label overrides: '{g}'")
+
 
     for card in all_cards:
         def_chunks = [ch.strip() for ch in card.definition.split("|") if ch.strip()]
@@ -155,8 +192,9 @@ def apply_sense_labels(
 
         senses = guid_to_senses.get(card.guid) or []
         card_overrides = overrides.get(card.guid) or []
+        source_label_specs = _source_label_specs(senses)
 
-        # Card identity check on overrides
+        # Card identity & source definition validation on overrides
         card_word_clean = card.word.split(" (")[0].strip().lower()
         for ov in card_overrides:
             ov_word = (ov.get("word") or "").split(" (")[0].strip().lower()
@@ -167,6 +205,55 @@ def apply_sense_labels(
                     f"Identity mismatch in sense label override for GUID '{card.guid}': "
                     f"override ({ov_word}, {ov_pos}, {ov_cefr}) vs card ({card_word_clean}, {card.pos}, {card.cefr})"
                 )
+
+            ov_src_def = (ov.get("source_definition") or "").strip().lower()
+            ov_chunk = (ov.get("definition_chunk") or "").strip()
+            action = ov.get("action")
+
+            matched_source_labels: frozenset[str] | None = None
+            if not ov_src_def:
+                errors.append(f"Missing 'source_definition' in sense label override for GUID '{card.guid}'")
+            else:
+                matching_label_sets = [
+                    labels for source_definition, labels in source_label_specs
+                    if source_definition == ov_src_def
+                ]
+                distinct_label_sets = set(matching_label_sets)
+                if not matching_label_sets:
+                    errors.append(
+                        f"Source definition mismatch in sense label override for GUID '{card.guid}': "
+                        f"source_definition '{ov.get('source_definition')}' does not exact-match any source definition of card '{card.word}'"
+                    )
+                elif len(distinct_label_sets) > 1:
+                    candidates = sorted(sorted(labels) for labels in distinct_label_sets)
+                    errors.append(
+                        f"Ambiguous source definition in sense label override for GUID '{card.guid}': "
+                        f"source_definition '{ov.get('source_definition')}' has conflicting source label sets {candidates}"
+                    )
+                else:
+                    matched_source_labels = matching_label_sets[0]
+
+            if matched_source_labels is not None and action == "skip":
+                if not matched_source_labels:
+                    errors.append(
+                        f"Unnecessary 'skip' override for GUID '{card.guid}' chunk '{ov_chunk}': "
+                        f"source definition has no labels to skip"
+                    )
+            elif matched_source_labels is not None and action == "apply":
+                ov_labels = ov.get("labels") or []
+                conflict_err = check_register_conflicts(ov_labels)
+                if conflict_err:
+                    errors.append(
+                        f"Invalid 'apply' override for GUID '{card.guid}' chunk '{ov_chunk}': "
+                        f"{conflict_err}"
+                    )
+                for lbl in ov_labels:
+                    if lbl not in matched_source_labels:
+                        errors.append(
+                            f"Invalid label '{lbl}' in override for GUID '{card.guid}' chunk '{ov_chunk}': "
+                            f"label is not present on source definition "
+                            f"(source labels: {sorted(matched_source_labels)})"
+                        )
 
         # Map def chunks to senses
         # Rule: auto-map 1:1 if counts match

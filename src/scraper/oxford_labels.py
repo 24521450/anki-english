@@ -6,6 +6,15 @@ from __future__ import annotations
 
 import re
 
+# ---------------------------------------------------------------------------
+# Forbidden register conflicts (canonical — import from here everywhere)
+# ---------------------------------------------------------------------------
+CONFLICT_PAIRS: list[tuple[str, str]] = [
+    ("formal", "informal"),
+    ("formal", "slang"),
+    ("approving", "disapproving"),
+]
+
 # 12 Register Labels (from data/oxford_labels.json -> register_labels)
 REGISTER_LABELS: frozenset[str] = frozenset({
     "approving",
@@ -95,20 +104,47 @@ def parse_label_compound(label_text: str) -> dict[str, list[str] | str | None]:
     return out
 
 
+def _label_is_owned_by_sense(lbl_el, sense_el) -> bool:
+    """Return True only if the span.labels is directly owned by the sense definition.
+
+    Allowlist strategy: walk from lbl_el toward sense_el. Every intermediate
+    ancestor must be span.sensetop — any other container (variants, examples,
+    usage notes, cross-references, collapse/unbox) means the label describes a
+    sub-structure (e.g. a variant form or example sentence), not the definition.
+
+    Allowed intermediate ancestor classes:
+      - span.sensetop  — the sense header wrapper used by Oxford
+
+    Rejected on anything else, including:
+      - div.variants   — variant forms (e.g. informal term "specs" inside spectacle)
+      - ul.examples / li — example sentences
+      - span.un        — inline usage notes
+      - span.xrefs     — cross-references
+      - div.collapse / span.unbox — expandable usage boxes
+    """
+    for anc in lbl_el.iterancestors():
+        if anc is sense_el:
+            return True
+        # Allow only span.sensetop as an intermediate wrapper
+        tag = anc.tag
+        cls = anc.get("class") or ""
+        if tag == "span" and "sensetop" in cls.split():
+            continue
+        # Everything else → label not owned by this sense
+        return False
+    return False  # sense_el not found in ancestor chain
+
+
 def extract_labels_for_sense(sense_el) -> dict[str, list[str] | str | None]:
-    """Extract register_tags and domain from a li.sense element."""
+    """Extract register_tags and domain from a li.sense element.
+
+    Only collects span.labels elements that are directly owned by the sense
+    (not inside variant blocks, example lists, usage notes, etc.).
+    See _label_is_owned_by_sense for the ownership rule.
+    """
     out: dict[str, list[str] | str | None] = {"register_tags": [], "domain": None}
     for lbl_el in sense_el.cssselect("span.labels"):
-        # Skip labels inside collapsible note boxes (e.g. div.collapse, span.unbox)
-        is_in_box = False
-        for anc in lbl_el.iterancestors():
-            if anc == sense_el:
-                break
-            cls = anc.get("class") or ""
-            if "collapse" in cls or "unbox" in cls:
-                is_in_box = True
-                break
-        if is_in_box:
+        if not _label_is_owned_by_sense(lbl_el, sense_el):
             continue
 
         text = (lbl_el.text_content() or "").strip()

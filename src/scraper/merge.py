@@ -16,6 +16,8 @@ from __future__ import annotations
 import copy
 from typing import Any, Optional
 
+from src.scraper.oxford_labels import CONFLICT_PAIRS
+
 
 # Canonical POS ordering for stable output (pinned Phase 7b: adj before noun before verb)
 POS_ORDER = [
@@ -38,6 +40,38 @@ _POS_RANK = {p: i for i, p in enumerate(POS_ORDER)}
 def _dedup_preserve_order(items: list) -> list:
     """Remove duplicates while keeping first occurrence's order."""
     return list(dict.fromkeys(items))
+
+
+def _merge_register_tags_strict(
+    records: list[dict],
+    field: str,
+    context: str,
+) -> list[str]:
+    """Union register tags from multiple records; raise ValueError on forbidden conflict.
+
+    Args:
+        records: source records (each has a `field` key with a list[str]).
+        field: the key to read from each record (e.g. 'register_tags').
+        context: human-readable context string for the error message.
+    """
+    out: list[str] = []
+    for r in records:
+        for tag in (r.get(field) or []):
+            if tag and tag not in out:
+                cand = out + [tag]
+                conflict = next(
+                    ((t1, t2) for t1, t2 in CONFLICT_PAIRS if t1 in cand and t2 in cand),
+                    None,
+                )
+                if conflict:
+                    raise ValueError(
+                        f"Conflicting register tags {conflict!r} in '{field}' "
+                        f"({context})"
+                    )
+                out.append(tag)
+    return out
+
+
 
 
 def _stable_pos_order(pos_list: list[str]) -> list[str]:
@@ -295,9 +329,10 @@ def merge_word_records(records: list[dict]) -> dict:
         [w for r in records for w in r.get("see_also", [])]
     )
 
-    # register_tags (top): union
-    base["register_tags"] = _dedup_preserve_order(
-        [t for r in records for t in r.get("register_tags", [])]
+    # register_tags (top-level): union, raise on forbidden conflict
+    base["register_tags"] = _merge_register_tags_strict(
+        records, field="register_tags",
+        context=f"word='{base.get('word')}' source_files={base.get('source_files')}",
     )
 
     # verb_forms: first non-null
@@ -337,16 +372,27 @@ def merge_word_records(records: list[dict]) -> dict:
                     new_ants = d.get("antonyms") or []
                     d_existing["antonyms"] = _dedup_preserve_order(existing_ants + new_ants)
 
-                    # Union register_tags (preserves source order, rejects conflicts)
+                    # Union register_tags (raise on forbidden conflict)
                     existing_regs = d_existing.get("register_tags") or []
                     new_regs = d.get("register_tags") or []
                     merged_regs = list(existing_regs)
-                    for r in new_regs:
-                        if r and r not in merged_regs:
-                            cand = merged_regs + [r]
-                            has_conflict = any(t1 in cand and t2 in cand for t1, t2 in [("formal", "informal"), ("formal", "slang"), ("approving", "disapproving")])
-                            if not has_conflict:
-                                merged_regs.append(r)
+                    for tag in new_regs:
+                        if tag and tag not in merged_regs:
+                            cand = merged_regs + [tag]
+                            conflict = next(
+                                (t1, t2)
+                                for t1, t2 in CONFLICT_PAIRS
+                                if t1 in cand and t2 in cand
+                            ) if any(t1 in cand and t2 in cand for t1, t2 in CONFLICT_PAIRS) else None
+                            if conflict:
+                                raise ValueError(
+                                    f"Conflicting register tags {conflict!r} for "
+                                    f"definition '{d.get('text')}' "
+                                    f"(word='{base.get('word')}' pos='{key[0]}' "
+                                    f"sensenum='{key[1]}' "
+                                    f"source_files={base.get('source_files')})"
+                                )
+                            merged_regs.append(tag)
                     d_existing["register_tags"] = merged_regs
 
                     # Domain: pick non-null domain; raise ValueError if two different non-null domains exist

@@ -29,6 +29,7 @@ from collections import Counter
 from typing import NamedTuple
 
 from src.deck_builder.beta_score import evaluate_pair
+from src.scraper.oxford_labels import CONFLICT_PAIRS  # noqa: F401 — re-exported for back-compat
 
 # Separator for merged text fields. Use ' ; ' (semicolon, not ' | ') per user preference.
 # Risk: Oxford defs may contain ';' mid-sentence, so we keep spaces around to make the
@@ -193,18 +194,18 @@ def _merge_texts(texts: list[str]) -> str:
     return TEXT_JOIN_SEPARATOR.join(parts)
 
 
-CONFLICT_PAIRS = [("formal", "informal"), ("formal", "slang"), ("approving", "disapproving")]
-
-
 def _merge_register_tags(sources: list[list[str]]) -> list[str]:
+    """Union register_tags from multiple source definitions (first-appearance order).
+
+    Conflicts (formal+informal etc.) are passed through intact so that
+    sense_labels.py can detect them and require an explicit override.
+    Silent suppression here would hide corruption in the source data.
+    """
     out = []
     for src in sources:
         for t in src or []:
             if t and t not in out:
-                cand = out + [t]
-                has_conflict = any(t1 in cand and t2 in cand for t1, t2 in CONFLICT_PAIRS)
-                if not has_conflict:
-                    out.append(t)
+                out.append(t)
     return out
 
 
