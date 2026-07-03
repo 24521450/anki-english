@@ -364,3 +364,54 @@ def test_merge_multi_record_normalizes_missing_antonyms():
     # Union picks up record2's antonyms; record1's missing field was
     # treated as [] for the union.
     assert defs[0]["antonyms"] == ["new", "young"]
+
+
+def test_extract_synonyms_nsyn_vicious_structure():
+    """xt='nsyn' block (like in vicious -> brutal) must extract synonym."""
+    html_content = """
+    <li class="sense" id="vicious_sng_1" cefr="c1">
+        <span class="def">violent and cruel</span>
+        <span class="xrefs" hclass="xrefs" htag="span" xt="nsyn">
+            <span class="prefix">synonym</span>
+            <a class="Ref" href="..."><span class="xr-g"><span class="xh">brutal</span></span></a>
+        </span>
+    </li>
+    """
+    element = lxml_html.fromstring(html_content)
+    assert _extract_synonyms(element) == ["brutal"]
+
+
+def test_extract_synonyms_syn_and_nsyn_dom_order_and_dedup():
+    """Both xt='syn' and xt='nsyn' are extracted in DOM order and deduped."""
+    html_content = """
+    <li class="sense">
+        <span class="def">violent and cruel</span>
+        <span class="xrefs" xt="syn" hclass="xrefs">
+            <span class="prefix">synonym</span>
+            <span class="xh">savage</span>
+            <span class="xh">brutal</span>
+        </span>
+        <span class="xrefs" xt="nsyn" hclass="xrefs">
+            <span class="prefix">synonym</span>
+            <span class="xh">brutal</span>
+            <span class="xh">ferocious</span>
+        </span>
+    </li>
+    """
+    element = lxml_html.fromstring(html_content)
+    assert _extract_synonyms(element) == ["savage", "brutal", "ferocious"]
+
+
+def test_extract_synonyms_excludes_other_xt():
+    """xt='opp', xt='cp', xt='see' blocks must NOT leak into synonyms."""
+    html_content = """
+    <li class="sense">
+        <span class="def">sample def</span>
+        <span class="xrefs" xt="opp" hclass="xrefs"><span class="xh">opposite_word</span></span>
+        <span class="xrefs" xt="cp" hclass="xrefs"><span class="xh">compare_word</span></span>
+        <span class="xrefs" xt="see" hclass="xrefs"><span class="xh">see_word</span></span>
+        <span class="xrefs" xt="nsyn" hclass="xrefs"><span class="xh">valid_synonym</span></span>
+    </li>
+    """
+    element = lxml_html.fromstring(html_content)
+    assert _extract_synonyms(element) == ["valid_synonym"]

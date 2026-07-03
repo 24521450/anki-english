@@ -520,6 +520,8 @@ def annotate_card_examples(
     all_syns: list[str] = []
     all_ants: list[str] = []
     for spec in specs:
+        if not spec:
+            continue
         for s in spec.get("synonyms") or []:
             all_syns.append(s.strip())
         for a in spec.get("antonyms") or []:
@@ -554,7 +556,7 @@ def annotate_card_examples(
 
         # Find the spec for this chunk by exact text match (no guessing).
         chunk_spec = next(
-            (sp for sp in specs if clean_for_matching(sp.get("text") or "") == chunk_clean),
+            (sp for sp in specs if sp and clean_for_matching(sp.get("text") or "") == chunk_clean),
             None,
         )
 
@@ -658,8 +660,8 @@ def annotate_card_examples(
             # chunk_spec is None — chunk doesn't map to any Oxford example.
             # Per legacy semantics: report unresolved only if some spec carries
             # relations AND no override was used to suppress annotation.
-            has_any_syns = any(sp.get("synonyms") for sp in specs)
-            has_any_ants = any(sp.get("antonyms") for sp in specs)
+            has_any_syns = any(sp and sp.get("synonyms") for sp in specs)
+            has_any_ants = any(sp and sp.get("antonyms") for sp in specs)
             if not any_override_used and (has_any_syns or has_any_ants):
                 errors.append(
                     f"Unresolved alignment for {card.word} ({card.guid}) chunk: "

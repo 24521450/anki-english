@@ -244,9 +244,17 @@ def _extract_see_also(root) -> list[str]:
 # Per-sense extractors ----------------------------------------------------
 
 def _extract_synonyms(sense_el) -> list[str]:
-    """Extract sense-level synonyms from span.xrefs[xt='syn'] span.xh."""
+    """Extract sense-level synonyms from span.xrefs[xt='syn' or xt='nsyn'] span.xh.
+
+    Oxford uses two relation codes for synonyms:
+      - xt="syn": standard synonym blocks
+      - xt="nsyn": note/new synonym blocks (e.g. vicious -> brutal)
+
+    Iterates relation blocks in DOM order, accepting both 'syn' and 'nsyn',
+    extracts headwords from .xh spans, and deduplicates preserving first occurrence order.
+    """
     out: list[str] = []
-    for xrefs in sense_el.cssselect("span[xt='syn']"):
+    for xrefs in sense_el.cssselect("span[xt='syn'], span[xt='nsyn']"):
         cls = xrefs.get("class") or ""
         hcls = xrefs.get("hclass") or ""
         if "xrefs" not in cls.split() and hcls != "xrefs":

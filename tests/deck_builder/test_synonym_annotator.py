@@ -582,3 +582,19 @@ def test_production_overrides_loaded_and_used_once():
             assert n_cells == len(ex_chunks), (
                 f"Card {c.word} ({c.guid}): {n_cells} relation cells vs {len(ex_chunks)} example chunks"
             )
+
+
+def test_annotate_vicious_brutal():
+    """Vicious example 'a vicious attack' + synonym 'brutal' annotates to 'a vicious (brutal) attack'."""
+    card = _card(
+        word="vicious", pos="adjective", cefr="C1",
+        example="a vicious attack",
+    )
+    specs = [
+        {"text": "a vicious attack", "synonyms": ["brutal"], "antonyms": []},
+    ]
+    annotated, syn_meta, ant_meta, errors = annotate_card_examples(card, specs, {})
+    assert errors == []
+    assert annotated == "a vicious (brutal) attack"
+    assert syn_meta == "brutal"
+    assert ant_meta == ""
