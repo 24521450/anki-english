@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from typing import NamedTuple
 
-from src.deck_builder.build_notes import _parse_vocab_list
+from src.deck_builder.build_support import parse_vocab_list
 
 class DefBeforeIntegrityPaths(NamedTuple):
     deck_audit_jsonl: Path
@@ -77,7 +77,7 @@ def check_def_before_integrity(paths: DefBeforeIntegrityPaths) -> DefBeforeInteg
     manual_fills = json.loads(paths.manual_card_fills.read_text(encoding="utf-8"))
     if not isinstance(manual_fills, list):
         raise ValueError("manual_card_fills must contain a JSON list")
-    oxford_5000_keys = _parse_vocab_list(paths.oxford_5000_md)
+    oxford_5000_keys = parse_vocab_list(paths.oxford_5000_md)
 
     # 3. Load oxford source records and index idioms
     oxford_db = {}

@@ -33,7 +33,7 @@ import nltk
 from nltk.stem import WordNetLemmatizer
 
 if TYPE_CHECKING:
-    from src.deck_builder.build_notes import BuiltCard
+    from src.deck_builder.build_contracts import BuiltCard
 
 try:
     lemmatizer = WordNetLemmatizer()

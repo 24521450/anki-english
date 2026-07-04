@@ -145,6 +145,18 @@ Implications:
 - The legacy `(Word, CEFR)` only rule was retired 2026-06-21 because it incorrectly forced merges across genuine list boundaries (e.g. it would have collapsed `firm|adjective|B2|Oxford_5000` into `firm|noun|B2|Oxford_3000` even though they are distinct vocabulary entries from different curricula).
 _Avoid_: Card key, card ID, `(word, CEFR)` only (legacy)
 
+**Card Registry**:
+The canonical registry of buildable cards. Each row stores the identity key, reviewed variant, GUID, status, and deck override for a single card. The registry is the build inventory and the source of truth for what the production builder may emit. Rows may be active or retired, but the builder must treat missing, duplicate, or malformed rows as build errors.
+_Avoid_: notes list, export ledger, scratch inventory
+
+**Manual Card Payload**:
+Canonical payload for cards that cannot be reconstructed from the source corpus alone. Stores only the card content that must be supplied manually; identity, GUID, deck, POS, and routing stay owned by the Card Registry. A manual payload is an input contract, not a copy of generated TXT or JSONL output.
+_Avoid_: manual dump, backup export, generated artifact copy
+
+**Transactional Publish**:
+The two-file publish contract for `anki_notes.jsonl` and `anki_notes.txt`. Build output is staged, validated, and then swapped into place atomically with rollback evidence so a partial write never leaves the canonical pair mixed. The contract is fail-closed: validation or publish errors keep the previous canonical hashes intact.
+_Avoid_: best-effort write, partial publish, ad-hoc backup
+
 **Corpus Deck Routing**:
 Corpus-list cards are routed under the nested `English Academic Vocabulary::Oxford`
 deck. `Oxford_5000` has highest priority and routes to `Oxford::Oxford 5000`.

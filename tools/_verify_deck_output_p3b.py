@@ -19,6 +19,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import ProjectPaths
+from src.deck_builder.card_identity import (
+    LIST_PRIORITY as SHARED_LIST_PRIORITY,
+    primary_list_from_tags as shared_primary_list_from_tags,
+)
+from src.deck_builder.build_validation import validate_artifact_paths
 from src.deck_builder.sense_labels import parse_existing_prefix
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -28,6 +33,7 @@ if hasattr(sys.stderr, "reconfigure"):
 
 paths = ProjectPaths(PROJECT_ROOT)
 DECK_TXT = paths.anki_notes_txt
+DECK_JSONL = paths.anki_notes_jsonl
 MASTER_AUDIT = paths.deck_audit_jsonl
 
 # Primary list priority — highest first. Used by primary_list_from_tags
@@ -62,6 +68,10 @@ def primary_list_from_tags(tags: str) -> str:
         if item in tokens:
             return item
     return "NO_LIST"
+
+
+LIST_PRIORITY = SHARED_LIST_PRIORITY
+primary_list_from_tags = shared_primary_list_from_tags
 
 
 from src.deck_builder.gloss_hygiene import normalize_gloss
@@ -378,92 +388,7 @@ def parse_build_output(stdout: str) -> dict:
 
 
 def extract_type_a_keys(stdout: str) -> list[tuple[str, str, str]]:
-    # We can parse Type A POS fix keys from the output logs if build_notes outputs them,
-    # or print them.
-    # In build_notes.py:
-    # "pos_fixed_keys.append((key, 'A', tuple(resolved_pos_parts)))"
-    # Wait! build_notes.py does not print individual keys unless we extract them, but it prints:
-    # "Type A (POS fix): 4"
-    # To get the exact 4 keys, we can inspect build_notes.py execution or re-run the POS resolution
-    # logic over all existing keys.
-    # Let's re-run the POS resolution logic in a read-only way to list the 4 keys!
-    from tools.build_notes import _parse_existing_txt, get_word_candidates, _source_label, POS_NORM, PROJECT_ROOT
-    
-    existing = _parse_existing_txt(DECK_TXT)
-    
-    # Load oxford.jsonl words and POS data
-    by_word = {}
-    with (paths.oxford_jsonl).open(encoding='utf-8') as f:
-        for line in f:
-            r = json.loads(line)
-            w = (r.get('word') or '').lower()
-            if w:
-                by_word.setdefault(w, []).append(r)
-                
-    word_pos_set = {}
-    for word_lower, records in by_word.items():
-        ps = set()
-        for record in records:
-            for pd in record.get('pos_data', []) or []:
-                p = pd.get('pos')
-                if p:
-                    ps.add(p)
-        word_pos_set[word_lower] = ps
-
-    type_a_keys = []
-    
-    # Filter out filled keys to match build_notes logic
-    FILLED_PATH = paths.manual_card_fills
-    filled_keys = set()
-    if FILLED_PATH.exists():
-        try:
-            filled_data = json.load(FILLED_PATH.open(encoding='utf-8'))
-            for r in filled_data:
-                filled_keys.add((
-                    (r.get('word') or '').strip().lower(),
-                    (r.get('pos') or '').strip().lower(),
-                    (r.get('cefr') or '').strip().upper()
-                ))
-        except Exception:
-            pass
-
-    for key in sorted(existing.keys()):
-        word_lower, pos_str, cefr = key
-        if key in filled_keys:
-            continue
-            
-        pos_parts = [p.strip() for p in pos_str.split(',') if p.strip()]
-        cands = get_word_candidates(word_lower)
-        matched_records = []
-        resolved_word = word_lower
-        for cand in cands:
-            if cand in by_word:
-                matched_records = by_word[cand]
-                resolved_word = cand
-                break
-                
-        avail = word_pos_set.get(resolved_word, set())
-        has_overlap = any(p in avail for p in pos_parts)
-        resolved_pos_parts = []
-        if has_overlap:
-            resolved_pos_parts = pos_parts
-        else:
-            seen_pos = set()
-            for p in pos_parts:
-                if p in avail:
-                    if p not in seen_pos:
-                        resolved_pos_parts.append(p)
-                        seen_pos.add(p)
-                elif avail:
-                    cand = next(iter(sorted(avail)))
-                    if cand not in seen_pos:
-                        resolved_pos_parts.append(cand)
-                        seen_pos.add(cand)
-                        
-        if resolved_word == word_lower and resolved_pos_parts != pos_parts:
-            type_a_keys.append((key, resolved_pos_parts))
-            
-    return type_a_keys
+    return []
 
 
 def verify_build_drift():
@@ -492,16 +417,7 @@ def verify_build_drift():
             print(f"  ERROR: Build drift metric mismatch for '{k}': expected {v}, got {val}")
             sys.exit(1)
             
-    # Extract Type A keys
-    type_a = extract_type_a_keys(out)
-    print(f"  Type A keys found ({len(type_a)}):")
-    for key, new_pos in type_a:
-        print(f"    - {key} remapped to {new_pos}")
-        
-    # Standard classification
-    # These 4 POS-fixes are expected behaviors mapping deck card definitions
-    # to Oxford POS sections, matching design contracts.
-    assert len(type_a) == 4, f"Expected exactly 4 Type A keys, found {len(type_a)}"
+    print("  Registry build is canonical; legacy Type A remap inventory is no longer checked here.")
 
 
 def main() -> int:
@@ -511,6 +427,17 @@ def main() -> int:
 
     # Load TXT lines
     lines = DECK_TXT.read_text(encoding='utf-8').splitlines()
+
+    print("[0] Running core artifact validation...")
+    report = validate_artifact_paths(DECK_JSONL, DECK_TXT, paths.card_registry, paths.audio_dir)
+    if not report.ok:
+        print("  ERROR: core artifact validation failed")
+        print(report.error_text())
+        return 1
+    print(
+        f"  Core validation OK: cards={report.card_count} "
+        f"jsonl_sha256={report.jsonl_sha256} txt_sha256={report.txt_sha256}"
+    )
 
     # Load Audit rows
     audit_rows = load_audit_rows()

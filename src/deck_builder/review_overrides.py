@@ -1,9 +1,8 @@
 from __future__ import annotations
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from src.deck_builder.build_notes import BuiltCard
+
+from src.deck_builder.build_contracts import BuiltCard
 
 def load_review_overrides(path: Path | None) -> dict[str, dict]:
     """Loads and strictly validates GUID-based review overrides from a JSONL file."""
@@ -47,8 +46,6 @@ def apply_review_overrides(all_cards: list[BuiltCard], overrides: dict[str, dict
     """Applies review overrides to BuiltCard objects, enforcing strict matches and counts."""
     if not overrides:
         return all_cards
-
-    from src.deck_builder.build_notes import BuiltCard
 
     updated_cards = []
     applied_guids = set()

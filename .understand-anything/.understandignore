@@ -10,6 +10,11 @@ tools/archive/
 **/__pycache__/
 .pytest_cache/
 
+# Understand Anything generated state
+.understand-anything/intermediate/
+.understand-anything/tmp/
+.understand-anything/*.json
+
 # Local/editor/agent state
 .git/
 .idea/

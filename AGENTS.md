@@ -1,6 +1,6 @@
 # AGENTS.md
 
-IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxford / Cambridge + AWL + audio TTS).
+IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxford / Cambridge + AWL + Oxford audio).
 
 > **Read first:** [`CONTEXT.md`](./CONTEXT.md) for the project glossary (canonical terms, no implementation details). Come back here for commands, layout, and conventions.
 
@@ -9,12 +9,13 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
 - Install deps: `pip install -r requirements.txt` (then `python -c "import nltk; nltk.download('wordnet'); nltk.download('omw-1.4')"`)
 - Build (editable): `pip install -e .`
 - Test: `pytest` — config in `pyproject.toml [tool.pytest.ini_options]`, `testpaths = ["tests"]`, `pythonpath = ["."]`
+- Historical / environment-specific coverage is marked `historical` or `external`; run it explicitly with `pytest -m historical` or `pytest -m external`.
 - Lint: not configured — match existing style, no new lint configs without asking
 
 ## Project layout
 
 - `src/` — Python package (per `pyproject.toml [tool.setuptools]` — package skeleton not yet committed)
-  - `scraper/` — owned by `scraper` rein: Oxford/Cambridge + AWL data ingestion, audio TTS
+  - `scraper/` — owned by `scraper` rein: Oxford/Cambridge + AWL data ingestion, audio assets
   - `deck_builder/` — owned by `deck-builder` rein: `.apkg` packaging, EAVM note type generation
   - `config.py` — shared config
 - `tests/` — pytest tests, mostly mirrored layout (`tests/scraper/test_x.py` ↔ `src/scraper/x.py`). Non-mirrored layout allowed for cross-cutting infra (e.g. `tests/design/test_design_sync.py`).
@@ -24,15 +25,16 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   - `curated/` — production audit overrides
   - `review/` — review verdicts and manual fills consumed by the build
   - `build/` — generated Anki-ready TXT and JSONL notes
-- `audio/` — generated TTS files (UK/US per word)
+- `audio/` — generated audio files (UK/US per word)
 - `design/` — Anki card visual design system. **`design/index.html` (vùng 2 card CSS) is the source of truth** — `EAVM/styling.txt` derives from it and is baked into `.apkg`. `tools/check_design_sync.py` enforces the sync.
 - `docs/adr/` — Architecture Decision Records. One file per decision, named `NNNN-title.md` (e.g. `0001-lxml-parser-backend.md`). Add a new ADR whenever a decision meets all 3 criteria: hard to reverse, surprising without context, and a real trade-off.
 - `vocab_list/` — source word lists (Oxford 3000/5000 markdown, AWL json/yml)
 - `update_anki_deck.py` — top-level packager (`data/build/anki_notes.jsonl` → `ielts_deck.apkg`). Owned by `developer` rein.
-- `src/pipeline.py` — production-stage orchestrator: `scrape → build → split → deck`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`).
-  - **scrape**: Oxford/Cambridge + AWL ingestion, audio TTS. Keeps all senses / all CEFR entries (raw).
+- `src/pipeline.py` — production-stage orchestrator: `scrape → build → validate → deck`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`).
+  - **scrape**: Oxford/Cambridge + AWL ingestion, audio. Keeps all senses / all CEFR entries (raw).
   - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md) and [Sense Sorting](./CONTEXT.md)** — splits by CEFR, retains all CEFR-matching senses (no per-card def cap), orders by sensenum_local asc. See `design/README.md § Card design rules` for the rule reference.
-  - **split**: divides into study profiles.
+  - **validate**: checks registry, card identity, JSONL/TXT parity, audio references, and deterministic output before publish.
+  - **split**: legacy alias for `validate` during migration.
   - **deck**: bakes `.apkg` via `update_anki_deck.py`.
   - Archived one-shot fixers are unsupported and are not wrapped by the pipeline.
 
@@ -46,7 +48,7 @@ Refresh with `/understand --full` after major refactors.
 
 ## Code style
 
-- Python 3.10+ (async-friendly: `edge-tts`, `aiohttp`)
+- Python 3.10+ (async-friendly: `aiohttp`)
 - Async I/O for scraping + TTS — match the existing pattern, don't mix blocking
 - No formal docstring format enforced; brief comments are fine
 - For terminology: use terms from [`CONTEXT.md`](./CONTEXT.md). If you introduce a new concept, add it there.
@@ -71,7 +73,7 @@ Refresh with `/understand --full` after major refactors.
 For each `(word, accent ∈ {UK, US})` pair, try in order:
 1. Cambridge dictionary audio URL
 2. Oxford Learner's audio URL
-3. `edge-tts` synthesis (last resort)
+3. no audio
 
 ### Oxford HTML structural quirks (learned 2026-06-10)
 - Oxford HTML uses `hclass` ATTRIBUTE (not `class`) on most elements: e.g. `<li class="sense" hclass="sense" cefr="c2">`. CSS selectors using `hclass=` (e.g. `[hclass='sense']`) often work, but `li.sense` also works for top-level. Some elements use both `class` and `hclass`.
@@ -97,7 +99,7 @@ No `<... class="def">` tags anywhere. Current parser (`src/scraper/oxford.py`) d
 
 **Known affected words** (verb, from 2026-06-19 audit): `consist` (only 1/5,318 — rare). If a word you care about shows 0 defs, check this pattern first before suspecting cache pollution or fold bug.
 
-**Build-pipeline mitigation:** `tools/build_notes.py` falls back to `data/build/anki_notes.txt` for defs when JSONL data is null — that's why Anki cards still display "be made of" for `consist` despite the Oxford source gap. Don't trust "card looks fine" as proof the source JSONL is fine; the TXT fallback is masking the parser gap.
+**Build-pipeline mitigation:** `tools/build_notes.py` now uses canonical registry/manual inputs and fail-closed validation. Do not rely on generated TXT as a source of truth when source JSONL is null; fix the parser or add canonical manual payload instead.
 
 ### Oxford rebuild determinism contract (learned 2026-06-13)
 **Rebuilding `data/sources/oxford.jsonl` MUST be byte-identical across runs** (same input cache → same output JSONL). Verified by SHA-256 comparison of two consecutive `python -m tools._run_full_cache --oxford-only` invocations.
