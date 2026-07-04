@@ -36,16 +36,28 @@ jobs:
       - name: Download NLTK corpora
         run: |
           python - <<'PY'
-          import sys
+          from pathlib import Path
           import nltk
 
-          ok_wordnet = nltk.download("wordnet", quiet=True)
-          ok_omw = nltk.download("omw-1.4", quiet=True)
-          if not (ok_wordnet and ok_omw):
-              raise SystemExit("failed to download NLTK corpora")
+          download_dir = Path.home() / "nltk_data"
+          download_dir.mkdir(parents=True, exist_ok=True)
+          nltk.data.path.insert(0, str(download_dir))
 
-          nltk.data.find("corpora/wordnet")
-          nltk.data.find("corpora/omw-1.4")
+          for package in ("wordnet", "omw-1.4"):
+              if not nltk.download(package, download_dir=str(download_dir), quiet=True, raise_on_error=True):
+                  raise SystemExit(f"failed to download NLTK corpus: {package}")
+
+          def ensure_resource(candidates: tuple[str, ...]) -> None:
+              for resource in candidates:
+                  try:
+                      nltk.data.find(resource)
+                      return
+                  except LookupError:
+                      continue
+              raise SystemExit(f"missing NLTK resource: {candidates[0]}")
+
+          ensure_resource(("corpora/wordnet", "corpora/wordnet.zip"))
+          ensure_resource(("corpora/omw-1.4", "corpora/omw-1.4.zip"))
           print("NLTK corpora ready")
           PY
 
