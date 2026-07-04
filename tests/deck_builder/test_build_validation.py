@@ -136,4 +136,4 @@ def test_validate_artifact_paths_rejects_missing_audio(tmp_path: Path):
     report = validate_artifact_paths(jsonl_path, txt_path, registry_path, audio_dir)
 
     assert not report.ok
-    assert any(issue.code == "audio_missing" for issue in report.issues)
+    assert any(issue.code == "audio_missing_reference" for issue in report.issues)

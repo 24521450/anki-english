@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +16,7 @@ from src.deck_builder.build_contracts import (
     serialize_jsonl,
     serialize_txt,
 )
+from src.deck_builder.audio_gate import validate_audio_gate
 from src.deck_builder.card_identity import (
     CardIdentity,
     primary_list_from_tags,
@@ -27,9 +27,6 @@ from src.deck_builder.card_registry import (
     validate_registry_rows,
 )
 from src.deck_builder.registry_build import RegistryBuildInputs, RegistryTarget
-
-
-SOUND_RE = re.compile(r"\[sound:([^\]]+)\]")
 
 
 @dataclass(frozen=True, slots=True)
@@ -147,7 +144,6 @@ def _validate_cards(
     cards: list[BuiltCard],
     registry_targets: list[RegistryTarget],
     registry_by_key: dict[tuple[str, str, str, str], RegistryTarget],
-    audio_dir: Path,
 ) -> list[BuildIssue]:
     issues: list[BuildIssue] = []
     seen_guids: dict[str, int] = {}
@@ -182,14 +178,6 @@ def _validate_cards(
             expected_pos = (target.row.get("pos") or "").strip()
             if card.pos != expected_pos:
                 issues.append(BuildIssue("error", "registry_pos_mismatch", f"row {idx} POS {card.pos!r} != registry {expected_pos!r}", identity=identity))
-
-        for field in ("uk_audio", "us_audio"):
-            for sound_name in SOUND_RE.findall(getattr(card, field)):
-                if "\\" in sound_name or "/" in sound_name or ".." in sound_name:
-                    issues.append(BuildIssue("error", "audio_path_traversal", f"row {idx} invalid sound reference {sound_name!r}", identity=identity))
-                    continue
-                if not (audio_dir / sound_name).exists():
-                    issues.append(BuildIssue("error", "audio_missing", f"row {idx} references missing audio {sound_name!r}", identity=identity))
 
     actual_order = [_identity_for_card(card).as_key() for card in cards]
     expected_order = [target.identity.as_key() for target in registry_targets]
@@ -249,8 +237,8 @@ def validate_build_result(
         result.built_cards,
         registry_inputs.targets,
         registry_inputs.registry_by_key,
-        audio_dir,
     ))
+    issues.extend(validate_audio_gate(result.built_cards, audio_dir).issues)
     return _report(result.built_cards, issues, result.jsonl_text, result.txt_text)
 
 
@@ -308,6 +296,7 @@ def validate_artifact_paths(
         issues.append(BuildIssue("error", "txt_serialization_mismatch", "TXT artifact is not canonical serialization"))
 
     if cards:
-        issues.extend(_validate_cards(cards, registry_targets, registry_by_key, audio_dir))
+        issues.extend(_validate_cards(cards, registry_targets, registry_by_key))
+        issues.extend(validate_audio_gate(cards, audio_dir).issues)
 
     return _report(cards, issues, jsonl_text, txt_text)
