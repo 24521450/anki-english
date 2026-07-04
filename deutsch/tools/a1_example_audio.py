@@ -6,7 +6,7 @@ Workflow:
     python deutsch/tools/a1_example_audio.py full        # generate all 891 unique entries
     python deutsch/tools/a1_example_audio.py resume      # verify existing + generate the rest
 
-Source: column `Sentence` in deutsch/goethe_wordlist/Goethe_A1.md
+Source: column `Sentence` in deutsch/sources/goethe/Goethe_A1.md
 Outputs:
     deutsch/audio/a1/examples_manifest.jsonl        — 910 occurrences, denormalized
     deutsch/audio/a1/examples_manifest.meta.json     — meta + counts
@@ -35,7 +35,7 @@ from pathlib import Path
 
 # === Paths ============================================================
 ROOT = Path(r"C:\Users\admin\Downloads\ankideck")
-SOURCE = ROOT / "deutsch" / "goethe_wordlist" / "Goethe_A1.md"
+SOURCE = ROOT / "deutsch" / "sources" / "goethe" / "Goethe_A1.md"
 OUT_DIR = ROOT / "deutsch" / "audio" / "a1"
 STAGING_DIR = OUT_DIR / "examples_staging"
 LIVE_DIR = OUT_DIR / "examples"

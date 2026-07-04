@@ -15,7 +15,7 @@ into the deck pipeline in this phase.
 - Live manifest: `deutsch/audio/a1/words_manifest.jsonl`
 - Live metadata: `deutsch/audio/a1/words_manifest.meta.json`
 - Matrix backup: `deutsch/audio/a1/matrix_backup/`
-- Manual overrides: `deutsch/audio/a1/duden_overrides.json`
+- Manual overrides: `deutsch/review/duden_overrides.json`
 
 The staging directory is the working area. When the run is accepted, the
 staging directory is promoted to `words/`. Matrix files are kept only in the

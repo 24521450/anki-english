@@ -4,7 +4,7 @@ import hashlib, json, random, re, sys
 from pathlib import Path
 
 ROOT = Path(r"C:\Users\admin\Downloads\ankideck")
-SOURCE = ROOT / "deutsch" / "goethe_wordlist" / "Goethe_A1.md"
+SOURCE = ROOT / "deutsch" / "sources" / "goethe" / "Goethe_A1.md"
 OUT_DIR = ROOT / "deutsch" / "audio" / "a1"
 WORDS_DIR = OUT_DIR / "words"
 MANIFEST = OUT_DIR / "words_manifest.jsonl"
@@ -99,7 +99,7 @@ def main():
                    "tts_status": "pending"}
             f.write(json.dumps(obj, ensure_ascii=False) + "\n")
 
-    meta = {"plan": "PLAN_A1_WORD_AUDIO.md", "source_path": str(SOURCE),
+    meta = {"plan": "deutsch/docs/PLAN_A1_WORD_AUDIO.md", "source_path": str(SOURCE),
             "source_sha256": src_sha, "source_size": len(src_bytes),
             "row_count": len(rows), "seed": SEED,
             "voice_targets": VOICE_TARGETS, "voice_actual": actual,

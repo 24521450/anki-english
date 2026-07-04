@@ -21,7 +21,3 @@ tools/.*
 tools/__pycache__/
 tests/__pycache__/
 *.pyc
-
-# Keep hand-authored docs/review policy files visible
-!audio/a1/PLAN_A1_WORD_AUDIO.md
-!audio/a1/duden_overrides.json

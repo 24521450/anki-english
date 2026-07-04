@@ -25,13 +25,13 @@ from src.config import ProjectPaths
 
 paths = ProjectPaths()
 ROOT = paths.root
-SOURCE_PATH = ROOT / "deutsch" / "goethe_wordlist" / "Goethe_A1.md"
+SOURCE_PATH = ROOT / "deutsch" / "sources" / "goethe" / "Goethe_A1.md"
 AUDIO_ROOT = ROOT / "deutsch" / "audio" / "a1"
 LIVE_WORDS_DIR = AUDIO_ROOT / "words"
 STAGING_WORDS_DIR = AUDIO_ROOT / "words_duden_staging"
 LIVE_MANIFEST_PATH = AUDIO_ROOT / "words_manifest.jsonl"
 LIVE_META_PATH = AUDIO_ROOT / "words_manifest.meta.json"
-OVERRIDES_PATH = AUDIO_ROOT / "duden_overrides.json"
+OVERRIDES_PATH = ROOT / "deutsch" / "review" / "duden_overrides.json"
 BACKUP_ROOT = AUDIO_ROOT / "matrix_backup"
 DUDEN_CHECKPOINT_ROOT = AUDIO_ROOT / "duden_checkpoints"
 MISSING_AUDIT_PATH = AUDIO_ROOT / "duden_missing_audit.jsonl"
