@@ -99,7 +99,7 @@ See consist in the Oxford Advanced American Dictionary
 No `<... class="def">` tags anywhere. Current parser (`src/scraper/oxford.py`) does NOT recurse into those phrase sub-pages, so the result is `definitions[0].text = null` (or empty string) for the entire entry.
 
 **Diagnostic recipe** when a (word, pos) has 0 defs but Oxford has the page:
-1. Open `data/.cache_html/oxford/oxford_<word>_(<pos>).html`
+1. Open `data/.cache_html/oxford/oxford_<word>_(<pos-token>).html` (`pos-token` uses `_` for spaces/composite POS labels)
 2. Search for `class="def"` — if 0 hits, it's a hub
 3. Search for `Phrasal Verbs` or `Phrases` section — list of related sub-pages
 4. Manually patch `data/sources/oxford.jsonl` for that entry, OR fix parser to recurse

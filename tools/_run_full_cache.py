@@ -61,7 +61,7 @@ def _write_atomic(out_path: str, lines: list[str]) -> None:
     tmp_dir = os.path.dirname(out_path)
     fd, tmp_path = tempfile.mkstemp(dir=tmp_dir, suffix=".tmp", prefix=".cache_")
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
             for line in lines:
                 f.write(line)
                 f.write("\n")
@@ -142,7 +142,7 @@ def run_source(
     # values; without this, `as_completed()` race order from the parallel
     # parser leaks into the merge layer's "first non-null" picks, causing
     # oxford_badge / audio / idioms / see_also to vary across runs.
-    # Filenames are ASCII (oxford_<word>_(<pos>).html), so this is
+    # Filenames are ASCII (oxford_<word>_(<pos-token>).html), so this is
     # deterministic on every OS.
     records.sort(key=lambda r: (
         r.get("word") or "",
