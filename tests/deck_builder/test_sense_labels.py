@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from src.deck_builder.build_notes import BuiltCard
+from src.deck_builder.build_contracts import BuiltCard
 from src.deck_builder.simplify_senses import MergedSense
 from src.deck_builder.sense_labels import (
     format_label_prefix,

@@ -340,20 +340,19 @@ class TestNewRoutingAndTagContracts:
 
     def test_awl_coxhead_membership_rules_and_routing(self):
         from src.config import ProjectPaths
-        from src.deck_builder.build_notes import _parse_existing_txt
+        from src.deck_builder.build_validation import _parse_txt_cards
         from src.deck_builder.corpus_tag_sync import apply_corpus_routing_and_tags
 
         proj = ProjectPaths()
         v3 = _parse_vocab_list(proj.oxford_3000_md)
         v5 = _parse_vocab_list(proj.oxford_5000_md)
         v_awl = _parse_vocab_list(proj.awl_md)
-        cards_dict = _parse_existing_txt(proj.anki_notes_txt)
+        cards, issues = _parse_txt_cards(proj.anki_notes_txt.read_text(encoding="utf-8"), proj.anki_notes_txt)
+        assert not issues
 
-        cards = []
         from collections import namedtuple
         CardMock = namedtuple('CardMock', ['word', 'pos', 'cefr', 'tags', 'deck'])
-        for (w_orig, pos, cefr), c in cards_dict.items():
-            cards.append(CardMock(c['word_orig'], pos, cefr, c['tags'], c['deck']))
+        cards = [CardMock(c.word, c.pos, c.cefr, c.tags, c.deck) for c in cards]
 
         updated = apply_corpus_routing_and_tags(cards, v3, v5, v_awl)
 

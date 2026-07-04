@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, NamedTuple
 from src.scraper.oxford_labels import CONFLICT_PAIRS, REGISTER_LABELS, SUBJECT_LABELS
 
 if TYPE_CHECKING:
-    from src.deck_builder.build_notes import BuiltCard
+    from src.deck_builder.build_contracts import BuiltCard
     from src.deck_builder.simplify_senses import MergedSense
 
 ALL_VALID_LABELS: frozenset[str] = REGISTER_LABELS | SUBJECT_LABELS

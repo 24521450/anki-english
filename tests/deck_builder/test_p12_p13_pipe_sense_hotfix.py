@@ -38,6 +38,8 @@ from tests.deck_builder.historical_supersession import (
 
 from src.config import ProjectPaths
 
+pytestmark = pytest.mark.historical
+
 paths = ProjectPaths()
 PROJECT_ROOT = paths.root
 AUDIT_PATH = paths.deck_audit_jsonl

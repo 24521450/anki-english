@@ -30,12 +30,20 @@ class ProjectPaths:
         return self.root / "data" / "curated" / "deck_audit.jsonl"
 
     @property
+    def card_registry(self) -> Path:
+        return self.root / "data" / "curated" / "card_registry.jsonl"
+
+    @property
     def gamma_verdicts(self) -> Path:
         return self.root / "data" / "review" / "gamma_verdicts.json"
 
     @property
     def manual_card_fills(self) -> Path:
         return self.root / "data" / "review" / "manual_card_fills.json"
+
+    @property
+    def manual_cards(self) -> Path:
+        return self.root / "data" / "review" / "manual_cards.jsonl"
 
     @property
     def non_oxford_non_c2_overrides(self) -> Path:
@@ -60,6 +68,10 @@ class ProjectPaths:
     @property
     def anki_notes_txt(self) -> Path:
         return self.root / "data" / "build" / "anki_notes.txt"
+
+    @property
+    def build_staging_dir(self) -> Path:
+        return self.root / "data" / "build" / ".staging"
 
     @property
     def oxford_3000_md(self) -> Path:

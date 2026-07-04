@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 
 from src.config import ProjectPaths
-from src.deck_builder.build_notes import _load_audit_overrides, lookup_gloss
+from src.deck_builder.build_support import lookup_gloss, _load_audit_overrides
 from src.deck_builder.simplify_senses import simplify_record
 
 

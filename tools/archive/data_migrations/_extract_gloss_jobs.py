@@ -17,7 +17,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
 sys.path.insert(0, str(PROJECT_ROOT))
-from tools.build_notes import _parse_existing_txt
+from src.deck_builder.build_validation import _parse_txt_cards
 
 TXT_PATH = PROJECT_ROOT / 'English Academic Vocabulary.txt'
 OUT_PATH = PROJECT_ROOT / 'data' / 'simplify_diff' / 'gloss_jobs.jsonl'
@@ -26,16 +26,18 @@ OUT_PATH = PROJECT_ROOT / 'data' / 'simplify_diff' / 'gloss_jobs.jsonl'
 EXCLUDE_WORDS = {'hallucination'}
 
 def main():
-    parsed = _parse_existing_txt(TXT_PATH)
-    print(f'Loaded {len(parsed)} cards from new txt')
+    cards, issues = _parse_txt_cards(TXT_PATH.read_text(encoding='utf-8'), TXT_PATH)
+    if issues:
+        raise RuntimeError("\n".join(issue.format() for issue in issues))
+    print(f'Loaded {len(cards)} cards from new txt')
     jobs = []
     excluded = []
-    for key, card in parsed.items():
-        word, pos, cefr = key
+    for card in cards:
+        word, pos, cefr = card.word, card.pos, card.cefr
         if word in EXCLUDE_WORDS:
-            excluded.append(key)
+            excluded.append((word, pos, cefr))
             continue
-        defn = card.get('definition_orig', '')
+        defn = card.definition
         h = hashlib.sha256(f'{word}|{pos}|{cefr}|{defn}'.encode()).hexdigest()[:16]
         jobs.append({
             'word': word,

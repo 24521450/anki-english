@@ -8,7 +8,7 @@ from src.scraper.cambridge_audio import (
     select_entry,
     get_audio_filename,
 )
-from src.deck_builder.build_notes import _resolve_audio_filename
+from src.deck_builder.build_support import resolve_audio_filename
 
 def test_normalization():
     # Parenthetical removal
@@ -82,12 +82,23 @@ def test_builder_resolver_fallback():
         "cambridge_uk_alien.mp3",
     }
     # POS-specific exists
-    assert _resolve_audio_filename("acid", "noun", "uk", available) == "[sound:cambridge_uk_acid_noun.mp3]"
+    assert resolve_audio_filename("acid", "noun", "uk", available) == "[sound:cambridge_uk_acid_noun.mp3]"
     # POS-specific does not exist, falls back to legacy (preserving word case)
-    assert _resolve_audio_filename("alien", "noun", "uk", available) == "[sound:cambridge_uk_alien.mp3]"
-    assert _resolve_audio_filename("Alien", "noun", "uk", available) == ""  # case sensitive check
+    assert resolve_audio_filename("alien", "noun", "uk", available) == "[sound:cambridge_uk_alien.mp3]"
+    assert resolve_audio_filename("Alien", "noun", "uk", available) == ""  # case sensitive check
     # Neither exists
-    assert _resolve_audio_filename("craft", "noun", "uk", available) == ""
+    assert resolve_audio_filename("craft", "noun", "uk", available) == ""
+
+
+def test_builder_resolver_prefers_oxford_over_tts_and_ignores_tts():
+    available = {
+        "tts_uk_craft.mp3",
+        "oxford_uk_craft.mp3",
+        "cambridge_uk_other.mp3",
+    }
+
+    assert resolve_audio_filename("craft", "noun", "uk", available) == "[sound:oxford_uk_craft.mp3]"
+    assert resolve_audio_filename("other", "noun", "uk", {"tts_uk_other.mp3"}) == ""
 
 
 def test_builder_resolver_uses_verb_audio_for_converse_card():
@@ -96,6 +107,6 @@ def test_builder_resolver_uses_verb_audio_for_converse_card():
         "cambridge_uk_converse_verb.mp3",
     }
 
-    assert _resolve_audio_filename(
+    assert resolve_audio_filename(
         "converse", "adjective, noun, verb", "uk", available
     ) == "[sound:cambridge_uk_converse_verb.mp3]"

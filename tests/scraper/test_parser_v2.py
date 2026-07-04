@@ -86,8 +86,7 @@ def cambridge_golden():
 def test_oxford_parser_consistent(record, oxford_golden):
     filename = record["file"]
     parsed = _parse_oxford_record(filename)
-    if parsed is None:
-        pytest.skip(f"Oxford file {filename} is a non-word page (no h1.headword); parser correctly returned None")
+    assert parsed is not None, f"Oxford golden file {filename} unexpectedly parsed to None"
     expected = {k: v for k, v in record.items() if k not in ("file", "polymorphic_form")}
 
     parsed_norm = _normalize_ws(parsed)
@@ -97,6 +96,12 @@ def test_oxford_parser_consistent(record, oxford_golden):
         from deepdiff import DeepDiff
         diff = DeepDiff(expected_norm, parsed_norm, ignore_order=True, verbose_level=2)
         pytest.fail(f"Oxford parse mismatch for {filename}:\n{diff}")
+
+
+def test_oxford_parser_returns_none_for_non_word_page():
+    raw = b"<html><body><p>No headword here</p></body></html>"
+    parsed = parse_oxford(raw, source_files=["synthetic_non_word.html"])
+    assert parsed is None
 
 
 # -----------------------------------------------------------------------------

@@ -1,81 +1,60 @@
-"""Thin CLI adapter for building Anki Notes from Oxford jsonl + γ verdicts + vocab_list.
-
-Delegates core implementation to src.deck_builder.build_notes.
-"""
+"""CLI adapter for the registry-driven Anki notes build."""
 from __future__ import annotations
+
 import argparse
 import sys
 from collections import Counter
-from datetime import datetime
 from pathlib import Path
 
-# Re-expose core types, functions, and constants for backwards-compatibility
-from src.deck_builder.build_notes import (
-    _format_examples,
-    DEF_SEPARATOR,
-    EX_SEP,
-    COLL_SEPARATOR,
-    _parse_existing_txt,
-    get_word_candidates,
-    lookup_gloss,
-    _format_collocations,
-    _format_idioms,
-    _format_wordfamily,
-    _format_ipa,
-    _normalize_ipa,
-    _format_ipa_field,
-    _format_audio,
-    _resolve_audio_filename,
-    _source_label,
-    _regenerate_tags,
-    _deck_for_source,
-    _new_guid,
-    _merge_collocations_dicts,
-    _simplify_with_gamma,
-    _load_gamma_verdicts,
-    _parse_vocab_list,
-    find_idioms_for_word,
-    BuiltCard,
-    BuildNotesPaths,
-    BuildNotesResult,
-    POS_NORM,
-    build_notes,
-)
-
 from src.config import ProjectPaths
+from src.deck_builder.build_contracts import BuildNotesPaths
+from src.deck_builder.build_issues import BuildValidationError
+from src.deck_builder.build_publisher import publish_build_result_transactional
+from src.deck_builder.build_validation import validate_build_result
+from src.deck_builder.registry_build import build_notes_from_registry, load_registry_build_inputs
+
 
 paths_registry = ProjectPaths()
 PROJECT_ROOT = paths_registry.root
 
 JSONL_PATH = paths_registry.oxford_jsonl
 GAMMA_VERDICTS_PATH = paths_registry.gamma_verdicts
-TXT_PATH = paths_registry.anki_notes_txt
 OUT_JSONL = paths_registry.anki_notes_jsonl
+OUT_TXT = paths_registry.anki_notes_txt
 OXFORD_3000_MD = paths_registry.oxford_3000_md
 OXFORD_5000_MD = paths_registry.oxford_5000_md
 AWL_MD = paths_registry.awl_md
 AUDIT_JSONL_PATH = paths_registry.deck_audit_jsonl
-FILLED_PATH = paths_registry.manual_card_fills
 AUDIO_DIR = paths_registry.audio_dir
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--dry-run', action='store_true', help='Compute but do not write')
-    ap.add_argument('--jsonl', type=Path, default=JSONL_PATH)
-    ap.add_argument('--txt', type=Path, default=TXT_PATH)
-    ap.add_argument('--out-jsonl', type=Path, default=OUT_JSONL)
-    ap.add_argument('--gamma', type=Path, default=GAMMA_VERDICTS_PATH)
+    ap.add_argument("--dry-run", action="store_true", help="Compute but do not write")
+    ap.add_argument("--jsonl", type=Path, default=JSONL_PATH)
+    ap.add_argument("--out-jsonl", type=Path, default=OUT_JSONL)
+    ap.add_argument("--out-txt", type=Path, default=OUT_TXT)
+    ap.add_argument(
+        "--txt",
+        type=Path,
+        default=None,
+        help="Deprecated alias for --out-txt; never read as build input",
+    )
+    ap.add_argument("--gamma", type=Path, default=GAMMA_VERDICTS_PATH)
+    ap.add_argument("--card-registry", type=Path, default=paths_registry.card_registry)
+    ap.add_argument("--manual-cards", type=Path, default=paths_registry.manual_cards)
+    ap.add_argument("--review-overrides", type=Path, default=paths_registry.non_oxford_non_c2_overrides)
+    ap.add_argument("--synonym-overrides", type=Path, default=paths_registry.synonym_example_overrides)
+    ap.add_argument("--antonym-overrides", type=Path, default=paths_registry.antonym_example_overrides)
+    ap.add_argument("--sense-label-overrides", type=Path, default=paths_registry.sense_label_overrides)
+    args = ap.parse_args(argv)
 
-    canonical_review_path = paths_registry.non_oxford_non_c2_overrides
-    ap.add_argument('--review-overrides', type=Path, default=canonical_review_path)
-    canonical_synonym_overrides = paths_registry.synonym_example_overrides
-    ap.add_argument('--synonym-overrides', type=Path, default=canonical_synonym_overrides)
-    canonical_antonym_overrides = paths_registry.antonym_example_overrides
-    ap.add_argument('--antonym-overrides', type=Path, default=canonical_antonym_overrides)
-    canonical_sense_label_overrides = paths_registry.sense_label_overrides
-    ap.add_argument('--sense-label-overrides', type=Path, default=canonical_sense_label_overrides)
-    args = ap.parse_args()
+    out_txt = args.txt if args.txt is not None else args.out_txt
+    if args.txt is not None:
+        print(
+            "Warning: --txt is deprecated; use --out-txt. It is treated only as an output path.",
+            file=sys.stderr,
+        )
 
     if not args.review_overrides.exists():
         print(f"Error: Review overrides file missing: {args.review_overrides}", file=sys.stderr)
@@ -83,61 +62,80 @@ def main() -> int:
 
     paths = BuildNotesPaths(
         oxford_jsonl_path=args.jsonl,
-        notes_txt_path=args.txt,
         deck_audit_jsonl_path=AUDIT_JSONL_PATH,
         gamma_verdicts_path=args.gamma,
         oxford_3000_md=OXFORD_3000_MD,
         oxford_5000_md=OXFORD_5000_MD,
         awl_md=AWL_MD,
-        manual_card_fills_path=FILLED_PATH,
         audio_dir=AUDIO_DIR,
+        card_registry_path=args.card_registry,
+        manual_cards_path=args.manual_cards,
         review_overrides_path=args.review_overrides,
         synonym_example_overrides_path=args.synonym_overrides,
         antonym_example_overrides_path=args.antonym_overrides,
         sense_label_overrides_path=args.sense_label_overrides,
     )
 
-    sys.path.insert(0, str(PROJECT_ROOT))
-    print('=== Loading inputs ===', file=sys.stderr)
-    print(f'  audio dir: {paths.audio_dir}', file=sys.stderr)
-    print(f'Vocab 3000: {paths.oxford_3000_md.name}', file=sys.stderr)
-    print(f'Vocab 5000: {paths.oxford_5000_md.name}', file=sys.stderr)
-    print(f'Vocab AWL:   {paths.awl_md.name}', file=sys.stderr)
+    print("=== Loading inputs ===", file=sys.stderr)
+    print(f"  audio dir: {paths.audio_dir}", file=sys.stderr)
+    print(f"Vocab 3000: {paths.oxford_3000_md.name}", file=sys.stderr)
+    print(f"Vocab 5000: {paths.oxford_5000_md.name}", file=sys.stderr)
+    print(f"Vocab AWL:   {paths.awl_md.name}", file=sys.stderr)
 
-    # Call the new Build Notes Module
-    res = build_notes(paths)
+    try:
+        res = build_notes_from_registry(paths)
+        registry_inputs = load_registry_build_inputs(args.card_registry, args.manual_cards)
+        validation_report = validate_build_result(res, registry_inputs, paths.audio_dir)
+    except BuildValidationError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
-    print('=== Building cards (existing txt scope) ===', file=sys.stderr)
-    print(f'  Type A (POS fix): {res.type_a_count}', file=sys.stderr)
-    print(f'  Type B (lemmatize): {res.type_b_count}', file=sys.stderr)
-    print(f'  Type C (drop, no data): {res.type_c_count}', file=sys.stderr)
-    print(f'  Dup emit skipped: {res.dup_emit_skip_count}', file=sys.stderr)
-    print(f'  UNCLASSIFIED drop: {res.unclassified_drop_count}', file=sys.stderr)
-    print(f'  built cards: {res.built_cards_count}', file=sys.stderr)
-    print(f'  missing in jsonl: {res.missing_in_jsonl_count}', file=sys.stderr)
+    print("=== Building cards (registry scope) ===", file=sys.stderr)
+    print(f"  Type A (POS fix): {res.type_a_count}", file=sys.stderr)
+    print(f"  Type B (lemmatize): {res.type_b_count}", file=sys.stderr)
+    print(f"  Type C (drop, no data): {res.type_c_count}", file=sys.stderr)
+    print(f"  Dup emit skipped: {res.dup_emit_skip_count}", file=sys.stderr)
+    print(f"  UNCLASSIFIED drop: {res.unclassified_drop_count}", file=sys.stderr)
+    print(f"  built cards: {res.built_cards_count}", file=sys.stderr)
+    print(f"  missing in jsonl: {res.missing_in_jsonl_count}", file=sys.stderr)
 
-    # Write files if not dry-run
+    if not validation_report.ok:
+        print("Build validation failed:", file=sys.stderr)
+        print(validation_report.error_text(), file=sys.stderr)
+        return 1
+
+    print(
+        f"  validation: OK cards={validation_report.card_count} "
+        f"jsonl_sha256={validation_report.jsonl_sha256} txt_sha256={validation_report.txt_sha256}",
+        file=sys.stderr,
+    )
+
     if not args.dry_run:
-        args.out_jsonl.parent.mkdir(parents=True, exist_ok=True)
-        args.out_jsonl.write_text(res.jsonl_text, encoding='utf-8')
-        print(f'Wrote: {args.out_jsonl}', file=sys.stderr)
+        try:
+            publish_report = publish_build_result_transactional(
+                res,
+                args.out_jsonl,
+                out_txt,
+                registry_inputs,
+                args.card_registry,
+                paths.audio_dir,
+                paths_registry.build_staging_dir,
+            )
+        except BuildValidationError as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
+        print(
+            f"Wrote transactionally: {args.out_jsonl} and {out_txt} "
+            f"(jsonl_sha256={publish_report.jsonl_sha256}, txt_sha256={publish_report.txt_sha256})",
+            file=sys.stderr,
+        )
 
-        ts = datetime.now().strftime('%Y%m%d_%H%M%S')
-        backup = args.txt.with_suffix(f'.txt.bak_pre_build_{ts}')
-        backup.write_text(args.txt.read_text(encoding='utf-8'), encoding='utf-8')
-        args.txt.write_text(res.txt_text, encoding='utf-8')
-        print(f'Wrote: {args.txt}  (backup: {backup.name})', file=sys.stderr)
-
-    # Quick stats
-    print('\n=== Quick stats ===', file=sys.stderr)
-    by_cefr = Counter(c.cefr for c in res.built_cards)
-    by_deck = Counter(c.deck for c in res.built_cards)
-    by_source = Counter(c.source1 for c in res.built_cards)
-    print(f'  by cefr: {dict(by_cefr)}', file=sys.stderr)
-    print(f'  by deck: {dict(by_deck)}', file=sys.stderr)
-    print(f'  by source1: {dict(by_source)}', file=sys.stderr)
+    print("\n=== Quick stats ===", file=sys.stderr)
+    print(f"  by cefr: {dict(Counter(c.cefr for c in res.built_cards))}", file=sys.stderr)
+    print(f"  by deck: {dict(Counter(c.deck for c in res.built_cards))}", file=sys.stderr)
+    print(f"  by source1: {dict(Counter(c.source1 for c in res.built_cards))}", file=sys.stderr)
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

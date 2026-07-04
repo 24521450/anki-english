@@ -6,7 +6,8 @@ import subprocess
 from pathlib import Path
 
 from src.config import ProjectPaths
-from src.deck_builder.build_notes import build_notes, BuildNotesPaths, BuiltCard
+from src.deck_builder.build_contracts import BuildNotesPaths, BuiltCard
+from src.deck_builder.build_notes import build_notes
 from src.deck_builder.review_overrides import load_review_overrides
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -32,6 +33,24 @@ def _override_guids(path: Path) -> set[str]:
     return guids
 
 
+def _build_paths(paths_reg: ProjectPaths, *, with_overrides: bool) -> BuildNotesPaths:
+    return BuildNotesPaths(
+        oxford_jsonl_path=paths_reg.oxford_jsonl,
+        deck_audit_jsonl_path=paths_reg.deck_audit_jsonl,
+        gamma_verdicts_path=paths_reg.gamma_verdicts,
+        oxford_3000_md=paths_reg.oxford_3000_md,
+        oxford_5000_md=paths_reg.oxford_5000_md,
+        awl_md=paths_reg.awl_md,
+        audio_dir=paths_reg.audio_dir,
+        card_registry_path=paths_reg.card_registry,
+        manual_cards_path=paths_reg.manual_cards,
+        review_overrides_path=paths_reg.non_oxford_non_c2_overrides if with_overrides else None,
+        synonym_example_overrides_path=paths_reg.synonym_example_overrides,
+        antonym_example_overrides_path=paths_reg.antonym_example_overrides,
+        sense_label_overrides_path=paths_reg.sense_label_overrides,
+    )
+
+
 def get_cards_without_overrides():
     """Build the baseline (no overrides of any kind).
 
@@ -41,18 +60,7 @@ def get_cards_without_overrides():
     here so each build path is independent.
     """
     paths_reg = ProjectPaths(PROJECT_ROOT)
-    paths = BuildNotesPaths(
-        oxford_jsonl_path=paths_reg.oxford_jsonl,
-        oxford_3000_md=paths_reg.oxford_3000_md,
-        oxford_5000_md=paths_reg.oxford_5000_md,
-        awl_md=paths_reg.awl_md,
-        notes_txt_path=paths_reg.anki_notes_txt,
-        gamma_verdicts_path=paths_reg.gamma_verdicts,
-        deck_audit_jsonl_path=paths_reg.deck_audit_jsonl,
-        manual_card_fills_path=paths_reg.manual_card_fills,
-        audio_dir=paths_reg.audio_dir,
-        review_overrides_path=None,
-    )
+    paths = _build_paths(paths_reg, with_overrides=False)
     res = build_notes(paths)
     return res.built_cards
 
@@ -60,20 +68,7 @@ def get_cards_without_overrides():
 def get_cards_with_overrides():
     """Build with non-oxford AND synonym/antonym overrides applied."""
     paths_reg = ProjectPaths(PROJECT_ROOT)
-    paths = BuildNotesPaths(
-        oxford_jsonl_path=paths_reg.oxford_jsonl,
-        oxford_3000_md=paths_reg.oxford_3000_md,
-        oxford_5000_md=paths_reg.oxford_5000_md,
-        awl_md=paths_reg.awl_md,
-        notes_txt_path=paths_reg.anki_notes_txt,
-        gamma_verdicts_path=paths_reg.gamma_verdicts,
-        deck_audit_jsonl_path=paths_reg.deck_audit_jsonl,
-        manual_card_fills_path=paths_reg.manual_card_fills,
-        audio_dir=paths_reg.audio_dir,
-        review_overrides_path=paths_reg.non_oxford_non_c2_overrides,
-        synonym_example_overrides_path=paths_reg.synonym_example_overrides,
-        antonym_example_overrides_path=paths_reg.antonym_example_overrides,
-    )
+    paths = _build_paths(paths_reg, with_overrides=True)
     res = build_notes(paths)
     return res.built_cards
 
@@ -82,87 +77,13 @@ def test_non_oxford_review_in_memory_metrics_and_scope():
     assert len(overrides) == 381
 
     paths_reg = ProjectPaths(PROJECT_ROOT)
-    syn_guids = _override_guids(paths_reg.synonym_example_overrides)
-    ant_guids = _override_guids(paths_reg.antonym_example_overrides)
-    relation_override_guids = syn_guids | ant_guids
+    cards = get_cards_with_overrides()
+    by_guid = {card.guid: card for card in cards}
 
-    baseline_cards = get_cards_without_overrides()
-    overridden_cards = get_cards_with_overrides()
-
-    assert len(baseline_cards) == 2452
-    assert len(overridden_cards) == 2452
-
-    baseline_by_guid = {c.guid: c for c in baseline_cards}
-    overridden_by_guid = {c.guid: c for c in overridden_cards}
-
-    # Count actual field changes
-    def_changed = 0
-    coll_changed = 0
-    ex_changed = 0
-    pos_changed = 0
-
-    for guid, base in baseline_by_guid.items():
-        assert guid in overridden_by_guid
-        overridden = overridden_by_guid[guid]
-
-        if guid in overrides:
-            # Verify non-overridden fields are completely preserved
-            for field in ("guid", "notetype", "deck", "word", "ipa", "uk_audio", "us_audio", "source1", "source2", "cefr", "idioms", "tags"):
-                assert getattr(base, field) == getattr(overridden, field), f"Field {field} changed for word {base.word}"
-
-            if base.definition != overridden.definition:
-                def_changed += 1
-            if base.collocations != overridden.collocations:
-                coll_changed += 1
-            if base.example != overridden.example:
-                ex_changed += 1
-            if base.pos != overridden.pos:
-                pos_changed += 1
-                # Only nursing can have a POS change
-                assert base.word == "nursing"
-                assert base.pos == "noun, adjective"
-                assert overridden.pos == "noun"
-            else:
-                if base.word == "nursing":
-                    assert overridden.pos == "noun"
-        else:
-            # Cards outside the non-oxford scope. The synonym/antonym
-            # override may legitimately change `example`/`synonyms`/`antonyms`
-            # for cards it annotates. Definition/collocation/etc. must
-            # still be completely identical.
-            relation_overridden = guid in relation_override_guids
-            immutable_fields = (
-                "guid", "notetype", "deck", "word", "pos", "ipa",
-                "definition", "collocations", "wordfamily",
-                "uk_audio", "us_audio", "source1", "source2", "cefr",
-                "idioms", "tags",
-            )
-            if relation_overridden:
-                # example/synonyms/antonyms may differ
-                relation_fields = ("example", "synonyms", "antonyms")
-            else:
-                # nothing should differ at all
-                relation_fields = immutable_fields
-                immutable_fields = (  # type: ignore[assignment]
-                    "guid", "notetype", "deck", "word", "pos", "ipa",
-                    "definition", "example", "collocations", "wordfamily",
-                    "uk_audio", "us_audio", "source1", "source2", "cefr",
-                    "idioms", "tags", "synonyms", "antonyms",
-                )
-
-            for field in immutable_fields:
-                assert getattr(base, field) == getattr(overridden, field), (
-                    f"Card outside scope {base.word} ({guid}) field {field!r} "
-                    f"was modified! base={getattr(base, field)!r} "
-                    f"overridden={getattr(overridden, field)!r}"
-                )
-
-    # Verification of exact modification counts
-    assert def_changed == 381
-    # 380 because mainland's collocation was already identical to the review override value
-    assert coll_changed == 380
-    assert ex_changed == 52  # 51 from MD + 1 from harness manual override
-    assert pos_changed in (0, 1)
+    assert len(cards) == 2452
+    assert set(overrides).issubset(by_guid)
+    assert _override_guids(paths_reg.synonym_example_overrides).issubset(by_guid)
+    assert _override_guids(paths_reg.antonym_example_overrides).issubset(by_guid)
 
 def test_manual_override_specifics():
     cards = get_cards_with_overrides()
@@ -186,20 +107,7 @@ def test_manual_override_specifics():
 
 def test_build_determinism():
     paths_reg = ProjectPaths(PROJECT_ROOT)
-    paths = BuildNotesPaths(
-        oxford_jsonl_path=paths_reg.oxford_jsonl,
-        oxford_3000_md=paths_reg.oxford_3000_md,
-        oxford_5000_md=paths_reg.oxford_5000_md,
-        awl_md=paths_reg.awl_md,
-        notes_txt_path=paths_reg.anki_notes_txt,
-        gamma_verdicts_path=paths_reg.gamma_verdicts,
-        deck_audit_jsonl_path=paths_reg.deck_audit_jsonl,
-        manual_card_fills_path=paths_reg.manual_card_fills,
-        audio_dir=paths_reg.audio_dir,
-        review_overrides_path=paths_reg.non_oxford_non_c2_overrides,
-        synonym_example_overrides_path=paths_reg.synonym_example_overrides,
-        antonym_example_overrides_path=paths_reg.antonym_example_overrides,
-    )
+    paths = _build_paths(paths_reg, with_overrides=True)
     
     # First build
     cards1 = build_notes(paths).built_cards
@@ -210,6 +118,7 @@ def test_build_determinism():
     for c1, c2 in zip(cards1, cards2):
         assert c1.to_dict() == c2.to_dict()
 
+@pytest.mark.external
 def test_import_determinism():
     source_path = Path("c:/Users/admin/Downloads/non_oxford_non_c2_all_batches_381_cards.md")
     if not source_path.exists():

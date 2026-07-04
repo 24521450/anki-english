@@ -18,7 +18,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(r'C:\Users\admin\Downloads\ankideck')
 sys.path.insert(0, str(PROJECT_ROOT))
-from tools.build_notes import _parse_existing_txt
+from src.deck_builder.build_validation import _parse_txt_cards
 from src.deck_builder.gloss_llm import (
     load_existing_verdicts, validate_verdict, JOBS_PATH, VERDICTS_PATH,
 )
@@ -84,8 +84,10 @@ def apply_glosses_to_txt(txt_path: Path, dry_run: bool = False) -> dict:
     verdicts = load_existing_verdicts()
     print(f'Loaded {len(verdicts)} gloss verdicts')
 
-    parsed = _parse_existing_txt(txt_path)
-    print(f'Loaded {len(parsed)} cards from txt')
+    cards, parse_issues = _parse_txt_cards(txt_path.read_text(encoding='utf-8'), txt_path)
+    if parse_issues:
+        raise RuntimeError("\n".join(issue.format() for issue in parse_issues))
+    print(f'Loaded {len(cards)} cards from txt')
 
     # Build (word_lower, pos, cefr) → gloss lookup. KEY INCLUDES DISAMBIGUATOR
     # so that "counter (argue against)" and "counter (long flat surface)" don't

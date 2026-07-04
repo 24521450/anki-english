@@ -58,7 +58,7 @@ def test_no_old_paths_or_hardcoded_root_in_maintained_code():
             for basename in OLD_BASENAMES:
                 if basename in content:
                     if basename == "English Academic Vocabulary.txt":
-                        # Require path to be anchored under data/build/ or notes_txt_path.parent
+                        # Require path to be anchored under data/build/ or an explicit parent path.
                         for line in content.splitlines():
                             if basename in line and "data/build" not in line and "parent /" not in line and "parent/" not in line:
                                 violations.append(

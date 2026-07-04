@@ -1,8 +1,10 @@
 from __future__ import annotations
 import pytest
 from pathlib import Path
-from src.deck_builder.build_notes import BuiltCard, build_notes, BuildNotesPaths
+from src.deck_builder.build_contracts import BuiltCard, BuildNotesPaths
+from src.deck_builder.build_issues import BuildValidationError
 from src.config import ProjectPaths
+from src.deck_builder.build_notes import build_notes
 from src.deck_builder.synonym_annotator import (
     clean_for_matching,
     strip_synonym_annotations,
@@ -489,17 +491,16 @@ def test_annotate_applicable_appends_after_existing_oxford_parenthetical():
 
 
 def test_unknown_guid_fails_on_single_card_build(tmp_path):
-    # Setup single card build
-    vocab_txt = tmp_path / "vocab.txt"
-    vocab_txt.write_text(
-        "#separator:tab\n#html:true\n#guid column:1\n#notetype column:2\n#deck column:3\n#tags column:17\n"
-        "guid_conq\tModel\tDeck Oxford\tconquer\tverb\t/ipa/\tdefn\tex\t\t\t\t\tOxford\tOxford\tC1\t\tSource::Oxford CEFR::C1\t\t\n",
+    oxford_jsonl = tmp_path / "oxford.jsonl"
+    oxford_jsonl.write_text("", encoding="utf-8")
+    registry = tmp_path / "card_registry.jsonl"
+    registry.write_text(
+        '{"word":"conquer","cefr":"C1","list":"NO_LIST","variant":"","pos":"verb","guid":"guid_conq","status":"active","deck_override":"Deck Oxford"}\n',
         encoding="utf-8",
     )
-
-    oxford_jsonl = tmp_path / "oxford.jsonl"
-    oxford_jsonl.write_text(
-        '{"word": "conquer", "pos_data": [{"pos": "verb", "definitions": [{"text": "defn"}]}]}\n',
+    manual = tmp_path / "manual_cards.jsonl"
+    manual.write_text(
+        '{"word":"conquer","cefr":"C1","list":"NO_LIST","variant":"","definition":"defn","example":"ex","collocations":"","wordfamily":"","ipa":"/ipa/","uk_audio":"","us_audio":"","source1":"Oxford","source2":"Oxford","idioms":"","provenance":{"source":"build_contract_source_gap","ledger_pos":"verb"},"tags":"Source::Oxford CEFR::C1 CEFR::oxford"}\n',
         encoding="utf-8",
     )
 
@@ -512,14 +513,14 @@ def test_unknown_guid_fails_on_single_card_build(tmp_path):
 
     paths = BuildNotesPaths(
         oxford_jsonl_path=oxford_jsonl,
-        notes_txt_path=vocab_txt,
         deck_audit_jsonl_path=tmp_path / "audit.jsonl",
         gamma_verdicts_path=tmp_path / "gamma.json",
         oxford_3000_md=tmp_path / "oxford_3000.md",
         oxford_5000_md=tmp_path / "oxford_5000.md",
         awl_md=tmp_path / "awl.md",
-        manual_card_fills_path=tmp_path / "filled.json",
         audio_dir=tmp_path / "audio",
+        card_registry_path=registry,
+        manual_cards_path=manual,
         synonym_example_overrides_path=overrides_file,
         antonym_example_overrides_path=tmp_path / "antonym_overrides.jsonl",
     )
@@ -530,13 +531,12 @@ def test_unknown_guid_fails_on_single_card_build(tmp_path):
     paths.oxford_3000_md.write_text("", encoding="utf-8")
     paths.oxford_5000_md.write_text("", encoding="utf-8")
     paths.awl_md.write_text("", encoding="utf-8")
-    paths.manual_card_fills_path.write_text("[]\n", encoding="utf-8")
     paths.audio_dir.mkdir(exist_ok=True)
     # Antonym overrides file is empty (no entries); should be tolerated.
     paths.antonym_example_overrides_path.write_text("", encoding="utf-8")
 
     # Should fail due to unknown GUID in overrides
-    with pytest.raises(ValueError) as exc:
+    with pytest.raises(BuildValidationError) as exc:
         build_notes(paths)
     assert "Unknown card GUIDs defined in synonym overrides" in str(exc.value)
 
@@ -551,17 +551,18 @@ def test_production_overrides_loaded_and_used_once():
     # Load cards and run the real builder to verify
     paths = BuildNotesPaths(
         oxford_jsonl_path=proj.oxford_jsonl,
-        notes_txt_path=proj.anki_notes_txt,
         deck_audit_jsonl_path=proj.deck_audit_jsonl,
         gamma_verdicts_path=proj.gamma_verdicts,
         oxford_3000_md=proj.oxford_3000_md,
         oxford_5000_md=proj.oxford_5000_md,
         awl_md=proj.awl_md,
-        manual_card_fills_path=proj.manual_card_fills,
         audio_dir=proj.audio_dir,
+        card_registry_path=proj.card_registry,
+        manual_cards_path=proj.manual_cards,
         synonym_example_overrides_path=proj.synonym_example_overrides,
         antonym_example_overrides_path=proj.antonym_example_overrides,
         review_overrides_path=proj.non_oxford_non_c2_overrides,
+        sense_label_overrides_path=proj.sense_label_overrides,
     )
 
     res = build_notes(paths)

@@ -314,19 +314,20 @@ def validate_source_to_build_roundtrip(
     data/sources/oxford.jsonl and overrides. Fails if stored notes are stale,
     labels are lost or corrupted, or overrides hide source definitions incorrectly.
     """
-    from src.deck_builder.build_notes import BuildNotesPaths, build_notes
+    from src.deck_builder.build_contracts import BuildNotesPaths
+    from src.deck_builder.registry_build import build_notes_from_registry
 
     paths = ProjectPaths()
     build_paths = BuildNotesPaths(
         oxford_jsonl_path=paths.oxford_jsonl,
-        notes_txt_path=paths.anki_notes_txt,
         deck_audit_jsonl_path=paths.deck_audit_jsonl,
         gamma_verdicts_path=paths.gamma_verdicts,
         oxford_3000_md=paths.oxford_3000_md,
         oxford_5000_md=paths.oxford_5000_md,
         awl_md=paths.awl_md,
-        manual_card_fills_path=paths.manual_card_fills,
         audio_dir=paths.audio_dir,
+        card_registry_path=paths.card_registry,
+        manual_cards_path=paths.manual_cards,
         review_overrides_path=paths.non_oxford_non_c2_overrides,
         synonym_example_overrides_path=paths.synonym_example_overrides,
         antonym_example_overrides_path=paths.antonym_example_overrides,
@@ -334,7 +335,7 @@ def validate_source_to_build_roundtrip(
     )
 
     try:
-        fresh_result = build_notes(build_paths)
+        fresh_result = build_notes_from_registry(build_paths)
     except Exception as err:
         return [f"In-memory build_notes() failed: {err}"]
 
