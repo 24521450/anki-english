@@ -24,7 +24,7 @@ Word `sick` cached as `oxford_sick_1_(adj).html` contains all 3 POS sections (ad
 ]
 ```
 
-All three `pos_data` entries have identical content — the parser is grouping all senses under each top-level POS label instead of partitioning by the `<pos-g htag="span">` boundary in the file.
+All three `pos_data` entries have identical content - the parser is grouping all senses under each top-level POS label instead of partitioning by the `<pos-g htag="span">` boundary in the file.
 
 ## Scale
 
@@ -43,13 +43,13 @@ The Oxford HTML structure for multi-POS files is:
   <li class="sense" ...>...</li>  <!-- sense 1 of adj -->
   <li class="sense" ...>...</li>  <!-- sense 2 of adj -->
 </ol>
-<pos-g hclass="pos" htag="span"><pos>adjective</pos></pos-g>  ← section break
+<pos-g hclass="pos" htag="span"><pos>adjective</pos></pos-g>  <-- section break
 <ol class="senses_multiple">
   <li class="sense" ...>...</li>  <!-- sense 1 of noun -->
 </ol>
 ```
 
-(Approximate — exact structure needs verification in Phase 6 implementation.)
+(Approximate - exact structure needs verification in Phase 6 implementation.)
 
 **Algorithm for fix:**
 1. Walk the file in document order
@@ -74,4 +74,4 @@ Document the bug, ship the JSONL as-is, plan Phase 6 to:
 ## Related
 
 - Schema field `pos_data.description` no longer carries this note (per Phase 5 review)
-- See `docs/adr/0003-oxford-register-tags-unverified.md` (TBD) for the related `.reg` selector issue
+- The related Oxford `.reg` selector issue remains a follow-up note; no separate ADR currently exists for it.

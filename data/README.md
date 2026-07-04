@@ -25,6 +25,8 @@ Supporting data remains in place:
 - `cefr_audit/` and `simplify_diff/` contain audit history and intermediate
   analysis artifacts. Files there are not canonical pipeline outputs unless
   explicitly exposed through `ProjectPaths`.
+- `archive/` contains retired audit artifacts kept for traceability. Runtime
+  code must not depend on files in this directory.
 
 ## Lifecycle
 

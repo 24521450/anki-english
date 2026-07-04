@@ -8,6 +8,12 @@ dist/
 .venv/
 venv/
 *.log
+tools/.tts*_args.json
+tools/.tts*.json
+tools/.tts*.py
+tools/.brute_lang.py
+tools/.lang_sanity.py
+.tts_dl_*.mp3
 
 # Local editor/agent state
 .idea/
@@ -19,6 +25,7 @@ scratch/
 
 # Scraper/build caches and generated package outputs
 data/.cache_html/
+data/oxford_unmerged_*.jsonl
 *.apkg
 
 # Local backups

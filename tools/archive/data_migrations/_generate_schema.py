@@ -333,7 +333,7 @@ def main() -> int:
 
     # Source-specific note in title-level description, NOT in field descriptions:
     # bug notes belong in ADR/CHANGELOG, not in schema contract. See docs/adr/0002-multi-pos-merge-bug.md.
-    # Register tags note: also bug-tracker worthy, not schema-worthy. See ADR-0003 (TBD).
+    # Register tags note: also bug-tracker worthy, not schema-worthy. No separate ADR currently exists.
 
     ox_path = os.path.join(OUT_DIR, "oxford_record.schema.json")
     cam_path = os.path.join(OUT_DIR, "cambridge_record.schema.json")
