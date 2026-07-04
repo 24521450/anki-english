@@ -45,6 +45,14 @@ If the file is missing or stale, run `/understand --full` to (re)build it.
 
 Refresh with `/understand --full` after major refactors.
 
+## Subagent policy
+
+For non-trivial tasks, Codex should assess whether parallel delegation is useful.
+It may autonomously spawn up to 3 subagents when workstreams are independent,
+have explicit output contracts, and do not modify overlapping files.
+The primary agent must merge, review, and run final verification.
+Avoid subagents for small, sequential, or tightly coupled tasks.
+
 ## Code style
 
 - Python 3.10+ (async-friendly: `aiohttp`)
