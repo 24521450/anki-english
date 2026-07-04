@@ -34,7 +34,6 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   - **scrape**: Oxford/Cambridge + AWL ingestion, audio. Keeps all senses / all CEFR entries (raw).
   - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md) and [Sense Sorting](./CONTEXT.md)** — splits by CEFR, retains all CEFR-matching senses (no per-card def cap), orders by sensenum_local asc. See `design/README.md § Card design rules` for the rule reference.
   - **validate**: checks registry, card identity, JSONL/TXT parity, audio references, and deterministic output before publish.
-  - **split**: legacy alias for `validate` during migration.
   - **deck**: bakes `.apkg` via `update_anki_deck.py`.
   - Archived one-shot fixers are unsupported and are not wrapped by the pipeline.
 

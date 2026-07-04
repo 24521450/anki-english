@@ -27,9 +27,11 @@ def test_resolve_stages_from_to_flags():
     assert resolve_stages(from_stage="build", to_stage=None) == ["build", "validate", "deck"]
     assert resolve_stages(from_stage=None, to_stage="validate") == ["build", "validate"]
 
-def test_resolve_stages_split_alias():
-    assert resolve_stages(stage="split") == ["validate"]
-    assert resolve_stages(from_stage="build", to_stage="split") == ["build", "validate"]
+def test_resolve_stages_rejects_split():
+    with pytest.raises(ValueError, match="Unknown stage 'split'"):
+        resolve_stages(stage="split")
+    with pytest.raises(ValueError, match="Unknown stage 'split'"):
+        resolve_stages(from_stage="build", to_stage="split")
 
 def test_resolve_stages_invalid_range():
     # start stage after end stage
@@ -45,3 +47,17 @@ def test_pipeline_main_handles_invalid_range(capsys):
     assert code != 0
     captured = capsys.readouterr()
     assert "Error: Invalid range" in captured.err or "Error: Invalid range" in captured.out
+
+
+def test_pipeline_main_rejects_split_stage(capsys):
+    code = main(["split", "--dry-run"])
+    assert code == 1
+    captured = capsys.readouterr()
+    assert "Unknown stage 'split'" in captured.err
+
+
+def test_pipeline_main_rejects_split_range(capsys):
+    code = main(["--from", "build", "--to", "split", "--dry-run"])
+    assert code == 1
+    captured = capsys.readouterr()
+    assert "Unknown stage 'split'" in captured.err

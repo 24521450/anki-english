@@ -19,15 +19,12 @@ NOTES_JSONL = paths.anki_notes_jsonl
 NOTES_TXT = paths.anki_notes_txt
 
 ALL_STAGES = ["scrape", "build", "validate", "deck"]
-DEPRECATED_STAGE_ALIASES = {"split": "validate"}
 DEFAULT_STAGES = ["build", "validate", "deck"]
 
 
 def _canonical_stage(stage: str) -> str:
     if stage in ALL_STAGES:
         return stage
-    if stage in DEPRECATED_STAGE_ALIASES:
-        return DEPRECATED_STAGE_ALIASES[stage]
     raise ValueError(f"Unknown stage '{stage}'")
 
 def run_scrape(dry_run: bool) -> int:
@@ -82,10 +79,6 @@ def run_validate(dry_run: bool) -> int:
     return 0
 
 
-def run_split(dry_run: bool) -> int:
-    print("Warning: 'split' is deprecated; use 'validate' instead.", file=sys.stderr)
-    return run_validate(dry_run)
-
 def run_deck(dry_run: bool) -> int:
     print("=== Pipeline: Running deck stage ===", file=sys.stderr)
     from update_anki_deck import main as run_update_anki_deck
@@ -134,9 +127,6 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Pipeline active stages: {stages_to_run}", file=sys.stderr)
     if args.dry_run:
         print("Pipeline is running in DRY-RUN mode.", file=sys.stderr)
-    if args.stage == "split" or args.from_stage == "split" or args.to_stage == "split":
-        print("Warning: 'split' is deprecated; use 'validate' instead.", file=sys.stderr)
-
     # Execute stages sequentially
     for stage in stages_to_run:
         if stage == "scrape":
