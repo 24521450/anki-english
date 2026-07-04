@@ -61,6 +61,9 @@ jobs:
           print("NLTK corpora ready")
           PY
 
+      - name: Hydrate parser fixtures
+        run: python -m tools.ci_hydrate_parser_fixtures
+
       - name: Check registry sync
         run: python -m tools.sync_card_registry --check
 
