@@ -85,6 +85,11 @@ jobs:
       - name: Dry-run pipeline deck
         run: python -m src.pipeline deck --dry-run
 
+      - name: Warm Node runtime
+        run: |
+          node --version
+          node -e "console.log('node warmup')"
+
       - name: Run tests
         run: python -m pytest
 
