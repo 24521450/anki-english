@@ -132,6 +132,27 @@ def _hydrate_oxford_record(record: dict, force: bool) -> str:
     raise RuntimeError(f"unable to hydrate Oxford fixture {filename}")
 
 
+def _hydrate_oxford_special(filename: str, force: bool, predicate) -> str:
+    target = OXFORD_CACHE / filename
+    if target.exists() and not force:
+        parsed = parse_oxford(target.read_bytes(), source_files=[filename])
+        if parsed is not None and predicate(parsed):
+            return f"ok {filename} (already present)"
+
+    for slug in _slug_candidates_from_oxford_filename(filename):
+        url = f"https://www.oxfordlearnersdictionaries.com/definition/english/{slug}"
+        content = _fetch(url)
+        if content is None:
+            continue
+        parsed = parse_oxford(content, source_files=[filename])
+        if parsed is None or not predicate(parsed):
+            continue
+        _write_if_needed(target, content, force)
+        return f"ok {filename} <- {url}"
+
+    raise RuntimeError(f"unable to hydrate Oxford special fixture {filename}")
+
+
 def _hydrate_cambridge_record(record: dict, force: bool) -> str:
     filename = record["file"]
     target = CAMBRIDGE_CACHE / filename
@@ -157,6 +178,27 @@ def _hydrate_cambridge_record(record: dict, force: bool) -> str:
     raise RuntimeError(f"unable to hydrate Cambridge fixture {filename}")
 
 
+def _hydrate_cambridge_special(filename: str, force: bool, predicate) -> str:
+    target = CAMBRIDGE_CACHE / filename
+    if target.exists() and not force:
+        parsed = parse_cambridge(target.read_bytes(), source_files=[filename])
+        if parsed is not None and predicate(parsed):
+            return f"ok {filename} (already present)"
+
+    for slug in _cambridge_candidates_from_filename(filename):
+        url = f"https://dictionary.cambridge.org/dictionary/english/{slug}"
+        content = _fetch(url)
+        if content is None:
+            continue
+        parsed = parse_cambridge(content, source_files=[filename])
+        if parsed is None or not predicate(parsed):
+            continue
+        _write_if_needed(target, content, force)
+        return f"ok {filename} <- {url}"
+
+    raise RuntimeError(f"unable to hydrate Cambridge special fixture {filename}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true", help="overwrite existing fixture files")
@@ -169,33 +211,73 @@ def main() -> int:
     for record in oxford:
         print(_hydrate_oxford_record(record, args.force))
 
-    extra_oxford = OXFORD_CACHE / "oxford_abolish_(verb).html"
-    if not extra_oxford.exists() or args.force:
-        url = "https://www.oxfordlearnersdictionaries.com/definition/english/abolish"
-        content = _fetch(url)
-        if content is None:
-            raise RuntimeError("unable to fetch Oxford abolish fixture")
-        parsed = parse_oxford(content, source_files=["oxford_abolish_(verb).html"])
-        if parsed is None:
-            raise RuntimeError("Oxford abolish page parsed to None")
-        _write_if_needed(extra_oxford, content, args.force)
-        print(f"ok oxford_abolish_(verb).html <- {url}")
+    print(
+        _hydrate_oxford_special(
+            "oxford_sick_1_(adj).html",
+            args.force,
+            lambda rec: rec.get("word") == "sick"
+            and rec.get("pos_data")
+            and len(rec["pos_data"]) == 1
+            and rec["pos_data"][0].get("pos") == "adjective"
+            and len(rec["pos_data"][0].get("definitions", [])) == 7,
+        )
+    )
+    print(
+        _hydrate_oxford_special(
+            "oxford_aggregate_(adj).html",
+            args.force,
+            lambda rec: rec.get("word") == "aggregate"
+            and rec.get("pos_data")
+            and len(rec["pos_data"]) == 1
+            and rec["pos_data"][0].get("pos") == "adjective"
+            and len(rec["pos_data"][0].get("definitions", [])) == 1,
+        )
+    )
+    print(
+        _hydrate_oxford_special(
+            "oxford_aggregate_(verb).html",
+            args.force,
+            lambda rec: rec.get("word") == "aggregate"
+            and rec.get("pos_data")
+            and len(rec["pos_data"]) == 1
+            and rec["pos_data"][0].get("pos") == "verb"
+            and len(rec["pos_data"][0].get("definitions", [])) == 1,
+        )
+    )
+    print(
+        _hydrate_oxford_special(
+            "oxford_aggregate_1_(noun).html",
+            args.force,
+            lambda rec: rec.get("word") == "aggregate"
+            and rec.get("pos_data")
+            and len(rec["pos_data"]) == 1
+            and rec["pos_data"][0].get("pos") == "noun"
+            and len(rec["pos_data"][0].get("definitions", [])) == 2,
+        )
+    )
+    print(
+        _hydrate_oxford_special(
+            "oxford_abolish_(verb).html",
+            args.force,
+            lambda rec: rec.get("word") == "abolish"
+            and rec.get("pos_data")
+            and len(rec["pos_data"]) >= 1,
+        )
+    )
 
     print(f"Hydrating Cambridge fixtures into {CAMBRIDGE_CACHE}")
     for record in cambridge:
         print(_hydrate_cambridge_record(record, args.force))
 
-    extra_cambridge = CAMBRIDGE_CACHE / "cambridge_violation.html"
-    if not extra_cambridge.exists() or args.force:
-        url = "https://dictionary.cambridge.org/dictionary/english/violation"
-        content = _fetch(url)
-        if content is None:
-            raise RuntimeError("unable to fetch Cambridge violation fixture")
-        parsed = parse_cambridge(content, source_files=["cambridge_violation.html"])
-        if parsed is None:
-            raise RuntimeError("Cambridge violation page parsed to None")
-        _write_if_needed(extra_cambridge, content, args.force)
-        print(f"ok cambridge_violation.html <- {url}")
+    print(
+        _hydrate_cambridge_special(
+            "cambridge_violation.html",
+            args.force,
+            lambda rec: rec.get("word") == "violation"
+            and "infraction" in rec.get("see_also", [])
+            and "misdemeanour" in rec.get("see_also", []),
+        )
+    )
 
     print("Parser fixtures ready")
     return 0
