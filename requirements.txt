@@ -1,32 +1,35 @@
 # ============================================================
-# IELTS Deck — Python Dependencies
+# IELTS Deck - Python Dependencies
 # ============================================================
 # Install:  pip install -r requirements.txt
 # After install, also run:
 #   python -c "import nltk; nltk.download('wordnet'); nltk.download('omw-1.4')"
 # ============================================================
 # Source of truth: pyproject.toml [project.dependencies] + [project.optional-dependencies].
-# This file mirrors those — keep in sync when adding/removing a dep.
+# This file mirrors those - keep in sync when adding/removing a dep.
 # ============================================================
 
-# ── Core scraping ────────────────────────────────────────────
+# Core scraping
 requests>=2.32.3          # HTTP requests (Oxford, Cambridge scraping)
 beautifulsoup4>=4.12.3    # HTML parsing
-lxml>=5.3.0               # Fast parser backend for BeautifulSoup
+lxml>=5.3.0              # Fast parser backend for BeautifulSoup
 
-# ── NLP / synonym fallback ───────────────────────────────────
-nltk>=3.9.4               # WordNet synonym fallback
+# NLP / synonym fallback
+nltk>=3.9.4              # WordNet synonym fallback
 
-# ── Audio ────────────────────────────────────────────────────
+# Audio
 
-# ── Anki packaging ───────────────────────────────────────────
-genanki>=0.13.1           # Build .apkg from Python (update_anki_deck.py)
+# Anki packaging
+genanki>=0.13.1          # Build .apkg from Python (update_anki_deck.py)
 
-# ── Async / performance (future use) ─────────────────────────
-aiohttp>=3.13.3           # Async HTTP (drop-in upgrade for high-volume scraping)
+# Validation
+jsonschema>=4.23.0       # JSON schema validation for source corpora and tools
 
-# ── Testing (optional) ───────────────────────────────────────
-pytest>=9.0.3             # Test suite
+# Async / performance (future use)
+aiohttp>=3.13.3          # Async HTTP (drop-in upgrade for high-volume scraping)
 
-# ── Parser backend (per ADR-0001) ────────────────────────────
-cssselect>=1.4.0          # CSS selector engine for lxml.html (explicit dep, not transitive)
+# Testing (optional)
+pytest>=9.0.3            # Test suite
+
+# Parser backend (per ADR-0001)
+cssselect>=1.4.0         # CSS selector engine for lxml.html (explicit dep, not transitive)
