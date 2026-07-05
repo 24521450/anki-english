@@ -16,25 +16,37 @@ from src.deck_builder.build_contracts import (
     serialize_jsonl,
     serialize_txt,
 )
-from src.deck_builder.build_issues import BuildIssue, BuildValidationError
-from src.deck_builder.build_support import (
-    _audio_dir_filenames,
-    _build_source_label_specs_index,
-    _format_examples,
-    _format_idioms,
-    _format_ipa_field,
-    _get_senses_for_card,
-    _get_source_label_specs_for_card,
-    _load_audit_overrides,
-    _load_gamma_verdicts,
-    _parse_vocab_list,
-    _regenerate_tags,
-    _resolve_audio_filename,
-    _simplify_with_gamma,
-    _source_label,
-    find_idioms_for_word,
-    get_word_candidates,
+from src.deck_builder.audio_resolution import (
+    audio_dir_filenames as _audio_dir_filenames,
+    resolve_audio_filename as _resolve_audio_filename,
+)
+from src.deck_builder.audit_overrides import (
+    load_audit_overrides as _load_audit_overrides,
     lookup_gloss,
+)
+from src.deck_builder.build_metadata import (
+    regenerate_tags as _regenerate_tags,
+    source_label as _source_label,
+)
+from src.deck_builder.build_issues import BuildIssue, BuildValidationError
+from src.deck_builder.formatting import (
+    format_examples as _format_examples,
+    format_idioms as _format_idioms,
+    format_ipa_field as _format_ipa_field,
+)
+from src.deck_builder.gamma_support import (
+    load_gamma_verdicts as _load_gamma_verdicts,
+    simplify_with_gamma as _simplify_with_gamma,
+)
+from src.deck_builder.source_label_specs import (
+    build_source_label_specs_index as _build_source_label_specs_index,
+    get_source_label_specs_for_card as _get_source_label_specs_for_card,
+)
+from src.deck_builder.vocab_lists import parse_vocab_list as _parse_vocab_list
+from src.deck_builder.word_lookup import (
+    find_idioms_for_word,
+    get_senses_for_card as _get_senses_for_card,
+    get_word_candidates,
     resolve_primary_record,
 )
 from src.deck_builder.card_identity import (

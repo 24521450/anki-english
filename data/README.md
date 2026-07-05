@@ -21,12 +21,12 @@ Supporting data remains in place:
 
 - `schema/` contains Oxford and Cambridge JSON schemas.
 - `oxford_labels.json` contains the Oxford labels taxonomy.
+- `oxford_symbols.json` contains the Oxford dictionary-symbol taxonomy.
 - `.cache_html/{oxford,cambridge}/` contains ignored fetcher caches.
-- `cefr_audit/` and `simplify_diff/` contain audit history and intermediate
-  analysis artifacts. Files there are not canonical pipeline outputs unless
-  explicitly exposed through `ProjectPaths`.
-- `archive/` contains retired audit artifacts kept for traceability. Runtime
-  code must not depend on files in this directory.
+- Retired audit snapshots and intermediate analysis artifacts are not tracked
+  in `data/`. Runtime code must depend only on paths exposed through
+  `ProjectPaths`. Local audit tools may recreate ignored output directories
+  such as `cefr_audit/`, `simplify_diff/`, or `archive/`.
 
 ## Lifecycle
 
@@ -76,7 +76,8 @@ python -m src.pipeline --dry-run
 - `build/anki_notes.txt` and `build/anki_notes.jsonl` represent the same notes
   and must preserve GUIDs.
 - Source JSONL, curated overrides, and review inputs are tracked. HTML caches,
-  backups, logs, and `.apkg` packages are ignored.
+  audit/intermediate output directories, backups, logs, and `.apkg` packages
+  are ignored.
 - New maintained code must use `ProjectPaths`; old artifact names and absolute
   checkout paths are rejected by `tests/test_drift_guard.py`.
 

@@ -6,8 +6,10 @@ for our cards.
 """
 from __future__ import annotations
 from pathlib import Path
-import re
 from typing import NamedTuple
+
+from src.deck_builder.build_contracts import POS_NORM
+from src.deck_builder.vocab_lists import parse_vocab_list as _parse_vocab_list
 
 HEADER_LINES = 6
 OXFORD_3000 = "Oxford 3000"
@@ -48,19 +50,6 @@ class TagUpdate(NamedTuple):
     removed: list[str]
 
 
-# POS normalization: vocab_list uses 'n.', 'v.', 'adj.' -> jsonl uses 'noun', 'verb', 'adjective'
-POS_NORM = {
-    'n': 'noun', 'v': 'verb', 'adj': 'adjective', 'adv': 'adverb',
-    'prep': 'preposition', 'pron': 'pronoun', 'det': 'determiner',
-    'conj': 'conjunction', 'num': 'number', 'modal': 'modal',
-    'predet': 'predeterminer', 'aux': 'auxiliary', 'exclam': 'exclamation',
-    'abbr': 'abbreviation', 'exclamation': 'exclamation',
-    'phrasal v': 'phrasal verb', 'phrasal verb': 'phrasal verb',
-    'indefinite article': 'indefinite article', 'definite article': 'definite article',
-    'number': 'number',
-}
-
-
 def parse_header(path: Path) -> int:
     """Read the first few lines of a file to find the `#tags column:` value.
     Defaults to 17 if not found.
@@ -74,37 +63,6 @@ def parse_header(path: Path) -> int:
             except ValueError:
                 pass
     return 17
-
-
-def _parse_vocab_list(path: Path) -> set[tuple[str, str, str]]:
-    """Parse vocab_list/Oxford/*.md or AWL.md. Returns (word_lower, pos, cefr) tuples."""
-    out = set()
-    for line in path.read_text(encoding='utf-8').splitlines():
-        if not line.startswith('| **'):
-            continue
-        m = re.match(r'\| \*\*([^*]+)\*\* \| ([^|]+) \| ([^|]+) \|', line)
-        if not m:
-            continue
-        word = m.group(1).strip()
-        word_clean = word.split(' (')[0].strip().lower()
-        pos_str = m.group(2).strip()
-        cefr = m.group(3).strip().upper()
-        # Special case: 'a, an' is a single entry with 'indefinite article' POS
-        if word_clean == 'a, an' or word_clean == 'a':
-            pos_list = ['indefinite article']
-        else:
-            raw_parts = []
-            for p in re.split(r',|/', pos_str):
-                p = p.strip()
-                if p:
-                    raw_parts.append(p)
-            pos_list = []
-            for p in raw_parts:
-                p_clean = p.rstrip('.')
-                pos_list.append(POS_NORM.get(p_clean, p_clean))
-        for p in pos_list:
-            out.add((word_clean, p, cefr))
-    return out
 
 
 def _parse_deck_pos(pos_str: str) -> list[str]:

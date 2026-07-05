@@ -28,6 +28,14 @@ from tools._apply_p4c_policy_review import (
 )
 from tools._verify_p4c_policy_review import _load_audit as _verify_load_audit
 
+pytestmark = [
+    pytest.mark.historical,
+    pytest.mark.skipif(
+        not LEDGER_PATH.exists(),
+        reason=f'{LEDGER_PATH.name} retired from tracked data',
+    ),
+]
+
 
 # === Apply-tool structural validation =========================================
 

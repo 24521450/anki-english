@@ -6,7 +6,7 @@ and any downstream stage that needs a common view of bucketed data.
 from __future__ import annotations
 
 
-def flatten_collocations(d: dict[str, list[str]]) -> list[str]:
+def flatten_collocations(d: dict[str, list[str] | None]) -> list[str]:
     """Flatten a bucketed collocations dict into a single list.
 
     Schema accepts two shapes:
@@ -18,5 +18,7 @@ def flatten_collocations(d: dict[str, list[str]]) -> list[str]:
     """
     out: list[str] = []
     for vals in d.values():
+        if not vals:
+            continue
         out.extend(vals)
     return out

@@ -61,6 +61,10 @@ class TestFlattenCollocations:
         assert _flatten_collocations({}) == set()
         assert _flatten_collocations(None) == set()
 
+    def test_ignores_empty_buckets(self):
+        c = {'adjective': None, 'verb + word': [], 'noun': ['legal']}
+        assert _flatten_collocations(c) == {'legal'}
+
 
 class TestCollocationOverlap:
     def test_identical(self):

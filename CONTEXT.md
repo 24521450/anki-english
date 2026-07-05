@@ -309,7 +309,7 @@ When NOT to use:
 - The def_before is a single concrete sense with no type-narrowing risk.
 - The headword is C1+ academic vocabulary where learners benefit from the compact single-word form.
 
-`precision_phrase` is a first-class rule code in `VALID_RULE_CODES`. The audit policy tool classifies it as `allowed_single_gloss` (one-chunk allowed). The Precision Phrase Ledger (`data/gloss_precision_phrase_p5.jsonl` for the P5 pass) records the human review decision for each candidate.
+`precision_phrase` is a first-class rule code in `VALID_RULE_CODES`. The audit policy tool classifies it as `allowed_single_gloss` (one-chunk allowed). The P5 Precision Phrase Ledger (`data/gloss_precision_phrase_p5.jsonl`) was a historical review artifact; it is no longer tracked or consumed by the current build.
 
 Schema:
 ```json
@@ -458,7 +458,7 @@ Worked example — `additionally|adverb|B2`:
 
 _Avoid_: flagging any same-stem as a loop (false-positive trap); using `Lexical Loop Guard` as a separate validator that gates apply (it is read-only reporting); collapsing all loops into one bucket (the 3 modes are reported separately so reviewers see the right pattern).
 **Policy Review Ledger**:
-A separate JSONL file (`data/gloss_policy_review_p4c.jsonl` for the P4C pass, future passes use the same convention) that records the **human review decision** for every `policy_review` row. The ledger is the source of truth for which `policy_review` rows have been triaged; the audit master row stays as-is and gains nothing from the review.
+A historical separate JSONL file (`data/gloss_policy_review_p4c.jsonl` for the P4C pass) that recorded the **human review decision** for every `policy_review` row. That ledger is retired from tracked data; current production overrides live in `data/curated/deck_audit.jsonl`.
 
 Schema (one JSON object per line):
 ```json

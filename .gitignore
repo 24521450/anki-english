@@ -17,15 +17,36 @@ tools/.lang_sanity.py
 
 # Local editor/agent state
 .idea/
-.codex/
+.codex/*
+!.codex/
+!.codex/agents/
+.codex/agents/*
+!.codex/agents/*.toml
 .agents/
 brain/
 scratch/
 /__*.py
+.understand-anything/intermediate/
+.understand-anything/tmp/
 
 # Scraper/build caches and generated package outputs
 data/.cache_html/
+data/archive/
+data/cefr_audit/
+data/simplify_diff/
 data/oxford_unmerged_*.jsonl
+data/_sense_span_audit.csv
+data/_span_content_enum.txt
+data/_topic_enum_checkpoint*.json
+data/_topic_names_inventory.csv
+data/audit_expanded_needs_gloss*.jsonl
+data/convention_p8_decisions.jsonl
+data/gloss_policy_review_p4c.jsonl
+data/gloss_precision_phrase_p5.jsonl
+data/manual_gloss_review_p5*_decisions.jsonl
+data/multisense_harddrop_p6_decisions.jsonl
+data/oxford5000_vs_bak_pre_inject_*.csv
+data/redundant_sense_trim_p7_decisions.jsonl
 *.apkg
 
 # Local backups
