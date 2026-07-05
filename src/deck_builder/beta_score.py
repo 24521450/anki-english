@@ -24,6 +24,8 @@ Design note (user feedback 2026-06-15):
 from __future__ import annotations
 from typing import NamedTuple
 
+from src.scraper._common import flatten_collocations
+
 # English stopwords (small set; full NLTK list would be ~180 — overkill for this)
 _STOPWORDS = frozenset({
     "a", "an", "the", "and", "or", "but", "if", "to", "of", "in", "on", "at",
@@ -74,12 +76,7 @@ def _flatten_collocations(collocations: dict) -> set[str]:
     """
     if not collocations:
         return set()
-    out: set[str] = set()
-    for bucket, values in collocations.items():
-        for v in values or []:
-            if v:
-                out.add(v)
-    return out
+    return {v for v in flatten_collocations(collocations) if v}
 
 
 def collocation_overlap(c1: dict, c2: dict) -> float:

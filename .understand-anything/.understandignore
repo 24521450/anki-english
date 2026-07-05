@@ -23,6 +23,9 @@ tools/archive/
 brain/
 scratch/
 deutsch/
+tools/download_duden_a1_audio.py
+tests/tools/test_a1_example_audio.py
+tests/tools/test_download_duden_a1_audio.py
 
 # Binary/reference inputs
 *.pdf

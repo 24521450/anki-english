@@ -22,11 +22,11 @@ from src.deck_builder.corpus_tag_sync import (
     DECK_OXFORD_3000_BASIC,
     DECK_AWL,
     HEADWORD_ALIASES,
-    _parse_vocab_list,
     get_vocab_membership,
     route_deck,
     parse_header,
 )
+from src.deck_builder.vocab_lists import parse_vocab_list as _parse_vocab_list
 
 def load_cards_from_file(path: Path) -> tuple[int, list[dict]]:
     """Load and parse cards from txt file, dynamically resolving tags column."""

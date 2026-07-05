@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from typing import NamedTuple
 
-from src.deck_builder.build_support import parse_vocab_list
+from src.deck_builder.vocab_lists import parse_vocab_list
 
 class DefBeforeIntegrityPaths(NamedTuple):
     deck_audit_jsonl: Path

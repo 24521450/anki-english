@@ -16,7 +16,7 @@ from src.deck_builder.card_registry import (
 )
 from src.deck_builder.card_identity import normalize_cefr, normalize_word, normalize_list_name
 from src.deck_builder.build_issues import BuildIssue, BuildValidationError
-from src.deck_builder.build_support import parse_vocab_list
+from src.deck_builder.vocab_lists import parse_vocab_list
 
 
 def _read_text(path: Path) -> str:

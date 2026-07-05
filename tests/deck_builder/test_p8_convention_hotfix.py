@@ -42,6 +42,14 @@ TXT_PATH = paths.anki_notes_txt
 from src.deck_builder.gloss_llm import validate_verdict  # noqa: E402
 from tests.deck_builder.historical_supersession import DELETED_KEYS
 
+pytestmark = [
+    pytest.mark.historical,
+    pytest.mark.skipif(
+        not DECISIONS_PATH.exists(),
+        reason=f'{DECISIONS_PATH.name} retired from tracked data',
+    ),
+]
+
 NEW_TAXONOMY = {
     '', 'rule_b_pick1', 'rule_b_pick2', 'rule_b_pick2_addendum',
     '2sense_samedomain', '2sense_distinct', '3sense_distinct',

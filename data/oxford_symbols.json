@@ -1,0 +1,90 @@
+{
+  "source_url": "https://www.oxfordlearnersdictionaries.com/about/english/labels",
+  "fetched_at": "2026-07-05T14:38:01+07:00",
+  "symbols": [
+    {
+      "id": "oxford_3000_with_cefr",
+      "name": "Oxford 3000",
+      "dictionary": "Oxford Advanced Learner's Dictionary",
+      "description": "Marks an Oxford 3000 word together with its CEFR level."
+    },
+    {
+      "id": "oxford_5000_with_cefr",
+      "name": "Oxford 5000",
+      "dictionary": "Oxford Advanced Learner's Dictionary",
+      "description": "Marks an Oxford 5000 word together with its CEFR level."
+    },
+    {
+      "id": "oxford_3000",
+      "name": "Oxford 3000",
+      "dictionary": null,
+      "description": "Marks a word as part of the Oxford 3000 list."
+    },
+    {
+      "id": "cefr",
+      "name": "CEFR",
+      "dictionary": null,
+      "description": "Marks the CEFR level of a word or phrase."
+    },
+    {
+      "id": "opal_written_oald",
+      "name": "OPAL written",
+      "dictionary": "Oxford Advanced Learner's Dictionary",
+      "description": "Marks a word from the OPAL written word list."
+    },
+    {
+      "id": "opal_written_oldae",
+      "name": "OPAL written",
+      "dictionary": "Oxford Learner's Dictionary of Academic English",
+      "description": "Marks a word from the OPAL written word list."
+    },
+    {
+      "id": "opal_spoken_oald",
+      "name": "OPAL spoken",
+      "dictionary": "Oxford Advanced Learner's Dictionary",
+      "description": "Marks a word from the OPAL spoken word list."
+    },
+    {
+      "id": "opal_spoken_oldae",
+      "name": "OPAL spoken",
+      "dictionary": "Oxford Learner's Dictionary of Academic English",
+      "description": "Marks a word from the OPAL spoken word list."
+    },
+    {
+      "id": "academic_word_list",
+      "name": "Academic Word List",
+      "dictionary": null,
+      "description": "Marks a word as part of the Academic Word List."
+    },
+    {
+      "id": "my_wordlists",
+      "name": "My Wordlists",
+      "dictionary": null,
+      "description": "Adds a word, phrasal verb, or idiom to My Word Lists."
+    },
+    {
+      "id": "derivative",
+      "name": "derivative symbol",
+      "dictionary": null,
+      "description": "Marks a derivative form that can be understood from its headword."
+    },
+    {
+      "id": "phrasal_verb_arrow",
+      "name": "phrasal verb arrow",
+      "dictionary": null,
+      "description": "Marks phrasal verbs where the object may appear before or after the particle."
+    },
+    {
+      "id": "cross_reference_arrow",
+      "name": "cross reference arrow",
+      "dictionary": null,
+      "description": "Marks a cross-reference to a related dictionary entry."
+    },
+    {
+      "id": "external_link_icon",
+      "name": "external link icon",
+      "dictionary": null,
+      "description": "Marks a cross-reference to the corresponding entry in another dictionary."
+    }
+  ]
+}

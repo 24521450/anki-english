@@ -309,7 +309,7 @@ When NOT to use:
 - The def_before is a single concrete sense with no type-narrowing risk.
 - The headword is C1+ academic vocabulary where learners benefit from the compact single-word form.
 
-`precision_phrase` is a first-class rule code in `VALID_RULE_CODES`. The audit policy tool classifies it as `allowed_single_gloss` (one-chunk allowed). The Precision Phrase Ledger (`data/gloss_precision_phrase_p5.jsonl` for the P5 pass) records the human review decision for each candidate.
+`precision_phrase` is a first-class rule code in `VALID_RULE_CODES`. The audit policy tool classifies it as `allowed_single_gloss` (one-chunk allowed). The P5 Precision Phrase Ledger (`data/gloss_precision_phrase_p5.jsonl`) was a historical review artifact; it is no longer tracked or consumed by the current build.
 
 Schema:
 ```json
@@ -458,7 +458,7 @@ Worked example — `additionally|adverb|B2`:
 
 _Avoid_: flagging any same-stem as a loop (false-positive trap); using `Lexical Loop Guard` as a separate validator that gates apply (it is read-only reporting); collapsing all loops into one bucket (the 3 modes are reported separately so reviewers see the right pattern).
 **Policy Review Ledger**:
-A separate JSONL file (`data/gloss_policy_review_p4c.jsonl` for the P4C pass, future passes use the same convention) that records the **human review decision** for every `policy_review` row. The ledger is the source of truth for which `policy_review` rows have been triaged; the audit master row stays as-is and gains nothing from the review.
+A historical separate JSONL file (`data/gloss_policy_review_p4c.jsonl` for the P4C pass) that recorded the **human review decision** for every `policy_review` row. That ledger is retired from tracked data; current production overrides live in `data/curated/deck_audit.jsonl`.
 
 Schema (one JSON object per line):
 ```json
@@ -557,7 +557,7 @@ _Avoid_: PV merging, fold into main
 **Fetcher Cache**:
 The on-disk cache that lets a fetcher return previously-fetched HTML without re-hitting the network. Lives in `data/.cache_html/<source>/` (one subdir per source). Each source uses a distinct cache filename prefix to avoid collisions when the same word is scraped from multiple sources:
 
-- **Oxford** (`data/.cache_html/oxford/`): three legitimate forms (see **Polymorphic Cache**) — `oxford_<word>.html`, `oxford_<word>_(<pos>).html`, or `oxford_<word>_<N>_(<pos>).html`. Cache prefix: `oxford_`.
+- **Oxford** (`data/.cache_html/oxford/`): three legitimate forms (see **Polymorphic Cache**) — `oxford_<word>.html`, `oxford_<word>_(<pos-token>).html`, or `oxford_<word>_<N>_(<pos-token>).html`. Cache prefix: `oxford_`. The POS token is filename-safe ASCII: lowercase, underscores for spaces, and underscores between composite POS labels (for example `phrasal_verb`, `determiner_pronoun`).
 - **Cambridge** (`data/.cache_html/cambridge/`): single form — `cambridge_<word>.html`. Cache prefix: `cambridge_`.
 
 The subdirectory + filename prefix together disambiguate sources. The prefix is wired in `src/scraper/fetch.py` via `HttpFetcher.cache_prefix` (default `""`).
@@ -567,8 +567,8 @@ _Avoid_: HTML cache, scrape cache
 The property of a fetcher's cache where the same word may produce multiple files, one per scraping variant the source returned. For the Oxford cache (`data/.cache_html/oxford/`) three forms coexist:
 
 - `oxford_<word>.html` — multi-POS "main page" (Oxford's default URL response); also used when a word has a single entry that isn't categorized. ~70 files expected after dedup (see **Semantic Duplicate**); 263 raw before dedup.
-- `oxford_<word>_(<pos>).html` — POS-specific page; canonical form for new scrapes.
-- `oxford_<word>_<N>_(<pos>).html` — POS-specific page with disambiguation index N, used when Oxford returns 2+ distinct pages for the same `(word, pos)` pair (e.g. different homonyms). 970 files in the current cache (all preserved by dedup — they have the highest specificity score).
+- `oxford_<word>_(<pos-token>).html` — POS-specific page; canonical form for new scrapes. Composite Oxford labels use `_`, not commas or spaces (for example `adjective_adverb`).
+- `oxford_<word>_<N>_(<pos-token>).html` — POS-specific page with disambiguation index N, used when Oxford returns 2+ distinct pages for the same `(word, pos)` pair (e.g. different homonyms). 971 files in the current cache (all preserved by dedup — they have the highest specificity score).
 
 **Important:** the 3 forms are **byte-distinct** (0 SHA-256 collisions across 7,975 files) but NOT all **semantic-distinct** — see **Semantic Duplicate**. Two files can have different bytes (different CSRF tokens, different WOTD widget) but the same dictionary content. Renaming between forms requires checking the target name doesn't already exist.
 _Avoid_: POS-suffixed file, indexed cache

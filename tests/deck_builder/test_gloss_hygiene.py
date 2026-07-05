@@ -19,8 +19,8 @@ from src.deck_builder.gloss_hygiene import (
     compact_pipe_in_text,
     HygieneResult,
 )
-from tools._check_gloss_hygiene import check_audit
-from tools._merge_expanded_glosses import merge
+from tools.archive.data_migrations._check_gloss_hygiene import check_audit
+from tools.archive.data_migrations._merge_expanded_glosses import merge
 
 
 class TestUnescapePipe:

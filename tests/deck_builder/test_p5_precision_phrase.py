@@ -16,7 +16,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from tools._apply_p5_precision_phrase import (
+from tools.archive.data_migrations._apply_p5_precision_phrase import (
     _load_ledger,
     _validate_ledger_structure,
     _check_audit_coverage,
@@ -25,9 +25,17 @@ from tools._apply_p5_precision_phrase import (
     _apply_txt,
     LEDGER_PATH,
 )
-from tools._verify_p5_precision_phrase import (
+from tools.archive.data_migrations._verify_p5_precision_phrase import (
     _load_audit as _verify_load_audit,
 )
+
+pytestmark = [
+    pytest.mark.historical,
+    pytest.mark.skipif(
+        not LEDGER_PATH.exists(),
+        reason=f'{LEDGER_PATH.name} retired from tracked data',
+    ),
+]
 
 
 # === Apply-tool structural validation =========================================
@@ -274,7 +282,7 @@ class TestApplyTxt:
             '\t'.join(row_target) + '\n' + '\t'.join(row_other) + '\n',
             encoding='utf-8',
         )
-        import tools._apply_p5_precision_phrase as m
+        import tools.archive.data_migrations._apply_p5_precision_phrase as m
         original_path = m.TXT_PATH
         m.TXT_PATH = txt_path
         try:

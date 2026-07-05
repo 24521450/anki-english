@@ -34,7 +34,6 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   - **scrape**: Oxford/Cambridge + AWL ingestion, audio. Keeps all senses / all CEFR entries (raw).
   - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md) and [Sense Sorting](./CONTEXT.md)** — splits by CEFR, retains all CEFR-matching senses (no per-card def cap), orders by sensenum_local asc. See `design/README.md § Card design rules` for the rule reference.
   - **validate**: checks registry, card identity, JSONL/TXT parity, audio references, and deterministic output before publish.
-  - **split**: legacy alias for `validate` during migration.
   - **deck**: bakes `.apkg` via `update_anki_deck.py`.
   - Archived one-shot fixers are unsupported and are not wrapped by the pipeline.
 
@@ -45,6 +44,55 @@ For non-trivial tasks, read `.understand-anything/knowledge-graph.json` for the 
 If the file is missing or stale, run `/understand --full` to (re)build it.
 
 Refresh with `/understand --full` after major refactors.
+
+Current refactor target: `src/deck_builder/build_support.py` is the highest
+degree deck-builder helper module. If reducing it, start with pure formatting
+helpers and keep compatibility re-exports from `build_support.py`; do not begin
+by moving `lookup_gloss`, `_resolve_audio_filename`, `resolve_primary_record`,
+or source-indexing logic without characterization tests.
+
+## Subagent policy
+
+The primary agent is the coordinator: it chooses the design, keeps cross-cutting
+context, merges/reviews results, and runs final verification.
+
+Delegation gate:
+
+- Do small, sequential, or tightly coupled tasks directly.
+- Use project-local native subagents in `.codex/agents/` for medium/large tasks
+  with clear scope, especially scoped reading, investigation, command/test
+  execution, focused edits, review, and concise summaries.
+- Use at most 3 delegated agents at once, only for independent workstreams with
+  explicit output contracts and non-overlapping write scopes.
+- Review only the needed summary, diff, and verification evidence before
+  integrating results.
+
+Native subagent roster:
+
+- Project-local native subagents in `.codex/agents/` currently use
+  `gpt-5.4-mini` with `model_reasoning_effort = "medium"`. Treat
+  `.codex/agents/*.toml` as the source of truth if this summary drifts.
+
+- `scraper-ingestion`: Oxford/Cambridge parsers, merge, scraper audio,
+  `tests/scraper/`.
+- `deck-builder`: registry build, Card Identity, Sense Sorting, validation,
+  publish contracts, `tests/deck_builder/`.
+- `design-system`: EAVM templates, `design/index.html`, CSS sync,
+  `tests/design/`.
+- `pipeline-release`: `src/pipeline.py`, `update_anki_deck.py`,
+  `tools/build_notes.py`, packaging/pipeline tests.
+- `verification-test`: pytest slices and regression triage; read-only by
+  default unless patching is explicitly assigned.
+- `data-audit-tools`: audit/check tools, determinism, registry sync,
+  audio/AWL/corpus integrity, `tests/tools/`.
+
+Delegation prompts must include objective, relevant context, allowed files,
+forbidden files, expected output, and tests to run. Keep a compact handoff for
+each active workstream: objective, decisions, changed files, verification
+status, and next action. Use MCP Codex workers only as fallback; workers 2-4 are
+`gpt-5.4-mini` medium, and workers 5-6 are `gpt-5.5` high for
+complex/high-risk review. `.codex/worker-rotation.json` applies only to MCP
+fallback.
 
 ## Code style
 
@@ -59,6 +107,19 @@ Refresh with `/understand --full` after major refactors.
 - Add tests for every new behavior — mirror layout: `tests/scraper/test_x.py` ↔ `src/scraper/x.py`; cross-cutting infra allowed elsewhere (e.g. `tests/design/test_design_sync.py`)
 - All tests must pass before commit
 - `pythonpath = ["."]` in pytest config → use absolute imports via `src.*`
+
+### Test slices
+
+- Smoke: `pytest tests/test_config.py tests/test_pipeline.py tests/test_schema_validation.py tests/test_drift_guard.py tests/tools/test_sync_card_registry.py`
+- Scraper: `pytest tests/scraper`
+- Deck builder core: `pytest tests/deck_builder -m "not historical and not external"`
+- Design: `pytest tests/design`
+- Tools: `pytest tests/tools`
+- Full: `pytest`
+- Historical / external lanes are opt-in only: `pytest -m historical`, `pytest -m external`
+
+Use the narrowest slice that covers the changed behavior during iteration. Run
+full `pytest` before commit/release or after cross-layer changes.
 
 ## PR & commit conventions
 
@@ -92,7 +153,7 @@ See consist in the Oxford Advanced American Dictionary
 No `<... class="def">` tags anywhere. Current parser (`src/scraper/oxford.py`) does NOT recurse into those phrase sub-pages, so the result is `definitions[0].text = null` (or empty string) for the entire entry.
 
 **Diagnostic recipe** when a (word, pos) has 0 defs but Oxford has the page:
-1. Open `data/.cache_html/oxford/oxford_<word>_(<pos>).html`
+1. Open `data/.cache_html/oxford/oxford_<word>_(<pos-token>).html` (`pos-token` uses `_` for spaces/composite POS labels)
 2. Search for `class="def"` — if 0 hits, it's a hub
 3. Search for `Phrasal Verbs` or `Phrases` section — list of related sub-pages
 4. Manually patch `data/sources/oxford.jsonl` for that entry, OR fix parser to recurse

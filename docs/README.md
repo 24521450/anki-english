@@ -1,7 +1,8 @@
 # Documentation
 
-`docs/` is the project audit trail. Keep current domain language in `CONTEXT.md`;
-use this directory for durable decisions and historical reports.
+`docs/` is the project decision log. Keep current domain language in
+`CONTEXT.md`; use this directory for durable decisions that explain why the
+codebase is shaped the way it is.
 
 ## Layout
 
@@ -9,13 +10,12 @@ use this directory for durable decisions and historical reports.
   to reverse, surprising without context, and involve a real trade-off. Do not
   move or renumber ADRs casually because `AGENTS.md`, `CONTEXT.md`, and old tools
   may cite them.
-- `reports/` - execution reports from cleanup, migration, or feature work. These
-  are historical evidence, not the current source of truth.
 
 ## Cleanup Rules
 
 Before deleting or moving a document, search for references from `AGENTS.md`,
 `CONTEXT.md`, `src/`, `tests`, and `tools/`.
 
-If a report only explains a one-shot migration, keep it under `reports/` unless
-it is clearly duplicated by an ADR or `CONTEXT.md`.
+Do not add execution reports by default. If a one-shot migration needs durable
+context, either fold the current terminology into `CONTEXT.md` or write an ADR
+when the decision meets the ADR bar.

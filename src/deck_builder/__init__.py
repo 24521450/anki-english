@@ -21,7 +21,11 @@ render in the back template's Idiom Box.
 """
 from __future__ import annotations
 
-from src.scraper._common import flatten_collocations
+from src.deck_builder.formatting import (
+    format_idioms as _shared_format_idioms,
+    format_ipa_field as _shared_format_ipa_field,
+    normalize_ipa as _shared_normalize_ipa,
+)
 
 
 # Anki note field names (per design/EAVM/{front,back}_template.txt)
@@ -47,22 +51,7 @@ def _format_idioms_field(idioms: list) -> str:
     Filter: only idioms with a CEFR level assigned (A1..C2 / UNCLASSIFIED).
     Idioms with cefr=None are dropped per user decision (2026-06-20).
     """
-    if not idioms:
-        return ''
-    parts: list[str] = []
-    for i in idioms:
-        # Per user (2026-06-20): keep only idioms with a CEFR level
-        cefr = i.get("cefr")
-        if cefr is None:
-            continue
-        phrase = (i.get("phrase") or "").strip()
-        text = (i.get("text") or "").strip()
-        examples = i.get("examples") or []
-        ex_str = "|".join((e or "").strip() for e in examples if (e or "").strip())
-        inner = " :: ".join(p for p in [phrase, text, ex_str] if p)
-        if inner:
-            parts.append(inner)
-    return "$$".join(parts)
+    return _shared_format_idioms(idioms)
 
 
 def _normalize_ipa_value(s) -> str:
@@ -71,11 +60,7 @@ def _normalize_ipa_value(s) -> str:
     Inputs may be None, '', '/x/', or 'x' (Oxford sometimes has stray whitespace
     around the slashes). Returns the bare IPA without slashes, or ''.
     """
-    if not s:
-        return ""
-    t = str(s).strip()
-    t = t.strip("/").strip()
-    return t
+    return _shared_normalize_ipa(s)
 
 
 def _format_ipa_field(uk_ipa, us_ipa) -> str:
@@ -90,17 +75,7 @@ def _format_ipa_field(uk_ipa, us_ipa) -> str:
     re-wrapped in slashes on output. The "/" separator between UK: and US: is
     literal (not a template pipe).
     """
-    uk = _normalize_ipa_value(uk_ipa)
-    us = _normalize_ipa_value(us_ipa)
-    if uk and us:
-        if uk == us:
-            return f"/{uk}/"
-        return f"UK: /{uk}/ | US: /{us}/"
-    if uk:
-        return f"/{uk}/"
-    if us:
-        return f"/{us}/"
-    return ""
+    return _shared_format_ipa_field(uk_ipa, us_ipa)
 
 
 def _empty_note() -> dict:

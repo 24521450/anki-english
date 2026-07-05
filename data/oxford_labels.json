@@ -1,194 +1,26 @@
 {
   "source_url": "https://www.oxfordlearnersdictionaries.com/about/english/labels",
   "fetched_at": "2026-06-07T10:09:10+00:00",
-  "symbols": [
-    {
-      "name": "Oxford 3000",
-      "description": "in the Oxford Advanced Learner's Dictionary , shows a word from the Oxford 3000 with its CEFR level . Click on this icon to see a list of other words that are part of the Oxford 3000 at the same CEFR level."
-    },
-    {
-      "name": "Oxford 5000",
-      "description": "in the Oxford Advanced Learner's Dictionary , shows a word from the Oxford 5000 with its CEFR level . Click on this icon to see a list of other words that are part of the Oxford 5000 at the same CEFR level."
-    },
-    {
-      "name": "Oxford 3000",
-      "description": "shows a word from the Oxford 3000 . Click on this icon to see a list of other words that are part of the Oxford 3000."
-    },
-    {
-      "name": "CEFR",
-      "description": "shows the CEFR level of a word or phrase"
-    },
-    {
-      "name": "OPAL written",
-      "description": "in the Oxford Advanced Learner's Dictionary , shows a word from the OPAL list of written words. Click on this icon to see the full OPAL sublist."
-    },
-    {
-      "name": "OPAL written",
-      "description": "in the Oxford Learner's Dictionary of Academic English , shows a word from the OPAL word list of written words. Click on this icon to see a list of all the words on the same OPAL sublist."
-    },
-    {
-      "name": "OPAL spoken",
-      "description": "in the Oxford Advanced Learner's Dictionary , shows a word from the OPAL list of spoken words. Click on this icon to see the full OPAL sublist."
-    },
-    {
-      "name": "OPAL spoken",
-      "description": "in the Oxford Learner's Dictionary of Academic English , shows a word from the OPAL word list of spoken words. Click on this icon to see a list of other words on the same OPAL sublist."
-    },
-    {
-      "name": "Academic Word List",
-      "description": "shows a word from the Academic Word List . Click on this icon to see a list of other words that are part of the Academic Word List."
-    },
-    {
-      "name": "My Wordlists",
-      "description": "adds a word, phrasal verb or idiom to My Word Lists"
-    },
-    {
-      "name": "derivative symbol",
-      "description": "shows a derivative. Derivatives can be easily understood from the meaning of the word from which they are derived (the headword)."
-    },
-    {
-      "name": "phrasal verb arrow",
-      "description": "in phrasal verbs, shows that the object may come either before or after the particle"
-    },
-    {
-      "name": "cross reference arrow",
-      "description": "shows a cross reference to another related entry in the dictionary"
-    },
-    {
-      "name": "external link icon",
-      "description": "shows a cross reference to the corresponding entry in another dictionary"
-    }
-  ],
   "register_labels": [
-    {
-      "name": "approving",
-      "description": "expressions show that you feel approval or admiration, for example feisty , petite .",
-      "examples_given": [
-        "feisty",
-        "petite"
-      ]
-    },
-    {
-      "name": "disapproving",
-      "description": "expressions show that you feel disapproval or contempt, for example blinkered , newfangled .",
-      "examples_given": [
-        "blinkered",
-        "newfangled"
-      ]
-    },
-    {
-      "name": "figurative",
-      "description": "language is used in a non-literal or metaphorical way, as in He didn't want to cast a shadow on (= spoil) their happiness.",
-      "examples_given": [
-        "He didn't want to cast a shadow on (= spoil) their happiness"
-      ]
-    },
-    {
-      "name": "formal",
-      "description": "expressions are usually only used in serious or official language and would not be appropriate in normal everyday conversation. Examples are admonish , besmirch .\n        (OLDAE users: note that academic writing is generally fairly formal in tone, as are many of the words in this dictionary. The formal label is used in OLDAE only for those words that are formal even by the standards of academic writing.)",
-      "examples_given": [
-        "admonish",
-        "besmirch"
-      ]
-    },
-    {
-      "name": "humorous",
-      "description": "expressions are intended to be funny, for example fisticuffs , ignoramus .",
-      "examples_given": [
-        "fisticuffs",
-        "ignoramus"
-      ]
-    },
-    {
-      "name": "informal",
-      "description": "expressions are used between friends or in a relaxed or unofficial situation. They are not appropriate for formal situations. Examples are bonkers , dodgy . (OLDAE users: note that informal expressions are not usually appropriate in academic writing, so very few are included in this dictionary. However, OLDAE includes a number of rather informal expressions which may be used in more informal types of academic writing.)",
-      "examples_given": [
-        "bonkers",
-        "dodgy"
-      ]
-    },
-    {
-      "name": "ironic",
-      "description": "language uses words to mean the opposite of the meaning that they seem to have, as in You're a great help, I must say! (= no help at all).",
-      "examples_given": [
-        "You're a great help, I must say! (= no help at all)"
-      ]
-    },
-    {
-      "name": "literary",
-      "description": "language is used mainly in literature and imaginative writing, for example aflame , halcyon .",
-      "examples_given": [
-        "aflame",
-        "halcyon"
-      ]
-    },
-    {
-      "name": "offensive",
-      "description": "expressions are used by some people to address or refer to people in a way that is very insulting, especially in connection with their race, religion, sex or disabilities. You should not use these words.",
-      "examples_given": []
-    },
-    {
-      "name": "slang",
-      "description": "is very informal language, sometimes restricted to a particular group of people, for example people of the same age or those who have the same interests or do the same job. Examples are dosh , gnarly .",
-      "examples_given": [
-        "dosh",
-        "gnarly"
-      ]
-    },
-    {
-      "name": "specialist",
-      "description": "language is used by people who specialize in particular subject areas, for example accretion , adipose .",
-      "examples_given": [
-        "accretion",
-        "adipose"
-      ]
-    },
-    {
-      "name": "taboo",
-      "description": "expressions are likely to be thought by many people to be obscene or shocking. You should not use them.",
-      "examples_given": []
-    }
+    "approving",
+    "disapproving",
+    "figurative",
+    "formal",
+    "humorous",
+    "informal",
+    "ironic",
+    "literary",
+    "offensive",
+    "slang",
+    "specialist",
+    "taboo"
   ],
   "usage_restrictions": [
-    {
-      "name": "dialect",
-      "description": "describes expressions that are mainly used in particular regions of the British Isles, not including Ireland, Scotland or Wales, for example beck , nowt .",
-      "examples_given": [
-        "beck",
-        "nowt"
-      ]
-    },
-    {
-      "name": "old-fashioned",
-      "description": "expressions are passing out of current use, for example beanfest , bothersome .\n        (OLDAE users: note that old-fashioned expressions may be appropriate when writing about historical contexts.)",
-      "examples_given": [
-        "beanfest",
-        "bothersome"
-      ]
-    },
-    {
-      "name": "old use",
-      "description": "describes expressions that are no longer in current use, for example ere , perchance .",
-      "examples_given": [
-        "ere",
-        "perchance"
-      ]
-    },
-    {
-      "name": "saying",
-      "description": "describes a well-known fixed or traditional phrase, such as a proverb, that is used to make a comment, give advice, etc., for example actions speak louder than words .",
-      "examples_given": [
-        "actions speak louder than words"
-      ]
-    },
-    {
-      "name": "™",
-      "description": "shows a trademark of a manufacturing company, for example Band-Aid , Frisbee .",
-      "examples_given": [
-        "Band-Aid",
-        "Frisbee"
-      ]
-    }
+    "dialect",
+    "old-fashioned",
+    "old use",
+    "saying",
+    "™"
   ],
   "subject_labels": [
     "anatomy",
