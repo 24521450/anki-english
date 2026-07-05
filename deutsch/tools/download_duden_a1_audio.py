@@ -35,6 +35,10 @@ OVERRIDES_PATH = ROOT / "deutsch" / "review" / "duden_overrides.json"
 BACKUP_ROOT = AUDIO_ROOT / "matrix_backup"
 DUDEN_CHECKPOINT_ROOT = AUDIO_ROOT / "duden_checkpoints"
 MISSING_AUDIT_PATH = AUDIO_ROOT / "duden_missing_audit.jsonl"
+REUSE_LIVE_WORDS_DIR: Path | None = None
+REUSE_LIVE_MANIFEST_PATH: Path | None = None
+_REUSE_INDEX_CACHE: dict[tuple[str, str, str], dict[str, Any]] | None = None
+PREFER_FIRST_EXACT_CANDIDATE = False
 
 EXPECTED_ROWS = 685
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -187,6 +191,15 @@ def normalize_text(value: str) -> str:
     value = value.replace("\xa0", " ")
     value = re.sub(r"\s+", " ", value)
     return value.strip()
+
+
+def display_path(path: Path | None) -> str | None:
+    if path is None:
+        return None
+    try:
+        return path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
 
 
 def normalize_word_for_file(word: str) -> str:
@@ -555,7 +568,7 @@ def _normalize_expected_gender(value: str) -> str | None:
         return "f"
     if text == "n.":
         return "n"
-    if text in {"m./f.", "f./m."}:
+    if text in {"m./f.", "f./m.", "m/f.", "f/m."}:
         return "mixed"
     if text == "pl.":
         return "pl"
@@ -1182,6 +1195,83 @@ def existing_file_is_valid(path: Path, expected_sha256: str | None = None, expec
     return True
 
 
+def copy_file_atomic(source_path: Path, output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        "wb",
+        delete=False,
+        dir=str(output_path.parent),
+        prefix=f".{output_path.name}.",
+        suffix=".tmp",
+    ) as tmp:
+        tmp_path = Path(tmp.name)
+        with source_path.open("rb") as src:
+            shutil.copyfileobj(src, tmp)
+    os.replace(tmp_path, output_path)
+
+
+def load_reuse_index() -> dict[tuple[str, str, str], dict[str, Any]]:
+    global _REUSE_INDEX_CACHE
+    if _REUSE_INDEX_CACHE is not None:
+        return _REUSE_INDEX_CACHE
+    index: dict[tuple[str, str, str], dict[str, Any]] = {}
+    if REUSE_LIVE_WORDS_DIR is None or REUSE_LIVE_MANIFEST_PATH is None or not REUSE_LIVE_MANIFEST_PATH.exists():
+        _REUSE_INDEX_CACHE = index
+        return index
+    for item in load_existing_manifest_rows(REUSE_LIVE_MANIFEST_PATH):
+        if normalize_text(str(item.get("status") or "")).lower() != "ok":
+            continue
+        if normalize_text(str(item.get("source") or "")).lower() != "duden":
+            continue
+        key = (
+            normalize_text(str(item.get("word") or "")),
+            normalize_text(str(item.get("pos") or "")),
+            normalize_text(str(item.get("gender") or "")),
+        )
+        if key not in index:
+            index[key] = item
+    _REUSE_INDEX_CACHE = index
+    return index
+
+
+def reuse_existing_duden_audio(row: SourceRow) -> Resolution | None:
+    if REUSE_LIVE_WORDS_DIR is None:
+        return None
+    key = (row.word, row.pos, row.gender)
+    item = load_reuse_index().get(key)
+    if item is None:
+        return None
+    source_filename = normalize_text(str(item.get("output_filename") or ""))
+    if not source_filename:
+        return None
+    source_path = REUSE_LIVE_WORDS_DIR / source_filename
+    source_sha256 = normalize_text(str(item.get("sha256") or "")) or None
+    source_size_raw = item.get("size")
+    source_size = int(source_size_raw) if source_size_raw is not None else None
+    if not existing_file_is_valid(source_path, source_sha256, source_size):
+        return None
+    output_path = STAGING_WORDS_DIR / filename_for_row(row)
+    if not existing_file_is_valid(output_path, source_sha256, source_size):
+        copy_file_atomic(source_path, output_path)
+    return Resolution(
+        row=row.row,
+        word=row.word,
+        pos=row.pos,
+        gender=row.gender,
+        output_filename=filename_for_row(row),
+        status="ok",
+        reason=f"reused Duden audio from {display_path(REUSE_LIVE_MANIFEST_PATH)}",
+        match_method="reuse-duden-manifest",
+        duden_page_url=normalize_text(str(item.get("duden_page_url") or "")) or None,
+        duden_audio_url=normalize_text(str(item.get("duden_audio_url") or "")) or None,
+        file_id=normalize_text(str(item.get("file_id") or "")) or None,
+        size=source_size,
+        sha256=source_sha256,
+        content_type=normalize_text(str(item.get("content_type") or "")) or "audio/mpeg",
+        etag=item.get("etag"),
+    )
+
+
 def inventory_tree(path: Path) -> dict[str, Any]:
     files: list[dict[str, Any]] = []
     if path.exists():
@@ -1479,23 +1569,24 @@ async def resolve_row(
         )
 
     if len(page_hits) > 1:
-        urls = ", ".join(page.canonical_url for page in page_hits)
-        return (
-            Resolution(
-                row=row.row,
-                word=row.word,
-                pos=row.pos,
-                gender=row.gender,
-                output_filename=filename_for_row(row),
-                status="ambiguous",
-                reason=f"multiple matching pages: {urls}",
-                match_method="page-ambiguous",
-                duden_page_url=page_hits[0].canonical_url,
-                duden_audio_url=None,
-                file_id=None,
-            ),
-            page_hits[0],
-        )
+        if not PREFER_FIRST_EXACT_CANDIDATE:
+            urls = ", ".join(page.canonical_url for page in page_hits)
+            return (
+                Resolution(
+                    row=row.row,
+                    word=row.word,
+                    pos=row.pos,
+                    gender=row.gender,
+                    output_filename=filename_for_row(row),
+                    status="ambiguous",
+                    reason=f"multiple matching pages: {urls}",
+                    match_method="page-ambiguous",
+                    duden_page_url=page_hits[0].canonical_url,
+                    duden_audio_url=None,
+                    file_id=None,
+                ),
+                page_hits[0],
+            )
 
     page = page_hits[0]
     if len(page.audio_candidates) == 0:
@@ -1517,25 +1608,31 @@ async def resolve_row(
         )
 
     if len(page.audio_candidates) > 1:
-        file_ids = ", ".join(item["file_id"] for item in page.audio_candidates if item.get("file_id"))
-        return (
-            Resolution(
-                row=row.row,
-                word=row.word,
-                pos=row.pos,
-                gender=row.gender,
-                output_filename=filename_for_row(row),
-                status="ambiguous",
-                reason=f"multiple audio candidates: {file_ids or page.audio_candidates[0]['audio_url']}",
-                match_method="page-multi-audio",
-                duden_page_url=page.canonical_url,
-                duden_audio_url=None,
-                file_id=None,
-            ),
-            page,
-        )
+        if not PREFER_FIRST_EXACT_CANDIDATE:
+            file_ids = ", ".join(item["file_id"] for item in page.audio_candidates if item.get("file_id"))
+            return (
+                Resolution(
+                    row=row.row,
+                    word=row.word,
+                    pos=row.pos,
+                    gender=row.gender,
+                    output_filename=filename_for_row(row),
+                    status="ambiguous",
+                    reason=f"multiple audio candidates: {file_ids or page.audio_candidates[0]['audio_url']}",
+                    match_method="page-multi-audio",
+                    duden_page_url=page.canonical_url,
+                    duden_audio_url=None,
+                    file_id=None,
+                ),
+                page,
+            )
 
     audio = page.audio_candidates[0]
+    match_method = "exact-page"
+    reason = "matched exact headword, pos, and gender"
+    if PREFER_FIRST_EXACT_CANDIDATE and (len(page_hits) > 1 or len(page.audio_candidates) > 1):
+        match_method = "exact-headword-first-candidate"
+        reason = "matched exact headword; selected first Duden candidate"
     return (
         Resolution(
             row=row.row,
@@ -1544,8 +1641,8 @@ async def resolve_row(
             gender=row.gender,
             output_filename=filename_for_row(row),
             status="ok",
-            reason="matched exact headword, pos, and gender",
-            match_method="exact-page",
+            reason=reason,
+            match_method=match_method,
             duden_page_url=page.canonical_url,
             duden_audio_url=audio["audio_url"],
             file_id=audio.get("file_id") or None,
@@ -1630,6 +1727,18 @@ def load_audit_rows(path: Path) -> dict[int, dict[str, Any]]:
         item = json.loads(line)
         rows[int(item["row"])] = item
     return rows
+
+
+def audit_decision_from_item(row: SourceRow, item: dict[str, Any]) -> AuditDecision:
+    return AuditDecision(
+        row=row,
+        status=normalize_text(str(item.get("status") or "")),
+        reason=normalize_text(str(item.get("reason") or "")),
+        candidates=tuple(item.get("candidates") or ()),
+        selected_page_url=item.get("selected_page_url"),
+        selected_audio_url=item.get("selected_audio_url"),
+        selected_file_id=item.get("selected_file_id"),
+    )
 
 
 def write_audit_rows(path: Path, decisions: list[AuditDecision]) -> None:
@@ -1749,16 +1858,16 @@ def manifest_meta(
 ) -> dict[str, Any]:
     return {
         "phase": phase,
-        "source_path": str(SOURCE_PATH),
+        "source_path": display_path(SOURCE_PATH),
         "source_sha256": hash_file(SOURCE_PATH),
         "source_row_count": len(source_rows),
         "expected_rows": EXPECTED_ROWS,
-        "output_live_dir": str(LIVE_WORDS_DIR),
-        "output_staging_dir": str(STAGING_WORDS_DIR),
-        "manifest_path": str(STAGING_MANIFEST_PATH),
-        "live_manifest_path": str(LIVE_MANIFEST_PATH),
-        "live_meta_path": str(LIVE_META_PATH),
-        "overrides_path": str(OVERRIDES_PATH),
+        "output_live_dir": display_path(LIVE_WORDS_DIR),
+        "output_staging_dir": display_path(STAGING_WORDS_DIR),
+        "manifest_path": display_path(STAGING_MANIFEST_PATH),
+        "live_manifest_path": display_path(LIVE_MANIFEST_PATH),
+        "live_meta_path": display_path(LIVE_META_PATH),
+        "overrides_path": display_path(OVERRIDES_PATH),
         "cooldown_until": cooldown_until,
         "inventory": inventory,
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -1881,7 +1990,10 @@ async def process_rows(
         for index, row in enumerate(targets, 1):
             print(f"[{index}/{len(targets)}] row={row.row:3d} word={row.word!r}")
             try:
-                resolution, page = await resolve_row(session, row, overrides, throttle=throttle)
+                resolution = reuse_existing_duden_audio(row)
+                page = None
+                if resolution is None:
+                    resolution, page = await resolve_row(session, row, overrides, throttle=throttle)
                 out_path = STAGING_WORDS_DIR / resolution.output_filename
                 if resolution.status == "ok" and resolution.duden_audio_url:
                     if existing_file_is_valid(out_path, resolution.sha256, resolution.size):
@@ -2017,12 +2129,26 @@ async def process_audit_missing(rows: list[SourceRow], *, confirm_usage: bool) -
     print(f"audit_targets={len(targets)}")
     decisions: list[AuditDecision] = []
     overrides = load_overrides(OVERRIDES_PATH)
+    existing_audit = load_audit_rows(MISSING_AUDIT_PATH)
+    completed_rows: set[int] = set()
+    for row in targets:
+        item = existing_audit.get(row.row)
+        if not item or item.get("status") == "technical_error":
+            continue
+        decision = audit_decision_from_item(row, item)
+        decisions.append(decision)
+        completed_rows.add(row.row)
+        if decision.status in {"exact_audio_found", "ambiguous_page"} and decision.selected_audio_url:
+            overrides[row.row] = audit_decision_to_override(decision)
+    remaining_targets = [row for row in targets if row.row not in completed_rows]
+    if completed_rows:
+        print(f"audit_resume_skipped={len(completed_rows)}")
     async with aiohttp.ClientSession(timeout=REQUEST_TIMEOUT) as session:
         throttle = RequestThrottle()
         try:
-            lexeme_index = await build_lexeme_index_for_rows(session, targets, throttle=throttle)
+            lexeme_index = await build_lexeme_index_for_rows(session, remaining_targets, throttle=throttle)
         except TechnicalError as exc:
-            for row in targets:
+            for row in remaining_targets:
                 decisions.append(
                     AuditDecision(
                         row=row,
@@ -2033,8 +2159,8 @@ async def process_audit_missing(rows: list[SourceRow], *, confirm_usage: bool) -
                 )
             write_audit_rows(MISSING_AUDIT_PATH, decisions)
             return EXIT_TECHNICAL_ERROR
-        for index, row in enumerate(targets, 1):
-            print(f"[audit {index}/{len(targets)}] row={row.row:3d} word={row.word!r}")
+        for index, row in enumerate(remaining_targets, 1):
+            print(f"[audit {index}/{len(remaining_targets)}] row={row.row:3d} word={row.word!r}")
             decision = await audit_missing_row(session, row, lexeme_index, throttle=throttle)
             decisions.append(decision)
             write_audit_rows(MISSING_AUDIT_PATH, decisions)
