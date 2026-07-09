@@ -43,11 +43,15 @@ LIST_PRIORITY = ("Oxford_5000", "Oxford_3000", "AWL_Coxhead")
 
 # Explicitly reviewed exception to the default one-card-per-list identity rule.
 # The two Oxford homonyms have different stress, meanings, and audio.
-REVIEWED_HOMONYM_SPLITS = {
+REVIEWED_IDENTITY_SPLITS = {
     ("converse", "UNCLASSIFIED", "AWL_Coxhead"): frozenset({
         "verb",
         "adjective, noun",
     }),
+    ("trail", "C1", "Oxford_5000"): frozenset({"noun", "verb"}),
+    ("bow", "C1", "Oxford_5000"): frozenset({"noun, verb", "noun"}),
+    ("hint", "C1", "Oxford_5000"): frozenset({"noun", "verb"}),
+    ("rally", "C1", "Oxford_5000"): frozenset({"noun", "verb"}),
 }
 
 
@@ -113,9 +117,9 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
             errors.append(f"Row {idx} does not have exactly 19 columns (found {len(parts)})")
             
         # Check critical fields non-empty
-        # 0: GUID, 1: notetype, 2: deck, 3: word, 4: pos, 6: definition, 14: cefr, 16: tags
-        critical_indices = [0, 1, 2, 3, 4, 6, 14, 16]
-        critical_names = ["GUID", "notetype", "deck", "word", "pos", "definition", "cefr", "tags"]
+        # 0: GUID, 1: notetype, 2: deck, 3: word, 4: pos, 14: cefr, 16: tags
+        critical_indices = [0, 1, 2, 3, 4, 14, 16]
+        critical_names = ["GUID", "notetype", "deck", "word", "pos", "cefr", "tags"]
         for c_idx, c_name in zip(critical_indices, critical_names):
             if c_idx < len(parts):
                 val = parts[c_idx].strip()
@@ -123,6 +127,9 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
                     errors.append(f"Row {idx} has empty critical field '{c_name}'")
             else:
                 errors.append(f"Row {idx} is missing index {c_idx} for '{c_name}'")
+
+        if len(parts) > 15 and not parts[6].strip() and not parts[15].strip():
+            errors.append(f"Row {idx} has neither a definition nor idioms")
 
         # Check GUID uniqueness
         if len(parts) > 0:
@@ -141,8 +148,8 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
                 errors.append(f"Row {idx} column {col_idx} contains newline or tab character")
 
     # Assert row count
-    if len(data_rows) != 2452:
-        errors.append(f"Expected exactly 2452 data rows, but found {len(data_rows)}")
+    if len(data_rows) != 2457:
+        errors.append(f"Expected exactly 2457 data rows, but found {len(data_rows)}")
 
     if errors:
         print("TXT Structural Integrity Errors:")
@@ -190,7 +197,7 @@ def verify_card_identity(data_rows: list[list[str]], audit_rows: list[dict]):
             for parts, row_key in zip(data_rows, txt_keys_word_cefr_list)
             if row_key == key
         )
-        if REVIEWED_HOMONYM_SPLITS.get(key) == positions:
+        if REVIEWED_IDENTITY_SPLITS.get(key) == positions:
             continue
         txt_word_cefr_list_dups.append(key)
     print(f"  TXT (word, CEFR, LIST) duplicates: {len(txt_word_cefr_list_dups)}")
@@ -327,8 +334,9 @@ def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
         cefr = parts[14].strip().upper()
         txt_def = parts[6]
 
-        if guid in review_overrides:
-            expected_def = review_overrides[guid]["Definition"]
+        override_definition = review_overrides.get(guid, {}).get("Definition")
+        if override_definition is not None:
+            expected_def = override_definition
         else:
             expected_def = resolve_expected_definition(word, pos, cefr)
 
@@ -406,7 +414,7 @@ def verify_build_drift():
     
     # Assert build metrics
     expected = {
-        'built_cards': 2452,
+        'built_cards': 2457,
         'missing_in_jsonl': 0,
         'dup_emit_skipped': 0,
     }

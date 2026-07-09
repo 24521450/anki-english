@@ -3,7 +3,7 @@ from __future__ import annotations
 from src.deck_builder.card_identity import (
     LIST_PRIORITY,
     primary_list_from_tags,
-    reviewed_homonym_variant,
+    reviewed_identity_variant,
 )
 
 
@@ -17,7 +17,17 @@ def test_primary_list_from_tags_can_canonicalize_awl():
     assert primary_list_from_tags("Source::Oxford AWL", canonical=True) == "AWL"
 
 
-def test_reviewed_homonym_variant_is_only_allowed_for_converse():
-    assert reviewed_homonym_variant("converse", "UNCLASSIFIED", "AWL", "verb") == "verb"
-    assert reviewed_homonym_variant("converse", "UNCLASSIFIED", "AWL", "adjective, noun") == "adjective, noun"
-    assert reviewed_homonym_variant("firm", "B2", "Oxford_5000", "adjective") == ""
+def test_reviewed_identity_variants_cover_approved_pos_splits():
+    assert reviewed_identity_variant("converse", "UNCLASSIFIED", "AWL", "verb") == "verb"
+    assert reviewed_identity_variant("converse", "UNCLASSIFIED", "AWL", "adjective, noun") == "adjective, noun"
+    assert reviewed_identity_variant("trail", "C1", "Oxford_5000", "noun") == "noun"
+    assert reviewed_identity_variant("trail", "C1", "Oxford_5000", "verb") == "verb"
+    assert reviewed_identity_variant("bow", "C1", "Oxford_5000", "noun, verb") == "noun, verb"
+    assert reviewed_identity_variant("bow", "C1", "Oxford_5000", "noun") == "noun"
+    assert reviewed_identity_variant("hint", "C1", "Oxford_5000", "noun") == "noun"
+    assert reviewed_identity_variant("hint", "C1", "Oxford_5000", "verb") == "verb"
+    assert reviewed_identity_variant("rally", "C1", "Oxford_5000", "noun") == "noun"
+    assert reviewed_identity_variant("rally", "C1", "Oxford_5000", "verb") == "verb"
+    assert reviewed_identity_variant("torture", "C1", "Oxford_5000", "noun") == ""
+    assert reviewed_identity_variant("torture", "C1", "Oxford_5000", "verb") == ""
+    assert reviewed_identity_variant("firm", "B2", "Oxford_5000", "adjective") == ""

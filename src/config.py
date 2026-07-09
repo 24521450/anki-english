@@ -58,6 +58,10 @@ class ProjectPaths:
         return self.root / "data" / "review" / "antonym_example_overrides.jsonl"
 
     @property
+    def antonym_loop_decisions(self) -> Path:
+        return self.root / "data" / "review" / "antonym_loop_decisions.jsonl"
+
+    @property
     def sense_label_overrides(self) -> Path:
         return self.root / "data" / "review" / "sense_label_overrides.jsonl"
 

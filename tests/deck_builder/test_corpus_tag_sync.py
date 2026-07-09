@@ -260,6 +260,7 @@ class TestNewRoutingAndTagContracts:
     def test_meantime_and_phrasal_cards_get_tag_from_non_first_pos(self):
         v3000 = set()
         v5000 = {
+            ('adhere', 'verb', 'C1'),
             ('meantime', 'noun', 'C1'),
             ('deposit', 'verb', 'C1'),
             ('deprive', 'verb', 'C1'),
@@ -281,6 +282,15 @@ class TestNewRoutingAndTagContracts:
 
         # derive: pos = "phrasal verb, verb" (verb is second)
         in_3000, in_5000 = get_vocab_membership('derive', 'phrasal verb, verb', 'B2', v3000, v5000)
+        assert in_5000 is True
+
+        in_3000, in_5000 = get_vocab_membership('derive from', 'phrasal verb, verb', 'B2', v3000, v5000)
+        assert in_5000 is True
+
+        in_3000, in_5000 = get_vocab_membership('deprive of', 'phrasal verb', 'C1', v3000, v5000)
+        assert in_5000 is True
+
+        in_3000, in_5000 = get_vocab_membership('adhere to', 'phrasal verb', 'C1', v3000, v5000)
         assert in_5000 is True
 
         # devote: pos = "phrasal verb, verb" (verb is second)

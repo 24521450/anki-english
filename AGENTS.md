@@ -186,6 +186,22 @@ fields inside Anki — edit the templates and re-run the packager. See
 `design/EAVM/README.md § Lưu ý quan trọng khi chỉnh sửa JavaScript` for the
 literal-newline gotcha in template JS.
 
+### Anki deletion/update workflow
+When deleting or merging notes in the local Anki app, use AnkiConnect if
+available. Do not edit `collection.anki2` directly.
+
+Required workflow:
+1. Query and verify the exact target note/card by `nid`, GUID, word, POS, and CEFR.
+2. Add tag `delete` to the note that will be removed.
+3. Export the affected deck to `scratch/` as the pre-delete audit artifact.
+4. Delete through AnkiConnect (`deleteNotes`).
+5. Verify the deleted `nid` no longer resolves, `tag:delete` is clear for that target, and the kept note/card is correct.
+6. Export the affected deck again to `scratch/` as the post-delete artifact.
+7. Sync repo/pipeline so the deleted card is not rebuilt or re-imported.
+
+Do not require manual deletion in the Anki UI when AnkiConnect is available.
+Do not delete without a delete-tag audit/export first.
+
 ### Design system sync
 `design/index.html` (vùng 2) is the **source of truth** for the card CSS.
 `design/EAVM/styling.txt` is auto-baked into `.apkg` and **must** stay in sync
@@ -212,8 +228,10 @@ entries — filtering happens at build, not at scrape.
 2. **Card Identity**: 1 CEFR level = 1 card by default. Multi-POS words (e.g.
    `absent` = adjective/verb/preposition) live in a single card per CEFR, with
    all POS chips listed in the top-bar. Same word with different CEFR levels
-   produces multiple cards. The reviewed `converse|UNCLASSIFIED` homonyms are
-   the sole POS split exception; see `CONTEXT.md`.
+   produces multiple cards. Reviewed identity variants currently cover the
+   `converse|UNCLASSIFIED` homonyms plus the reviewed noun/verb split for
+   `trail|C1`; `torture|C1` is a reviewed POS merge and is not a precedent for
+   new splits. See `CONTEXT.md`.
 
 See `design/README.md § Card design rules` for the full rationale.
 
@@ -236,7 +254,8 @@ multiple cards.
 - Sense Sorting's worked example is in CONTEXT.md § Sense Sorting — read it
   FIRST before writing audit scripts that look for "pagination patterns".
 - Card Identity is strict: **exactly one** card per identity unless the key is
-  an explicitly documented homonym exception. Unreviewed duplicates are bugs.
+  an explicitly documented reviewed identity variant. Unreviewed duplicates
+  are bugs.
 
 ### Data freshness
 `vocab_list/` is the seed. The scraper re-validates against live pages to catch

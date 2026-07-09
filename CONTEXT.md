@@ -127,8 +127,12 @@ _Avoid_: Bold word, headword mark
 
 ### Card content rules
 
+**Example Alignment**:
+The `Definition` and `Example` fields are pipe-aligned: `Definition[i]` renders with `Example[i]`. Distinct senses use `|`. Multiple examples for the same sense remain in one Example segment and use `<br><br>` between sentences so the rendered card has visible vertical spacing. A single `<br>` is non-canonical and rejected by build validation.
+_Avoid_: one Example pipe segment per sentence, single `<br>` between same-sense examples
+
 **Card Identity**:
-A card is normally identified by the triple `(Word, CEFRLevel, LIST)`. **Exactly one card per `(Word, CEFRLevel, LIST)` triple** unless a reviewed homonym exception is listed below. `LIST` is the primary corpus/list bucket derived from the card's tags via a fixed priority:
+A card is normally identified by the triple `(Word, CEFRLevel, LIST)`. **Exactly one card per `(Word, CEFRLevel, LIST)` triple** unless a reviewed identity variant is listed below. `LIST` is the primary corpus/list bucket derived from the card's tags via a fixed priority:
 
 ```text
 Oxford_5000 > Oxford_3000 > AWL > NO_LIST
@@ -140,10 +144,18 @@ Implications:
 - Same word at the same CEFR on different lists produces multiple cards. Example: `firm|noun|B2` lives on `Oxford_3000` and `firm|adjective|B2` lives on `Oxford_5000` — they are two distinct cards even though they share `(firm, B2)`.
 - Same word with different CEFR levels still produces multiple cards (e.g. `tackle` at B2 and `tackle` at C1 are two distinct cards).
 - Multi-POS words (e.g. `absent` = adjective/verb/preposition, `yield` = noun/verb) normally live in a single card per `(CEFR, LIST)`, with all POS chips listed in the top-bar.
-- **Reviewed homonym exception — `converse|UNCLASSIFIED`**: two Oxford homonyms with different stress and meanings remain separate cards in the AWL deck: `verb` (`/kənˈvɜːs/`, “have a conversation”) and `adjective, noun` (`/ˈkɒnvɜːs/`, “opposite”). This is an explicit one-word exception, not a general POS split rule.
+- **Reviewed homonym variant — `converse|UNCLASSIFIED|AWL`**: two Oxford homonyms with different stress and meanings remain separate cards: `verb` (`/kənˈvɜːs/`, “have a conversation”) and `adjective, noun` (`/ˈkɒnvɜːs/`, “opposite”).
+- **Reviewed POS variant — `trail|C1|Oxford_5000`**: keeps separate `noun` and `verb` cards after explicit content review found independently learnable sense/example/collocation systems. The original GUID stays with the noun card; the verb card receives a new GUID.
+- **Reviewed homograph/POS variants — P4 multi-POS review (2026-07-08)**: `bow|C1|Oxford_5000` is split by pronunciation/homograph (`/baʊ/` greeting/respect vs `/bəʊ/` or `/boʊ/` weapon/knot/violin stick). `hint|C1|Oxford_5000` and `rally|C1|Oxford_5000` are split into separate `noun` and `verb` cards after review found the POS sense systems clearer as independent learning units.
+- **Reviewed POS merge — `torture|C1|Oxford_5000`**: the earlier noun/verb split was reversed on 2026-07-06. `torture` now follows the default Card Identity rule as one `noun, verb` card under the original noun GUID; the retired verb GUID must be deleted from Anki only after delete-tag audit/export.
+- Reviewed identity variants are an allowlist, not a general rule to split multi-POS cards.
 - `NO_LIST` is a valid identity bucket for cards with no corpus list tag (e.g. Oxford proper nouns not on any curated list). The identity rule applies uniformly.
 - The legacy `(Word, CEFR)` only rule was retired 2026-06-21 because it incorrectly forced merges across genuine list boundaries (e.g. it would have collapsed `firm|adjective|B2|Oxford_5000` into `firm|noun|B2|Oxford_3000` even though they are distinct vocabulary entries from different curricula).
 _Avoid_: Card key, card ID, `(word, CEFR)` only (legacy)
+
+**Learning-Pattern Headword**:
+A display headword that includes a required particle or preposition when the reviewed learning unit is more useful than the bare lemma. Promote only when the particle/preposition locks or changes the core learning meaning; keep ordinary noun/adjective dependent-preposition patterns in Collocations. Approved cases include `adhere to`, `derive from`, and `deprive of`. `adhere` remains a separate physical card ("stick to a surface"), while `adhere to` carries the abstract "follow/obey rules or beliefs" learning unit. `absence of` remains a non-promote precedent because `absence` is still the natural headword and `of` is only a usage pattern. Card Identity uses the displayed phrase, while Corpus Deck Routing resolves the base lemmas `adhere`, `derive`, and `deprive` for Oxford-list membership. Existing GUIDs are preserved during renames; newly created learning-pattern cards receive new GUIDs.
+_Avoid_: silently treating every dependent-preposition collocation as a headword
 
 **Card Registry**:
 The canonical registry of buildable cards. Each row stores the identity key, reviewed variant, GUID, status, and deck override for a single card. The registry is the build inventory and the source of truth for what the production builder may emit. Rows may be active or retired, but the builder must treat missing, duplicate, or malformed rows as build errors.
@@ -175,7 +187,7 @@ All CEFR-matching definitions per **card** (per `(Word, CEFRLevel, LIST)` unit) 
   - `(tackle, C1, Oxford_5000)` card: 4 senses, ordered by sensenum_local asc — all 4 C1 senses are kept, none dropped
 - **Worked example — `firm` (list-aware split)**: the word has 2 distinct cards on different lists at the same CEFR — `(firm, B2, Oxford_5000)` for the adjective sense ("solid|unlikely to change") and `(firm, B2, Oxford_3000)` for the noun sense ("a business or company"). Same `(firm, B2)` is now allowed because the LIST differs.
 - **Worked example — `yield` (multi-POS merge)**: a single card `(yield, C1, Oxford_5000)` carries both noun ("output | produce") and verb ("surrender") senses in one row with all POS chips listed in the top-bar — never one card per POS.
-- Anti-pattern: 1 card per sense, 1 card per (sense, POS), or an unreviewed N>1 split for the same `(word, CEFR, LIST)`. Sense Sorting does not paginate.
+- Anti-pattern: 1 card per sense, 1 card per (sense, POS), or an unreviewed N>1 split for the same `(word, CEFR, LIST)`. Sense Sorting does not paginate; reviewed identity variants are explicit exceptions.
 _Avoid_: Sense Cap (legacy name), Definition limit, max senses, "pagination" (the term itself suggests splitting into multiple cards, which is wrong here)
 
 **CEFR Sense-Level Assignment Rule**:
@@ -445,11 +457,13 @@ A gloss-policy constraint that prevents a gloss from sending the learner back to
 
 - **`word_family_loop`** — the gloss shares a morphological root or derivational family with the headword, so the learner can't use the gloss to decode the headword without already knowing it. Example: `additionally → in addition` (both `addit-*` root) — replace with `also`. Detection: headword stem appears in any gloss chunk stem (Porter stemmer).
 
-- **`antonym_loop`** — the gloss uses a negation of an antonym that itself is at the same or higher learner difficulty. The negation inverts the difficulty instead of reducing it. Example: `permanent → not temporary` (`temporary` is B1, negation adds parse cost) — replace with `long-lasting`. Detection: gloss starts with `not|no|never|without|un-` followed by an academic-ish word.
+- **`antonym_loop`** — the gloss uses a negation of an antonym that itself is at the same or higher learner difficulty. The negation can invert the difficulty instead of reducing it. Example: `permanent → not temporary` (`temporary` is B1, negation adds parse cost) — replace with `long-lasting`. Detection is intentionally broad: gloss chunks starting with `not|no|never|without|un-` are review candidates, not automatic defects.
 
 - **`hard_synonym_drift`** — the gloss is a single synonym at the same or higher learner difficulty, often a contrast pair. Example: `mediate → arbitrate` (mediator vs arbitrator are distinct roles). This is the failure mode already covered by **`precision_phrase`**; the `loop_type` tag lets the ledger distinguish it from the other two loops for reporting. Detection: gloss is 1 chunk, gloss word count ≤ 2, gloss doesn't share headword stem (so not `word_family_loop`) and isn't a `not+`-prefix antonym (so not `antonym_loop`).
 
 `Lexical Loop Guard` does **not** introduce a new rule code — `precision_phrase` remains the repair rule. The `loop_type` field is a tag on review ledger entries and audit row metadata, not a separate decision. The detector (`tools/_detect_lexical_loops.py`) is **read-only**: it scans audit + ledger rows and reports likely loop candidates. It must NOT auto-fix; human review remains required because (a) some loops are intentional (e.g. precision_phrase is the planned fix), and (b) false positives are common in single-word overlap detection (e.g. `legal → law` shares a stem, but the gloss is genuinely simpler).
+
+For `antonym_loop_review`, keep broad detection and make decisions in small batches. Do not rewrite only because a gloss contains `not`, `no`, `without`, `un-`, or `non-`. Use `keep_basic_negation` when the negated word is basic/common and the gloss is short, clear, and more natural than a harder paraphrase; approved keep precedents include `insufficient → not enough`, `intact → not damaged`, `secular → not religious`, `seldom → not often`, `failed → not successful`, and `bare → not covered`. Use `repair_gloss` only when the negation is opaque, uses a hard antonym/synonym, or has a clearer basic paraphrase; approved repair precedent: `permanent → not temporary` becomes `long-lasting`. Current decisions live in `data/review/antonym_loop_decisions.jsonl`; repaired rows update production sources, while keep rows remain as ledger-only review state.
 
 Worked example — `additionally|adverb|B2`:
 - Current gloss: `in addition` (loop_type=`word_family_loop` — both share `addit-*`).

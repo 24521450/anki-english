@@ -9,7 +9,7 @@ from src.deck_builder.def_before_integrity import (
     check_def_before_integrity
 )
 
-EXPECTED_AUDIT_ROWS = 2457
+EXPECTED_AUDIT_ROWS = 2459
 
 def main() -> int:
     paths = ProjectPaths()
@@ -32,7 +32,7 @@ def main() -> int:
     for k, v in report.stats.items():
         print(f"  {k:22s}: {v}")
 
-    # Verify total sum of all stats is exactly 2457
+    # Verify total sum of all stats is exactly EXPECTED_AUDIT_ROWS
     total_classified = sum(report.stats.values())
     print(f"  Total Rows Read:       {report.total_rows_read}")
     print(f"  Total Rows Classified: {total_classified}")

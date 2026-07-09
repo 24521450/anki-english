@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -20,7 +21,7 @@ from src.deck_builder.audio_gate import validate_audio_gate
 from src.deck_builder.card_identity import (
     CardIdentity,
     primary_list_from_tags,
-    reviewed_homonym_variant,
+    reviewed_identity_variant,
 )
 from src.deck_builder.card_registry import (
     load_jsonl as load_registry_jsonl,
@@ -63,7 +64,7 @@ def _identity_for_card(card: BuiltCard) -> CardIdentity:
         word=card.word.strip(),
         cefr=(card.cefr or "").strip().upper() or "UNCLASSIFIED",
         list=list_name,
-        variant=reviewed_homonym_variant(card.word, card.cefr, list_name, card.pos),
+        variant=reviewed_identity_variant(card.word, card.cefr, list_name, card.pos),
     )
 
 
@@ -154,6 +155,25 @@ def _validate_cards(
         for field in ("guid", "notetype", "deck", "word", "pos", "cefr"):
             if not getattr(card, field).strip():
                 issues.append(BuildIssue("error", "required_field_empty", f"row {idx} field {field!r} is empty", identity=identity))
+
+        example_without_double_breaks = re.sub(
+            r"(?:<br\s*/?>\s*){2}", "", card.example, flags=re.IGNORECASE
+        )
+        if re.search(r"<br\s*/?>", example_without_double_breaks, flags=re.IGNORECASE):
+            issues.append(BuildIssue(
+                "error",
+                "noncanonical_example_break",
+                f"row {idx} Example must use <br><br> between examples of one sense",
+                identity=identity,
+            ))
+
+        if not card.definition.strip() and not card.idioms.strip():
+            issues.append(BuildIssue(
+                "error",
+                "missing_learning_content",
+                f"row {idx} must have either Definition or Idioms content",
+                identity=identity,
+            ))
 
         if card.guid in seen_guids:
             issues.append(BuildIssue("error", "duplicate_guid", f"GUID {card.guid!r} appears at rows {seen_guids[card.guid]} and {idx}", identity=identity))

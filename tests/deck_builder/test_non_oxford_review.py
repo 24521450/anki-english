@@ -8,7 +8,7 @@ from pathlib import Path
 from src.config import ProjectPaths
 from src.deck_builder.build_contracts import BuildNotesPaths, BuiltCard
 from src.deck_builder.build_notes import build_notes
-from src.deck_builder.review_overrides import load_review_overrides
+from src.deck_builder.review_overrides import apply_review_overrides, load_review_overrides
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 REVIEW_PATH = ProjectPaths(PROJECT_ROOT).non_oxford_non_c2_overrides
@@ -74,13 +74,13 @@ def get_cards_with_overrides():
 
 def test_non_oxford_review_in_memory_metrics_and_scope():
     overrides = load_review_overrides(REVIEW_PATH)
-    assert len(overrides) == 381
+    assert len(overrides) == 382
 
     paths_reg = ProjectPaths(PROJECT_ROOT)
     cards = get_cards_with_overrides()
     by_guid = {card.guid: card for card in cards}
 
-    assert len(cards) == 2452
+    assert len(cards) == 2457
     assert set(overrides).issubset(by_guid)
     assert _override_guids(paths_reg.synonym_example_overrides).issubset(by_guid)
     assert _override_guids(paths_reg.antonym_example_overrides).issubset(by_guid)
@@ -104,6 +104,43 @@ def test_manual_override_specifics():
     assert nursing.definition == "care of sick people (nghề điều dưỡng/chăm sóc bệnh nhân)"
     assert nursing.example == "a career in nursing"
     assert nursing.collocations == "nursing care/profession/career|career in nursing"
+
+
+def test_review_override_can_replace_ipa():
+    card = BuiltCard(
+        guid="extract-guid",
+        notetype="English Academic Vocabulary Model",
+        deck="Oxford",
+        word="extract",
+        pos="noun",
+        ipa="/ɪkˈstrækt/",
+        definition="short passage",
+        example="an extract",
+        collocations="extract from a book",
+        wordfamily="",
+        uk_audio="",
+        us_audio="",
+        source1="Oxford",
+        source2="Oxford",
+        cefr="B2",
+        idioms="",
+        tags="Source::Oxford CEFR::B2 Oxford_5000",
+        synonyms="",
+        antonyms="",
+    )
+    override = {
+        "extract-guid": {
+            "guid": "extract-guid",
+            "word": "extract",
+            "input_pos": "noun",
+            "cefr": "B2",
+            "IPA": "UK: /ˈekstrækt/ | US: /ˈekstrækt/",
+        }
+    }
+
+    updated = apply_review_overrides([card], override)
+
+    assert updated[0].ipa == "UK: /ˈekstrækt/ | US: /ˈekstrækt/"
 
 def test_build_determinism():
     paths_reg = ProjectPaths(PROJECT_ROOT)

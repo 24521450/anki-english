@@ -110,6 +110,34 @@ def test_annotate_card_examples_success():
     assert ant_meta == "|"
 
 
+def test_annotate_card_examples_supports_double_break_within_one_sense():
+    card = _card(
+        word="outrage", pos="noun", cefr="C1",
+        example=(
+            "The remarks caused public outrage.<br><br>"
+            "No one claimed responsibility for the terrorist outrage."
+        ),
+    )
+    specs = [
+        {"text": "The remarks caused public outrage.", "synonyms": [], "antonyms": []},
+        {
+            "text": "No one claimed responsibility for the terrorist outrage.",
+            "synonyms": ["atrocity"],
+            "antonyms": [],
+        },
+    ]
+
+    annotated, syn_meta, ant_meta, errors = annotate_card_examples(card, specs, {}, {})
+
+    assert not errors
+    assert annotated == (
+        "The remarks caused public outrage.<br><br>"
+        "No one claimed responsibility for the terrorist outrage (atrocity)."
+    )
+    assert syn_meta == "atrocity"
+    assert ant_meta == ""
+
+
 def test_annotate_card_examples_unmapped_without_override():
     card = _card(
         word="delve", pos="verb", cefr="UNCLASSIFIED",
@@ -566,7 +594,7 @@ def test_production_overrides_loaded_and_used_once():
     )
 
     res = build_notes(paths)
-    assert res.built_cards_count == 2452
+    assert res.built_cards_count == 2457
 
     # Every built card has synonyms and antonyms fields (possibly empty strings).
     for c in res.built_cards:

@@ -47,6 +47,7 @@
 {"word":"adequate","cefr":"B2","list":"Oxford_5000","variant":"","pos":"adjective","guid":"=8n2MQitQ","status":"active","deck_override":null}
 {"word":"adequately","cefr":"B2","list":"Oxford_5000","variant":"","pos":"adverb","guid":"TXg,WviTkl","status":"active","deck_override":null}
 {"word":"adhere","cefr":"C1","list":"Oxford_5000","variant":"","pos":"verb","guid":"fP[g=pH}gT","status":"active","deck_override":null}
+{"word":"adhere to","cefr":"C1","list":"Oxford_5000","variant":"","pos":"phrasal verb","guid":"WPrL$@Wp65","status":"active","deck_override":null}
 {"word":"adjacent","cefr":"C1","list":"Oxford_5000","variant":"","pos":"adjective","guid":"jyg/I}BNJI","status":"active","deck_override":null}
 {"word":"adjust","cefr":"B2","list":"Oxford_5000","variant":"","pos":"verb","guid":"8rCzQJK{g&","status":"active","deck_override":null}
 {"word":"adjustment","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"\"U+5o5#(un5\"","status":"active","deck_override":null}
@@ -65,7 +66,7 @@
 {"word":"affirm","cefr":"C1","list":"NO_LIST","variant":"","pos":"verb","guid":"FY=B+RFC{6","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
 {"word":"affordable","cefr":"B2","list":"Oxford_5000","variant":"","pos":"adjective","guid":"\"r.>{5#fY/,\"","status":"active","deck_override":null}
 {"word":"aftermath","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"\"jNBnn<Mj#}\"","status":"active","deck_override":null}
-{"word":"aggregate","cefr":"UNCLASSIFIED","list":"AWL","variant":"","pos":"adjective, noun, verb","guid":"ks`c2oY7jq","status":"active","deck_override":null}
+{"word":"aggregate","cefr":"C2","list":"AWL","variant":"","pos":"noun","guid":"ks`c2oY7jq","status":"active","deck_override":null}
 {"word":"aggression","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"o|y,8*J3n(","status":"active","deck_override":null}
 {"word":"agile","cefr":"C2","list":"NO_LIST","variant":"","pos":"adjective","guid":"fDXW(m|WN]","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
 {"word":"agricultural","cefr":"C1","list":"Oxford_5000","variant":"","pos":"adjective","guid":"6sN;7j0M+c","status":"active","deck_override":null}
@@ -250,7 +251,8 @@
 {"word":"bound","cefr":"B2","list":"Oxford_5000","variant":"","pos":"adjective","guid":"OL}c/<etlc","status":"active","deck_override":null}
 {"word":"boundary","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"BW+2:[bE@r","status":"active","deck_override":null}
 {"word":"boundless","cefr":"UNCLASSIFIED","list":"NO_LIST","variant":"","pos":"adjective","guid":"Ed5M/b$6/9","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
-{"word":"bow","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun, verb","guid":"M[dNo,3q=f","status":"active","deck_override":null}
+{"word":"bow","cefr":"C1","list":"Oxford_5000","variant":"noun, verb","pos":"noun, verb","guid":"M[dNo,3q=f","status":"active","deck_override":null}
+{"word":"bow","cefr":"C1","list":"Oxford_5000","variant":"noun","pos":"noun","guid":"V3*Opcns6`","status":"active","deck_override":null}
 {"word":"breach","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun, verb","guid":"z,EGH`_O--","status":"active","deck_override":null}
 {"word":"breakdown","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"xxmWG4l|Wh","status":"active","deck_override":null}
 {"word":"breakthrough","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"mK}e=7a6T^","status":"active","deck_override":null}
@@ -518,7 +520,7 @@
 {"word":"councillor","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"VON.xsD|Y1","status":"active","deck_override":null}
 {"word":"counselling","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":".j)W3e!)xh","status":"active","deck_override":null}
 {"word":"counsellor","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"}G_Ty/S^AO","status":"active","deck_override":null}
-{"word":"counter (argue against)","cefr":"C1","list":"Oxford_5000","variant":"","pos":"verb","guid":"8b{)Qdx7[i","status":"active","deck_override":null}
+{"word":"counter","cefr":"C1","list":"Oxford_5000","variant":"","pos":"verb","guid":"8b{)Qdx7[i","status":"active","deck_override":null}
 {"word":"counter (long flat surface)","cefr":"B2","list":"Oxford_5000","variant":"","pos":"noun","guid":"Gas*[.9tYP","status":"active","deck_override":null}
 {"word":"counterfeit","cefr":"UNCLASSIFIED","list":"NO_LIST","variant":"","pos":"adjective","guid":"f>Y1iAk%qE","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
 {"word":"countermeasure","cefr":"UNCLASSIFIED","list":"NO_LIST","variant":"","pos":"noun","guid":"&8XQ)H!{W","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
@@ -621,9 +623,9 @@
 {"word":"depress","cefr":"C2","list":"AWL","variant":"","pos":"verb","guid":"zI03Ybs&K!","status":"active","deck_override":null}
 {"word":"depression","cefr":"B2","list":"Oxford_5000","variant":"","pos":"noun","guid":"=$rtV,M0`&","status":"active","deck_override":null}
 {"word":"deprivation","cefr":"C2","list":"NO_LIST","variant":"","pos":"noun","guid":"i)&b%A>xZ>","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
-{"word":"deprive","cefr":"C1","list":"Oxford_5000","variant":"","pos":"phrasal verb, verb","guid":"8VcO1&GtcB","status":"active","deck_override":null}
+{"word":"deprive of","cefr":"C1","list":"Oxford_5000","variant":"","pos":"phrasal verb","guid":"8VcO1&GtcB","status":"active","deck_override":null}
 {"word":"deputy","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"QmS>J{<wiA","status":"active","deck_override":null}
-{"word":"derive","cefr":"B2","list":"Oxford_5000","variant":"","pos":"phrasal verb, verb","guid":"dyWb^v=0``","status":"active","deck_override":null}
+{"word":"derive from","cefr":"B2","list":"Oxford_5000","variant":"","pos":"phrasal verb, verb","guid":"dyWb^v=0``","status":"active","deck_override":null}
 {"word":"descend","cefr":"C1","list":"Oxford_5000","variant":"","pos":"verb","guid":"F*cyD6>^Zg","status":"active","deck_override":null}
 {"word":"descent","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":">7B(tqnqLd","status":"active","deck_override":null}
 {"word":"designate","cefr":"UNCLASSIFIED","list":"NO_LIST","variant":"","pos":"adjective","guid":"xKlE{U(XC3","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
@@ -1071,7 +1073,8 @@
 {"word":"high-profile","cefr":"C1","list":"Oxford_5000","variant":"","pos":"adjective","guid":"L%*zw}81L.","status":"active","deck_override":null}
 {"word":"highway","cefr":"B2","list":"Oxford_5000","variant":"","pos":"noun","guid":"h6w>5RmA=V","status":"active","deck_override":null}
 {"word":"hilarious","cefr":"B2","list":"Oxford_5000","variant":"","pos":"adjective","guid":"\"$#$79Bsz-C\"","status":"active","deck_override":null}
-{"word":"hint","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun, verb","guid":"l8^bnn+PFB","status":"active","deck_override":null}
+{"word":"hint","cefr":"C1","list":"Oxford_5000","variant":"noun","pos":"noun","guid":"l8^bnn+PFB","status":"active","deck_override":null}
+{"word":"hint","cefr":"C1","list":"Oxford_5000","variant":"verb","pos":"verb","guid":"|w4lhA2z`Y","status":"active","deck_override":null}
 {"word":"hip","cefr":"B2","list":"Oxford_5000","variant":"","pos":"noun","guid":"w9w9w;H9QV","status":"active","deck_override":null}
 {"word":"historian","cefr":"B2","list":"Oxford_5000","variant":"","pos":"noun","guid":"sz%)%|74${","status":"active","deck_override":null}
 {"word":"holistic","cefr":"UNCLASSIFIED","list":"NO_LIST","variant":"","pos":"adjective","guid":"uuzS)<*FUY","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
@@ -1795,7 +1798,8 @@
 {"word":"rage","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"j87Zr&)K|p","status":"active","deck_override":null}
 {"word":"raid","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun, verb","guid":"\"nXxa#e}p>]\"","status":"active","deck_override":null}
 {"word":"rail","cefr":"B2","list":"Oxford_5000","variant":"","pos":"noun","guid":"kE]0/&9sPC","status":"active","deck_override":null}
-{"word":"rally","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun, verb","guid":"\"b3wpN/#H?F\"","status":"active","deck_override":null}
+{"word":"rally","cefr":"C1","list":"Oxford_5000","variant":"noun","pos":"noun","guid":"\"b3wpN/#H?F\"","status":"active","deck_override":null}
+{"word":"rally","cefr":"C1","list":"Oxford_5000","variant":"verb","pos":"verb","guid":"288vg%/Y.O","status":"active","deck_override":null}
 {"word":"rampant","cefr":"UNCLASSIFIED","list":"NO_LIST","variant":"","pos":"adjective","guid":"FvaSvIsBA]","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
 {"word":"random","cefr":"B2","list":"Oxford_5000","variant":"","pos":"adjective","guid":"xBR(I+A8f<","status":"active","deck_override":null}
 {"word":"randomize","cefr":"UNCLASSIFIED","list":"NO_LIST","variant":"","pos":"verb","guid":"\"fI(E%#w*q8\"","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
@@ -2133,7 +2137,7 @@
 {"word":"subconscious","cefr":"UNCLASSIFIED","list":"NO_LIST","variant":"","pos":"adjective","guid":"hed&bNo(C+","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
 {"word":"subjective","cefr":"B2","list":"NO_LIST","variant":"","pos":"adjective","guid":"jWb,-wZ!d%","status":"active","deck_override":"English Academic Vocabulary::TED YT"}
 {"word":"submission","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"LTh_,dI]QH","status":"active","deck_override":null}
-{"word":"subordinate","cefr":"UNCLASSIFIED","list":"AWL","variant":"","pos":"adjective, noun, verb","guid":"LrM)$H6}^L","status":"active","deck_override":null}
+{"word":"subordinate","cefr":"C2","list":"AWL","variant":"","pos":"noun","guid":"LrM)$H6}^L","status":"active","deck_override":null}
 {"word":"subscriber","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"c+:mL:|&5F","status":"active","deck_override":null}
 {"word":"subscription","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"eaAR}&gLqT","status":"active","deck_override":null}
 {"word":"subsequent","cefr":"B2","list":"Oxford_5000","variant":"","pos":"adjective","guid":"J)phDZtQU8","status":"active","deck_override":null}
@@ -2281,7 +2285,8 @@
 {"word":"trading","cefr":"B2","list":"Oxford_5000","variant":"","pos":"noun","guid":"\"8#uTL5l_.B\"","status":"active","deck_override":null}
 {"word":"tragedy","cefr":"B2","list":"Oxford_5000","variant":"","pos":"noun","guid":"0i=1Pnz[*?","status":"active","deck_override":null}
 {"word":"tragic","cefr":"B2","list":"Oxford_5000","variant":"","pos":"adjective","guid":"ZxM8ir_&e|","status":"active","deck_override":null}
-{"word":"trail","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun, verb","guid":"DPe6!OKrwD","status":"active","deck_override":null}
+{"word":"trail","cefr":"C1","list":"Oxford_5000","variant":"noun","pos":"noun","guid":"DPe6!OKrwD","status":"active","deck_override":null}
+{"word":"trail","cefr":"C1","list":"Oxford_5000","variant":"verb","pos":"verb","guid":"3GalxBKT!y","status":"active","deck_override":null}
 {"word":"trailer","cefr":"C1","list":"Oxford_5000","variant":"","pos":"noun","guid":"MIKD7(,!,4","status":"active","deck_override":null}
 {"word":"trait","cefr":"B2","list":"Oxford_5000","variant":"","pos":"noun","guid":"b<7JFzLp&S","status":"active","deck_override":null}
 {"word":"trample","cefr":"UNCLASSIFIED","list":"NO_LIST","variant":"","pos":"verb","guid":"Ik4ot~?b_Q","status":"active","deck_override":"English Academic Vocabulary::TED YT"}

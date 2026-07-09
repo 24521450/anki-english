@@ -22,6 +22,7 @@ from src.deck_builder.corpus_tag_sync import (
     DECK_OXFORD_3000_BASIC,
     DECK_AWL,
     HEADWORD_ALIASES,
+    corpus_lookup_identity,
     get_vocab_membership,
     route_deck,
     parse_header,
@@ -255,9 +256,8 @@ def audit_target_coverage(cards: list[dict], vocab_5000: set[tuple[str, str, str
     print("\n=== Auditing target coverage (Oxford 5000) ===")
     covered = set()
     for c in cards:
-        word_clean = c['word'].split(' (')[0].strip().lower()
+        word_clean, pos_parts = corpus_lookup_identity(c['word'], c['pos'])
         cefr = c['cefr'].strip().upper()
-        pos_parts = [p.strip().lower() for p in c['pos'].split(',') if p.strip()]
 
         for pos in pos_parts:
             triple = (word_clean, pos, cefr)
@@ -290,7 +290,7 @@ def validate_export_consistency(
     db_cards: list[dict],
     exp_cards: list[dict],
     tag_difference_guids: set[str] | None = None,
-    expected_count: int | None = 2452,
+    expected_count: int | None = 2457,
 ) -> list[str]:
     """Pure function that validates metadata consistency between database cards and export cards.
 

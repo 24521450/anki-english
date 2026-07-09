@@ -30,6 +30,12 @@ HEADWORD_ALIASES = {
     "utilise": "utilize",
 }
 
+LEARNING_PATTERN_ALIASES = {
+    "adhere to": "adhere",
+    "derive from": "derive",
+    "deprive of": "deprive",
+}
+
 DECK_OXFORD_5000 = "English Academic Vocabulary::Oxford::Oxford 5000"
 DECK_OXFORD_3000_ADVANCED = (
     "English Academic Vocabulary::Oxford::Oxford 3000 Advanced"
@@ -96,6 +102,17 @@ def _parse_txt_card(line: str, tags_col: int = 16) -> dict | None:
     }
 
 
+def corpus_lookup_identity(word: str, pos_str: str) -> tuple[str, list[str]]:
+    """Map a display headword/POS to the vocab-list lookup identity."""
+    display_word = word.split(" (")[0].strip().lower()
+    word_clean = LEARNING_PATTERN_ALIASES.get(display_word, display_word)
+    pos_parts = [part.strip().lower() for part in pos_str.split(",") if part.strip()]
+    if display_word in LEARNING_PATTERN_ALIASES and "phrasal verb" in pos_parts:
+        if "verb" not in pos_parts:
+            pos_parts.append("verb")
+    return word_clean, pos_parts
+
+
 def _card_should_have_corpus_tag(
     card: dict, vocab_set: set[tuple[str, str, str]], cefr: str
 ) -> bool:
@@ -114,9 +131,8 @@ def get_vocab_membership(
     vocab_5000: set[tuple[str, str, str]],
 ) -> tuple[bool, bool]:
     """Determine list membership by (word, any POS, CEFR), including exceptions."""
-    word_clean = word.split(' (')[0].strip().lower()
+    word_clean, pos_parts = corpus_lookup_identity(word, pos_str)
     cefr_upper = cefr.strip().upper()
-    pos_parts = [p.strip().lower() for p in pos_str.split(',') if p.strip()]
 
     is_in_3000 = False
     is_in_5000 = False

@@ -14,7 +14,7 @@ from src.deck_builder.card_identity import (
     normalize_variant,
     normalize_word,
     primary_list_from_tags,
-    reviewed_homonym_variant,
+    reviewed_identity_variant,
 )
 
 
@@ -50,7 +50,7 @@ def _canonical_registry_row(note: dict) -> dict:
     pos = (note.get("pos") or "").strip()
     guid = (note.get("guid") or "").strip()
     list_name = primary_list_from_tags(note.get("tags"), canonical=True)
-    variant = reviewed_homonym_variant(word, cefr, list_name, pos)
+    variant = reviewed_identity_variant(word, cefr, list_name, pos)
     deck_override = None if list_name != "NO_LIST" else (note.get("deck") or "").strip() or None
     return OrderedDict([
         ("word", word),
@@ -159,7 +159,7 @@ def validate_registry_rows(rows: list[dict]) -> list[BuildIssue]:
                 identity=identity,
             ))
 
-        expected_variant = reviewed_homonym_variant(
+        expected_variant = reviewed_identity_variant(
             row.get("word"),
             row.get("cefr"),
             row.get("list"),

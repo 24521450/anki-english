@@ -92,6 +92,50 @@ def test_validate_build_result_accepts_valid_result(tmp_path: Path):
     assert report.card_count == 1
 
 
+def test_validate_build_result_rejects_single_example_break(tmp_path: Path):
+    card = _card()._replace(example="first example<br>second example")
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result([card]), inputs, tmp_path)
+
+    assert not report.ok
+    assert any(issue.code == "noncanonical_example_break" for issue in report.issues)
+
+
+def test_validate_build_result_accepts_double_example_break(tmp_path: Path):
+    card = _card()._replace(example="first example<br><br>second example")
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result([card]), inputs, tmp_path)
+
+    assert report.ok
+
+
+def test_validate_build_result_accepts_idiom_only_card(tmp_path: Path):
+    card = _card()._replace(
+        definition="",
+        example="",
+        idioms="phrase :: meaning :: example",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result([card]), inputs, tmp_path)
+
+    assert report.ok
+
+
 def test_validate_artifact_paths_rejects_txt_field_drift(tmp_path: Path):
     card = _card()
     jsonl_path, txt_path, registry_path, audio_dir = _write_artifacts(tmp_path, [card])

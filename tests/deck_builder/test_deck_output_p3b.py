@@ -23,7 +23,7 @@ def test_txt_parser_skips_headers_and_preserves_field_count():
     # ex, coll, wf, uk, us, src1, src2, cefr, idioms, tags, synonyms, antonyms.
     valid_row = "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms"
     lines = ["#separator:tab", "#html:true", "#guid:1", "#notetype:2", "#deck:3", "#tags:4", ""]
-    lines.extend([valid_row] * 2452)
+    lines.extend([valid_row] * 2457)
 
     # Change GUIDs to make them unique
     for i in range(7, len(lines)):
@@ -32,13 +32,29 @@ def test_txt_parser_skips_headers_and_preserves_field_count():
         lines[i] = '\t'.join(parts)
 
     data_rows = verify_txt_structure(lines)
-    assert len(data_rows) == 2452
+    assert len(data_rows) == 2457
     assert all(len(row) == 19 for row in data_rows)
+
+
+def test_txt_parser_accepts_idiom_only_card():
+    valid_row = "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms"
+    lines = [valid_row] * 2457
+    for i in range(2457):
+        parts = lines[i].split("\t")
+        parts[0] = f"G{i}"
+        if i == 0:
+            parts[6] = ""
+            parts[15] = "phrase :: meaning :: example"
+        lines[i] = "\t".join(parts)
+
+    data_rows = verify_txt_structure(lines)
+
+    assert len(data_rows) == 2457
 
 
 def test_txt_parser_fails_on_duplicate_guid():
     valid_row = "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms"
-    lines = [valid_row] * 2452
+    lines = [valid_row] * 2457
     # Duplicate GUIDs present, so verify_txt_structure should exit 1
     with pytest.raises(SystemExit):
         verify_txt_structure(lines)
@@ -46,9 +62,9 @@ def test_txt_parser_fails_on_duplicate_guid():
 
 def test_txt_parser_fails_on_escaped_pipe():
     valid_row = "G\tnotetype\tdeck\tword\tpos\tipa\tdefn\\|escaped\tex\tcoll\twf\tuk\tus\tsrc1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms"
-    lines = [valid_row] * 2452
+    lines = [valid_row] * 2457
     # Make GUIDs unique
-    for i in range(2452):
+    for i in range(2457):
         parts = lines[i].split('\t')
         parts[0] = f"G{i}"
         lines[i] = '\t'.join(parts)
@@ -104,6 +120,38 @@ def test_card_identity_allows_reviewed_converse_homonym_split():
     ]
 
     verify_card_identity(data_rows, [])
+
+
+@pytest.mark.parametrize("word", ["trail", "hint", "rally"])
+def test_card_identity_allows_reviewed_noun_verb_split(word):
+    tags = "Source::Oxford CEFR::C1 CEFR::oxford Oxford_5000"
+    data_rows = [
+        ["G1", "M", "D", word, "noun", "ipa", "noun def", "ex", "c", "wf", "uk", "us", "Oxford", "Oxford", "C1", "", tags],
+        ["G2", "M", "D", word, "verb", "ipa", "verb def", "ex", "c", "wf", "uk", "us", "Oxford", "Oxford", "C1", "", tags],
+    ]
+
+    verify_card_identity(data_rows, [])
+
+
+def test_card_identity_allows_reviewed_bow_homograph_split():
+    tags = "Source::Oxford CEFR::C1 CEFR::oxford Oxford_5000"
+    data_rows = [
+        ["G1", "M", "D", "bow", "noun, verb", "/baʊ/", "bend head/body", "ex", "c", "wf", "uk", "us", "Oxford", "Oxford", "C1", "", tags],
+        ["G2", "M", "D", "bow", "noun", "UK: /bəʊ/ | US: /boʊ/", "arrow weapon", "ex", "c", "wf", "uk", "us", "Oxford", "Oxford", "C1", "", tags],
+    ]
+
+    verify_card_identity(data_rows, [])
+
+
+def test_card_identity_rejects_torture_noun_verb_split():
+    tags = "Source::Oxford CEFR::C1 CEFR::oxford Oxford_5000"
+    data_rows = [
+        ["G1", "M", "D", "torture", "noun", "ipa", "noun def", "ex", "c", "wf", "uk", "us", "Oxford", "Oxford", "C1", "", tags],
+        ["G2", "M", "D", "torture", "verb", "ipa", "verb def", "ex", "c", "wf", "uk", "us", "Oxford", "Oxford", "C1", "", tags],
+    ]
+
+    with pytest.raises(SystemExit):
+        verify_card_identity(data_rows, [])
 
 
 def test_card_identity_rejects_wrong_converse_split_shape():
@@ -185,7 +233,7 @@ def test_build_output_parser():
       AWL:  715 entries
       total target keys: 6100
     Loading existing txt: anki_notes.txt
-      existing cards: 2452
+      existing cards: 2457
     Loading gamma verdicts: gamma_verdicts.json
       gamma verdicts: 548
       audit glosses loaded: 2487
@@ -196,7 +244,7 @@ def test_build_output_parser():
     === Building cards (existing txt scope) ===
       Pre-computing simplified senses for all jsonl records...
       words with simplified data: 5307
-      Iterating 2452 existing txt rows (3-type POS fix)...
+      Iterating 2457 existing txt rows (3-type POS fix)...
       Type A (POS fix): 4
       Type B (lemmatize): 0
       Type C (drop, no data): 0
@@ -204,12 +252,12 @@ def test_build_output_parser():
       UNCLASSIFIED drop: 0
       POS-fixed keys: 4
       Dropped keys: 0
-      built cards: 2452
+      built cards: 2457
       missing in jsonl: 0
     """
     metrics = parse_build_output(mock_stdout)
-    assert metrics['existing_cards'] == 2452
-    assert metrics['built_cards'] == 2452
+    assert metrics['existing_cards'] == 2457
+    assert metrics['built_cards'] == 2457
     assert metrics['missing_in_jsonl'] == 0
     assert metrics['dup_emit_skipped'] == 0
     assert metrics['audit_glosses'] == 2487

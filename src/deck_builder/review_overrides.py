@@ -94,7 +94,7 @@ def apply_review_overrides(all_cards: list[BuiltCard], overrides: dict[str, dict
                 deck=c.deck,
                 word=c.word,
                 pos=new_pos,
-                ipa=c.ipa,
+                ipa=r.get("IPA", c.ipa),
                 definition=r.get("Definition", c.definition),
                 example=r.get("Example", c.example),
                 collocations=r.get("Collocations", c.collocations),

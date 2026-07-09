@@ -71,6 +71,13 @@ def _extract_render_relations_js() -> str:
     return f"{trim_js}\n\n{render_js}"
 
 
+def _extract_raw_example_js() -> str:
+    src = BACK_TEMPLATE.read_text(encoding="utf-8")
+    trim_js = _extract_function(src, "trim")
+    raw_example_js = _extract_function(src, "getRawExampleHtml")
+    return f"{trim_js}\n\n{raw_example_js}"
+
+
 def _run_node_render_relations(ex_html: str, syn_words: list[str] | None, ant_words: list[str] | None) -> str:
     js_code = _extract_render_relations_js()
     runner = f"""
@@ -93,9 +100,52 @@ console.log(renderRelations(exHtml, synWords, antWords));
     return res.stdout.rstrip("\r\n")
 
 
+def _run_node_get_raw_example_html(inner_html: str) -> str:
+    js_code = _extract_raw_example_js()
+    runner = f"""
+{js_code}
+global.document = {{
+  getElementById: function(id) {{
+    return {{ innerHTML: {json.dumps(inner_html)} }};
+  }}
+}};
+console.log(getRawExampleHtml("raw-example-back"));
+"""
+    env = os.environ.copy()
+    env.pop("NODE_OPTIONS", None)
+    res = subprocess.run(
+        ["node", "-e", runner],
+        env=env,
+        timeout=5,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return res.stdout.rstrip("\r\n")
+
+
+def test_example_field_reads_canonical_br_html():
+    out = _run_node_get_raw_example_html(
+        "She gave a slight bow of her head in greeting.<br><br>He bowed low to the assembled crowd."
+    )
+    assert out == "She gave a slight bow of her head in greeting.<br><br>He bowed low to the assembled crowd."
+
+
+def test_example_field_normalizes_anki_export_encoded_br_html():
+    out = _run_node_get_raw_example_html(
+        "She gave a slight bow of her head in greeting.<br>&lt;br&gt;&lt;br&gt;<br>He bowed low to the assembled crowd."
+    )
+    assert out == "She gave a slight bow of her head in greeting.<br><br>He bowed low to the assembled crowd."
+
+
+def test_example_field_uses_html_reader_for_raw_example():
+    src = BACK_TEMPLATE.read_text(encoding="utf-8")
+    assert "var rawEx   = getRawExampleHtml('raw-example-back');" in src
+
+
 def test_node_check_javascript_syntax(tmp_path):
     """Verify that the extracted JavaScript is syntactically valid via `node --check <file>`."""
-    js_code = _extract_render_relations_js()
+    js_code = _extract_render_relations_js() + "\n\n" + _extract_raw_example_js()
     js_file = tmp_path / "extracted_render_relations.js"
     js_file.write_text(js_code, encoding="utf-8")
 

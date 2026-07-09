@@ -220,6 +220,64 @@ def test_oxford_5000_seed_override_requires_exact_seed_key(temp_paths):
     report_without_seed = check_def_before_integrity(temp_paths)
     assert report_without_seed.stats["unmatched"] == 1
 
+def test_learning_pattern_headword_alias_matches_source_lemma(temp_paths):
+    audit_row = {
+        "word": "derive",
+        "pos": "verb",
+        "cefr": "B2",
+        "def_before": "to come or develop from something",
+        "cefr_source": "oxford_5000_seed",
+    }
+    temp_paths.deck_audit_jsonl.write_text(json.dumps(audit_row) + "\n", encoding="utf-8")
+    temp_paths.oxford_jsonl.write_text(json.dumps({
+        "word": "derive",
+        "pos": ["verb"],
+        "pos_data": [{
+            "pos": "verb",
+            "definitions": [{"text": "to come or develop from something", "cefr": "B2"}],
+        }],
+    }) + "\n", encoding="utf-8")
+    temp_paths.manual_card_fills.write_text("[]", encoding="utf-8")
+    card_row = "\t".join([
+        "guid123", "Notetype", "Deck", "derive from", "phrasal verb, verb",
+        "", "", "", "", "", "", "", "", "", "B2", "", "Source::Oxford Oxford_5000",
+    ])
+    temp_paths.anki_notes_txt.write_text("#header\n" + card_row + "\n", encoding="utf-8")
+
+    report = check_def_before_integrity(temp_paths)
+
+    assert report.stats["orphan"] == 0
+    assert report.stats["oxford_exact"] == 1
+
+def test_reviewed_pos_mismatch_row_can_share_output_card(temp_paths):
+    audit_row = {
+        "word": "nursing",
+        "pos": "adjective",
+        "cefr": "B2",
+        "def_before": "relating to care",
+        "rule_applied": "POS_DEF_MISMATCH_fixed",
+    }
+    temp_paths.deck_audit_jsonl.write_text(json.dumps(audit_row) + "\n", encoding="utf-8")
+    temp_paths.oxford_jsonl.write_text(json.dumps({
+        "word": "nursing",
+        "pos": ["adjective"],
+        "pos_data": [{
+            "pos": "adjective",
+            "definitions": [{"text": "relating to care", "cefr": "B2"}],
+        }],
+    }) + "\n", encoding="utf-8")
+    temp_paths.manual_card_fills.write_text("[]", encoding="utf-8")
+    card_row = "\t".join([
+        "guid123", "Notetype", "Deck", "nursing", "noun",
+        "", "", "", "", "", "", "", "", "", "B2", "", "Source::Oxford Oxford_5000",
+    ])
+    temp_paths.anki_notes_txt.write_text("#header\n" + card_row + "\n", encoding="utf-8")
+
+    report = check_def_before_integrity(temp_paths)
+
+    assert report.stats["orphan"] == 0
+    assert report.stats["oxford_exact"] == 1
+
 def test_idiom_match_exact_only(temp_paths):
     # Audit row asks for UNCLASSIFIED
     audit_row = {"word": "a test idiom", "pos": "idiom", "cefr": "UNCLASSIFIED", "def_before": "exact idiom meaning"}

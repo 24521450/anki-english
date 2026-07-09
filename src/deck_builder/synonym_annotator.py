@@ -492,6 +492,105 @@ def _apply_annotate_override(
 # Card-level annotation
 # -----------------------------------------------------------------------------
 
+_SAME_SENSE_BREAK_RE = re.compile(r"((?:<br\s*/?>\s*)+)", re.IGNORECASE)
+
+
+def _split_same_sense_examples(chunk: str) -> list[tuple[str, str]]:
+    """Return ``(separator_before, example)`` pairs for one sense chunk."""
+    parts = _SAME_SENSE_BREAK_RE.split(chunk)
+    examples: list[tuple[str, str]] = []
+    separator = ""
+    for idx, part in enumerate(parts):
+        if idx % 2:
+            separator = part
+            continue
+        example = part.strip()
+        if example:
+            examples.append((separator, example))
+            separator = ""
+    return examples
+
+
+def _annotate_same_sense_examples(
+    chunk: str,
+    card: "BuiltCard",
+    specs: list[dict],
+    all_syns: list[str],
+    all_ants: list[str],
+) -> tuple[str, list[str], list[str], list[str]]:
+    """Annotate examples joined by HTML breaks while keeping one pipe cell."""
+    annotated_parts: list[str] = []
+    syn_words: list[str] = []
+    ant_words: list[str] = []
+    errors: list[str] = []
+    has_any_syns = any(spec and spec.get("synonyms") for spec in specs)
+    has_any_ants = any(spec and spec.get("antonyms") for spec in specs)
+    actual_word_clean = re.sub(r"\s*\(.*?\)\s*", "", card.word).strip().lower()
+
+    for separator, original_example in _split_same_sense_examples(chunk):
+        cleaned_example = original_example
+        if all_syns:
+            cleaned_example = _strip_annotations_for_words(cleaned_example, all_syns)
+        if all_ants:
+            cleaned_example = _strip_annotations_for_words(cleaned_example, all_ants)
+
+        example_clean = clean_for_matching(cleaned_example)
+        spec = next(
+            (
+                candidate
+                for candidate in specs
+                if candidate
+                and clean_for_matching(candidate.get("text") or "") == example_clean
+            ),
+            None,
+        )
+
+        if spec is None:
+            if has_any_syns or has_any_ants:
+                errors.append(
+                    f"Unresolved alignment for {card.word} ({card.guid}) example: "
+                    f"{original_example!r}. Could not map it to any Oxford sense. "
+                    "Please add a manual override."
+                )
+        else:
+            spec_syns = list(spec.get("synonyms") or [])
+            if spec_syns:
+                annotated = _annotate_chunk_with_words(
+                    cleaned_example, actual_word_clean, spec_syns
+                )
+                if annotated is None:
+                    errors.append(
+                        f"Unresolved auto-annotation (synonym) for {card.word} "
+                        f"({card.guid}) example: {original_example!r}. "
+                        f"Synonyms of sense: {spec_syns}. Please add a manual override."
+                    )
+                else:
+                    cleaned_example = annotated
+                    for word in spec_syns:
+                        if word not in syn_words:
+                            syn_words.append(word)
+
+            spec_ants = list(spec.get("antonyms") or [])
+            if spec_ants:
+                annotated = _annotate_chunk_with_words(
+                    cleaned_example, actual_word_clean, spec_ants
+                )
+                if annotated is None:
+                    errors.append(
+                        f"Unresolved auto-annotation (antonym) for {card.word} "
+                        f"({card.guid}) example: {original_example!r}. "
+                        f"Antonyms of sense: {spec_ants}. Please add a manual override."
+                    )
+                else:
+                    cleaned_example = annotated
+                    for word in spec_ants:
+                        if word not in ant_words:
+                            ant_words.append(word)
+
+        annotated_parts.append(separator + cleaned_example)
+
+    return "".join(annotated_parts), syn_words, ant_words, errors
+
 def annotate_card_examples(
     card: "BuiltCard",
     specs: list[dict],
@@ -545,6 +644,23 @@ def annotate_card_examples(
     ant_used_idxs: set[int] = set()
 
     for chunk_idx, original_chunk in enumerate(chunks):
+        same_sense_examples = _split_same_sense_examples(original_chunk)
+        if len(same_sense_examples) > 1:
+            annotated_chunk, syn_words, ant_words, chunk_errors = (
+                _annotate_same_sense_examples(
+                    original_chunk,
+                    card,
+                    specs,
+                    all_syns,
+                    all_ants,
+                )
+            )
+            annotated_chunks.append(annotated_chunk)
+            syn_metadata.append(", ".join(syn_words))
+            ant_metadata.append(", ".join(ant_words))
+            errors.extend(chunk_errors)
+            continue
+
         # Scrub pre-existing relation annotations.
         cleaned_chunk = original_chunk
         if all_syns:

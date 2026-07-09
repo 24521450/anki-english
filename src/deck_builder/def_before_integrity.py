@@ -6,7 +6,12 @@ import re
 from pathlib import Path
 from typing import NamedTuple
 
+from src.deck_builder.corpus_tag_sync import LEARNING_PATTERN_ALIASES
 from src.deck_builder.vocab_lists import parse_vocab_list
+
+BASE_LEARNING_PATTERN_ALIASES = {
+    base: pattern for pattern, base in LEARNING_PATTERN_ALIASES.items()
+}
 
 class DefBeforeIntegrityPaths(NamedTuple):
     deck_audit_jsonl: Path
@@ -40,6 +45,35 @@ def norm_def(s: str | None) -> str:
     s = re.sub(r'\s+', ' ', s)
     s = s.rstrip('.').strip().lower()
     return s
+
+def _pos_parts(pos_str: str) -> set[str]:
+    return {p.strip() for p in pos_str.split(",") if p.strip()}
+
+def _identity_aliases(word: str, pos_str: str) -> list[tuple[str, set[str]]]:
+    """Return source/display aliases that may identify the same reviewed card."""
+    word_clean = re.sub(r"\s*\(.*?\)\s*", "", word).strip().lower()
+    pos_parts = _pos_parts(pos_str)
+    aliases = [(word_clean, set(pos_parts))]
+
+    if word_clean in LEARNING_PATTERN_ALIASES:
+        aliases.append((LEARNING_PATTERN_ALIASES[word_clean], set(pos_parts)))
+    if word_clean in BASE_LEARNING_PATTERN_ALIASES:
+        aliases.append((BASE_LEARNING_PATTERN_ALIASES[word_clean], set(pos_parts)))
+
+    expanded = []
+    seen = set()
+    for alias_word, alias_pos in aliases:
+        effective_pos = set(alias_pos)
+        if alias_word in LEARNING_PATTERN_ALIASES or alias_word in BASE_LEARNING_PATTERN_ALIASES:
+            if "phrasal verb" in effective_pos:
+                effective_pos.add("verb")
+            if "verb" in effective_pos:
+                effective_pos.add("phrasal verb")
+        key = (alias_word, tuple(sorted(effective_pos)))
+        if key not in seen:
+            seen.add(key)
+            expanded.append((alias_word, effective_pos))
+    return expanded
 
 def check_def_before_integrity(paths: DefBeforeIntegrityPaths) -> DefBeforeIntegrityReport:
     stats = {
@@ -110,14 +144,28 @@ def check_def_before_integrity(paths: DefBeforeIntegrityPaths) -> DefBeforeInteg
             def_before = row.get("def_before", "")
 
             # A. Check orphan (exact word/CEFR and POS overlap)
-            row_pos_parts = {p.strip() for p in pos_str.split(",") if p.strip()}
+            row_pos_parts = _pos_parts(pos_str)
             has_matching_card = False
+            row_aliases = _identity_aliases(word, pos_str)
             for card_word, card_pos_str, card_cefr in existing_cards:
-                if card_word == word and card_cefr == cefr:
-                    card_pos_parts = {p.strip() for p in card_pos_str.split(",") if p.strip()}
-                    if row_pos_parts & card_pos_parts:
-                        has_matching_card = True
+                if card_cefr != cefr:
+                    continue
+                card_aliases = _identity_aliases(card_word, card_pos_str)
+                for row_word_alias, row_alias_pos in row_aliases:
+                    for card_word_alias, card_alias_pos in card_aliases:
+                        if row_word_alias == card_word_alias and row_alias_pos & card_alias_pos:
+                            has_matching_card = True
+                            break
+                    if has_matching_card:
                         break
+                if has_matching_card:
+                    break
+                if (
+                    row.get("rule_applied") == "POS_DEF_MISMATCH_fixed"
+                    and card_word == word
+                ):
+                    has_matching_card = True
+                    break
 
             if not has_matching_card:
                 stats["orphan"] += 1

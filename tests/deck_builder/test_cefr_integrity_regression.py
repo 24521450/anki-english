@@ -81,7 +81,7 @@ def test_converse_homonyms_are_separate_cards():
     assert nominal["guid"] == "dI;xOQZ.Jd"
     assert nominal["ipa"] == "UK: /ˈkɒnvɜːs/ | US: /ˈkɑːnvɜːrs/"
     assert nominal["definition"] == "opposite of a fact or statement (điều ngược lại/mặt trái)"
-    assert nominal["example"].startswith("the converse effect|")
+    assert nominal["example"].startswith("the converse effect<br><br>")
     assert nominal["source2"] == "AWL"
     assert nominal["uk_audio"] == "[sound:cambridge_uk_converse_adjective_noun.mp3]"
     assert nominal["us_audio"] == "[sound:cambridge_us_converse_adjective_noun.mp3]"

@@ -84,6 +84,14 @@
 (function() {
   function trim(s) { return s ? s.replace(/^\s+|\s+$/g, '') : ''; }
   function getRaw(id) { var e = document.getElementById(id); return e ? trim(e.textContent || e.innerText) : ''; }
+  function getRawExampleHtml(id) {
+    var e = document.getElementById(id);
+    if (!e) return '';
+    var html = e.innerHTML || '';
+    html = html.replace(/<br\s*\/?>\s*&lt;br\s*\/?&gt;&lt;br\s*\/?&gt;\s*<br\s*\/?>/gi, '<br><br>');
+    html = html.replace(/\s*(<br\s*\/?>)\s*/gi, '$1');
+    return trim(html);
+  }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function(c) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
@@ -218,7 +226,7 @@
 
   // 4. L3 Senses grid
   var rawDef  = getRaw('raw-definition-back');
-  var rawEx   = getRaw('raw-example-back');
+  var rawEx   = getRawExampleHtml('raw-example-back');
   var rawWord = getRaw('raw-word-back');
   var rawSyns = getRaw('raw-synonyms-back');
   var rawAnts = getRaw('raw-antonyms-back');
