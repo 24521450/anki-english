@@ -490,13 +490,6 @@
 .sense-row + .sense-row {
   border-top: 1px solid #1e1d1d;
 }
-/* #2 Fix: Audio no-audio disabled state */
-.no-audio {
-  opacity: 0.28;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
 /* #4 Fix: sense-def wider line-height + hyphenation for long words */
 .sense-def {
   font-size: 15.5px;
@@ -551,21 +544,6 @@
   border-left: 1px solid #1e1d1d;
   padding-left: 14px;
 }
-.sense-num {
-  display: none;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  font-weight: 700;
-  color: #a78bfa;
-  background: #2d2850;
-  border-radius: 3px;
-  padding: 1px 5px;
-  margin-right: 6px;
-  vertical-align: middle;
-  position: relative;
-  top: -1px;
-}
-
 /* ── Idioms section (Oxford-style: phrase + explanation + examples) ── */
 .idiom-box {
   background: #1a1810;

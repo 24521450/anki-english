@@ -224,6 +224,11 @@
   var ipaEl = document.getElementById('ipa-display');
   if (ipaEl) ipaEl.innerHTML = renderIpa(ipaEl.textContent || ipaEl.innerText || '');
 
+  var audioRow = document.getElementById('audio-row-container');
+  if (audioRow && !trim(audioRow.textContent || audioRow.innerText)) {
+    audioRow.style.display = 'none';
+  }
+
   // 4. L3 Senses grid
   var rawDef  = getRaw('raw-definition-back');
   var rawEx   = getRawExampleHtml('raw-example-back');
@@ -240,8 +245,6 @@
     for (var d = 0; d < defParts.length; d++) { if (trim(defParts[d])) defs.push({i:d, t:trim(defParts[d])}); }
 
     var wordRe = rawWord ? new RegExp(rawWord.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi') : null;
-    var badges = ['\u2460','\u2461','\u2462'];
-    var multi = defs.length > 1;
     var sHtml = '';
 
     // Render synonym/antonym parentheticals with their colored class.
@@ -323,9 +326,8 @@
         for (var aw2 = 0; aw2 < antWords.length; aw2++) { if (antWords[aw2]) { hasRelationMeta = true; break; } }
       }
       if (hasRelationMeta) ex = renderRelations(ex, synWords, antWords);
-      var badge = multi ? '<span class="sense-num">' + badges[di] + '</span>' : '';
       sHtml += '<div class="sense-row">'
-             + '<div class="sense-def">' + badge + hideVietnameseGloss(parseDef(def)) + '</div>'
+             + '<div class="sense-def">' + hideVietnameseGloss(parseDef(def)) + '</div>'
              + '<div class="sense-ex">'  + (ex ? '\u201c' + ex + '\u201d' : '') + '</div>'
              + '</div>';
     }

@@ -563,12 +563,6 @@
   border-top: 1px solid #1e1d1d;
 }
 
-.no-audio {
-  opacity: 0.28;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
 .sense-def {
   font-size: 15.5px;
   line-height: 1.8;
@@ -621,21 +615,6 @@
   border-left: 1px solid #1e1d1d;
   padding-left: 14px;
 }
-.sense-num {
-  display: none;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  font-weight: 700;
-  color: #a78bfa;
-  background: #2d2850;
-  border-radius: 3px;
-  padding: 1px 5px;
-  margin-right: 6px;
-  vertical-align: middle;
-  position: relative;
-  top: -1px;
-}
-
 .idiom-box {
   background: #1a1810;
   border-color: #3a2a08;
@@ -748,7 +727,7 @@
 
     <h3 class="swatch-group-label" style="margin-top:24px">Accent colors</h3>
     <div class="swatch-grid">
-      <div class="swatch"><span class="swatch-color" style="background:#a78bfa"></span><div class="swatch-info"><div class="swatch-name">accent-purple</div><div class="swatch-hex">#a78bfa · sense-num</div></div></div>
+      <div class="swatch"><span class="swatch-color" style="background:#a78bfa"></span><div class="swatch-info"><div class="swatch-name">accent-purple</div><div class="swatch-hex">#a78bfa · pos-chip-num</div></div></div>
       <div class="swatch"><span class="swatch-color" style="background:#fb923c"></span><div class="swatch-info"><div class="swatch-name">accent-amber</div><div class="swatch-hex">#fb923c · rt-amber</div></div></div>
       <div class="swatch"><span class="swatch-color" style="background:#fbbf24"></span><div class="swatch-info"><div class="swatch-name">accent-warm</div><div class="swatch-hex">#fbbf24 · rt-warm</div></div></div>
       <div class="swatch"><span class="swatch-color" style="background:#fca5a5"></span><div class="swatch-info"><div class="swatch-name">accent-red</div><div class="swatch-hex">#fca5a5 · rt-red</div></div></div>
@@ -823,7 +802,7 @@
         <li><code style="color:#fbbf24">.card-content-front</code> + <code style="color:#fbbf24">.word-front</code> + <code style="color:#fbbf24">.sense-count</code> + <code style="color:#fbbf24">.sense-count-dot</code></li>
         <li><code style="color:#fbbf24">.card-content-back</code> + <code style="color:#fbbf24">.word-back</code> + <code style="color:#fbbf24">.word-header-back</code> + <code style="color:#fbbf24">.meta-row</code> + <code style="color:#fbbf24">.ipa-text</code></li>
         <li><code style="color:#fbbf24">.divider</code> + <code style="color:#fbbf24">.divider-A1</code> … <code style="color:#fbbf24">.divider-UNCLASSIFIED</code></li>
-        <li><code style="color:#fbbf24">.audio-row</code> + <code style="color:#fbbf24">.audio-btn-wrapper</code> + <code style="color:#fbbf24">.audio-btn-uk</code> + <code style="color:#fbbf24">.audio-btn-us</code> + <code style="color:#fbbf24">.no-audio</code></li>
+        <li><code style="color:#fbbf24">.audio-row</code> + <code style="color:#fbbf24">.audio-btn-wrapper</code> + <code style="color:#fbbf24">.audio-btn-uk</code> + <code style="color:#fbbf24">.audio-btn-us</code></li>
         <li><code style="color:#fbbf24">.section-box</code> + <code style="color:#fbbf24">.section-title</code></li>
         <li><code style="color:#fbbf24">.word-highlight</code> (used in examples)</li>
         <li><code style="color:#fbbf24">.relation-synonym</code> + <code style="color:#fbbf24">.relation-antonym</code> (sense-level synonym/antonym parentheticals)</li>
@@ -832,7 +811,7 @@
         <li><code style="color:#fbbf24">.corpus-badge</code> + <code style="color:#fbbf24">.corpus-opal</code> + <code style="color:#fbbf24">.corpus-oxf</code> + <code style="color:#fbbf24">.corpus-awl</code></li>
         <li><code style="color:#fbbf24">.register-tag</code> + <code style="color:#fbbf24">.rt-amber</code> + <code style="color:#fbbf24">.rt-warm</code> + <code style="color:#fbbf24">.rt-red</code> + <code style="color:#fbbf24">.rt-subject</code> + <code style="color:#fbbf24">.rt-idiom</code></li>
         <li><code style="color:#fbbf24">.usage-tag</code> + <code style="color:#fbbf24">.feature-row</code> + <code style="color:#fbbf24">.feature-tag</code></li>
-        <li><code style="color:#fbbf24">.senses-box</code> + <code style="color:#fbbf24">.sense-row</code> + <code style="color:#fbbf24">.sense-def</code> + <code style="color:#fbbf24">.sense-ex</code> + <code style="color:#fbbf24">.sense-num</code></li>
+        <li><code style="color:#fbbf24">.senses-box</code> + <code style="color:#fbbf24">.sense-row</code> + <code style="color:#fbbf24">.sense-def</code> + <code style="color:#fbbf24">.sense-ex</code></li>
         <li><code style="color:#fbbf24">.idiom-box</code> + <code style="color:#fbbf24">.idiom-list</code> + <code style="color:#fbbf24">.idiom-row</code> + <code style="color:#fbbf24">.idiom-phrase</code> + <code style="color:#fbbf24">.idiom-explanation</code> + <code style="color:#fbbf24">.idiom-examples</code> + <code style="color:#fbbf24">.idiom-example</code></li>
       </ul>
     </div>
@@ -942,8 +921,6 @@
       <div class="demo-row">
         <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
         <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
-        <span class="audio-btn-wrapper audio-btn-uk no-audio"><i class="ti ti-volume"></i> UK ∅</span>
-        <span class="audio-btn-wrapper audio-btn-us no-audio"><i class="ti ti-volume"></i> US ∅</span>
       </div>
     </div>
 
@@ -965,12 +942,6 @@
           <div class="sense-def">a way of thinking or behaving that reflects this</div>
           <div class="sense-ex">"the company has changed its <span class="word-highlight">attitude</span> to diversity"</div>
         </div>
-      </div>
-      <div class="demo-label" style="margin-top:14px">Sense number badge (multi-sense only)</div>
-      <div class="demo-row" style="font-size:14px;color:#e2e8f0">
-        <span class="sense-num" style="display:inline-flex">①</span> first
-        <span class="sense-num" style="display:inline-flex">②</span> second
-        <span class="sense-num" style="display:inline-flex">③</span> third
       </div>
     </div>
 
@@ -1174,23 +1145,23 @@
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> not in a place because of illness, etc.</div>
+                <div class="sense-def">not in a place because of illness, etc.</div>
                 <div class="sense-ex">"She was <span class="word-highlight">absent</span> from work for two weeks."</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span> not present in something</div>
+                <div class="sense-def">not present in something</div>
                 <div class="sense-ex">"Love was totally <span class="word-highlight">absent</span> from his childhood."</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">③</span> showing that you are not really looking at or thinking about what is happening around you</div>
+                <div class="sense-def">showing that you are not really looking at or thinking about what is happening around you</div>
                 <div class="sense-ex">"an <span class="word-highlight">absent</span> expression"</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">④</span> to not go to or be in a place where you are expected to be</div>
+                <div class="sense-def">to not go to or be in a place where you are expected to be</div>
                 <div class="sense-ex">"He had <span class="word-highlight">absented</span> himself from the office for the day."</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑤</span> without</div>
+                <div class="sense-def">without</div>
                 <div class="sense-ex">"<span class="word-highlight">Absent</span> further evidence, the police had no choice but to release him without charge."</div>
               </div>
             </div>
@@ -1229,11 +1200,11 @@
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> the fact of somebody being away from a place where they are usually expected to be; the occasion or period of time when somebody is away</div>
+                <div class="sense-def">the fact of somebody being away from a place where they are usually expected to be; the occasion or period of time when somebody is away</div>
                 <div class="sense-ex">"The decision was made in my <span class="word-highlight">absence</span> (= while I was not there)."</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span> the fact of somebody/something not existing or not being available; a lack of something</div>
+                <div class="sense-def">the fact of somebody/something not existing or not being available; a lack of something</div>
                 <div class="sense-ex">"I was surprised by the <span class="word-highlight">absence</span> of any women on the board of directors."</div>
               </div>
             </div>
@@ -1361,10 +1332,6 @@
               <div class="word-back">paradigm</div>
               <hr class="divider divider-UNCLASSIFIED">
             </div>
-            <div class="audio-row">
-              <span class="audio-btn-wrapper audio-btn-uk no-audio"><i class="ti ti-volume"></i> UK ∅</span>
-              <span class="audio-btn-wrapper audio-btn-us no-audio"><i class="ti ti-volume"></i> US ∅</span>
-            </div>
             <div class="section-box senses-box">
               <div class="sense-row">
                 <div class="sense-def"><span class="register-tag rt-warm">specialist</span><span class="register-tag rt-amber">formal</span> a typical example or pattern of something</div>
@@ -1434,31 +1401,31 @@
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> physically or mentally ill</div>
+                <div class="sense-def">physically or mentally ill</div>
                 <div class="sense-ex">"a <span class="word-highlight">sick</span> child"</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span> feeling that you want to vomit</div>
+                <div class="sense-def">feeling that you want to vomit</div>
                 <div class="sense-ex">"Mum, I feel <span class="word-highlight">sick</span>!"</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">③</span><span class="register-tag rt-amber">figurative</span> feeling <span class="word-highlight">sick</span> as a result of travelling on a ship, plane, etc.</div>
+                <div class="sense-def"><span class="register-tag rt-amber">figurative</span> feeling <span class="word-highlight">sick</span> as a result of travelling on a ship, plane, etc.</div>
                 <div class="sense-ex">"seasick · airsick · carsick"</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">④</span><span class="register-tag rt-amber">informal</span> bored with or annoyed about something that has been happening for a long time</div>
+                <div class="sense-def"><span class="register-tag rt-amber">informal</span> bored with or annoyed about something that has been happening for a long time</div>
                 <div class="sense-ex">"I'm <span class="word-highlight">sick</span> of the way you've treated me."</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑤</span><span class="register-tag rt-amber">humorous</span> dealing with physical or mental pain, disease or death in a cruel way</div>
+                <div class="sense-def"><span class="register-tag rt-amber">humorous</span> dealing with physical or mental pain, disease or death in a cruel way</div>
                 <div class="sense-ex">"a <span class="word-highlight">sick</span> joke"</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑥</span><span class="register-tag rt-red">offensive</span> getting pleasure from doing strange or cruel things</div>
+                <div class="sense-def"><span class="register-tag rt-red">offensive</span> getting pleasure from doing strange or cruel things</div>
                 <div class="sense-ex">"a <span class="word-highlight">sick</span> mind"</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑦</span><span class="register-tag rt-warm">slang</span> very good, a lot of fun, etc.</div>
+                <div class="sense-def"><span class="register-tag rt-warm">slang</span> very good, a lot of fun, etc.</div>
                 <div class="sense-ex">"I love that song — it's <span class="word-highlight">sick</span>!"</div>
               </div>
             </div>
@@ -1505,23 +1472,23 @@
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> to leave somebody, especially somebody you are responsible for, with no intention of returning</div>
+                <div class="sense-def">to leave somebody, especially somebody you are responsible for, with no intention of returning</div>
                 <div class="sense-ex">"The baby had been <span class="word-highlight">abandoned</span> by its mother."</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span> to leave a thing or place, especially because it is impossible or dangerous to stay</div>
+                <div class="sense-def">to leave a thing or place, especially because it is impossible or dangerous to stay</div>
                 <div class="sense-ex">"Snow forced many drivers to <span class="word-highlight">abandon</span> their vehicles."</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">③</span> to stop doing something, especially before it is finished; to stop having something</div>
+                <div class="sense-def">to stop doing something, especially before it is finished; to stop having something</div>
                 <div class="sense-ex">"They <span class="word-highlight">abandoned</span> the match because of rain."</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">④</span> to stop supporting or helping somebody; to stop believing in something</div>
+                <div class="sense-def">to stop supporting or helping somebody; to stop believing in something</div>
                 <div class="sense-ex">"The country <span class="word-highlight">abandoned</span> its political leaders after the war."</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">⑤</span><span class="register-tag rt-amber">literary</span> to feel an emotion so strongly that you can feel nothing else</div>
+                <div class="sense-def"><span class="register-tag rt-amber">literary</span> to feel an emotion so strongly that you can feel nothing else</div>
                 <div class="sense-ex">"He <span class="word-highlight">abandoned</span> himself to despair."</div>
               </div>
             </div>
@@ -1557,11 +1524,11 @@
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">①</span> a chemical, often a liquid, that can burn or dissolve other substances</div>
+                <div class="sense-def">a chemical, often a liquid, that can burn or dissolve other substances</div>
                 <div class="sense-ex">"vinegar is a weak <span class="word-highlight">acid</span>"</div>
               </div>
               <div class="sense-row">
-                <div class="sense-def"><span class="sense-num" style="display:inline-flex">②</span><span class="register-tag rt-warm">slang</span> the drug LSD</div>
+                <div class="sense-def"><span class="register-tag rt-warm">slang</span> the drug LSD</div>
                 <div class="sense-ex"></div>
               </div>
             </div>

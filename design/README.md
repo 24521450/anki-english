@@ -61,7 +61,7 @@ Giá trị dưới đây là **sau khi sync** (mirror vùng 2 của `index.html`
 | `text-meta` | `#94a3b8` | IPA pill, audio btn |
 | `text-muted` | `#64748b` | Sense-ex, usage-tag |
 | `text-section-title` | `#4b5563` | Section title |
-| `accent-purple` | `#a78bfa` | Số thứ tự (pos-chip-num, sense-num) |
+| `accent-purple` | `#a78bfa` | Số thứ tự POS (`pos-chip-num`) |
 | `accent-amber` | `#fb923c` | Register tag — attitude (`rt-amber`) |
 | `accent-warm` | `#fbbf24` | Register tag — slang/specialist (`rt-warm`) |
 | `accent-red` | `#fca5a5` | Register tag — offensive/taboo (`rt-red`) |
@@ -91,7 +91,7 @@ Giá trị dưới đây là **sau khi sync** (mirror vùng 2 của `index.html`
 
 - Card content padding: `28px 20px` (back) / `40px` (front)
 - Section gap (back content): `20px`
-- Border radius: `20px` (card), `14px` (section box), `9999px` (chip/badge), `6px` (corpus badge), `3px` (sense-num / pos-chip-num)
+- Border radius: `20px` (card), `14px` (section box), `9999px` (chip/badge), `6px` (corpus badge), `3px` (`pos-chip-num`)
 - Card width: `440px` fixed (preview) / `100%` (Anki, max 540px) — marked `/* @preview-only */` cho width
 
 ## Quy tắc chỉnh sửa
@@ -191,7 +191,7 @@ Giá trị dưới đây là **sau khi sync** (mirror vùng 2 của `index.html`
 | `text-meta` | `#94a3b8` | IPA pill, audio btn |
 | `text-muted` | `#64748b` | Sense-ex, usage-tag |
 | `text-section-title` | `#4b5563` | Section title |
-| `accent-purple` | `#a78bfa` | Số thứ tự (pos-chip-num, sense-num) |
+| `accent-purple` | `#a78bfa` | Số thứ tự POS (`pos-chip-num`) |
 | `accent-amber` | `#fb923c` | Register tag — attitude (`rt-amber`) |
 | `accent-warm` | `#fbbf24` | Register tag — slang/specialist (`rt-warm`) |
 | `accent-red` | `#fca5a5` | Register tag — offensive/taboo (`rt-red`) |
@@ -221,7 +221,7 @@ Giá trị dưới đây là **sau khi sync** (mirror vùng 2 của `index.html`
 
 - Card content padding: `28px 20px` (back) / `40px` (front)
 - Section gap (back content): `20px`
-- Border radius: `20px` (card), `14px` (section box), `9999px` (chip/badge), `6px` (corpus badge), `3px` (sense-num / pos-chip-num)
+- Border radius: `20px` (card), `14px` (section box), `9999px` (chip/badge), `6px` (corpus badge), `3px` (`pos-chip-num`)
 - Card width: `440px` fixed (preview) / `100%` (Anki, max 540px) — marked `/* @preview-only */` cho width
 
 ## Quy tắc chỉnh sửa

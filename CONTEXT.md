@@ -57,7 +57,7 @@ A `.ipa-text` element with monospace font + pill background, displaying the phon
 _Avoid_: Pronunciation, phonetic text
 
 **Audio Button**:
-A `.audio-btn-wrapper` chip with a Tabler volume icon, in either UK (`.audio-btn-uk`, blue accent) or US (`.audio-btn-us`, red accent) variant. Disabled state uses `.no-audio` (28% opacity, no pointer events).
+A `.audio-btn-wrapper` chip with a Tabler volume icon, in either UK (`.audio-btn-uk`, blue accent) or US (`.audio-btn-us`, red accent) variant. Missing audio is hidden rather than rendered as a disabled placeholder.
 _Avoid_: Speaker button, sound icon
 
 ### Card-level features (footer row)
@@ -73,7 +73,7 @@ A `.section-box` container with `bg-section` background, `border-subtle` border,
 _Avoid_: Card panel, content box
 
 **Sense Row**:
-A `.sense-row` grid row with `55fr 45fr` columns — definition on the left, example on the right. Multiple sense rows are stacked in `.senses-box` with 1px dividers. Each row can carry a `.sense-num` badge (① ② ③) when multi-sense.
+A `.sense-row` grid row with `55fr 45fr` columns — definition on the left, example on the right. Multiple sense rows are stacked in `.senses-box` with 1px dividers.
 _Avoid_: Definition row, sense line
 
 **Idiom Box**:
