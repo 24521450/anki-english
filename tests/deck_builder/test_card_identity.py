@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from src.deck_builder.card_identity import (
     LIST_PRIORITY,
+    is_reviewed_identity_variant_allowed,
     primary_list_from_tags,
     reviewed_identity_variant,
 )
@@ -28,6 +29,27 @@ def test_reviewed_identity_variants_cover_approved_pos_splits():
     assert reviewed_identity_variant("hint", "C1", "Oxford_5000", "verb") == "verb"
     assert reviewed_identity_variant("rally", "C1", "Oxford_5000", "noun") == "noun"
     assert reviewed_identity_variant("rally", "C1", "Oxford_5000", "verb") == "verb"
+    assert is_reviewed_identity_variant_allowed(
+        "proposition", "C1", "Oxford_5000", "noun", "primary"
+    )
+    assert is_reviewed_identity_variant_allowed(
+        "proposition", "C1", "Oxford_5000", "noun", "secondary_law_formal"
+    )
+    assert not is_reviewed_identity_variant_allowed(
+        "proposition", "C1", "Oxford_5000", "noun", "other"
+    )
     assert reviewed_identity_variant("torture", "C1", "Oxford_5000", "noun") == ""
     assert reviewed_identity_variant("torture", "C1", "Oxford_5000", "verb") == ""
+
+
+def test_temporal_reviewed_semantic_variants_are_allowed():
+    assert is_reviewed_identity_variant_allowed(
+        "temporal", "UNCLASSIFIED", "NO_LIST", "adjective", "general_formal"
+    )
+    assert is_reviewed_identity_variant_allowed(
+        "temporal", "UNCLASSIFIED", "NO_LIST", "adjective", "anatomy"
+    )
+    assert not is_reviewed_identity_variant_allowed(
+        "temporal", "UNCLASSIFIED", "NO_LIST", "adjective", ""
+    )
     assert reviewed_identity_variant("firm", "B2", "Oxford_5000", "adjective") == ""

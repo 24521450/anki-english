@@ -16,14 +16,25 @@ LIST_ALIASES: Final[dict[str, str]] = {
 }
 
 # Reviewed identity exceptions are the only cards allowed to carry a non-empty
-# registry variant. They cover true homonyms and explicitly reviewed POS splits.
-# The value is the exact variant label written into the registry row.
+# registry variant. POS variants cover true homonyms and explicitly reviewed
+# POS splits; the value is the exact variant label written into the registry row.
 REVIEWED_IDENTITY_VARIANTS: Final[dict[tuple[str, str, str], frozenset[str]]] = {
     ("converse", "UNCLASSIFIED", "AWL"): frozenset({"verb", "adjective, noun"}),
     ("trail", "C1", "Oxford_5000"): frozenset({"noun", "verb"}),
     ("bow", "C1", "Oxford_5000"): frozenset({"noun, verb", "noun"}),
     ("hint", "C1", "Oxford_5000"): frozenset({"noun", "verb"}),
     ("rally", "C1", "Oxford_5000"): frozenset({"noun", "verb"}),
+}
+
+# Semantic variants split two cards that keep the same displayed word/POS/CEFR
+# but intentionally carry different reviewed sense groups.
+REVIEWED_SEMANTIC_IDENTITY_VARIANTS: Final[dict[tuple[str, str, str, str], frozenset[str]]] = {
+    ("proposition", "C1", "Oxford_5000", "noun"): frozenset(
+        {"primary", "secondary_law_formal"}
+    ),
+    ("temporal", "UNCLASSIFIED", "NO_LIST", "adjective"): frozenset(
+        {"general_formal", "anatomy"}
+    ),
 }
 
 # Compatibility for archived migrations that predate reviewed POS variants.
@@ -95,6 +106,50 @@ def reviewed_identity_variant(
     if allowed and pos_key in allowed:
         return pos_key
     return ""
+
+
+def is_reviewed_identity_variant_allowed(
+    word: str | None,
+    cefr: str | None,
+    list_name: str | None,
+    pos: str | None,
+    variant: str | None,
+) -> bool:
+    """Return whether a registry variant is allowed for this card."""
+    variant_key = normalize_variant(variant).lower()
+    expected_pos_variant = reviewed_identity_variant(word, cefr, list_name, pos)
+    if expected_pos_variant:
+        return variant_key == expected_pos_variant
+
+    word_key = normalize_word(word).lower()
+    cefr_key = normalize_cefr(cefr)
+    list_key = normalize_list_name(list_name, canonical=True)
+    pos_key = normalize_variant(pos).lower()
+    allowed = REVIEWED_SEMANTIC_IDENTITY_VARIANTS.get(
+        (word_key, cefr_key, list_key, pos_key)
+    )
+    if allowed:
+        return variant_key in allowed
+    return variant_key == ""
+
+
+def is_reviewed_semantic_identity_variant(
+    word: str | None,
+    cefr: str | None,
+    list_name: str | None,
+    pos: str | None,
+    variant: str | None,
+) -> bool:
+    """Return whether a variant is an explicitly reviewed semantic split."""
+    word_key = normalize_word(word).lower()
+    cefr_key = normalize_cefr(cefr)
+    list_key = normalize_list_name(list_name, canonical=True)
+    pos_key = normalize_variant(pos).lower()
+    variant_key = normalize_variant(variant).lower()
+    allowed = REVIEWED_SEMANTIC_IDENTITY_VARIANTS.get(
+        (word_key, cefr_key, list_key, pos_key)
+    )
+    return bool(allowed and variant_key in allowed)
 
 
 def reviewed_homonym_variant(

@@ -74,13 +74,13 @@ def get_cards_with_overrides():
 
 def test_non_oxford_review_in_memory_metrics_and_scope():
     overrides = load_review_overrides(REVIEW_PATH)
-    assert len(overrides) == 382
+    assert len(overrides) == 380
 
     paths_reg = ProjectPaths(PROJECT_ROOT)
     cards = get_cards_with_overrides()
     by_guid = {card.guid: card for card in cards}
 
-    assert len(cards) == 2457
+    assert len(cards) == 2461
     assert set(overrides).issubset(by_guid)
     assert _override_guids(paths_reg.synonym_example_overrides).issubset(by_guid)
     assert _override_guids(paths_reg.antonym_example_overrides).issubset(by_guid)

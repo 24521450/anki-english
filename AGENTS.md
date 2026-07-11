@@ -70,7 +70,7 @@ Delegation gate:
 Native subagent roster:
 
 - Project-local native subagents in `.codex/agents/` currently use
-  `gpt-5.4-mini` with `model_reasoning_effort = "medium"`. Treat
+  `gpt-5.6-terra` with `model_reasoning_effort = "medium"`. Treat
   `.codex/agents/*.toml` as the source of truth if this summary drifts.
 
 - `scraper-ingestion`: Oxford/Cambridge parsers, merge, scraper audio,

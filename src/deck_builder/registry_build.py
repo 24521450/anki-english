@@ -27,6 +27,7 @@ from src.deck_builder.audit_overrides import (
 from src.deck_builder.build_metadata import (
     regenerate_tags as _regenerate_tags,
     source_label as _source_label,
+    sync_idioms_feature_tag,
 )
 from src.deck_builder.build_issues import BuildIssue, BuildValidationError
 from src.deck_builder.formatting import (
@@ -499,13 +500,14 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
                 audio_source = "Cambridge"
                 break
 
+        formatted_idioms = _format_idioms(record.get("idioms") or [])
         tags = _regenerate_tags(
             word=resolved_word,
             pos=resolved_pos,
             cefr=new_cefr,
             source1=source1,
             audio_source=audio_source,
-            has_idioms=bool(record.get("idioms")),
+            has_idioms=bool(formatted_idioms),
             oxford_lists=record.get("oxford_lists") or [],
             opal=record.get("opal"),
             awl_flag=is_in_awl,
@@ -536,7 +538,7 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
             source1=source1,
             source2="AWL" if is_in_awl else "Oxford",
             cefr=new_cefr,
-            idioms=_format_idioms(record.get("idioms") or []),
+            idioms=formatted_idioms,
             tags=tags,
             synonyms="",
             antonyms="",
@@ -639,4 +641,8 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         ])
 
     cards = apply_corpus_routing_and_tags(annotated_cards, vocab_3000, vocab_5000, vocab_awl)
+    cards = [
+        card._replace(tags=sync_idioms_feature_tag(card.tags, card.idioms))
+        for card in cards
+    ]
     return _serialize_result(cards, counters=counters)

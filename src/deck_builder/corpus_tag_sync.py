@@ -175,6 +175,8 @@ def route_deck(
     is_nursing_exception = (word_clean == 'nursing' and cefr_upper == 'B2' and 'noun' in pos_parts)
 
     if is_in_5000 or is_nursing_exception:
+        if current_deck.startswith(DECK_OXFORD_5000 + "::"):
+            return current_deck
         return DECK_OXFORD_5000
     elif is_in_3000:
         if cefr_upper == 'B2':

@@ -224,10 +224,10 @@ def test_anki_card_fix_notes_are_applied_to_generated_cards():
             ),
             "collocations": "set/lay trap|walk into a trap|be trapped in/inside sth|trap finger/coat",
         },
-        ("twist", "noun, verb", "C1"): {
-            "definition": (
-                "turn or bend sth (xoay/vặn)|unexpected change (bước ngoặt)|"
-                "bend in path or body part (khúc quanh/bong/gập)"
+            ("twist", "noun, verb", "C1"): {
+                "definition": (
+                    "turn or bend sth (xoay hoặc vặn)|unexpected change (bước ngoặt)|"
+                    "bend in path or body part (khúc quanh hoặc chỗ bong gân)"
             ),
             "example": (
                 "She gave the lid another twist and it came off.|"
@@ -456,12 +456,13 @@ def test_antonym_loop_decision_ledger_is_batched_and_complete():
     batches = Counter(r["batch"] for r in decisions)
     decision_counts = Counter(r["decision"] for r in decisions)
 
-    assert len(decisions) == 111
+    assert len(decisions) == 119
     assert len(guards) == len(set(guards))
-    assert decision_counts == {"keep_basic_negation": 96, "repair_gloss": 15}
-    assert set(batches) == {f"batch_{i:02d}" for i in range(1, 13)}
+    assert decision_counts == {"keep_basic_negation": 104, "repair_gloss": 15}
+    assert set(batches) == {f"batch_{i:02d}" for i in range(1, 13)} | {"sense_grouping_review"}
     assert all(count <= 10 for count in batches.values())
-    assert batches["batch_12"] == 1
+    assert batches["batch_12"] == 8
+    assert batches["sense_grouping_review"] == 1
 
     for row in decisions:
         if row["decision"] == "repair_gloss":
@@ -486,7 +487,7 @@ def test_antonym_loop_repairs_are_applied_to_generated_cards():
         ("partial", "adjective", "C1"): "only part of sth (một phần/không hoàn chỉnh)",
         ("partially", "adverb", "C1"): "only partly (một phần)",
         ("reluctance", "noun", "UNCLASSIFIED"): "feeling of not wanting to do sth (sự miễn cưỡng/ngần ngại)",
-        ("short-sighted", "adjective", "UNCLASSIFIED"): (
+        ("short-sighted", "adjective", "C2"): (
             "able to see only near things (cận thị)|thinking only about now (thiển cận)"
         ),
         ("unfounded", "adjective", "UNCLASSIFIED"): "lacking facts or evidence (vô căn cứ)",
@@ -499,6 +500,140 @@ def test_antonym_loop_repairs_are_applied_to_generated_cards():
         definition = _without_register_tags(cards[identity]["definition"])
         assert definition == expected_definition
         assert "antonym_loop" not in detect_loops(word, definition)
+
+
+def test_five_review_signals_are_canonical_keeps_without_content_changes():
+    cards = _cards_by_identity()
+    decisions = {
+        (row["word"], row["pos"], row["cefr"]): row
+        for row in _antonym_loop_decisions()
+    }
+    expected = {
+        ("exploitation", "noun", "C1"),
+        ("fake", "adjective", "B2"),
+        ("intolerance", "noun", "C2"),
+        ("spam", "noun", "C1"),
+        ("violation", "noun", "C1"),
+    }
+
+    for identity in expected:
+        decision = decisions[identity]
+        assert decision["decision"] == "keep_basic_negation"
+        assert decision["new_definition"] == ""
+        assert cards[identity]["definition"] == decision["old_definition"]
+
+
+def test_proposition_semantic_variant_split_is_applied():
+    rows = [
+        json.loads(line)
+        for line in PATHS.anki_notes_jsonl.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    rows = [
+        row
+        for row in rows
+        if row["word"] == "proposition" and row["cefr"] == "C1"
+    ]
+    by_guid = {row["guid"]: row for row in rows}
+
+    assert set(by_guid) == {"e/a@jzBur]", "pR0pLawF1%"}
+
+    primary = by_guid["e/a@jzBur]"]
+    assert primary["deck"] == "English Academic Vocabulary::Oxford::Oxford 5000"
+    assert primary["pos"] == "noun"
+    assert primary["definition"] == "suggested idea/plan (đề xuất)|thing to deal with (vấn đề)"
+    assert primary["example"] == (
+        "I'd like to put a business proposition to you.|"
+        "Getting a work permit in the UK is not always a simple proposition (matter)."
+    )
+
+    secondary = by_guid["pR0pLawF1%"]
+    assert secondary["deck"] == "English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses"
+    assert secondary["pos"] == "noun"
+    assert secondary["definition"] == (
+        "[politics]vote law proposal (dự luật trưng cầu)|"
+        "[formal]opinion statement (mệnh đề/luận điểm)"
+    )
+    assert secondary["example"] == (
+        "How did you vote on Proposition 8?|"
+        "Her assessment is based on the proposition that power corrupts."
+    )
+    assert "SecondarySense" in secondary["tags"].split()
+
+
+def test_awl_cefr_rescue_cards_are_applied():
+    cards = _cards_by_identity()
+    expected = {
+        ("immigrate", "verb", "C1"): (
+            "imm1GrAt3C1",
+            "come to live permanently in another country (nhập cư)",
+        ),
+        ("offset", "verb", "C2"): (
+            "offs3tC2vB",
+            "balance or reduce an opposing cost/effect (bù đắp/cân bằng)",
+        ),
+        ("percent", "adjective, adverb", "B1"): (
+            "p3rc3ntB1x",
+            "amount out of every 100 (phần trăm)",
+        ),
+        ("restrain", "verb", "C1"): (
+            "i/Mobs,`g1",
+            "control or limit sb/sth (kiềm chế, khống chế hoặc hạn chế)",
+        ),
+        ("tense", "adjective", "C1"): (
+            "tens3AdjC1",
+            "nervous, worried, and unable to relax (căng thẳng)",
+        ),
+    }
+
+    assert ("restrain", "verb", "UNCLASSIFIED") not in cards
+    for identity, (guid, definition) in expected.items():
+        row = cards[identity]
+        assert row["guid"] == guid
+        assert row["definition"] == definition
+        assert row["deck"] == "English Academic Vocabulary::AWL 50 Academic Words"
+        assert "AWL_Coxhead" in row["tags"].split()
+
+
+def test_equate_uses_the_learner_gloss_for_equating_two_things():
+    card = _cards_by_identity()[("equate", "verb", "C2")]
+
+    assert card["guid"] == "Qmol/ya1&P"
+    assert card["definition"] == (
+        "think two things are the same or equally important (đánh đồng)"
+    )
+    assert card["collocations"] == (
+        "equate A with B|equate success with money|wrongly/often equate sth with sth"
+    )
+
+
+def test_forth_keeps_only_the_two_priority_idioms():
+    card = _cards_by_identity()[("forth", "adverb", "C1")]
+
+    assert card["guid"] == "iYka_pH9Jw"
+    assert card["idioms"].split("$$") == [
+        "and so forth :: used at the end of a list to show that it continues in the same way :: "
+        "We discussed everything—when to go, what to see and so on.",
+        "back and forth :: from one place to another and back again repeatedly :: "
+        "ferries sailing back and forth between the islands",
+    ]
+    assert "from that day/time forth" not in card["idioms"]
+    assert "idioms" in card["tags"].split()
+
+
+def test_concede_groups_the_two_admit_senses():
+    card = _cards_by_identity()[("concede", "verb", "C1")]
+
+    assert card["guid"] == "C!}?S?hfm_"
+    assert card["definition"] == (
+        "admit sth / defeat (thừa nhận / chấp nhận thua)|"
+        "give up or allow sth (nhượng bộ/cho phép)"
+    )
+    assert card["example"] == (
+        "‘Not bad,’ she conceded grudgingly.<br><br>He refused to concede defeat.|"
+        "The government had been forced to concede the point."
+    )
+    assert card["example"].count("|") == 1
 
 
 def test_current_antonym_loop_candidates_are_reviewed_keeps():
@@ -514,7 +649,7 @@ def test_current_antonym_loop_candidates_are_reviewed_keeps():
         if "antonym_loop" in detect_loops(row["word"], row["definition"])
     ]
 
-    assert len(current_antonym_loop_cards) == 96
+    assert len(current_antonym_loop_cards) == 95
     for identity, row in current_antonym_loop_cards:
         decision = decisions.get(identity)
         assert decision is not None

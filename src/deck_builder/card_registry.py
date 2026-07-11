@@ -9,6 +9,8 @@ from typing import Iterable
 from src.deck_builder.build_issues import BuildIssue, BuildValidationError
 from src.deck_builder.card_identity import (
     CardIdentity,
+    is_reviewed_identity_variant_allowed,
+    is_reviewed_semantic_identity_variant,
     normalize_cefr,
     normalize_list_name,
     normalize_variant,
@@ -151,7 +153,13 @@ def validate_registry_rows(rows: list[dict]) -> list[BuildIssue]:
                     message=f"row {idx} with NO_LIST requires deck_override",
                     identity=identity,
                 ))
-        elif deck_override not in (None, ""):
+        elif deck_override not in (None, "") and not is_reviewed_semantic_identity_variant(
+            row.get("word"),
+            row.get("cefr"),
+            row.get("list"),
+            row.get("pos"),
+            row.get("variant"),
+        ):
             issues.append(BuildIssue(
                 severity="error",
                 code="unexpected_deck_override",
@@ -159,13 +167,13 @@ def validate_registry_rows(rows: list[dict]) -> list[BuildIssue]:
                 identity=identity,
             ))
 
-        expected_variant = reviewed_identity_variant(
+        if not is_reviewed_identity_variant_allowed(
             row.get("word"),
             row.get("cefr"),
             row.get("list"),
             row.get("pos"),
-        )
-        if expected_variant != identity.variant:
+            row.get("variant"),
+        ):
             issues.append(BuildIssue(
                 severity="error",
                 code="unauthorized_variant",

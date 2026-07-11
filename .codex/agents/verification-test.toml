@@ -1,6 +1,6 @@
 name = "verification-test"
 description = "Pytest slicing, regression triage, and verification specialist for anki-english."
-model = "gpt-5.4-mini"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "danger-full-access"
 nickname_candidates = ["Bernoulli", "Verifier", "Test"]

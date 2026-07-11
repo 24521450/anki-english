@@ -8,6 +8,7 @@ Exits 0 if no mismatches are found (except the accepted nursing exception),
 otherwise exits 1.
 """
 from __future__ import annotations
+import json
 import sys
 from pathlib import Path
 
@@ -28,6 +29,12 @@ from src.deck_builder.corpus_tag_sync import (
     parse_header,
 )
 from src.deck_builder.vocab_lists import parse_vocab_list as _parse_vocab_list
+
+def is_allowed_oxford_5000_deck(deck: str, tags: set[str]) -> bool:
+    if deck == DECK_OXFORD_5000:
+        return True
+    return "SecondarySense" in tags and deck.startswith(DECK_OXFORD_5000 + "::")
+
 
 def load_cards_from_file(path: Path) -> tuple[int, list[dict]]:
     """Load and parse cards from txt file, dynamically resolving tags column."""
@@ -194,9 +201,13 @@ def audit_file(
     return clean
 
 
-def audit_awl_coxhead_rules(cards: list[dict], vocab_awl: set[tuple[str, str, str]]) -> bool:
+def audit_awl_coxhead_rules(
+    cards: list[dict],
+    vocab_awl: set[tuple[str, str, str]],
+    expected_count: int,
+) -> bool:
     """Audit AWL_Coxhead contract rules:
-    1. Exactly 54 cards carry AWL_Coxhead tag.
+    1. The card count matches active AWL Card Registry identities.
     2. No headword possesses both an Oxford tag (Oxford_3000 / Oxford_5000) and AWL_Coxhead.
     3. converse|UNCLASSIFIED homonym split cards exist in AWL_Coxhead.
     4. Deck routing matches tag.
@@ -204,11 +215,14 @@ def audit_awl_coxhead_rules(cards: list[dict], vocab_awl: set[tuple[str, str, st
     print("\n=== Auditing AWL_Coxhead contract rules ===")
 
     awl_coxhead_cards = [c for c in cards if "AWL_Coxhead" in c["tags"].split()]
-    print(f"  AWL_Coxhead tag count: {len(awl_coxhead_cards)} / 54")
+    print(f"  AWL_Coxhead tag count: {len(awl_coxhead_cards)} / {expected_count}")
 
     errors = []
-    if len(awl_coxhead_cards) != 54:
-        errors.append(f"Expected exactly 54 AWL_Coxhead cards, found {len(awl_coxhead_cards)}")
+    if len(awl_coxhead_cards) != expected_count:
+        errors.append(
+            f"Expected exactly {expected_count} AWL_Coxhead cards, "
+            f"found {len(awl_coxhead_cards)}"
+        )
 
     headword_tags: dict[str, set[str]] = {}
     for c in cards:
@@ -233,7 +247,7 @@ def audit_awl_coxhead_rules(cards: list[dict], vocab_awl: set[tuple[str, str, st
         deck = c["deck"]
         if "AWL_Coxhead" in tags and deck != DECK_AWL:
             errors.append(f"Card {c['word']} has AWL_Coxhead tag but deck is '{deck}', expected '{DECK_AWL}'")
-        elif "Oxford_5000" in tags and deck != DECK_OXFORD_5000:
+        elif "Oxford_5000" in tags and not is_allowed_oxford_5000_deck(deck, tags):
             errors.append(f"Card {c['word']} has Oxford_5000 tag but deck is '{deck}', expected '{DECK_OXFORD_5000}'")
         elif "Oxford_3000" in tags:
             cefr = c["cefr"].strip().upper()
@@ -247,7 +261,10 @@ def audit_awl_coxhead_rules(cards: list[dict], vocab_awl: set[tuple[str, str, st
             print(f"    - {err}")
         return False
 
-    print("  [AWL_Coxhead] SUCCESS: All 54 AWL_Coxhead cards and routing rules verified.")
+    print(
+        f"  [AWL_Coxhead] SUCCESS: All {expected_count} AWL_Coxhead cards "
+        "and routing rules verified."
+    )
     return True
 
 
@@ -290,7 +307,7 @@ def validate_export_consistency(
     db_cards: list[dict],
     exp_cards: list[dict],
     tag_difference_guids: set[str] | None = None,
-    expected_count: int | None = 2457,
+    expected_count: int | None = 2462,
 ) -> list[str]:
     """Pure function that validates metadata consistency between database cards and export cards.
 
@@ -365,8 +382,17 @@ def main() -> int:
     _, db_cards = load_cards_from_file(paths.anki_notes_txt)
     coverage_clean = audit_target_coverage(db_cards, vocab_5000)
 
-    # 3. Audit AWL_Coxhead rules (54 cards)
-    awl_clean = audit_awl_coxhead_rules(db_cards, vocab_awl)
+    # 3. Audit AWL_Coxhead rules against the canonical Card Registry.
+    registry_rows = [
+        json.loads(line)
+        for line in paths.card_registry.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    expected_awl_count = sum(
+        row.get("status") == "active" and row.get("list") == "AWL"
+        for row in registry_rows
+    )
+    awl_clean = audit_awl_coxhead_rules(db_cards, vocab_awl, expected_awl_count)
 
     # 4. Verify database vs export snapshot consistency if export exists and not --database-only
     export_path = paths.anki_notes_txt.parent / "English Academic Vocabulary.txt"

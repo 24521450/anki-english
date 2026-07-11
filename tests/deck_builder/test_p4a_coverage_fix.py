@@ -282,6 +282,14 @@ class TestCrossCutInvariants:
             })
         # Total rows preserved
         assert len(new_txt_rows) == len(before)
+        before_defs_by_key: dict[tuple[str, str, str], list[str]] = {}
+        for row in before:
+            key = (
+                row['word'].lower(),
+                row['pos'].lower(),
+                row['cefr'].upper(),
+            )
+            before_defs_by_key.setdefault(key, []).append(row['def'])
         # All 26 target defs are the new ones
         for r in new_txt_rows:
             key = (r['word'].lower(), r['pos'].lower(), r['cefr'].upper())
@@ -291,13 +299,10 @@ class TestCrossCutInvariants:
                 )
             else:
                 # Non-target row's def must be byte-identical to original
-                orig = next(
-                    (o for o in before
-                     if (o['word'].lower(), o['pos'].lower(), o['cefr'].upper()) == key),
-                    None,
-                )
-                assert orig is not None
-                assert r['def'] == orig['def'], (
+                original_defs = before_defs_by_key.get(key)
+                assert original_defs
+                original_def = original_defs.pop(0)
+                assert r['def'] == original_def, (
                     f'apply_txt changed non-target def for {key}: '
-                    f'{orig["def"]!r} → {r["def"]!r}'
+                    f'{original_def!r} → {r["def"]!r}'
                 )

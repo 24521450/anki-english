@@ -58,7 +58,15 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def _identity_for_card(card: BuiltCard) -> CardIdentity:
+def _identity_for_card(
+    card: BuiltCard,
+    registry_by_guid: dict[str, RegistryTarget] | None = None,
+) -> CardIdentity:
+    if registry_by_guid is not None:
+        target = registry_by_guid.get(card.guid.strip())
+        if target is not None:
+            return target.identity
+
     list_name = primary_list_from_tags(card.tags, canonical=True)
     return CardIdentity(
         word=card.word.strip(),
@@ -149,9 +157,14 @@ def _validate_cards(
     issues: list[BuildIssue] = []
     seen_guids: dict[str, int] = {}
     seen_keys: dict[tuple[str, str, str, str], int] = {}
+    registry_by_guid = {
+        (target.row.get("guid") or "").strip(): target
+        for target in registry_targets
+        if (target.row.get("guid") or "").strip()
+    }
 
     for idx, card in enumerate(cards, 1):
-        identity = _identity_for_card(card)
+        identity = _identity_for_card(card, registry_by_guid)
         for field in ("guid", "notetype", "deck", "word", "pos", "cefr"):
             if not getattr(card, field).strip():
                 issues.append(BuildIssue("error", "required_field_empty", f"row {idx} field {field!r} is empty", identity=identity))
@@ -199,7 +212,7 @@ def _validate_cards(
             if card.pos != expected_pos:
                 issues.append(BuildIssue("error", "registry_pos_mismatch", f"row {idx} POS {card.pos!r} != registry {expected_pos!r}", identity=identity))
 
-    actual_order = [_identity_for_card(card).as_key() for card in cards]
+    actual_order = [_identity_for_card(card, registry_by_guid).as_key() for card in cards]
     expected_order = [target.identity.as_key() for target in registry_targets]
     if actual_order != expected_order:
         first_diff = next(

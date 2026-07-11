@@ -326,6 +326,8 @@ class TestNewRoutingAndTagContracts:
         # Oxford 5000 priority wins
         deck = route_deck("English Academic Vocabulary::Oxford", is_in_3000=True, is_in_5000=True, word="test", pos_str="noun", cefr="B2")
         assert deck == "English Academic Vocabulary::Oxford::Oxford 5000"
+        deck = route_deck("English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses", is_in_3000=False, is_in_5000=True, word="test", pos_str="noun", cefr="B2")
+        assert deck == "English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses"
 
         # Oxford 3000 + B2 -> Advanced
         deck = route_deck("English Academic Vocabulary::Oxford", is_in_3000=True, is_in_5000=False, word="test", pos_str="noun", cefr="B2")
@@ -371,8 +373,13 @@ class TestNewRoutingAndTagContracts:
             w_clean = c.word.split(' (')[0].strip().lower()
             by_word.setdefault(w_clean, []).append(c)
 
-        # 1. criterion and labor cards get AWL_Coxhead
-        assert any('AWL_Coxhead' in c.tags for c in by_word['criterion'])
+        # 1. criterion is Oxford 3000 B2; labor remains AWL_Coxhead.
+        assert any('Oxford_3000' in c.tags for c in by_word['criterion'])
+        assert all('AWL_Coxhead' not in c.tags for c in by_word['criterion'])
+        assert all(
+            c.deck == 'English Academic Vocabulary::Oxford::Oxford 3000 Advanced'
+            for c in by_word['criterion']
+        )
         assert any('AWL_Coxhead' in c.tags for c in by_word['labor'])
         for c in by_word['labor']:
             assert c.deck == 'English Academic Vocabulary::AWL 50 Academic Words'

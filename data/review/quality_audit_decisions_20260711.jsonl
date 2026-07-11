@@ -1,0 +1,17 @@
+{"issue_type":"exact_headword_in_gloss_review","guid":"obxExIEKPe","word":"abstract","decision":"keep","rationale":"The reviewed art/general grouping intentionally uses the familiar headword as a category label before a basic contrastive explanation."}
+{"issue_type":"exact_source_cefr_rescue_review","guid":"m}g1cKg({G","word":"harbour","decision":"keep","rationale":"Cambridge B1 evidence is for the noun, while this card identity is a verb."}
+{"issue_type":"multi_pos_card_review","guid":"p3rc3ntB1x","word":"percent","decision":"keep","rationale":"Adjective and adverb share one compact B1 learning unit and one sense."}
+{"issue_type":"semantic_overload_review","guid":"B7[0+R><3N","word":"disconnect","decision":"keep","rationale":"The four senses are close applications of ending a connection."}
+{"issue_type":"semantic_overload_review","guid":"ka@NZF]8Qa","word":"exclusive","decision":"keep","rationale":"The senses remain organized around restricted access or inclusion."}
+{"issue_type":"sense_grouping_review","guid":"5h{~9ioTEb","word":"amateur","decision":"keep","rationale":"Professional status and skill level remain distinct learner-facing senses."}
+{"issue_type":"sense_grouping_review","guid":"^9}nTPVuab","word":"crown","decision":"keep","rationale":"The physical headpiece and institutional royal power remain distinct."}
+{"issue_type":"sense_grouping_review","guid":"/xUiXso]~Q","word":"entitle","decision":"keep","rationale":"Granting a right and assigning a title are independent constructions."}
+{"issue_type":"sense_grouping_review","guid":"D0tq!F6I2+","word":"glory","decision":"keep","rationale":"Public honour and magnificent beauty remain distinct senses."}
+{"issue_type":"sense_grouping_review","guid":"odm-*w)do.","word":"grocery","decision":"keep","rationale":"The shop and the goods sold there are distinct uses."}
+{"issue_type":"sense_grouping_review","guid":"Hd?Kj:WO(B","word":"illusion","decision":"keep","rationale":"False belief and deceptive appearance are distinct mental and visual senses."}
+{"issue_type":"sense_grouping_review","guid":"],rh8tuEgo","word":"neutral","decision":"keep","rationale":"Non-alignment and absence of a strong quality remain distinct."}
+{"issue_type":"sense_grouping_review","guid":"Ix&&{f]Rfd","word":"query","decision":"keep","rationale":"A question and an editorial question-mark annotation remain distinct."}
+{"issue_type":"sense_grouping_review","guid":"NQD8xUt1~7","word":"seize","decision":"keep","rationale":"Forceful capture, official confiscation, and opportunity-taking remain distinct."}
+{"issue_type":"sense_grouping_review","guid":"qY[R!q3,p[","word":"tighten","decision":"keep","rationale":"The grouped physical sense and the stricter-policy sense remain independent despite sharing the first gloss token."}
+{"issue_type":"sense_grouping_review","guid":"s>o7[6qaNE","word":"tuition","decision":"keep","rationale":"Instruction and the fees charged for it remain distinct."}
+{"issue_type":"word_family_loop_review","guid":"q}27BMm.K","word":"mortality","decision":"keep","rationale":"Mortal is the clearest basic adjective for the reviewed human-finiteness sense; rewriting would reduce precision."}

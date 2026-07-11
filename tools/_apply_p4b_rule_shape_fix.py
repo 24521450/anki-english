@@ -240,7 +240,7 @@ def _apply_txt(new_gloss_by_key: dict[tuple[str, str, str], str]) -> list[str]:
     """Update TXT def cells (col 6) for the 24 target keys. Returns new lines."""
     lines = TXT_PATH.read_text(encoding='utf-8').splitlines()
     new_lines: list[str] = []
-    replaced = 0
+    replaced_keys: set[tuple[str, str, str]] = set()
     for line in lines:
         if line.startswith('#') or not line.strip():
             new_lines.append(line)
@@ -253,14 +253,15 @@ def _apply_txt(new_gloss_by_key: dict[tuple[str, str, str], str]) -> list[str]:
         pos = parts[4].strip().lower()
         cefr = parts[14].strip().upper()
         key = (word, pos, cefr)
-        if key in new_gloss_by_key:
+        if key in new_gloss_by_key and key not in replaced_keys:
             parts[6] = new_gloss_by_key[key]
             new_lines.append('\t'.join(parts))
-            replaced += 1
+            replaced_keys.add(key)
         else:
             new_lines.append(line)
-    assert replaced == len(new_gloss_by_key), (
-        f'TXT replace mismatch: replaced={replaced} expected={len(new_gloss_by_key)}'
+    assert replaced_keys == set(new_gloss_by_key), (
+        f'TXT replace mismatch: replaced={len(replaced_keys)} '
+        f'expected={len(new_gloss_by_key)}'
     )
     return new_lines
 

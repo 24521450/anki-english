@@ -26,6 +26,7 @@ from src.deck_builder.formatting import (
     format_ipa_field as _shared_format_ipa_field,
     normalize_ipa as _shared_normalize_ipa,
 )
+from src.deck_builder.build_metadata import sync_idioms_feature_tag
 
 
 # Anki note field names (per design/EAVM/{front,back}_template.txt)
@@ -183,6 +184,7 @@ def _populate_note_fields(
     # Empties drop from the inner triple; empties across the whole list → ''.
     # Per user (2026-06-20): only idioms with a CEFR level survive.
     note["Idioms"] = _format_idioms_field(record.get("idioms") or [])
+    note["Tags"] = sync_idioms_feature_tag(note["Tags"], note["Idioms"])
 
 
 def _resolve_idiom_only_card(record: dict) -> dict:
@@ -197,6 +199,7 @@ def _resolve_idiom_only_card(record: dict) -> dict:
     note["AudioUS"] = audio.get("us") or ""
     note["IPA"] = _format_ipa_field(record.get("uk_ipa"), record.get("us_ipa"))
     note["Idioms"] = _format_idioms_field(record.get("idioms") or [])
+    note["Tags"] = sync_idioms_feature_tag(note["Tags"], note["Idioms"])
     return note
 
 

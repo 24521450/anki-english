@@ -47,6 +47,14 @@ def regenerate_tags(
     return " ".join(tags)
 
 
+def sync_idioms_feature_tag(tags: str | None, idioms: str | None) -> str:
+    """Derive the idioms feature tag from the serialized learner payload."""
+    tokens = [token for token in (tags or "").split() if token != "idioms"]
+    if (idioms or "").strip():
+        tokens.append("idioms")
+    return " ".join(tokens)
+
+
 def deck_for_source(source1: str, is_awl: bool) -> str:
     if is_awl or source1 == "AWL":
         return "English Academic Vocabulary::AWL 50 Academic Words"
