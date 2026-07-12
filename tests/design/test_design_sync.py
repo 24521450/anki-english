@@ -48,3 +48,14 @@ def test_production_css_strips_preview_override_but_keeps_base_rule():
     assert "width: 100%" in production
     assert "width: 800px" not in production
     assert "@preview-only" not in production
+
+
+def test_back_reveal_animation_is_staged_without_animating_card_frame():
+    css = STYLING_TXT.read_text(encoding="utf-8")
+    assert ".word-header-back" in css
+    assert "animation: eavm-answer-reveal" in css
+    assert ".card-content-back > :not(.word-header-back)" in css
+    assert "@media (prefers-reduced-motion: reduce)" in css
+
+    container_rule = css.split(".anki-card-container {", 1)[1].split("}", 1)[0]
+    assert "animation:" not in container_rule
