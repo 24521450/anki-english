@@ -19,3 +19,7 @@ Before deleting or moving a document, search for references from `AGENTS.md`,
 Do not add execution reports by default. If a one-shot migration needs durable
 context, either fold the current terminology into `CONTEXT.md` or write an ADR
 when the decision meets the ADR bar.
+
+Completed one-shot executables do not remain in `HEAD`. Preserve the accepted
+result in canonical data and current-state regression tests; use Git history
+when the original migration implementation is needed for an audit.

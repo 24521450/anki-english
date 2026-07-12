@@ -9,7 +9,7 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
 - Install deps: `pip install -r requirements.txt` (then `python -c "import nltk; nltk.download('wordnet'); nltk.download('omw-1.4')"`)
 - Build (editable): `pip install -e .`
 - Test: `pytest` — config in `pyproject.toml [tool.pytest.ini_options]`, `testpaths = ["tests"]`, `pythonpath = ["."]`
-- Historical / environment-specific coverage is marked `historical` or `external`; run it explicitly with `pytest -m historical` or `pytest -m external`.
+- Environment-specific coverage is marked `external`; run it explicitly with `pytest -m external`.
 - Lint: not configured — match existing style, no new lint configs without asking
 
 ## Project layout
@@ -19,7 +19,7 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   - `deck_builder/` — owned by `deck-builder` rein: `.apkg` packaging, EAVM note type generation
   - `config.py` — shared config
 - `tests/` — pytest tests, mostly mirrored layout (`tests/scraper/test_x.py` ↔ `src/scraper/x.py`). Non-mirrored layout allowed for cross-cutting infra (e.g. `tests/design/test_design_sync.py`).
-- `tools/` — standalone CLI scripts and shared helpers (not part of `src/` package). Leading-underscore names (`_foo.py`) are private/inspector scripts; no-underscore names are real tools (e.g. `check_design_sync.py`, `build_notes.py`). Unsupported one-shot migrations live under `tools/archive/data_migrations/`.
+- `tools/` — maintained standalone CLIs and shared helpers (not part of the `src/` package). One-shot migrations are removed after their outputs and durable regressions become canonical; recover retired commands from Git history instead of keeping executable archives in `HEAD`.
 - `data/` — lifecycle-organized artifacts; `.cache_html/` and `*.bak` are gitignored
   - `sources/` — canonical Oxford and Cambridge scraper outputs
   - `curated/` — production audit overrides
@@ -112,11 +112,11 @@ fallback.
 
 - Smoke: `pytest tests/test_config.py tests/test_pipeline.py tests/test_schema_validation.py tests/test_drift_guard.py tests/tools/test_sync_card_registry.py`
 - Scraper: `pytest tests/scraper`
-- Deck builder core: `pytest tests/deck_builder -m "not historical and not external"`
+- Deck builder core: `pytest tests/deck_builder -m "not external"`
 - Design: `pytest tests/design`
 - Tools: `pytest tests/tools`
 - Full: `pytest`
-- Historical / external lanes are opt-in only: `pytest -m historical`, `pytest -m external`
+- External coverage is opt-in only: `pytest -m external`
 
 Use the narrowest slice that covers the changed behavior during iteration. Run
 full `pytest` before commit/release or after cross-layer changes.

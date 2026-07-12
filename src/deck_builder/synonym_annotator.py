@@ -488,6 +488,60 @@ def _apply_annotate_override(
     return list(allowed)
 
 
+def _apply_relation_channel(
+    output_text: str,
+    validation_text: str,
+    original_text: str,
+    actual_word_clean: str,
+    card: "BuiltCard",
+    specs: list[dict],
+    chunk_spec: dict | None,
+    relation_label: str,
+    override: dict | None,
+    errors: list[str],
+) -> tuple[str, list[str], bool]:
+    """Apply one synonym/antonym channel through the shared relation flow."""
+    relation_key = relation_label + "s"
+    if override is not None:
+        action = (override.get("action") or "").strip().lower()
+        if action == "skip":
+            if chunk_spec is not None and (chunk_spec.get(relation_key) or []):
+                errors.append(
+                    f"Skip action not allowed for exact sense with {relation_key} on "
+                    f"card {card.word} ({card.guid}) for example {original_text!r}"
+                )
+            return output_text, [], True
+
+        words = _apply_annotate_override(
+            override,
+            specs,
+            chunk_spec,
+            relation_label,
+            validation_text,
+            card,
+            original_text,
+            errors,
+        )
+        return override.get("annotated_example") or output_text, words, True
+
+    if chunk_spec is None:
+        return output_text, [], False
+
+    words = list(chunk_spec.get(relation_key) or [])
+    if not words:
+        return output_text, [], False
+
+    annotated = _annotate_chunk_with_words(output_text, actual_word_clean, words)
+    if annotated is None:
+        errors.append(
+            f"Unresolved auto-annotation ({relation_label}) for {card.word} "
+            f"({card.guid}) example: {original_text!r}. "
+            f"{relation_key.capitalize()} of sense: {words}. Please add a manual override."
+        )
+        return output_text, [], False
+    return annotated, words, False
+
+
 # -----------------------------------------------------------------------------
 # Card-level annotation
 # -----------------------------------------------------------------------------
@@ -517,6 +571,10 @@ def _annotate_same_sense_examples(
     specs: list[dict],
     all_syns: list[str],
     all_ants: list[str],
+    synonym_overrides: dict[str, list[dict]],
+    antonym_overrides: dict[str, list[dict]],
+    syn_used_idxs: set[int],
+    ant_used_idxs: set[int],
 ) -> tuple[str, list[str], list[str], list[str]]:
     """Annotate examples joined by HTML breaks while keeping one pipe cell."""
     annotated_parts: list[str] = []
@@ -545,47 +603,55 @@ def _annotate_same_sense_examples(
             None,
         )
 
+        syn_override = _consume_override_for_chunk(
+            synonym_overrides, card.guid, syn_used_idxs, example_clean
+        )
+        ant_override = _consume_override_for_chunk(
+            antonym_overrides, card.guid, ant_used_idxs, example_clean
+        )
+
+        validation_text = cleaned_example
+        cleaned_example, example_syns, syn_consumed = _apply_relation_channel(
+            cleaned_example,
+            validation_text,
+            original_example,
+            actual_word_clean,
+            card,
+            specs,
+            spec,
+            "synonym",
+            syn_override,
+            errors,
+        )
+        cleaned_example, example_ants, ant_consumed = _apply_relation_channel(
+            cleaned_example,
+            validation_text,
+            original_example,
+            actual_word_clean,
+            card,
+            specs,
+            spec,
+            "antonym",
+            ant_override,
+            errors,
+        )
+
         if spec is None:
-            if has_any_syns or has_any_ants:
+            unresolved_syns = has_any_syns and not syn_consumed
+            unresolved_ants = has_any_ants and not ant_consumed
+            if unresolved_syns or unresolved_ants:
                 errors.append(
                     f"Unresolved alignment for {card.word} ({card.guid}) example: "
                     f"{original_example!r}. Could not map it to any Oxford sense. "
                     "Please add a manual override."
                 )
-        else:
-            spec_syns = list(spec.get("synonyms") or [])
-            if spec_syns:
-                annotated = _annotate_chunk_with_words(
-                    cleaned_example, actual_word_clean, spec_syns
-                )
-                if annotated is None:
-                    errors.append(
-                        f"Unresolved auto-annotation (synonym) for {card.word} "
-                        f"({card.guid}) example: {original_example!r}. "
-                        f"Synonyms of sense: {spec_syns}. Please add a manual override."
-                    )
-                else:
-                    cleaned_example = annotated
-                    for word in spec_syns:
-                        if word not in syn_words:
-                            syn_words.append(word)
 
-            spec_ants = list(spec.get("antonyms") or [])
-            if spec_ants:
-                annotated = _annotate_chunk_with_words(
-                    cleaned_example, actual_word_clean, spec_ants
-                )
-                if annotated is None:
-                    errors.append(
-                        f"Unresolved auto-annotation (antonym) for {card.word} "
-                        f"({card.guid}) example: {original_example!r}. "
-                        f"Antonyms of sense: {spec_ants}. Please add a manual override."
-                    )
-                else:
-                    cleaned_example = annotated
-                    for word in spec_ants:
-                        if word not in ant_words:
-                            ant_words.append(word)
+        for word in example_syns:
+            if word not in syn_words:
+                syn_words.append(word)
+        for word in example_ants:
+            if word not in ant_words:
+                ant_words.append(word)
 
         annotated_parts.append(separator + cleaned_example)
 
@@ -643,7 +709,7 @@ def annotate_card_examples(
     syn_used_idxs: set[int] = set()
     ant_used_idxs: set[int] = set()
 
-    for chunk_idx, original_chunk in enumerate(chunks):
+    for original_chunk in chunks:
         same_sense_examples = _split_same_sense_examples(original_chunk)
         if len(same_sense_examples) > 1:
             annotated_chunk, syn_words, ant_words, chunk_errors = (
@@ -653,6 +719,10 @@ def annotate_card_examples(
                     specs,
                     all_syns,
                     all_ants,
+                    synonym_overrides,
+                    antonym_overrides,
+                    syn_used_idxs,
+                    ant_used_idxs,
                 )
             )
             annotated_chunks.append(annotated_chunk)
@@ -678,125 +748,54 @@ def annotate_card_examples(
 
         syn_words: list[str] = []
         ant_words: list[str] = []
-        syn_override_used = False
-        ant_override_used = False
-
-        # --- Synonym override path ---
         syn_override = _consume_override_for_chunk(
             synonym_overrides, card.guid, syn_used_idxs, chunk_clean
         )
-        errors_before_syn_override = len(errors)
-        if syn_override is not None:
-            syn_override_used = True
-            action = syn_override.get("action", "").strip().lower()
-            if action == "skip":
-                if chunk_spec is not None and (chunk_spec.get("synonyms") or []):
-                    errors.append(
-                        f"Skip action not allowed for exact sense with synonyms on "
-                        f"card {card.word} ({card.guid}) for example {original_chunk!r}"
-                    )
-            else:
-                syn_words = _apply_annotate_override(
-                    syn_override, specs, chunk_spec, "synonym", cleaned_chunk, card,
-                    original_chunk, errors,
-                )
-
-        # --- Antonym override path ---
         ant_override = _consume_override_for_chunk(
             antonym_overrides, card.guid, ant_used_idxs, chunk_clean
         )
-        errors_before_ant_override = len(errors)
-        if ant_override is not None:
-            ant_override_used = True
-            action = ant_override.get("action", "").strip().lower()
-            if action == "skip":
-                if chunk_spec is not None and (chunk_spec.get("antonyms") or []):
-                    errors.append(
-                        f"Skip action not allowed for exact sense with antonyms on "
-                        f"card {card.word} ({card.guid}) for example {original_chunk!r}"
-                    )
-            else:
-                ant_words = _apply_annotate_override(
-                    ant_override, specs, chunk_spec, "antonym", cleaned_chunk, card,
-                    original_chunk, errors,
-                )
-
-        # If an annotate override failed for either channel, do NOT fall back
-        # to auto-annotation on this chunk — the override already declared its
-        # intent, and a failed manual override should not silently trigger
-        # additional errors from the auto path. A skip override also suppresses
-        # auto-annotation (skip means "don't annotate", per legacy semantics).
-        syn_override_failed = (
-            syn_override is not None
-            and syn_override.get("action", "").strip().lower() == "annotate"
-            and len(errors) > errors_before_syn_override
+        validation_text = cleaned_chunk
+        cleaned_chunk, syn_words, syn_override_consumed = _apply_relation_channel(
+            cleaned_chunk,
+            validation_text,
+            original_chunk,
+            actual_word_clean,
+            card,
+            specs,
+            chunk_spec,
+            "synonym",
+            syn_override,
+            errors,
         )
-        ant_override_failed = (
-            ant_override is not None
-            and ant_override.get("action", "").strip().lower() == "annotate"
-            and len(errors) > errors_before_ant_override
+        cleaned_chunk, ant_words, ant_override_consumed = _apply_relation_channel(
+            cleaned_chunk,
+            validation_text,
+            original_chunk,
+            actual_word_clean,
+            card,
+            specs,
+            chunk_spec,
+            "antonym",
+            ant_override,
+            errors,
         )
-        # True when an override was used for this chunk (skip OR annotate).
-        # Skip = the override consumed the chunk; auto-path should not fire.
-        # Annotate (failed) = same: override already declared its intent.
-        syn_override_consumed = syn_override is not None
-        ant_override_consumed = ant_override is not None
 
-        # --- Auto path (only when no override touched either channel) ---
-        any_override_used = syn_override_used or ant_override_used
-
-        if chunk_spec is not None:
-            if not syn_words and not syn_override_failed and not syn_override_consumed:
-                spec_syns = chunk_spec.get("synonyms") or []
-                if spec_syns:
-                    auto = _annotate_chunk_with_words(cleaned_chunk, actual_word_clean, spec_syns)
-                    if auto is None:
-                        errors.append(
-                            f"Unresolved auto-annotation (synonym) for "
-                            f"{card.word} ({card.guid}) chunk: {original_chunk!r}. "
-                            f"Synonyms of sense: {spec_syns}. Please add a manual override."
-                        )
-                    else:
-                        cleaned_chunk = auto
-                        syn_words = spec_syns
-            if not ant_words and not ant_override_failed and not ant_override_consumed:
-                spec_ants = chunk_spec.get("antonyms") or []
-                if spec_ants:
-                    auto = _annotate_chunk_with_words(cleaned_chunk, actual_word_clean, spec_ants)
-                    if auto is None:
-                        errors.append(
-                            f"Unresolved auto-annotation (antonym) for "
-                            f"{card.word} ({card.guid}) chunk: {original_chunk!r}. "
-                            f"Antonyms of sense: {spec_ants}. Please add a manual override."
-                        )
-                    else:
-                        cleaned_chunk = auto
-                        ant_words = spec_ants
-        else:
+        if chunk_spec is None:
             # chunk_spec is None — chunk doesn't map to any Oxford example.
             # Per legacy semantics: report unresolved only if some spec carries
             # relations AND no override was used to suppress annotation.
             has_any_syns = any(sp and sp.get("synonyms") for sp in specs)
             has_any_ants = any(sp and sp.get("antonyms") for sp in specs)
-            if not any_override_used and (has_any_syns or has_any_ants):
+            if (
+                not syn_override_consumed
+                and not ant_override_consumed
+                and (has_any_syns or has_any_ants)
+            ):
                 errors.append(
                     f"Unresolved alignment for {card.word} ({card.guid}) chunk: "
                     f"{original_chunk!r}. Could not map chunk to any Oxford sense. "
                     f"Please add a manual override."
                 )
-
-        # If an annotate override specified an annotated_example, prefer it
-        # as the chunk text — the override has full control over the output
-        # for this chunk. Skip override just consumes the override and
-        # leaves the chunk as-is.
-        if syn_override is not None and syn_override.get("action", "").strip().lower() == "annotate":
-            override_anno = syn_override.get("annotated_example")
-            if override_anno:
-                cleaned_chunk = override_anno
-        if ant_override is not None and ant_override.get("action", "").strip().lower() == "annotate":
-            override_anno = ant_override.get("annotated_example")
-            if override_anno:
-                cleaned_chunk = override_anno
 
         annotated_chunks.append(cleaned_chunk)
         syn_metadata.append(", ".join(syn_words))

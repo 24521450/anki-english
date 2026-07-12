@@ -237,7 +237,9 @@ After `simplify_record` clusters senses by `(cefr_original, pos)`, the **review-
 
 **Implication for future tuning**: β thresholds of 0.7 (merge) and 0.3 (split) are well-calibrated — the heuristic is right that the 0.5–0.7 zone is ambiguous and needs γ. **Do NOT lower the β merge threshold to 0.5** — that would over-merge 60% of cases that γ actually splits.
 
-_Files: `src/deck_builder/gamma_llm.py` (schema + export), `src/deck_builder/beta_score.py` (β), `src/deck_builder/simplify_senses.py` (orchestrator + 3-tier fallback), `tools/_apply_gamma_verdicts.py` (apply γ overrides)._
+_Current implementation: `src/deck_builder/beta_score.py` provides β,
+`src/deck_builder/simplify_senses.py` orchestrates the fallback, and reviewed γ
+decisions live in the canonical review inputs._
 
 ### Gloss pipeline
 
@@ -255,17 +257,9 @@ _Avoid_: short def, mini definition, paraphrase
 A single M3 (the agent itself, not an external LLM HTTP call) decision for one job. Schema: `(gloss, separator, count, rule_applied)` where separator ∈ `{none, '|', ';'}`, count = number of chunks, rule_applied ∈ `VALID_RULE_CODES` (9 granular codes: `rule_b_pick1`, `rule_b_pick2`, `rule_b_pick2_addendum`, `2sense_samedomain`, `2sense_distinct`, `concrete_1sense`, `multi_pos_pick1`, `multi_pos_pick2`, `safety_net`). Schema stored in `GlossVerdict` dataclass in `src/deck_builder/gloss_llm.py`.
 _Avoid_: gloss decision, gloss entry
 
-**M3 Rerun**:
-The batch script (`tools/_m3_rerun_v2.py`) that re-generates M3 verdicts for the 889 cards whose `def` field changed format after the `|` encoding fix. Re-reads jobs from `data/simplify_diff/gloss_jobs.jsonl` (2,477 jobs total, 889 need re-run), looks up verdict in `M3_VERDICTS` dict, runs validation gate, writes passing verdicts to `data/simplify_diff/gloss_rerun_verdicts.json` and violations to `data/simplify_diff/gloss_rerun_violations.json`. **Critical:** new verdicts must be appended at END of dict (Python dict literal last-wins).
-_Avoid_: regenerate verdicts, gloss rebuild
-
 **Gloss Validation Gate**:
-The auto-detectable structural check in `validate_verdict(word, gloss, separator, count)` in `src/deck_builder/gloss_llm.py`. Returns `list[str]` of violations (empty = pass, never raises). **As of P5D (2026-06-22)**, the gate enforces 2 rules: (1) separator/count/content consistency (incl. empty-chunk detection), (2) headword in any chunk (catches self-ref + leak + morphological variants). The word-count limits (total 1-6, per-chunk 1-3/1-4/1-6) were **removed** — human-filled glosses are trusted over arbitrary numeric length caps. `no-gloss` decision bypasses all checks. Defense-in-depth: called from 3 sites (M3 rerun, apply-to-txt, `__post_init__`).
+The auto-detectable structural check in `validate_verdict(word, gloss, separator, count)` in `src/deck_builder/gloss_llm.py`. Returns `list[str]` of violations (empty = pass, never raises). **As of P5D (2026-06-22)**, the gate enforces 2 rules: (1) separator/count/content consistency (incl. empty-chunk detection), (2) headword in any chunk (catches self-ref + leak + morphological variants). The word-count limits (total 1-6, per-chunk 1-3/1-4/1-6) were **removed** — human-filled glosses are trusted over arbitrary numeric length caps. `no-gloss` decision bypasses all checks. Current import and release verification call the maintained validator directly.
 _Avoid_: gate, validator, gloss checker
-
-**Apply-Step Skip**:
-A defense-in-depth behavior in `_apply_glosses_to_txt.py`: when a verdict fails the gate at apply time, the corresponding card keeps its original Oxford def instead of the bad gloss. Stops bad data from being written. Outputs `Skipped N verdicts due to gate violations` summary. Distinct from "Skip Rule" in merge layer (which is about records, not verdicts).
-_Avoid_: apply skip, gate skip
 
 **Sense Drop Invariant**:
 When the gloss for a card has fewer chunks than the example set (e.g. gloss has 2 chunks because M3 dropped sense 3 as a sub-nuance), the template's `def[i]` ↔ `ex[i]` pairing **drops the extra examples silently**. So 2-chunk gloss + 3-chunk ex → card shows 2 sense rows; the 3rd example is dropped, NOT orphaned. The reverse (more gloss chunks than ex) is a bug — gate does not catch this; verified manually. **Pairing invariant: `gloss_count == ex_count` per card.** If mismatched, fix by re-deciding the gloss (drop or extend to match ex).
@@ -306,7 +300,7 @@ A `Gloss Verdict` must have a separator/chunk shape consistent with its `rule_ap
 | `2sense_samedomain` | one chunk allowed when Rule A collapses near-synonyms; otherwise `;` or `|` may be justified by review |
 | `pos_aware_gloss` | policy review (one chunk may be intentional, see P4B addendum) |
 
-A `rule_b_pick2` verdict with a single-chunk gloss is a **rule-shape contradiction** — the rule says "pick 2" but the gloss has only 1. Caught and fixed by P4B (`tools/_apply_p4b_rule_shape_fix.py`). The reverse — many `def_before` segments collapsing to one gloss — is **not** automatically a bug: Rule A allows near-synonym collapse, Rule B allows same-concept collapse, Rule C forces retention. Use `tools/_audit_gloss_policy_coverage.py` to classify rows into `allowed_single_gloss` / `rule_shape_contradiction` / `policy_review` / `metadata_error` buckets.
+A `rule_b_pick2` verdict with a single-chunk gloss is a **rule-shape contradiction** — the rule says "pick 2" but the gloss has only 1. The reverse — many `def_before` segments collapsing to one gloss — is **not** automatically a bug: Rule A allows near-synonym collapse, Rule B allows same-concept collapse, Rule C forces retention. Current canonical inputs and build validation preserve the reviewed rule shape; retired phase commands remain available through Git history.
 _Avoid_: rule-shape mismatch, "1-chunk with multi-def def_before is a bug" (it isn't always — see Rule A/B/C).
 
 **Precision Phrase**:
@@ -322,7 +316,9 @@ When NOT to use:
 - The def_before is a single concrete sense with no type-narrowing risk.
 - The headword is C1+ academic vocabulary where learners benefit from the compact single-word form.
 
-`precision_phrase` is a first-class rule code in `VALID_RULE_CODES`. The audit policy tool classifies it as `allowed_single_gloss` (one-chunk allowed). The P5 Precision Phrase Ledger (`data/gloss_precision_phrase_p5.jsonl`) was a historical review artifact; it is no longer tracked or consumed by the current build.
+`precision_phrase` is a first-class rule code in `VALID_RULE_CODES` and allows
+one chunk. The P5 Precision Phrase Ledger was a historical review artifact; its
+accepted output is materialized in canonical curated data.
 
 Schema:
 ```json
@@ -495,7 +491,7 @@ Decisions:
 - `keep_single` — current single-gloss reviewed as covering all major academic meaning; no audit change. The ledger row is the only artifact of the review.
 - `repair_gloss` — current gloss has a clear semantic loss (multi-POS drops a POS, def_before shows a domain the gloss can't suggest, gloss is too narrow or drift). Updates audit + TXT + JSONL via `tools/build_notes.py`.
 
-The audit policy tool (`tools/_audit_gloss_policy_coverage.py`) reads the ledger and splits `policy_review` into three sub-buckets:
+The retired P4C audit classified `policy_review` into three sub-buckets:
 - `policy_review_open` — policy_review rows with no ledger row (untriaged). Hard fail (exit 1).
 - `policy_review_reviewed_keep` — ledger has a `keep_single` decision. Informational.
 - `policy_review_repaired` — ledger has a `repair_gloss` decision and the audit row reflects it. Informational.
@@ -509,7 +505,10 @@ _Avoid_: putting review metadata into `data/curated/deck_audit.jsonl` (the audit
 A common bug: declaring `|` in the verdict but writing `;` in the gloss content. The validation gate catches this as `separator_mismatch`.
 
 **M3** (Gloss Verdict author):
-The agent itself (mavis), reasoning as an English lexicographer to produce glosses for a batch of jobs. M3 reads jobs from `data/simplify_diff/gloss_jobs_to_rerun.jsonl`, decides glosses based on the prompt rules, and writes them into `M3_VERDICTS` dict in `tools/_m3_rerun_v2.py`. **M3 is the same agent for all gloss work** — no external LLM HTTP call. Output cached by `cluster_hash` so re-runs are free. (Same M3 also acts as γ-judge in 3-tier sense-merging — see above.)
+The agent itself, reasoning as an English lexicographer to produce reviewed
+glosses. Accepted decisions are stored in canonical curated/review inputs; the
+one-shot batch executable and intermediate jobs are retained only in Git
+history. The same role also acts as γ-judge in three-tier sense merging.
 _Avoid_: LLM judge, gloss generator
 
 ### Design system structure

@@ -138,6 +138,43 @@ def test_annotate_card_examples_supports_double_break_within_one_sense():
     assert ant_meta == ""
 
 
+def test_double_break_group_consumes_skip_override_for_unmapped_example():
+    card = _card(
+        guid='"j>(#&<;AW0"',
+        word="sterile",
+        pos="adjective",
+        cefr="UNCLASSIFIED",
+        example="sterile soil<br><br>a sterile debate",
+    )
+    specs = [
+        {
+            "text": "a sterile debate",
+            "synonyms": ["fruitless"],
+            "antonyms": [],
+        }
+    ]
+    overrides = {
+        card.guid: [{
+            "guid": card.guid,
+            "word": "sterile",
+            "pos": "adjective",
+            "cefr": "UNCLASSIFIED",
+            "original_example": "sterile soil",
+            "action": "skip",
+            "reason": "custom learner example",
+        }]
+    }
+
+    annotated, syn_meta, ant_meta, errors = annotate_card_examples(
+        card, specs, overrides, {}
+    )
+
+    assert not errors
+    assert annotated == "sterile soil<br><br>a sterile (fruitless) debate"
+    assert syn_meta == "fruitless"
+    assert ant_meta == ""
+
+
 def test_annotate_card_examples_unmapped_without_override():
     card = _card(
         word="delve", pos="verb", cefr="UNCLASSIFIED",
@@ -594,7 +631,7 @@ def test_production_overrides_loaded_and_used_once():
     )
 
     res = build_notes(paths)
-    assert res.built_cards_count == 2457
+    assert res.built_cards_count == 2461
 
     # Every built card has synonyms and antonyms fields (possibly empty strings).
     for c in res.built_cards:

@@ -10,17 +10,10 @@ Locks in the 4 mechanical rules:
 Plus: change-detection flags (``unescaped_pipe``, ``pipe_spacing_compacted``)
 and the free-form ``compact_pipe_in_text`` helper for TXT cells.
 """
-import json
-
-import pytest
-
 from src.deck_builder.gloss_hygiene import (
     normalize_gloss,
     compact_pipe_in_text,
-    HygieneResult,
 )
-from tools.archive.data_migrations._check_gloss_hygiene import check_audit
-from tools.archive.data_migrations._merge_expanded_glosses import merge
 
 
 class TestUnescapePipe:
@@ -237,77 +230,3 @@ class TestCompactPipeInText:
         new, changed = compact_pipe_in_text(None)
         assert new is None or new == ""
         assert changed is False
-
-
-def _audit_row(word, gloss, pos="noun", cefr="B2"):
-    res = normalize_gloss(gloss)
-    return {
-        "word": word,
-        "pos": pos,
-        "cefr": cefr,
-        "def_before": "source definition",
-        "gloss_after": res.gloss,
-        "separator": res.separator,
-        "rule_applied": "test",
-        "gloss_word_count": res.gloss_word_count,
-        "gate_status": "pass",
-        "source": "test",
-        "fix_status": "test",
-    }
-
-
-class TestCheckerDebtReport:
-    """The checker reports all validator/style debt, not only total word count."""
-
-    def test_reports_validator_and_pos_label_debt(self, tmp_path):
-        path = tmp_path / "audit.jsonl"
-        rows = [
-            _audit_row("navigate", "find or plan a route|handle a complex situation", pos="verb"),
-            _audit_row("domain", "internet domain name"),
-            _audit_row("generic", "general", pos="adjective"),
-            _audit_row("abuse", "noun: wrong use|verb: treat badly"),
-        ]
-        path.write_text(
-            "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows),
-            encoding="utf-8",
-        )
-
-        result = check_audit(path)
-
-        assert result["hard"] == {}
-        debt = result["debt"]
-        # P5D (2026-06-22) removed word-count limits from `validate_verdict`,
-        # so `gloss_too_long` (from `word_count_out_of_range`) and
-        # `chunk_word_count` (from per-chunk `> max=N` violations) no longer
-        # appear in the debt report. The 3 remaining debt categories are
-        # the structural + semantic checks that survived the limit removal.
-        assert "gloss_too_long" not in debt
-        assert "chunk_word_count" not in debt
-        assert len(debt["headword_in_definition"]) == 1
-        assert len(debt["morphological_variant"]) == 1
-        assert len(debt["pos_label_candidate"]) == 1
-
-
-class TestMergeExpandedGlosses:
-    """The merge tool must not update ambiguous duplicate-key master rows."""
-
-    def test_multi_match_is_skipped_and_reported(self):
-        expanded = [{
-            "word": "duplicate",
-            "pos": "noun",
-            "cefr": "C1",
-            "def_before": "source definition",
-            "gloss_after": "new gloss",
-            "gate_status": "pass",
-        }]
-        master = [
-            _audit_row("duplicate", "old one", cefr="C1"),
-            _audit_row("duplicate", "old two", cefr="C1"),
-        ]
-
-        updated, stats = merge(expanded, master)
-
-        assert stats["multi_match"] == 1
-        assert stats["updated"] == 0
-        assert updated[0]["gloss_after"] == "old one"
-        assert updated[1]["gloss_after"] == "old two"

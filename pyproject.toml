@@ -19,6 +19,9 @@ dependencies = [
     "aiohttp>=3.13.3",
 ]
 
+[project.scripts]
+anki-english = "src.pipeline:main"
+
 [project.optional-dependencies]
 test = ["pytest>=9.0.3"]
 
@@ -32,7 +35,6 @@ minversion = "7.0"
 testpaths = ["tests"]
 addopts = "-ra -q"
 markers = [
-    "historical: archive-only regression tests kept out of the default suite",
     "external: tests that require non-repo inputs or environment-specific fixtures",
 ]
 # Add the project root to sys.path so `from src.config import ...` works

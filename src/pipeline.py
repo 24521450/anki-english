@@ -33,19 +33,14 @@ def run_scrape(dry_run: bool) -> int:
         print("[dry-run] scrape: Would parse HTML cache and merge Oxford records.", file=sys.stderr)
         return 0
         
-    # Import and call tools._run_full_cache
-    orig_argv = sys.argv
-    try:
-        sys.argv = [orig_argv[0]]
-        # We always rebuild both Oxford and Cambridge in the pipeline
-        from tools._run_full_cache import main as run_full_cache
-        return run_full_cache()
-    finally:
-        sys.argv = orig_argv
+    from src.scraper.rebuild_command import main as run_full_cache
+
+    # The production pipeline always rebuilds both Oxford and Cambridge.
+    return run_full_cache([])
 
 def run_build(dry_run: bool) -> int:
     print("=== Pipeline: Running build stage ===", file=sys.stderr)
-    from tools.build_notes import main as run_build_notes
+    from src.deck_builder.build_command import main as run_build_notes
     argv = ["--dry-run"] if dry_run else []
     return run_build_notes(argv)
 
@@ -81,7 +76,7 @@ def run_validate(dry_run: bool) -> int:
 
 def run_deck(dry_run: bool) -> int:
     print("=== Pipeline: Running deck stage ===", file=sys.stderr)
-    from update_anki_deck import main as run_update_anki_deck
+    from src.deck_builder.package_command import main as run_update_anki_deck
     argv = ["--dry-run"] if dry_run else []
     return run_update_anki_deck(argv)
 

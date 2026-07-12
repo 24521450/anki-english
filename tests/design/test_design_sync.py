@@ -16,6 +16,7 @@ from tools.check_design_sync import (
     extract_region2,
     normalize_css,
 )
+from src.design_css import derive_production_css
 
 def test_design_is_in_sync():
     """Assert design/index.html (vùng 2 CSS) and design/EAVM/styling.txt are in sync."""
@@ -33,3 +34,17 @@ def test_design_is_in_sync():
         "Design drift detected between design/index.html (vùng 2) and design/EAVM/styling.txt! "
         "Run 'python -m tools.check_design_sync' to see the detailed diff."
     )
+
+
+def test_production_css_strips_preview_override_but_keeps_base_rule():
+    css = """
+    .card { width: 100%; }
+    /* @preview-only */
+    .card { width: 800px; }
+    """
+
+    production = derive_production_css(css)
+
+    assert "width: 100%" in production
+    assert "width: 800px" not in production
+    assert "@preview-only" not in production

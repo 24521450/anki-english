@@ -11,7 +11,7 @@ paths = ProjectPaths()
 PROJECT_ROOT = paths.root
 sys.path.insert(0, str(PROJECT_ROOT))
 
-import update_anki_deck
+from src.deck_builder import package_command as update_anki_deck
 
 def test_generate_deterministic_id():
     name = "Test Deck"
@@ -20,6 +20,14 @@ def test_generate_deterministic_id():
     assert 1 <= deck_id <= 2**31 - 1
     # Check stable across runs
     assert deck_id == update_anki_deck.generate_deterministic_id(name)
+
+
+def test_eavm_model_identity_matches_existing_anki_note_type():
+    assert update_anki_deck.EAVM_MODEL_NAME == "English Academic Vocabulary Model"
+    assert update_anki_deck.EAVM_MODEL_ID == 1607392819
+    assert update_anki_deck.EAVM_MODEL_ID != update_anki_deck.generate_deterministic_id(
+        update_anki_deck.EAVM_MODEL_NAME
+    )
 
 def test_extract_audio_filename():
     assert update_anki_deck.extract_audio_filename("[sound:hello.mp3]") == "hello.mp3"
@@ -72,9 +80,7 @@ def test_update_anki_deck_success(tmp_path, monkeypatch):
     monkeypatch.setattr(update_anki_deck, "AUDIO_DIR", audio_dir)
     monkeypatch.setattr(update_anki_deck, "OUTPUT_APKG", output_apkg)
 
-    # Monkeypatch design sync check to always succeed
-    import tools.check_design_sync
-    monkeypatch.setattr(tools.check_design_sync, "main", lambda: 0)
+    monkeypatch.setattr(update_anki_deck, "check_design_sync", lambda: True)
 
     # Run deck generator
     exit_code = update_anki_deck.main([])
@@ -118,9 +124,7 @@ def test_update_anki_deck_missing_guid(tmp_path, monkeypatch):
     monkeypatch.setattr(update_anki_deck, "AUDIO_DIR", tmp_path / "audio")
     monkeypatch.setattr(update_anki_deck, "OUTPUT_APKG", tmp_path / "output_deck.apkg")
 
-    # Monkeypatch design sync
-    import tools.check_design_sync
-    monkeypatch.setattr(tools.check_design_sync, "main", lambda: 0)
+    monkeypatch.setattr(update_anki_deck, "check_design_sync", lambda: True)
 
     exit_code = update_anki_deck.main([])
     assert exit_code != 0
@@ -162,9 +166,7 @@ def test_update_anki_deck_malformed_audio(tmp_path, monkeypatch):
     monkeypatch.setattr(update_anki_deck, "AUDIO_DIR", tmp_path / "audio")
     monkeypatch.setattr(update_anki_deck, "OUTPUT_APKG", tmp_path / "output_deck.apkg")
 
-    # Monkeypatch design sync
-    import tools.check_design_sync
-    monkeypatch.setattr(tools.check_design_sync, "main", lambda: 0)
+    monkeypatch.setattr(update_anki_deck, "check_design_sync", lambda: True)
 
     exit_code = update_anki_deck.main([])
     assert exit_code != 0
@@ -209,9 +211,7 @@ def test_update_anki_deck_missing_audio(tmp_path, monkeypatch):
     monkeypatch.setattr(update_anki_deck, "AUDIO_DIR", audio_dir)
     monkeypatch.setattr(update_anki_deck, "OUTPUT_APKG", tmp_path / "output_deck.apkg")
 
-    # Monkeypatch design sync
-    import tools.check_design_sync
-    monkeypatch.setattr(tools.check_design_sync, "main", lambda: 0)
+    monkeypatch.setattr(update_anki_deck, "check_design_sync", lambda: True)
 
     exit_code = update_anki_deck.main([])
     assert exit_code != 0
@@ -251,9 +251,7 @@ def test_update_anki_deck_multiple_subdecks(tmp_path, monkeypatch):
     monkeypatch.setattr(update_anki_deck, "AUDIO_DIR", tmp_path / "audio")
     monkeypatch.setattr(update_anki_deck, "OUTPUT_APKG", tmp_path / "output_deck.apkg")
 
-    # Monkeypatch design sync
-    import tools.check_design_sync
-    monkeypatch.setattr(tools.check_design_sync, "main", lambda: 0)
+    monkeypatch.setattr(update_anki_deck, "check_design_sync", lambda: True)
 
     # We want to intercept the decks and check if both exist
     original_deck_init = genanki.Deck.__init__
@@ -313,9 +311,7 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
     monkeypatch.setattr(update_anki_deck, "AUDIO_DIR", audio_dir)
     monkeypatch.setattr(update_anki_deck, "OUTPUT_APKG", tmp_path / "output_deck.apkg")
 
-    # Monkeypatch design sync
-    import tools.check_design_sync
-    monkeypatch.setattr(tools.check_design_sync, "main", lambda: 0)
+    monkeypatch.setattr(update_anki_deck, "check_design_sync", lambda: True)
 
     # Intercept Note creation
     notes_created = []
@@ -336,41 +332,24 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
     assert len(notes_created) == 1
     created = notes_created[0]
     
-    # Assert fields in order (14-field model: 12 base + Synonyms + Antonyms):
-    # 0: Word ("conquer")
-    # 1: CEFRLevel ("C1")
-    # 2: PartOfSpeech ("verb")
-    # 3: Definition ("take control by force|overcome")
-    # 4: Example ("to conquer the world")
-    # 5: IPA ("/ˈkɒŋkə(r)/")
-    # 6: AudioUK ("[sound:uk_conquer.mp3]")
-    # 7: AudioUS ("[sound:us_conquer.mp3]")
-    # 8: Tags ("C1 verb academic")
-    # 9: Collocations ("colloc")
-    # 10: WordFamily ("family")
-    # 11: Idioms ("idiom")
-    # 12: Synonyms ("" when missing)
-    # 13: Antonyms ("" when missing)
-    assert created["fields"] == [
-        "conquer",
-        "C1",
-        "verb",
+    assert created["fields"][0:2] == ["conquer", "verb"]
+    assert created["fields"][2] == "/ˈkɒŋkə(r)/"
+    assert created["fields"][3:7] == [
         "take control by force|overcome",
         "to conquer the world",
-        "/ˈkɒŋkə(r)/",
-        "[sound:uk_conquer.mp3]",
-        "[sound:us_conquer.mp3]",
-        "C1 verb academic",
         "colloc",
         "family",
+    ]
+    assert created["fields"][7:15] == [
+        "[sound:uk_conquer.mp3]",
+        "[sound:us_conquer.mp3]",
+        "",
+        "",
+        "C1",
         "idiom",
         "",
         "",
     ]
-    
-    # Assert guid is preserved
     assert created["guid"] == "test_guid_12345"
-    
-    # Assert tags are parsed into list
     assert created["tags"] == ["C1", "verb", "academic"]
 

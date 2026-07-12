@@ -25,12 +25,11 @@
   margin: 0;
   padding: 0;
 }
-/* @preview-only — preview tile is fixed 800px; production uses 100% (fluid in max 800px) */
 .anki-card-container {
   background: #141313;
   border-radius: 20px;
   max-width: 800px;
-  width: 800px;
+  width: 100%;
   margin: 0 auto;
   overflow: hidden;
   border: 1px solid #2a2929;
@@ -110,12 +109,11 @@
 }
 
 /* ── Front card ── */
-/* @preview-only — preview min-height 220px; production uses 240px */
 .card-content-front {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 220px;
+  min-height: 240px;
   padding: 40px;
 }
 

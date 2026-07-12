@@ -2,6 +2,12 @@
 
 **Applied:** 2026-06-18
 
+> **Historical implementation note (2026-07-12):** this ADR intentionally
+> preserves the names of one-shot phase commands that existed when the decision
+> was applied. Those executables were retired from `HEAD` after their accepted
+> outputs became canonical curated/review data. Recover them from Git history
+> only when auditing the original migration.
+
 ## Context
 
 The gloss layer in the Anki deck shows 2-6 word learner-friendly paraphrases of

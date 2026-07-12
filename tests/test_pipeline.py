@@ -1,11 +1,25 @@
 import sys
 from pathlib import Path
 import pytest
+import src.pipeline as pipeline
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.pipeline import resolve_stages, ALL_STAGES, DEFAULT_STAGES, main
+
+
+def test_scrape_stage_calls_packaged_command_without_mutating_argv(monkeypatch):
+    calls = []
+    original_argv = list(sys.argv)
+    monkeypatch.setattr(
+        "src.scraper.rebuild_command.main",
+        lambda argv: calls.append(argv) or 0,
+    )
+
+    assert pipeline.run_scrape(False) == 0
+    assert calls == [[]]
+    assert sys.argv == original_argv
 
 def test_resolve_stages_default():
     # If no stage or flags, run default pipeline: build -> validate -> deck

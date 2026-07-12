@@ -32,7 +32,11 @@ class AudioGateReport:
 def _audio_names(audio_dir: Path) -> set[str]:
     if not audio_dir.exists():
         return set()
-    return {path.name for path in audio_dir.iterdir() if path.is_file() and path.suffix.lower() == ".mp3"}
+    return {
+        path.name
+        for path in audio_dir.iterdir()
+        if path.is_file() and path.name.lower().endswith(".mp3")
+    }
 
 
 def tracked_audio_names_from_git(audio_dir: Path) -> set[str] | None:
@@ -132,6 +136,15 @@ def validate_audio_gate(
             f"deprecated TTS audio file still exists on disk: {name!r}",
             source=audio_dir / name,
         ))
+
+    if tracked_audio_names is not None:
+        for name in sorted(tracked_audio_names - set(refs)):
+            issues.append(BuildIssue(
+                "error",
+                "audio_unreferenced_tracked_file",
+                f"tracked audio file {name!r} is not referenced by the canonical build",
+                source=audio_dir / name,
+            ))
 
     return AudioGateReport(
         issues=tuple(issues),

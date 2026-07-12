@@ -51,6 +51,26 @@ def test_validate_audio_gate_rejects_untracked_audio(tmp_path: Path):
     assert any(issue.code == "audio_referenced_but_untracked" for issue in report.issues)
 
 
+def test_validate_audio_gate_rejects_tracked_unreferenced_audio(tmp_path: Path):
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    (audio_dir / "oxford_uk_used.mp3").write_bytes(b"used")
+    (audio_dir / "oxford_uk_orphan.mp3").write_bytes(b"orphan")
+
+    report = validate_audio_gate(
+        [_card("[sound:oxford_uk_used.mp3]")],
+        audio_dir,
+        {"oxford_uk_used.mp3", "oxford_uk_orphan.mp3"},
+    )
+
+    orphan_issues = [
+        issue for issue in report.issues
+        if issue.code == "audio_unreferenced_tracked_file"
+    ]
+    assert len(orphan_issues) == 1
+    assert orphan_issues[0].source == audio_dir / "oxford_uk_orphan.mp3"
+
+
 def test_validate_audio_gate_rejects_case_mismatch(tmp_path: Path):
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()

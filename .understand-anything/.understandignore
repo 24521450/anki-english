@@ -5,8 +5,7 @@ audio/
 *.bak
 *.bak*
 
-# Historical one-shot tools and generated caches
-tools/archive/
+# Generated caches
 **/__pycache__/
 .pytest_cache/
 

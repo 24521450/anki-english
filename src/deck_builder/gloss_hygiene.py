@@ -14,10 +14,9 @@ Per user plan (2026-06-21, "P0 Gloss Hygiene Cleanup"):
        ``len(re.sub(r"[|;]", " ", gloss).split())``
      (mirror of ``src.deck_builder.gloss_llm.validate_verdict`` word-count formula).
 
-This module is the single source of truth — both the apply tool
-(``tools/_apply_gloss_hygiene.py``) and the merge tool
-(``tools/archive/data_migrations/_merge_expanded_glosses.py``) use these helpers, so future edits
-can't drift again.
+This module is the maintained source of truth used by current validation and
+release verification. Historical one-shot applicators were retired after their
+outputs became canonical inputs.
 """
 from __future__ import annotations
 

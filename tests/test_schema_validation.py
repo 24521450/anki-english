@@ -102,21 +102,6 @@ def test_oxford_full_jsonl_does_not_exist():
     )
 
 
-def test_inspect_phrasal_files_uses_merged_source():
-    """The deprecated phrasal-files inspector must read oxford.jsonl,
-    not the removed oxford_full.jsonl. It uses `fname in source_files` to
-    find the phrasal-verb record; merged records preserve source_files list."""
-    from pathlib import Path
-    inspector = (PROJECT_ROOT / "tools" / "_inspect_phrasal_files.py").read_text(encoding="utf-8")
-    assert "oxford_full.jsonl" not in inspector, (
-        "tools/_inspect_phrasal_files.py still references oxford_full.jsonl (removed in v3.1). "
-        "Update it to read oxford.jsonl."
-    )
-    assert "oxford.jsonl" in inspector, (
-        "tools/_inspect_phrasal_files.py must read oxford.jsonl after v3.1 cleanup."
-    )
-
-
 def test_check_determinism_tool_exists_and_reads_merged():
     """tools/_check_determinism.py must exist and reference oxford.jsonl
     (replaces the v3.0 --oxford-only flag SHA-256 check that was tied to the

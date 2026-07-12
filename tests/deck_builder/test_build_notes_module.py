@@ -13,6 +13,7 @@ from src.deck_builder.build_support import (
     resolve_primary_record,
 )
 import tools.build_notes
+from src.deck_builder import build_command
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -160,12 +161,12 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
     out_jsonl = tmp_path / "anki_notes.jsonl"
     out_txt = tmp_path / "anki_notes.txt"
 
-    monkeypatch.setattr(tools.build_notes, "paths_registry", ProjectPaths(tmp_path))
-    monkeypatch.setattr(tools.build_notes, "OXFORD_3000_MD", paths.oxford_3000_md)
-    monkeypatch.setattr(tools.build_notes, "OXFORD_5000_MD", paths.oxford_5000_md)
-    monkeypatch.setattr(tools.build_notes, "AWL_MD", paths.awl_md)
-    monkeypatch.setattr(tools.build_notes, "AUDIT_JSONL_PATH", paths.deck_audit_jsonl_path)
-    monkeypatch.setattr(tools.build_notes, "AUDIO_DIR", paths.audio_dir)
+    monkeypatch.setattr(build_command, "paths_registry", ProjectPaths(tmp_path))
+    monkeypatch.setattr(build_command, "OXFORD_3000_MD", paths.oxford_3000_md)
+    monkeypatch.setattr(build_command, "OXFORD_5000_MD", paths.oxford_5000_md)
+    monkeypatch.setattr(build_command, "AWL_MD", paths.awl_md)
+    monkeypatch.setattr(build_command, "AUDIT_JSONL_PATH", paths.deck_audit_jsonl_path)
+    monkeypatch.setattr(build_command, "AUDIO_DIR", paths.audio_dir)
     monkeypatch.setattr(sys, "argv", [
         "build_notes.py",
         "--dry-run",

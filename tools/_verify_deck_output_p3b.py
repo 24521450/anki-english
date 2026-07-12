@@ -1,11 +1,8 @@
 """P3B Final Deck Output QA Verifier.
 
-Card Identity contract (2026-06-21): a card is uniquely identified by
-`(Word, CEFRLevel, LIST)`. `LIST` is the primary corpus/list bucket
-resolved from the card's tags via `primary_list_from_tags`. Hard
-duplicate check uses the triple; the legacy `(Word, CEFR)` only check
-is reported as informational because list-aware splits (e.g. `firm`
-on Oxford_3000 vs Oxford_5000 at the same CEFR) are now legitimate.
+Core artifact, Card Identity, registry coverage, order, and card-count
+validation belong to ``src.deck_builder.build_validation``. P3B adds
+legacy audit/gloss checks without reimplementing registry contracts.
 """
 from __future__ import annotations
 
@@ -19,10 +16,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import ProjectPaths
-from src.deck_builder.card_identity import (
-    LIST_PRIORITY as SHARED_LIST_PRIORITY,
-    primary_list_from_tags as shared_primary_list_from_tags,
-)
 from src.deck_builder.build_validation import validate_artifact_paths
 from src.deck_builder.sense_labels import parse_existing_prefix
 
@@ -35,48 +28,6 @@ paths = ProjectPaths(PROJECT_ROOT)
 DECK_TXT = paths.anki_notes_txt
 DECK_JSONL = paths.anki_notes_jsonl
 MASTER_AUDIT = paths.deck_audit_jsonl
-
-# Primary list priority — highest first. Used by primary_list_from_tags
-# to collapse a tag set (which may carry multiple corpus list tags) into
-# the single LIST bucket that participates in Card Identity.
-LIST_PRIORITY = ("Oxford_5000", "Oxford_3000", "AWL_Coxhead")
-
-# Explicitly reviewed exception to the default one-card-per-list identity rule.
-# The two Oxford homonyms have different stress, meanings, and audio.
-REVIEWED_IDENTITY_SPLITS = {
-    ("converse", "UNCLASSIFIED", "AWL_Coxhead"): frozenset({
-        "verb",
-        "adjective, noun",
-    }),
-    ("trail", "C1", "Oxford_5000"): frozenset({"noun", "verb"}),
-    ("bow", "C1", "Oxford_5000"): frozenset({"noun, verb", "noun"}),
-    ("hint", "C1", "Oxford_5000"): frozenset({"noun", "verb"}),
-    ("rally", "C1", "Oxford_5000"): frozenset({"noun", "verb"}),
-}
-
-
-def primary_list_from_tags(tags: str) -> str:
-    """Resolve the primary LIST bucket from a tags string.
-
-    Card Identity = (Word, CEFR, LIST). A card may carry multiple corpus
-    list tags (e.g. "Source::Oxford CEFR::B2 CEFR::oxford Oxford_5000 AWL");
-    only the highest-priority tag contributes to identity, per the fixed
-    priority `Oxford_5000 > Oxford_3000 > AWL > NO_LIST`.
-
-    Returns one of: `Oxford_5000`, `Oxford_3000`, `AWL`, `NO_LIST`.
-    `NO_LIST` is a valid identity bucket for cards without any curated
-    list tag (e.g. Oxford proper nouns).
-    """
-    tokens = set((tags or '').split())
-    for item in LIST_PRIORITY:
-        if item in tokens:
-            return item
-    return "NO_LIST"
-
-
-LIST_PRIORITY = SHARED_LIST_PRIORITY
-primary_list_from_tags = shared_primary_list_from_tags
-
 
 from src.deck_builder.gloss_hygiene import normalize_gloss
 
@@ -147,10 +98,6 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
             if '\n' in p or '\r' in p or '\t' in p:
                 errors.append(f"Row {idx} column {col_idx} contains newline or tab character")
 
-    # Assert row count
-    if len(data_rows) != 2457:
-        errors.append(f"Expected exactly 2457 data rows, but found {len(data_rows)}")
-
     if errors:
         print("TXT Structural Integrity Errors:")
         for err in errors[:10]:
@@ -166,75 +113,15 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
     return data_rows
 
 
-def verify_card_identity(data_rows: list[list[str]], audit_rows: list[dict]):
-    # Normalize word, pos, cefr, list for uniqueness checks.
-    # Card Identity contract (2026-06-21): `(Word, CEFR, LIST)`.
-    # LIST is resolved from the card's tags via primary_list_from_tags.
-    txt_keys_word_cefr = []
+def verify_audit_alignment(data_rows: list[list[str]], audit_rows: list[dict]):
+    """Check legacy audit-key coverage after core registry validation passes."""
     txt_keys_word_pos_cefr = []
-    txt_keys_word_cefr_list = []
 
     for parts in data_rows:
         word = parts[3].strip().lower()
         pos = parts[4].strip().lower()
         cefr = parts[14].strip().upper()
-        tags = parts[16].strip() if len(parts) > 16 else ''
-        primary_list = primary_list_from_tags(tags)
-        txt_keys_word_cefr.append((word, cefr))
         txt_keys_word_pos_cefr.append((word, pos, cefr))
-        txt_keys_word_cefr_list.append((word, cefr, primary_list))
-
-    # TXT (Word, CEFR, LIST) duplicates check — HARD IDENTITY CONTRACT.
-    # A duplicate here is a real bug (e.g. same word emitted twice on the
-    # same list at the same CEFR, perhaps via Type A POS remap).
-    unique_word_cefr_list = set(txt_keys_word_cefr_list)
-    txt_word_cefr_list_dups = []
-    for key in unique_word_cefr_list:
-        if txt_keys_word_cefr_list.count(key) <= 1:
-            continue
-        positions = frozenset(
-            parts[4].strip().lower()
-            for parts, row_key in zip(data_rows, txt_keys_word_cefr_list)
-            if row_key == key
-        )
-        if REVIEWED_IDENTITY_SPLITS.get(key) == positions:
-            continue
-        txt_word_cefr_list_dups.append(key)
-    print(f"  TXT (word, CEFR, LIST) duplicates: {len(txt_word_cefr_list_dups)}")
-    if txt_word_cefr_list_dups:
-        print(f"    Duplicates found: {txt_word_cefr_list_dups}")
-        sys.exit(1)
-
-    # TXT (Word, CEFR) duplicates — INFORMATIONAL ONLY.
-    # Legacy (pre-2026-06-21) check. With list-aware identity, the same
-    # (word, CEFR) can legitimately appear on multiple lists (e.g. `firm`
-    # on Oxford_3000 and Oxford_5000 at B2). Report count but do NOT fail.
-    unique_word_cefr = set(txt_keys_word_cefr)
-    txt_word_cefr_dups = [k for k in unique_word_cefr if txt_keys_word_cefr.count(k) > 1]
-    print(f"  TXT (word, CEFR) duplicates (informational): {len(txt_word_cefr_dups)}")
-    if txt_word_cefr_dups:
-        # Show the (word, CEFR) → [list...] mapping for visibility.
-        from collections import defaultdict
-        cefr_to_lists = defaultdict(set)
-        for (w, c), lst in zip(txt_keys_word_cefr, [
-            primary_list_from_tags(parts[16].strip() if len(parts) > 16 else '')
-            for parts in data_rows
-        ]):
-            cefr_to_lists[(w, c)].add(lst)
-        sample = sorted(txt_word_cefr_dups)[:10]
-        for k in sample:
-            print(f"    {k} appears across lists: {sorted(cefr_to_lists[k])}")
-
-    # TXT (Word, pos, CEFR) duplicates check — HARD contract.
-    # A duplicate here is a real bug: same word + same POS + same CEFR
-    # emitted as 2 cards in the TXT (build pipeline emitted the same card
-    # twice under different GUIDs).
-    unique_word_pos_cefr = set(txt_keys_word_pos_cefr)
-    txt_word_pos_cefr_dups = [k for k in unique_word_pos_cefr if txt_keys_word_pos_cefr.count(k) > 1]
-    print(f"  TXT (word, pos, CEFR) duplicates: {len(txt_word_pos_cefr_dups)}")
-    if txt_word_pos_cefr_dups:
-        print(f"    Duplicates found: {txt_word_pos_cefr_dups}")
-        sys.exit(1)
 
     # Audit master duplicates check (audit keyed by (word, pos, cefr)).
     # Audit master keys already disambiguate by POS, so a duplicate here
@@ -297,6 +184,40 @@ def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
                     if guid:
                         review_overrides[guid] = item
 
+    registry_key_by_guid = {}
+    if paths_reg.card_registry.exists():
+        with paths_reg.card_registry.open(encoding='utf-8') as f:
+            for line in f:
+                if line.strip():
+                    item = json.loads(line)
+                    guid = (item.get("guid") or "").strip()
+                    if guid:
+                        registry_key_by_guid[guid] = (
+                            (item.get("word") or "").strip(),
+                            (item.get("cefr") or "").strip().upper(),
+                            (item.get("list") or "").strip(),
+                            (item.get("variant") or "").strip(),
+                        )
+
+    manual_def_by_guid = {}
+    if paths_reg.manual_cards.exists():
+        manual_by_key = {}
+        with paths_reg.manual_cards.open(encoding='utf-8') as f:
+            for line in f:
+                if line.strip():
+                    item = json.loads(line)
+                    key = (
+                        (item.get("word") or "").strip(),
+                        (item.get("cefr") or "").strip().upper(),
+                        (item.get("list") or "").strip(),
+                        (item.get("variant") or "").strip(),
+                    )
+                    manual_by_key[key] = item
+        for guid, key in registry_key_by_guid.items():
+            manual = manual_by_key.get(key)
+            if manual is not None:
+                manual_def_by_guid[guid] = manual.get("definition") or ""
+
     synced_count = 0
     not_in_audit_count = 0
     mismatches = []
@@ -337,6 +258,8 @@ def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
         override_definition = review_overrides.get(guid, {}).get("Definition")
         if override_definition is not None:
             expected_def = override_definition
+        elif guid in manual_def_by_guid:
+            expected_def = manual_def_by_guid[guid]
         else:
             expected_def = resolve_expected_definition(word, pos, cefr)
 
@@ -348,9 +271,12 @@ def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
         txt_chunks = [ch.strip() for ch in txt_def.split("|") if ch.strip()]
         clean_txt_chunks = [parse_existing_prefix(ch)[1] for ch in txt_chunks]
         txt_def_clean = " | ".join(clean_txt_chunks)
+        expected_chunks = [ch.strip() for ch in expected_def.split("|") if ch.strip()]
+        clean_expected_chunks = [parse_existing_prefix(ch)[1] for ch in expected_chunks]
+        expected_def_clean = " | ".join(clean_expected_chunks)
 
         txt_norm = normalize_gloss(txt_def_clean).gloss
-        expected_norm = normalize_gloss(expected_def).gloss
+        expected_norm = normalize_gloss(expected_def_clean).gloss
         
         if txt_norm != expected_norm:
             mismatches.append({
@@ -399,7 +325,7 @@ def extract_type_a_keys(stdout: str) -> list[tuple[str, str, str]]:
     return []
 
 
-def verify_build_drift():
+def verify_build_drift(expected_card_count: int):
     print("[4] Verifying build dry-run outputs and drift...")
     cmd = [sys.executable, '-m', 'tools.build_notes', '--dry-run']
     ret, out = run_command_capture(cmd, PROJECT_ROOT)
@@ -414,7 +340,7 @@ def verify_build_drift():
     
     # Assert build metrics
     expected = {
-        'built_cards': 2457,
+        'built_cards': expected_card_count,
         'missing_in_jsonl': 0,
         'dup_emit_skipped': 0,
     }
@@ -453,13 +379,13 @@ def main() -> int:
     print("[1] Verifying TXT structural integrity...")
     data_rows = verify_txt_structure(lines)
 
-    print("[2] Verifying Card Identity...")
-    verify_card_identity(data_rows, audit_rows)
+    print("[2] Verifying legacy audit alignment...")
+    verify_audit_alignment(data_rows, audit_rows)
 
     print("[3] Verifying Definition Sync...")
     verify_definition_sync(data_rows, audit_rows)
 
-    verify_build_drift()
+    verify_build_drift(report.card_count)
 
     print("\nPASS: deck output QA completed successfully.")
     return 0
