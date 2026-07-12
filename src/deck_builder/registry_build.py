@@ -21,6 +21,7 @@ from src.deck_builder.audio_resolution import (
     resolve_audio_filename as _resolve_audio_filename,
 )
 from src.deck_builder.audit_overrides import (
+    find_cross_cefr_override_examples,
     load_audit_overrides as _load_audit_overrides,
     lookup_gloss,
 )
@@ -287,6 +288,39 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
     sense_source_record = indexes["sense_source_record"]
     word_pos_set = indexes["word_pos_set"]
     source_label_specs_index = indexes["source_label_specs_index"]
+
+    audit_rows = []
+    if paths.deck_audit_jsonl_path and paths.deck_audit_jsonl_path.exists():
+        audit_rows = [
+            json.loads(line)
+            for line in paths.deck_audit_jsonl_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+    manual_keys = set(inputs.manual_by_key)
+    active_non_manual_cards = {
+        (
+            target.identity.word.lower(),
+            (target.row.get("pos") or "").strip().lower(),
+            target.identity.cefr,
+        )
+        for target in inputs.targets
+        if target.identity.as_key() not in manual_keys
+    }
+    for issue in find_cross_cefr_override_examples(
+        audit_rows,
+        by_word,
+        active_non_manual_cards=active_non_manual_cards,
+    ):
+        issues.append(BuildIssue(
+            severity="error",
+            code="cross_cefr_audit_override_example",
+            message=(
+                f"curated example {issue['example']!r} for {issue['word']!r} "
+                f"{issue['pos']!r} {issue['cefr']} comes from source sense "
+                f"{issue['sense_number']!r} assigned to {issue['assigned_cefr']}"
+            ),
+            source=paths.deck_audit_jsonl_path,
+        ))
 
     cards: list[BuiltCard] = []
     counters = {"type_a": 0, "type_b": 0, "type_c": 0, "missing": 0}

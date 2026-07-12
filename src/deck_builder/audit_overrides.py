@@ -2,7 +2,85 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
+
+from src.deck_builder.simplify_senses import _flatten_senses
+
+
+def _pos_parts(value: str) -> set[str]:
+    return {part.strip().lower() for part in value.split(",") if part.strip()}
+
+
+def _normalize_example(value: str | None) -> str:
+    if not value:
+        return ""
+    return re.sub(r"\s+", " ", value).strip().casefold()
+
+
+def find_cross_cefr_override_examples(
+    audit_rows: list[dict],
+    records_by_word: dict[str, list[dict]],
+    *,
+    active_non_manual_cards: set[tuple[str, str, str]],
+) -> list[dict]:
+    """Find curated examples copied from a source sense assigned elsewhere.
+
+    This is deliberately evidence-based: an override segment is rejected only
+    when it exactly matches a raw Oxford example, every matching source sense
+    is assigned to a CEFR other than the target card, and the card is built
+    from source data rather than an explicit manual payload.
+    """
+    active_by_word_cefr: dict[tuple[str, str], list[set[str]]] = {}
+    for word, pos, cefr in active_non_manual_cards:
+        key = (word.strip().lower(), cefr.strip().upper())
+        active_by_word_cefr.setdefault(key, []).append(_pos_parts(pos))
+
+    issues: list[dict] = []
+    for row in audit_rows:
+        word = (row.get("word") or "").strip().lower()
+        cefr = (row.get("cefr") or "").strip().upper()
+        row_pos = _pos_parts(row.get("pos") or "")
+        active_pos_sets = active_by_word_cefr.get((word, cefr), [])
+        if not any(row_pos & active_pos for active_pos in active_pos_sets):
+            continue
+
+        example_matches: dict[str, list[dict]] = {}
+        for record in records_by_word.get(word, []):
+            flat = _flatten_senses(record)
+            for flat_sense in flat:
+                if flat_sense.pos.strip().lower() not in row_pos:
+                    continue
+                definition = record["pos_data"][flat_sense.pd_idx]["definitions"][flat_sense.def_idx]
+                assigned_cefr = flat_sense.cefr_resolved or "UNCLASSIFIED"
+                for example in definition.get("examples") or []:
+                    text = example.get("text") if isinstance(example, dict) else str(example)
+                    normalized = _normalize_example(text)
+                    if not normalized:
+                        continue
+                    example_matches.setdefault(normalized, []).append({
+                        "assigned_cefr": assigned_cefr,
+                        "sense_cefr": definition.get("cefr"),
+                        "cefr_source": flat_sense.cefr_source,
+                        "sense_number": definition.get("sensenum_local"),
+                        "source_example": text,
+                    })
+
+        for segment in (row.get("example_after") or "").split("|"):
+            normalized = _normalize_example(segment)
+            matches = example_matches.get(normalized, [])
+            if not matches or any(match["assigned_cefr"] == cefr for match in matches):
+                continue
+            match = matches[0]
+            issues.append({
+                "word": word,
+                "pos": (row.get("pos") or "").strip().lower(),
+                "cefr": cefr,
+                "example": segment.strip(),
+                **match,
+            })
+
+    return issues
 
 
 def lookup_gloss(
