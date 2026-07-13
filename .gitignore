@@ -28,6 +28,7 @@ scratch/
 /__*.py
 .understand-anything/intermediate/
 .understand-anything/tmp/
+.understand-anything/.trash-*/
 
 # Scraper/build caches and generated package outputs
 data/.cache_html/

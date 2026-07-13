@@ -14,8 +14,14 @@ from src.deck_builder.anki_import_command import (
     AnkiConnectError,
     import_and_verify,
     load_expected_media,
+    load_expected_records,
     load_expected_signatures,
+    migrate_established_eavm_fields,
     preflight_and_backup,
+    sync_example_audio_fields,
+    sync_missing_media,
+    sync_existing_notes,
+    sync_model_design,
     validate_local_inputs,
     verify_import,
 )
@@ -64,6 +70,15 @@ def test_load_expected_media_supports_sound_and_html_audio(tmp_path: Path):
     }
 
 
+def test_expected_records_distinguish_reviewed_identity_variants(tmp_path: Path):
+    notes = tmp_path / "notes.jsonl"
+    _write_jsonl(notes, [
+        _row(word="temporal", cefr="UNCLASSIFIED", tags="SenseVariant::general_formal"),
+        _row(word="temporal", cefr="UNCLASSIFIED", tags="SenseVariant::anatomy"),
+    ])
+    assert len(load_expected_records(notes)) == 2
+
+
 def test_preflight_backs_up_existing_root_deck(tmp_path: Path):
     calls = []
 
@@ -106,6 +121,56 @@ def test_preflight_rejects_prefix_compatible_extra_fields(tmp_path: Path):
         preflight_and_backup(Client(), tmp_path)
 
 
+def test_migrate_established_model_appends_audio_fields_in_order():
+    fields = list(EAVM_FIELDS[:15])
+    calls = []
+
+    class Client:
+        def call(self, action, **params):
+            calls.append((action, params))
+            if action == "modelNames": return [EAVM_MODEL_NAME]
+            if action == "modelFieldNames": return list(fields)
+            if action == "modelFieldAdd":
+                fields.insert(params["index"], params["fieldName"])
+                return None
+            raise AssertionError(action)
+
+    migrate_established_eavm_fields(Client())
+
+    assert fields == list(EAVM_FIELDS)
+    additions = [params for action, params in calls if action == "modelFieldAdd"]
+    assert [params["fieldName"] for params in additions] == list(EAVM_FIELDS[15:])
+    assert [params["index"] for params in additions] == [15, 16, 17, 18]
+
+
+def test_sync_model_design_updates_existing_template_name_and_css(tmp_path: Path):
+    front = tmp_path / "front.txt"
+    back = tmp_path / "back.txt"
+    css = tmp_path / "style.txt"
+    front.write_text("front {{Word}}", encoding="utf-8")
+    back.write_text("back {{ExampleAudioUK}}", encoding="utf-8")
+    css.write_text(".example-audio-btn { color: red; }", encoding="utf-8")
+    templates = {"Reading Card": {"Front": "old front", "Back": "old back"}}
+    styling = {"css": "old css"}
+
+    class Client:
+        def call(self, action, **params):
+            if action == "modelTemplates": return templates
+            if action == "modelStyling": return styling
+            if action == "updateModelTemplates":
+                templates.update(params["model"]["templates"])
+                return None
+            if action == "updateModelStyling":
+                styling["css"] = params["model"]["css"]
+                return None
+            raise AssertionError(action)
+
+    sync_model_design(Client(), front, back, css)
+
+    assert templates["Reading Card"]["Back"] == "back {{ExampleAudioUK}}"
+    assert styling["css"].strip() == ".example-audio-btn { color: red; }"
+
+
 def test_validate_local_inputs_requires_package_and_all_media(tmp_path: Path):
     notes = tmp_path / "notes.jsonl"
     package = tmp_path / "deck.apkg"
@@ -139,6 +204,85 @@ def test_verify_import_checks_fields_notes_and_media():
             raise AssertionError(action)
 
     assert verify_import(Client(), expected, {"uk_conquer.mp3", "example_uk_a.mp3"}) == 1
+
+
+def test_sync_example_audio_fields_matches_established_signature_and_batches_update():
+    row = _row()
+    full = tuple(field["value"] for field in _live_note(row)["fields"].values())
+    live = _live_note(row)
+    live["noteId"] = 123
+    for name in EAVM_FIELDS[15:]:
+        live["fields"][name]["value"] = ""
+    calls = []
+
+    class Client:
+        def call(self, action, **params):
+            calls.append((action, params))
+            if action == "findNotes": return [123]
+            if action == "notesInfo": return [live]
+            if action == "multi": return [None] * len(params["actions"])
+            raise AssertionError(action)
+
+    assert sync_example_audio_fields(Client(), Counter({full: 1})) == 1
+    actions = next(params["actions"] for action, params in calls if action == "multi")
+    assert actions == [{
+        "action": "updateNoteFields",
+        "params": {"note": {"id": 123, "fields": {
+            "ExampleAudioUK": row["example_audio_uk"],
+            "ExampleAudioUS": row["example_audio_us"],
+            "IdiomExampleAudioUK": "",
+            "IdiomExampleAudioUS": "",
+        }}},
+    }]
+
+
+def test_sync_missing_media_uses_local_paths_and_only_uploads_missing(tmp_path: Path):
+    existing = tmp_path / "existing.mp3"
+    missing = tmp_path / "missing.mp3"
+    existing.write_bytes(b"existing")
+    missing.write_bytes(b"missing")
+    calls = []
+
+    class Client:
+        def call(self, action, **params):
+            calls.append((action, params))
+            if action == "getMediaFilesNames": return ["existing.mp3"]
+            if action == "multi": return ["missing.mp3"]
+            raise AssertionError(action)
+
+    assert sync_missing_media(
+        Client(), {"existing.mp3", "missing.mp3"}, tmp_path
+    ) == 1
+    actions = next(params["actions"] for action, params in calls if action == "multi")
+    assert actions == [{
+        "action": "storeMediaFile",
+        "params": {"filename": "missing.mp3", "path": missing.resolve().as_posix()},
+    }]
+
+
+def test_sync_existing_notes_updates_all_fields_and_routes_cards(tmp_path: Path):
+    notes = tmp_path / "notes.jsonl"
+    row = _row(deck="English Academic Vocabulary::Oxford", tags="CEFR::C1")
+    _write_jsonl(notes, [row])
+    live = _live_note(row)
+    live.update({"noteId": 123, "cards": [456], "tags": ["CEFR::C1"]})
+    live["fields"]["Definition"]["value"] = "old"
+    calls = []
+
+    class Client:
+        def call(self, action, **params):
+            calls.append((action, params))
+            if action == "findNotes": return [123]
+            if action == "notesInfo": return [live]
+            if action == "multi": return [None]
+            if action == "changeDeck": return None
+            raise AssertionError(action)
+
+    assert sync_existing_notes(Client(), notes) == 1
+    update = next(params["actions"][0] for action, params in calls if action == "multi")
+    assert update["action"] == "updateNote"
+    assert update["params"]["note"]["fields"]["Definition"] == "win"
+    assert ("changeDeck", {"cards": [456], "deck": row["deck"]}) in calls
 
 
 def test_verify_import_fails_on_missing_media():

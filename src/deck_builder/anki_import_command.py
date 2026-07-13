@@ -14,7 +14,15 @@ from typing import Any, Iterable
 import requests
 
 from src.config import ProjectPaths
-from src.deck_builder.package_command import EAVM_FIELD_NAMES, EAVM_MODEL_NAME, OUTPUT_APKG
+from src.deck_builder.package_command import (
+    BACK_TEMPLATE,
+    EAVM_FIELD_NAMES,
+    EAVM_MODEL_NAME,
+    FRONT_TEMPLATE,
+    OUTPUT_APKG,
+    STYLING_TXT,
+)
+from src.design_css import load_production_css
 
 
 ANKI_CONNECT_URL = "http://127.0.0.1:8765"
@@ -112,6 +120,40 @@ def load_expected_media(notes_jsonl: Path) -> set[str]:
     return expected
 
 
+def _identity(word: str, pos: str, cefr: str, tags: Iterable[str]) -> tuple[str, ...]:
+    variants = sorted(
+        tag for tag in tags
+        if tag == "SecondarySense" or tag.startswith("SenseVariant::")
+    )
+    return word, pos, cefr, *variants
+
+
+def load_expected_records(notes_jsonl: Path) -> dict[tuple[str, ...], dict[str, Any]]:
+    """Index canonical records by stable Card Identity plus reviewed variant tags."""
+    records: dict[tuple[str, ...], dict[str, Any]] = {}
+    with notes_jsonl.open(encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            tags = [tag for tag in str(row.get("tags") or "").split() if tag]
+            identity = _identity(
+                str(row.get("word") or ""), str(row.get("pos") or ""),
+                str(row.get("cefr") or ""), tags,
+            )
+            if identity in records:
+                raise ValueError(f"Non-unique canonical import identity: {identity!r}")
+            records[identity] = {
+                "deck": str(row.get("deck") or ""),
+                "fields": {
+                    field_name: str(row.get(key) or "")
+                    for key, field_name in JSON_TO_ANKI_FIELD
+                },
+                "tags": tags,
+            }
+    return records
+
+
 def validate_local_inputs(
     package_path: Path,
     notes_jsonl: Path,
@@ -136,6 +178,139 @@ def validate_local_inputs(
 def _live_signature(note: dict[str, Any]) -> tuple[str, ...]:
     fields = note.get("fields") or {}
     return tuple(str((fields.get(name) or {}).get("value") or "") for _, name in JSON_TO_ANKI_FIELD)
+
+
+def sync_example_audio_fields(
+    client: AnkiConnectClient,
+    expected: Counter[tuple[str, ...]],
+) -> int:
+    """Populate appended fields on existing notes after native APKG migration."""
+    by_established_signature: dict[tuple[str, ...], tuple[str, ...]] = {}
+    for signature, count in expected.items():
+        base = signature[:len(ESTABLISHED_EAVM_FIELDS)]
+        if count != 1 or base in by_established_signature:
+            raise AnkiConnectError(
+                "Cannot synchronize example audio because the established field "
+                "signature is not unique"
+            )
+        by_established_signature[base] = signature
+
+    note_ids = client.call(
+        "findNotes", query=f'deck:"{ROOT_DECK}" note:"{EAVM_MODEL_NAME}"'
+    ) or []
+    if len(note_ids) != sum(expected.values()):
+        raise AnkiConnectError(
+            "Cannot synchronize example audio because the live note count does not "
+            "match the canonical build"
+        )
+
+    actions: list[dict[str, Any]] = []
+    matched: set[tuple[str, ...]] = set()
+    appended_names = EAVM_FIELDS[len(ESTABLISHED_EAVM_FIELDS):]
+    for batch in _chunks(note_ids):
+        for note in client.call("notesInfo", notes=batch) or []:
+            live = _live_signature(note)
+            base = live[:len(ESTABLISHED_EAVM_FIELDS)]
+            target = by_established_signature.get(base)
+            if target is None or base in matched:
+                raise AnkiConnectError(
+                    "Cannot synchronize example audio: an existing note did not "
+                    "resolve to exactly one canonical 15-field signature"
+                )
+            matched.add(base)
+            desired = target[len(ESTABLISHED_EAVM_FIELDS):]
+            if live[len(ESTABLISHED_EAVM_FIELDS):] != desired:
+                actions.append({
+                    "action": "updateNoteFields",
+                    "params": {
+                        "note": {
+                            "id": note["noteId"],
+                            "fields": dict(zip(appended_names, desired)),
+                        }
+                    },
+                })
+    if len(matched) != len(by_established_signature):
+        raise AnkiConnectError("Not every canonical note was matched during audio-field sync")
+    for start in range(0, len(actions), 100):
+        client.call("multi", actions=actions[start:start + 100])
+    return len(actions)
+
+
+def sync_missing_media(
+    client: AnkiConnectClient,
+    expected_media: set[str],
+    audio_dir: Path,
+) -> int:
+    """Copy package media skipped by Anki's importer into the live collection."""
+    remote = set(client.call("getMediaFilesNames", pattern="*") or [])
+    missing = sorted(expected_media - remote)
+    actions = []
+    for filename in missing:
+        source = (audio_dir / filename).resolve()
+        if not source.is_file():
+            raise AnkiConnectError(f"Cannot upload missing local media: {source}")
+        actions.append({
+            "action": "storeMediaFile",
+            "params": {"filename": filename, "path": source.as_posix()},
+        })
+    for start in range(0, len(actions), 100):
+        client.call("multi", actions=actions[start:start + 100])
+    return len(actions)
+
+
+def sync_existing_notes(
+    client: AnkiConnectClient,
+    notes_jsonl: Path,
+) -> int:
+    """Update an established deck directly without invoking APKG model import."""
+    expected = load_expected_records(notes_jsonl)
+    note_ids = client.call(
+        "findNotes", query=f'deck:"{ROOT_DECK}" note:"{EAVM_MODEL_NAME}"'
+    ) or []
+    if len(note_ids) != len(expected):
+        raise AnkiConnectError(
+            f"Direct sync expected {len(expected)} established notes, found {len(note_ids)}"
+        )
+    actions: list[dict[str, Any]] = []
+    deck_moves: dict[str, list[int]] = {}
+    matched: set[tuple[str, ...]] = set()
+    for batch in _chunks(note_ids):
+        for note in client.call("notesInfo", notes=batch) or []:
+            fields = note.get("fields") or {}
+            identity = _identity(
+                str((fields.get("Word") or {}).get("value") or ""),
+                str((fields.get("PartOfSpeech") or {}).get("value") or ""),
+                str((fields.get("CEFRLevel") or {}).get("value") or ""),
+                note.get("tags") or [],
+            )
+            target = expected.get(identity)
+            if target is None or identity in matched:
+                raise AnkiConnectError(
+                    f"Existing note did not resolve to one canonical Card Identity: {identity!r}"
+                )
+            matched.add(identity)
+            current_fields = {
+                name: str((fields.get(name) or {}).get("value") or "")
+                for name in EAVM_FIELDS
+            }
+            current_tags = sorted(str(tag) for tag in (note.get("tags") or []))
+            if current_fields != target["fields"] or current_tags != sorted(target["tags"]):
+                actions.append({
+                    "action": "updateNote",
+                    "params": {"note": {
+                        "id": note["noteId"],
+                        "fields": target["fields"],
+                        "tags": target["tags"],
+                    }},
+                })
+            deck_moves.setdefault(target["deck"], []).extend(note.get("cards") or [])
+    if len(matched) != len(expected):
+        raise AnkiConnectError("Not every canonical Card Identity matched an established note")
+    for start in range(0, len(actions), 100):
+        client.call("multi", actions=actions[start:start + 100])
+    for deck, cards in deck_moves.items():
+        client.call("changeDeck", cards=cards, deck=deck)
+    return len(actions)
 
 
 def verify_import(
@@ -194,6 +369,16 @@ def preflight_and_backup(
         )
 
     model_names = set(client.call("modelNames") or [])
+    suffixed = []
+    for model_name in sorted(model_names):
+        if model_name.startswith(f"{EAVM_MODEL_NAME}-"):
+            note_ids = client.call("findNotes", query=f'note:"{model_name}"') or []
+            if note_ids:
+                suffixed.append((model_name, len(note_ids)))
+    if suffixed:
+        raise AnkiConnectError(
+            f"Refusing import while suffixed EAVM notes exist: {suffixed!r}"
+        )
     if EAVM_MODEL_NAME in model_names:
         current_fields = tuple(client.call("modelFieldNames", modelName=EAVM_MODEL_NAME) or [])
         if current_fields not in (ESTABLISHED_EAVM_FIELDS, EAVM_FIELDS):
@@ -219,19 +404,83 @@ def preflight_and_backup(
     return backup_path
 
 
+def migrate_established_eavm_fields(client: AnkiConnectClient) -> None:
+    """Append the four example-audio fields to the established 15-field model."""
+    if EAVM_MODEL_NAME not in set(client.call("modelNames") or []):
+        return
+    current_fields = tuple(
+        client.call("modelFieldNames", modelName=EAVM_MODEL_NAME) or []
+    )
+    if current_fields == EAVM_FIELDS:
+        return
+    if current_fields != ESTABLISHED_EAVM_FIELDS:
+        raise AnkiConnectError(
+            f"Cannot migrate incompatible {EAVM_MODEL_NAME!r} fields: "
+            f"{list(current_fields)!r}"
+        )
+    for index, field_name in enumerate(
+        EAVM_FIELDS[len(ESTABLISHED_EAVM_FIELDS):],
+        start=len(ESTABLISHED_EAVM_FIELDS),
+    ):
+        client.call(
+            "modelFieldAdd",
+            modelName=EAVM_MODEL_NAME,
+            fieldName=field_name,
+            index=index,
+        )
+    migrated = tuple(client.call("modelFieldNames", modelName=EAVM_MODEL_NAME) or [])
+    if migrated != EAVM_FIELDS:
+        raise AnkiConnectError(
+            f"Failed to migrate {EAVM_MODEL_NAME!r} to the expected field contract: "
+            f"{list(migrated)!r}"
+        )
+
+
+def sync_model_design(
+    client: AnkiConnectClient,
+    front_path: Path = FRONT_TEMPLATE,
+    back_path: Path = BACK_TEMPLATE,
+    styling_path: Path = STYLING_TXT,
+) -> None:
+    """Synchronize the canonical EAVM templates and CSS onto the live model."""
+    current = client.call("modelTemplates", modelName=EAVM_MODEL_NAME) or {}
+    if len(current) != 1:
+        raise AnkiConnectError(
+            f"Expected one template on {EAVM_MODEL_NAME!r}, found {list(current)!r}"
+        )
+    template_name = next(iter(current))
+    front = front_path.read_text(encoding="utf-8")
+    back = back_path.read_text(encoding="utf-8")
+    css = load_production_css(styling_path)
+    client.call("updateModelTemplates", model={
+        "name": EAVM_MODEL_NAME,
+        "templates": {template_name: {"Front": front, "Back": back}},
+    })
+    client.call("updateModelStyling", model={"name": EAVM_MODEL_NAME, "css": css})
+    updated_templates = client.call("modelTemplates", modelName=EAVM_MODEL_NAME) or {}
+    updated_css = (client.call("modelStyling", modelName=EAVM_MODEL_NAME) or {}).get("css")
+    if updated_templates.get(template_name) != {"Front": front, "Back": back} or updated_css != css:
+        raise AnkiConnectError("Live EAVM template/CSS verification failed after synchronization")
+
+
 def import_and_verify(
     client: AnkiConnectClient,
     package_path: Path,
     notes_jsonl: Path,
     scratch_dir: Path,
+    audio_dir: Path | None = None,
 ) -> int:
     """Import through Anki's native package importer, then verify canonical fields."""
     expected = load_expected_signatures(notes_jsonl)
     expected_media = load_expected_media(notes_jsonl)
-    preflight_and_backup(client, scratch_dir)
-    # AnkiConnect importPackage delegates to Anki's APKG importer. The stable
-    # note GUIDs and model ID inside the package provide update-in-place semantics.
-    client.call("importPackage", path=package_path.resolve().as_posix())
+    backup = preflight_and_backup(client, scratch_dir)
+    migrate_established_eavm_fields(client)
+    if backup is None:
+        client.call("importPackage", path=package_path.resolve().as_posix())
+    else:
+        sync_model_design(client)
+        sync_existing_notes(client, notes_jsonl)
+    sync_missing_media(client, expected_media, audio_dir or ProjectPaths().audio_dir)
     return verify_import(client, expected, expected_media)
 
 
@@ -261,7 +510,8 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         verified_count = import_and_verify(
-            AnkiConnectClient(args.url), package_path, paths.anki_notes_jsonl, paths.root / "scratch"
+            AnkiConnectClient(args.url), package_path, paths.anki_notes_jsonl,
+            paths.root / "scratch", paths.audio_dir,
         )
     except (AnkiConnectError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
