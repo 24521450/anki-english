@@ -619,7 +619,7 @@
 {"word": "deploy", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "verb", "guid": "+,tcCC0zRm", "status": "active", "deck_override": null}
 {"word": "deployment", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "noun", "guid": "k>MHxdgZ0c", "status": "active", "deck_override": null}
 {"word": "deposit", "cefr": "B2", "list": "Oxford_5000", "variant": "", "pos": "noun", "guid": "5[fv?8uF;~", "status": "active", "deck_override": null}
-{"word": "deposit", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "noun, verb", "guid": "b6cD1Ck8TE", "status": "active", "deck_override": null}
+{"word": "deposit", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "verb", "guid": "b6cD1Ck8TE", "status": "active", "deck_override": null}
 {"word": "depress", "cefr": "C2", "list": "AWL", "variant": "", "pos": "verb", "guid": "zI03Ybs&K!", "status": "active", "deck_override": null}
 {"word": "depression", "cefr": "B2", "list": "Oxford_5000", "variant": "", "pos": "noun", "guid": "=$rtV,M0`&", "status": "active", "deck_override": null}
 {"word": "deprivation", "cefr": "C2", "list": "NO_LIST", "variant": "", "pos": "noun", "guid": "i)&b%A>xZ>", "status": "active", "deck_override": "English Academic Vocabulary::TED YT"}
@@ -649,7 +649,7 @@
 {"word": "devil", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "noun", "guid": "-%=9:!Gu^l", "status": "active", "deck_override": null}
 {"word": "devise", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "verb", "guid": "Wy&8wNTc-~", "status": "active", "deck_override": null}
 {"word": "devoid", "cefr": "UNCLASSIFIED", "list": "NO_LIST", "variant": "", "pos": "adjective", "guid": "I-&_jF*}!o", "status": "active", "deck_override": "English Academic Vocabulary::TED YT"}
-{"word": "devote", "cefr": "B2", "list": "Oxford_5000", "variant": "", "pos": "phrasal verb, verb", "guid": "d0+rK3^u+.", "status": "active", "deck_override": null}
+{"word": "devote sth to sth", "cefr": "B2", "list": "Oxford_5000", "variant": "", "pos": "phrasal verb", "guid": "d0+rK3^u+.", "status": "active", "deck_override": null}
 {"word": "devour", "cefr": "C1", "list": "NO_LIST", "variant": "", "pos": "verb", "guid": "LOdTnR)Ely", "status": "active", "deck_override": "English Academic Vocabulary::TED YT"}
 {"word": "diagnose", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "verb", "guid": "\"@.[#$q0a?(\"", "status": "active", "deck_override": null}
 {"word": "diagnosis", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "noun", "guid": "^]yC&4OeFF", "status": "active", "deck_override": null}
@@ -1396,7 +1396,7 @@
 {"word": "mayor", "cefr": "B2", "list": "Oxford_5000", "variant": "", "pos": "noun", "guid": "~~]1`.,)ol", "status": "active", "deck_override": null}
 {"word": "meander", "cefr": "C2", "list": "NO_LIST", "variant": "", "pos": "verb", "guid": "G%X^8Gi(IF", "status": "active", "deck_override": "English Academic Vocabulary::TED YT"}
 {"word": "meaningful", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "adjective", "guid": "jaGZXeW|-i", "status": "active", "deck_override": null}
-{"word": "meantime", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "adverb, noun", "guid": "N|.UFNN`SW", "status": "active", "deck_override": null}
+{"word": "meantime", "cefr": "C1", "list": "Oxford_5000", "variant": "", "pos": "noun", "guid": "N|.UFNN`SW", "status": "active", "deck_override": null}
 {"word": "mechanic", "cefr": "B2", "list": "Oxford_5000", "variant": "", "pos": "noun", "guid": "zpVdOpc-}C", "status": "active", "deck_override": null}
 {"word": "mechanical", "cefr": "B2", "list": "Oxford_5000", "variant": "", "pos": "adjective", "guid": "HUsV:=fy_N", "status": "active", "deck_override": null}
 {"word": "mechanism", "cefr": "B2", "list": "Oxford_5000", "variant": "", "pos": "noun", "guid": "KJ@iCPAQ+2", "status": "active", "deck_override": null}

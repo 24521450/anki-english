@@ -293,8 +293,8 @@ class TestNewRoutingAndTagContracts:
         in_3000, in_5000 = get_vocab_membership('adhere to', 'phrasal verb', 'C1', v3000, v5000)
         assert in_5000 is True
 
-        # devote: pos = "phrasal verb, verb" (verb is second)
-        in_3000, in_5000 = get_vocab_membership('devote', 'phrasal verb, verb', 'B2', v3000, v5000)
+        # Learning-Pattern Headword resolves to the Oxford verb lemma.
+        in_3000, in_5000 = get_vocab_membership('devote sth to sth', 'phrasal verb', 'B2', v3000, v5000)
         assert in_5000 is True
 
     def test_mainland_manual_fill_branch_gets_tag(self):

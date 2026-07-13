@@ -207,3 +207,88 @@ def test_vietnamese_precision_review_matches_canonical_owner_payloads():
         and any(row.get("guid") == owner.get("guid") for owner in owners)
     ]
     assert remaining == []
+
+
+def test_audit_review_20260713_matches_reviewed_card_payloads():
+    rows = _canonical_rows()
+    cards = {row["guid"]: row for row in rows["cards"]}
+    registry = {row["guid"]: row for row in rows["registry"]}
+
+    assert (registry["d0+rK3^u+."]["word"], registry["d0+rK3^u+."]["pos"]) == (
+        "devote sth to sth",
+        "phrasal verb",
+    )
+    assert (cards["d0+rK3^u+."]["word"], cards["d0+rK3^u+."]["pos"]) == (
+        "devote sth to sth",
+        "phrasal verb",
+    )
+
+    advocate = cards["km/DeO(0eI"]
+    assert advocate["pos"] == "noun, verb"
+    assert advocate["example"] == (
+        "an advocate for hospital workers<br><br>"
+        "The group does not advocate the use of violence."
+    )
+
+    deposit_b2 = cards["5[fv?8uF;~"]
+    assert (deposit_b2["word"], deposit_b2["pos"], deposit_b2["cefr"]) == (
+        "deposit",
+        "noun",
+        "B2",
+    )
+    assert deposit_b2["definition"] == (
+        "first part of payment (tiền đặt cọc)|"
+        "refundable security money (tiền cọc bảo đảm)"
+    )
+
+    deposit_c1 = cards["b6cD1Ck8TE"]
+    assert deposit_c1["pos"] == "verb"
+    assert deposit_c1["definition"] == (
+        "put money into a bank account (gửi tiền vào tài khoản)|"
+        "pay money in advance or as refundable security (đặt cọc)"
+    )
+    assert deposit_c1["synonyms"] == deposit_c1["antonyms"] == ""
+    assert "idioms" not in deposit_c1["tags"].split()
+
+    meantime = cards["N|.UFNN`SW"]
+    assert meantime["pos"] == "noun"
+    assert (meantime["definition"], meantime["example"], meantime["collocations"]) == (
+        "",
+        "",
+        "",
+    )
+    assert [part.split(" :: ", 1)[0] for part in meantime["idioms"].split("$$")] == [
+        "for the meantime",
+        "in the meantime",
+    ]
+    assert "/meanwhile" not in meantime["idioms"]
+
+    solo = cards["%nP=oVYMv%"]
+    assert solo["definition"] == "done by one person alone|a piece or performance for one person"
+    assert solo["example"] == "his first solo flight|She played a piano solo."
+
+    worship = cards[",qqw,<G4mQ"]
+    assert worship["definition"] == (
+        "showing respect to God (thờ phụng)|strong love/respect (sùng bái)"
+    )
+    assert (worship["synonyms"], worship["antonyms"]) == ("|adoration", "|")
+
+    yield_card = cards["@NbB`9?Tqc"]
+    assert yield_card["example"] == (
+        "This will give a yield of 10% on your investment.<br><br>"
+        "Higher-rate deposit accounts yield good returns.|"
+        "After a long siege, the town was forced to yield (give way)."
+    )
+
+    assert cards["kCq5xM.G_7"]["definition"] == (
+        "believing people act selfishly (hoài nghi)|"
+        "not believing good will happen (bi quan)"
+    )
+
+    audit_keys = {
+        (row["word"], row["pos"], row["cefr"])
+        for row in rows["audit"]
+    }
+    assert ("deposit", "noun", "C1") not in audit_keys
+    assert ("meantime", "adverb", "C1") not in audit_keys
+    assert len(rows["audit"]) == 2459

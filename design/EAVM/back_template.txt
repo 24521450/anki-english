@@ -147,20 +147,6 @@
     return html + '</span>';
   }
 
-  function hideVietnameseGloss(html) {
-    // Structural rule: every non-empty trailing parenthesis at the end of a
-    // Definition chunk is a Vietnamese gloss. We do NOT try to detect
-    // Vietnamese by diacritic characters — the data contract guarantees the
-    // trailing-paren position is the gloss (either diacritic-rich like
-    // "(đặc điểm)" or ASCII-only like "(gan)").
-    // Parens in the middle of a chunk are not touched.
-    return html.replace(/\s*\(([^()]*)\)\s*$/g, function(match, gloss) {
-      var clean = trim(gloss);
-      if (!clean) return match;
-      return ' <button type="button" class="vi-reveal" onclick="this.className+=\' is-open\'; this.disabled=true;"><span class="vi-reveal-label">Hiện nghĩa Việt</span><span class="vi-reveal-text">(' + clean + ')</span></button>';
-    });
-  }
-
   // 1. POS chips
   var rawPos = getRaw('raw-pos-back');
   var posDiv = document.getElementById('top-bar-pos-back');
@@ -327,7 +313,7 @@
       }
       if (hasRelationMeta) ex = renderRelations(ex, synWords, antWords);
       sHtml += '<div class="sense-row">'
-             + '<div class="sense-def">' + hideVietnameseGloss(parseDef(def)) + '</div>'
+             + '<div class="sense-def">' + parseDef(def) + '</div>'
              + '<div class="sense-ex">'  + (ex ? '\u201c' + ex + '\u201d' : '') + '</div>'
              + '</div>';
     }

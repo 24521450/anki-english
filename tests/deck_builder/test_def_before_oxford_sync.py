@@ -40,7 +40,6 @@ EXPECTED = {
         "not seriously or to a great degree; in a way that only affects the surface|"
         "in a way that is not serious or important and lacks any depth of understanding or feeling"
     ),
-    ("meantime", "adverb", "C1"): "in the period of time between two times or events",
 }
 
 

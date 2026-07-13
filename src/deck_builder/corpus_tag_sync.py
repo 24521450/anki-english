@@ -34,6 +34,7 @@ LEARNING_PATTERN_ALIASES = {
     "adhere to": "adhere",
     "derive from": "derive",
     "deprive of": "deprive",
+    "devote sth to sth": "devote",
 }
 
 DECK_OXFORD_5000 = "English Academic Vocabulary::Oxford::Oxford 5000"

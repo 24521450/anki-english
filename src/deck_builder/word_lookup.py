@@ -4,10 +4,12 @@ from __future__ import annotations
 import re
 
 from src.deck_builder.build_contracts import BuiltCard
+from src.deck_builder.corpus_tag_sync import LEARNING_PATTERN_ALIASES
 
 
 def get_word_candidates(word: str) -> list[str]:
-    word_clean = re.sub(r"\s*\(.*?\)\s*", "", word.lower()).strip()
+    display_word = re.sub(r"\s*\(.*?\)\s*", "", word.lower()).strip()
+    word_clean = LEARNING_PATTERN_ALIASES.get(display_word, display_word)
     cands = [word_clean]
     suffixes = [
         ("ies", "y"), ("ied", "y"), ("ying", "y"),

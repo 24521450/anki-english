@@ -86,6 +86,10 @@ def test_get_word_candidates_strips_parenthetical_for_source_lookup():
     assert "counter (argue against)" not in get_word_candidates("counter (argue against)")
 
 
+def test_get_word_candidates_resolves_learning_pattern_to_source_lemma():
+    assert get_word_candidates("devote sth to sth")[0] == "devote"
+
+
 def test_lookup_gloss_prefers_exact_parenthetical_key():
     audit = {
         ("counter (argue against)", "verb", "C1"): "oppose",

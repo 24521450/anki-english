@@ -13,10 +13,13 @@ base lemma.
 
 ## Decision
 
-Display the reviewed cards as `derive from` and `deprive of`, preserve their
+Display the reviewed cards as `derive from`, `deprive of`, and
+`devote sth to sth`, preserve their
 existing GUIDs, and store the renamed identities in the Card Registry and
 Manual Card Payloads. Corpus Deck Routing maps those display phrases back to
-`derive` and `deprive` only for list membership. `deprive of` uses POS
+`derive`, `deprive`, and `devote` for source, audio, and list lookup.
+`devote sth to sth` keeps the required object position visible; the contiguous
+form `devote to` is not used. `deprive of` and `devote sth to sth` use POS
 `phrasal verb`; `derive from` retains `phrasal verb, verb` because its card
 contains both intransitive and transitive patterns.
 
