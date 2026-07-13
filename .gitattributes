@@ -1,4 +1,4 @@
 # Treat the tab-delimited Anki notes file as a data artifact: trailing
-# tabs are load-bearing (they delimit empty `Synonyms`/`Antonyms` columns
-# in 19-col rows), not "blank at eol" violations.
+# tabs are load-bearing (they delimit empty trailing note fields in canonical
+# rows), not "blank at eol" violations.
 data/build/anki_notes.txt whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab

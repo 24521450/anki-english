@@ -9,9 +9,11 @@ from pathlib import Path
 
 from src.deck_builder.build_issues import BuildIssue
 from src.deck_builder.build_contracts import BuiltCard
+from src.deck_builder.example_audio import is_valid_example_mp3
 
 
 SOUND_RE = re.compile(r"\[sound:([^\]]+)\]")
+HTML_AUDIO_RE = re.compile(r'<audio\b[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>\s*</audio>', re.I)
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,6 +70,11 @@ def _ref_count(cards: list[BuiltCard]) -> Counter[str]:
     for card in cards:
         refs.update(SOUND_RE.findall(card.uk_audio or ""))
         refs.update(SOUND_RE.findall(card.us_audio or ""))
+        for field in (
+            card.example_audio_uk, card.example_audio_us,
+            card.idiom_example_audio_uk, card.idiom_example_audio_us,
+        ):
+            refs.update(HTML_AUDIO_RE.findall(field or ""))
     return refs
 
 
@@ -115,6 +122,14 @@ def validate_audio_gate(
                     f"audio reference {ref!r} is missing from {audio_dir}",
                 ))
             continue
+
+        if ref.startswith("example_") and not is_valid_example_mp3(audio_dir / ref):
+            issues.append(BuildIssue(
+                "error",
+                "audio_invalid_example_mp3",
+                f"example audio file {ref!r} is truncated or has an invalid MP3 header",
+                source=audio_dir / ref,
+            ))
 
         if tracked_audio_names is not None and ref not in tracked_audio_names:
             issues.append(BuildIssue(

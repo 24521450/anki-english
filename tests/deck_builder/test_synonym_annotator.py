@@ -25,7 +25,7 @@ def _card(
     deck: str = "Oxford",
     notetype: str = "EAVM",
 ) -> BuiltCard:
-    """Helper: build a BuiltCard fixture with the new 19-col signature."""
+    """Build a minimal card; appended example-audio fields use defaults."""
     return BuiltCard(
         guid=guid, notetype=notetype, deck=deck, word=word, pos=pos, ipa="...",
         definition="...", example=example,

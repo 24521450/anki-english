@@ -18,6 +18,7 @@ from src.deck_builder.build_contracts import (
     serialize_txt,
 )
 from src.deck_builder.audio_gate import validate_audio_gate
+from src.deck_builder.example_audio import validate_example_audio_alignment
 from src.deck_builder.card_identity import (
     CardIdentity,
     primary_list_from_tags,
@@ -188,6 +189,14 @@ def _validate_cards(
                 identity=identity,
             ))
 
+        for field in validate_example_audio_alignment(card):
+            issues.append(BuildIssue(
+                "error",
+                "example_audio_alignment_mismatch",
+                f"row {idx} field {field!r} does not match canonical Example/Idioms audio planning",
+                identity=identity,
+            ))
+
         if card.guid in seen_guids:
             issues.append(BuildIssue("error", "duplicate_guid", f"GUID {card.guid!r} appears at rows {seen_guids[card.guid]} and {idx}", identity=identity))
         else:
@@ -249,6 +258,8 @@ def validate_build_result(
     result: BuildNotesResult,
     registry_inputs: RegistryBuildInputs,
     audio_dir: Path,
+    *,
+    validate_audio: bool = True,
 ) -> ValidationReport:
     issues: list[BuildIssue] = []
 
@@ -271,7 +282,8 @@ def validate_build_result(
         registry_inputs.targets,
         registry_inputs.registry_by_key,
     ))
-    issues.extend(validate_audio_gate(result.built_cards, audio_dir).issues)
+    if validate_audio:
+        issues.extend(validate_audio_gate(result.built_cards, audio_dir).issues)
     return _report(result.built_cards, issues, result.jsonl_text, result.txt_text)
 
 

@@ -26,6 +26,12 @@ Kịch bản đóng gói bộ thẻ [update_anki_deck.py](file:///c:/Users/admin
 > [!TIP]
 > **Mọi thay đổi design bắt đầu từ `../index.html` (vùng 2).** Các tệp `.txt` trong thư mục này derive từ đó. Sau khi sửa `index.html`, sync tương ứng vào `styling.txt` rồi chạy `python -m tools.check_design_sync` để verify.
 
+Audio câu ví dụ dùng bốn field nối cuối note type: `ExampleAudioUK`,
+`ExampleAudioUS`, `IdiomExampleAudioUK`, và `IdiomExampleAudioUS`. Mặt sau chỉ
+hiển thị nút UK/US cạnh đúng câu đã căn hàng; audio không autoplay và mỗi lần
+chỉ phát một clip. Main Example căn theo `|` rồi `<br><br>`; Idiom Example căn
+theo `$$` rồi `|`.
+
 ---
 
 ## Hướng dẫn Tái sử dụng & Đồng bộ hóa thủ công trong Anki

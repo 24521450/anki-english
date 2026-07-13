@@ -515,6 +515,43 @@
   border-left: 1px solid #1e1d1d;
   padding-left: 14px;
 }
+.example-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.example-line + .example-line { margin-top: 8px; }
+.example-text { flex: 1; min-width: 0; }
+.example-audio-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.example-audio-btn {
+  appearance: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+  background: #181717;
+  border: 1px solid #333232;
+  border-radius: 9999px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+.example-audio-btn:hover,
+.example-audio-btn:focus-visible { color: #e5e2e1; outline: none; }
+.example-audio-uk { border-color: #1e3a5f; }
+.example-audio-uk:hover,
+.example-audio-uk:focus-visible { border-color: #3b82f6; }
+.example-audio-us { border-color: #450a0a; }
+.example-audio-us:hover,
+.example-audio-us:focus-visible { border-color: #ef4444; }
 /* ── Idioms section (Oxford-style: phrase + explanation + examples) ── */
 .idiom-box {
   background: #1a1810;

@@ -26,6 +26,7 @@ def test_resolve_stages_default():
     stages = resolve_stages(stage=None, from_stage=None, to_stage=None)
     assert stages == DEFAULT_STAGES
     assert "scrape" not in stages
+    assert "import" not in stages
 
 def test_resolve_stages_single():
     # Single stage runs just that stage
@@ -36,10 +37,17 @@ def test_resolve_stages_from_to_flags():
     # From build to deck range
     assert resolve_stages(from_stage="build", to_stage="deck") == ["build", "validate", "deck"]
     # Full range from scrape to deck
-    assert resolve_stages(from_stage="scrape", to_stage="deck") == ["scrape", "build", "validate", "deck"]
+    assert resolve_stages(from_stage="scrape", to_stage="deck") == [
+        "scrape", "example-audio", "build", "validate", "deck"
+    ]
     # From defaults
     assert resolve_stages(from_stage="build", to_stage=None) == ["build", "validate", "deck"]
-    assert resolve_stages(from_stage=None, to_stage="validate") == ["build", "validate"]
+    assert resolve_stages(from_stage=None, to_stage="validate") == ["example-audio", "build", "validate"]
+
+
+def test_import_is_explicit_but_available_as_range_endpoint():
+    assert resolve_stages(stage="import") == ["import"]
+    assert resolve_stages(from_stage="deck", to_stage="import") == ["deck", "import"]
 
 def test_resolve_stages_rejects_split():
     with pytest.raises(ValueError, match="Unknown stage 'split'"):

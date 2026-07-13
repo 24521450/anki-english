@@ -85,7 +85,12 @@ def main(argv: list[str] | None = None) -> int:
     try:
         res = build_notes_from_registry(paths)
         registry_inputs = load_registry_build_inputs(args.card_registry, args.manual_cards)
-        validation_report = validate_build_result(res, registry_inputs, paths.audio_dir)
+        validation_report = validate_build_result(
+            res,
+            registry_inputs,
+            paths.audio_dir,
+            validate_audio=not args.dry_run,
+        )
     except BuildValidationError as exc:
         print(str(exc), file=sys.stderr)
         return 1

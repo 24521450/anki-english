@@ -54,6 +54,10 @@ def _txt_row(guid: str, word: str, pos: str, cefr: str) -> str:
         f"Source::Oxford CEFR::{cefr} CEFR::oxford",
         "",
         "",
+        "",
+        "",
+        "",
+        "",
     ])
 
 

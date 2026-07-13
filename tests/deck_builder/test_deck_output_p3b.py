@@ -7,11 +7,14 @@ from tools._verify_deck_output_p3b import (
     verify_definition_sync,
     verify_txt_structure,
 )
+from src.deck_builder.build_contracts import CARD_FIELDS
 
 
 VALID_ROW = (
     "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\t"
-    "src1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms"
+    "src1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms\t"
+    "example_audio_uk\texample_audio_us\tidiom_example_audio_uk\t"
+    "idiom_example_audio_us"
 )
 
 
@@ -39,7 +42,7 @@ def test_txt_parser_skips_headers_and_preserves_field_count():
     data_rows = verify_txt_structure(lines)
 
     assert len(data_rows) == 2
-    assert all(len(row) == 19 for row in data_rows)
+    assert all(len(row) == len(CARD_FIELDS) for row in data_rows)
 
 
 def test_txt_parser_accepts_idiom_only_card():

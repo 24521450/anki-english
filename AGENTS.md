@@ -25,16 +25,18 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   - `curated/` — production audit overrides
   - `review/` — review verdicts and manual fills consumed by the build
   - `build/` — generated Anki-ready TXT and JSONL notes
-- `audio/` — generated audio files (UK/US per word)
+- `audio/` — generated headword audio plus content-addressed UK/US Example Audio
 - `design/` — Anki card visual design system. **`design/index.html` (vùng 2 card CSS) is the source of truth** — `EAVM/styling.txt` derives from it and is baked into `.apkg`. `tools/check_design_sync.py` enforces the sync.
 - `docs/adr/` — Architecture Decision Records. One file per decision, named `NNNN-title.md` (e.g. `0001-lxml-parser-backend.md`). Add a new ADR whenever a decision meets all 3 criteria: hard to reverse, surprising without context, and a real trade-off.
 - `vocab_list/` — source word lists (Oxford 3000/5000 markdown, AWL json/yml)
 - `update_anki_deck.py` — top-level packager (`data/build/anki_notes.jsonl` → `ielts_deck.apkg`). Owned by `developer` rein.
-- `src/pipeline.py` — production-stage orchestrator: `scrape → build → validate → deck`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`).
+- `src/pipeline.py` — production-stage orchestrator: `scrape → example-audio → build → validate → deck → import`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`). The default stops at `deck`; `import` is explicit because it mutates the live Anki collection.
   - **scrape**: Oxford/Cambridge + AWL ingestion, audio. Keeps all senses / all CEFR entries (raw).
+  - **example-audio**: derives final Example/Idiom Example speech from the registry build plan and generates missing Edge TTS media. Run this stage, stage changed `audio/example_*.mp3` in Git, then continue from `build` so release validation can enforce tracked media.
   - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md) and [Sense Sorting](./CONTEXT.md)** — splits by CEFR, retains all CEFR-matching senses (no per-card def cap), orders by sensenum_local asc. See `design/README.md § Card design rules` for the rule reference.
   - **validate**: checks registry, card identity, JSONL/TXT parity, audio references, and deterministic output before publish.
   - **deck**: bakes `.apkg` via `update_anki_deck.py`.
+  - **import**: imports the validated `.apkg` through AnkiConnect and verifies the EAVM note type, note GUID coverage, and media. Requires Anki + AnkiConnect to be running; never edits `collection.anki2` directly.
   - Archived one-shot fixers are unsupported and are not wrapped by the pipeline.
 
 ## Architecture context
@@ -136,6 +138,15 @@ For each `(word, accent ∈ {UK, US})` pair, try in order:
 2. Oxford Learner's audio URL
 3. no audio
 
+### Example Audio generation
+
+- Engine: `edge-tts==7.2.8`; UK `en-GB-RyanNeural`, US `en-US-JennyNeural`.
+- Fixed synthesis: rate `-5%`, pitch `+0Hz`, volume `+0%`; no API key.
+- Only the clean spoken copy is synthesized. Visible Example/Idiom text is unchanged; parenthetical glosses are omitted from speech.
+- Files are content-addressed as `audio/example_{uk|us}_{digest}.mp3`, committed to Git, and referenced from the four appended EAVM audio fields.
+- Edge is a remote service: deterministic means stable inputs, names, references, and cache reuse. Forced regeneration is not guaranteed byte-identical.
+- Example Audio is manual-play only. Do not replace its HTML `<audio src>` references with `[sound:...]`, which would put every clip into Anki's autoplay queue.
+
 ### Oxford HTML structural quirks (learned 2026-06-10)
 - Oxford HTML uses `hclass` ATTRIBUTE (not `class`) on most elements: e.g. `<li class="sense" hclass="sense" cefr="c2">`. CSS selectors using `hclass=` (e.g. `[hclass='sense']`) often work, but `li.sense` also works for top-level. Some elements use both `class` and `hclass`.
 - **pos-g element is a TRAP**: `<pos-g hclass="pos">` markers appear ALL OVER the page (12+ on `sick_1_(adj).html`) — most are in `<span class="arl1">`/`<span class="arl2">` (related-entries links at top of page), NOT in sense blocks. The TRUE POS section boundary is `pos-g` followed by `<ol class="senses_multiple">` or `<ol class="sense_single">` as next sibling (anhe pattern (b) from Phase 7 grill).
@@ -185,6 +196,17 @@ The Anki note type `English Academic Vocabulary Model` is generated from
 fields inside Anki — edit the templates and re-run the packager. See
 `design/EAVM/README.md § Lưu ý quan trọng khi chỉnh sửa JavaScript` for the
 literal-newline gotcha in template JS.
+
+The established first 15 fields and model ID `1607392819` are immutable. New
+fields must be appended. Example Audio uses `ExampleAudioUK`, `ExampleAudioUS`,
+`IdiomExampleAudioUK`, and `IdiomExampleAudioUS` after `Antonyms`.
+
+### Anki package import workflow
+
+`python -m src.pipeline import` is the supported live update path. It calls
+AnkiConnect `importPackage` with the generated `.apkg`, then verifies the note
+type fields, canonical GUID coverage, and referenced media. Keep `import` out of
+the default pipeline range and use `--dry-run` before the first live import.
 
 ### Anki deletion/update workflow
 When deleting or merging notes in the local Anki app, use AnkiConnect if

@@ -31,6 +31,7 @@ from src.deck_builder.build_metadata import (
     sync_idioms_feature_tag,
 )
 from src.deck_builder.build_issues import BuildIssue, BuildValidationError
+from src.deck_builder.example_audio import plan_cards_example_audio
 from src.deck_builder.formatting import (
     format_examples as _format_examples,
     format_idioms as _format_idioms,
@@ -679,4 +680,5 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         card._replace(tags=sync_idioms_feature_tag(card.tags, card.idioms))
         for card in cards
     ]
+    cards, _ = plan_cards_example_audio(cards)
     return _serialize_result(cards, counters=counters)

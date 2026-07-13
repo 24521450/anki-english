@@ -35,6 +35,25 @@ def test_extract_audio_filename():
     assert update_anki_deck.extract_audio_filename("invalid_sound") is None
     assert update_anki_deck.extract_audio_filename("") is None
 
+
+def test_extract_audio_filenames_supports_aligned_html_audio():
+    value = (
+        '<audio preload="none" src="example_uk_a.mp3"></audio>|'
+        '<audio preload="none" src="example_uk_b.mp3"></audio>'
+    )
+    assert update_anki_deck.extract_audio_filenames(value) == [
+        "example_uk_a.mp3", "example_uk_b.mp3"
+    ]
+
+
+@pytest.mark.parametrize("value", ["|", "$$", "$$|$$", "<br><br>"])
+def test_empty_audio_layout_accepts_alignment_delimiters(value):
+    assert update_anki_deck.is_empty_audio_layout(value)
+
+
+def test_empty_audio_layout_rejects_unparsed_content():
+    assert not update_anki_deck.is_empty_audio_layout("not-an-audio-reference")
+
 def test_update_anki_deck_success(tmp_path, monkeypatch):
     # Setup mock templates
     front_file = tmp_path / "front_template.txt"
@@ -350,6 +369,7 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "",
         "",
     ]
+    assert created["fields"][15:19] == ["", "", "", ""]
     assert created["guid"] == "test_guid_12345"
     assert created["tags"] == ["C1", "verb", "academic"]
 

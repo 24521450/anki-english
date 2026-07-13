@@ -30,6 +30,12 @@ OUTPUT_APKG = PROJECT_ROOT / "ielts_deck.apkg"
 # field order makes Anki create a suffixed duplicate during package import.
 EAVM_MODEL_NAME = "English Academic Vocabulary Model"
 EAVM_MODEL_ID = 1607392819
+EAVM_FIELD_NAMES: tuple[str, ...] = (
+    "Word", "PartOfSpeech", "IPA", "Definition", "Example", "Collocations",
+    "WordFamily", "AudioUK", "AudioUS", "AudioSource", "Source", "CEFRLevel",
+    "Idioms", "Synonyms", "Antonyms", "ExampleAudioUK", "ExampleAudioUS",
+    "IdiomExampleAudioUK", "IdiomExampleAudioUS",
+)
 
 
 def check_design_sync() -> bool:
@@ -59,6 +65,23 @@ def extract_audio_filename(sound_field: str) -> str | None:
         return m.group(1).strip()
     return None
 
+
+def extract_audio_filenames(audio_field: str) -> list[str]:
+    """Extract all Anki sound and manual HTML-audio media references."""
+    if not audio_field:
+        return []
+    filenames = re.findall(r'\[sound:([^\]]+)\]', audio_field)
+    filenames.extend(
+        re.findall(r'<audio\b[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>', audio_field, re.IGNORECASE)
+    )
+    return [filename.strip() for filename in filenames if filename.strip()]
+
+
+def is_empty_audio_layout(audio_field: str) -> bool:
+    """Return whether a reference field contains alignment delimiters only."""
+    remainder = re.sub(r"(?:\$\$|\||<br\s*/?>|\s)+", "", audio_field, flags=re.IGNORECASE)
+    return not remainder
+
 def main(argv: list[str] | None = None) -> int:
     import argparse
     ap = argparse.ArgumentParser(description="CLI adapter for Anki .apkg packaging.")
@@ -87,23 +110,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # 4. Define genanki model
     # Tags are Anki metadata, exposed through the built-in {{Tags}} replacement.
-    fields_schema = [
-        {"name": "Word"},
-        {"name": "PartOfSpeech"},
-        {"name": "IPA"},
-        {"name": "Definition"},
-        {"name": "Example"},
-        {"name": "Collocations"},
-        {"name": "WordFamily"},
-        {"name": "AudioUK"},
-        {"name": "AudioUS"},
-        {"name": "AudioSource"},
-        {"name": "Source"},
-        {"name": "CEFRLevel"},
-        {"name": "Idioms"},
-        {"name": "Synonyms"},
-        {"name": "Antonyms"},
-    ]
+    fields_schema = [{"name": name} for name in EAVM_FIELD_NAMES]
 
     model = genanki.Model(
         EAVM_MODEL_ID,
@@ -162,6 +169,10 @@ def main(argv: list[str] | None = None) -> int:
                 r.get("idioms") or "",
                 r.get("synonyms") or "",
                 r.get("antonyms") or "",
+                r.get("example_audio_uk") or "",
+                r.get("example_audio_us") or "",
+                r.get("idiom_example_audio_uk") or "",
+                r.get("idiom_example_audio_us") or "",
             ]
 
             # Validate audio files
@@ -175,6 +186,33 @@ def main(argv: list[str] | None = None) -> int:
                     audio_path = AUDIO_DIR / filename
                     if not audio_path.exists():
                         print(f"Error: Missing referenced audio file '{filename}' (referenced on line {line_num})", file=sys.stderr)
+                        return 1
+                    media_files.add(str(audio_path))
+
+            for audio_field_name in (
+                "example_audio_uk", "example_audio_us",
+                "idiom_example_audio_uk", "idiom_example_audio_us",
+            ):
+                audio_value = r.get(audio_field_name) or ""
+                filenames = extract_audio_filenames(audio_value)
+                if audio_value.strip() and not filenames and not is_empty_audio_layout(audio_value):
+                    print(
+                        f"Error: Malformed example audio field {audio_field_name!r} "
+                        f"(referenced on line {line_num})",
+                        file=sys.stderr,
+                    )
+                    return 1
+                for filename in filenames:
+                    if Path(filename).name != filename:
+                        print(f"Error: Invalid audio filename {filename!r} on line {line_num}", file=sys.stderr)
+                        return 1
+                    audio_path = AUDIO_DIR / filename
+                    if not audio_path.exists():
+                        print(
+                            f"Error: Missing referenced audio file '{filename}' "
+                            f"(referenced on line {line_num})",
+                            file=sys.stderr,
+                        )
                         return 1
                     media_files.add(str(audio_path))
 

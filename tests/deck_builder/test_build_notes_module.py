@@ -14,6 +14,7 @@ from src.deck_builder.build_support import (
 )
 import tools.build_notes
 from src.deck_builder import build_command
+from src.deck_builder.example_audio import referenced_example_audio_names
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -167,6 +168,7 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(build_command, "AWL_MD", paths.awl_md)
     monkeypatch.setattr(build_command, "AUDIT_JSONL_PATH", paths.deck_audit_jsonl_path)
     monkeypatch.setattr(build_command, "AUDIO_DIR", paths.audio_dir)
+
     monkeypatch.setattr(sys, "argv", [
         "build_notes.py",
         "--dry-run",
@@ -182,6 +184,10 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
     ])
     assert tools.build_notes.main() == 0
     assert not out_jsonl.exists()
+
+    result = build_notes(paths)
+    for name in referenced_example_audio_names(result.built_cards):
+        (paths.audio_dir / name).write_bytes(b"ID3" + b"x" * 509)
 
     monkeypatch.setattr(sys, "argv", [
         "build_notes.py",

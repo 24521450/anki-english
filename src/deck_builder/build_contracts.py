@@ -48,7 +48,7 @@ class BuildNotesPaths(NamedTuple):
 
 
 class BuiltCard(NamedTuple):
-    """One Anki note, encoded as the canonical 19-column TXT row."""
+    """One Anki note, encoded as the canonical 23-column TXT row."""
 
     guid: str
     notetype: str
@@ -69,6 +69,10 @@ class BuiltCard(NamedTuple):
     tags: str
     synonyms: str
     antonyms: str
+    example_audio_uk: str = ""
+    example_audio_us: str = ""
+    idiom_example_audio_uk: str = ""
+    idiom_example_audio_us: str = ""
 
     def to_tsv(self) -> str:
         return '\t'.join([
@@ -76,6 +80,8 @@ class BuiltCard(NamedTuple):
             self.definition, self.example, self.collocations, self.wordfamily,
             self.uk_audio, self.us_audio, self.source1, self.source2, self.cefr,
             self.idioms, self.tags, self.synonyms, self.antonyms,
+            self.example_audio_uk, self.example_audio_us,
+            self.idiom_example_audio_uk, self.idiom_example_audio_us,
         ])
 
     def to_dict(self) -> dict:
@@ -99,6 +105,10 @@ class BuiltCard(NamedTuple):
             'tags': self.tags,
             'synonyms': self.synonyms,
             'antonyms': self.antonyms,
+            'example_audio_uk': self.example_audio_uk,
+            'example_audio_us': self.example_audio_us,
+            'idiom_example_audio_uk': self.idiom_example_audio_uk,
+            'idiom_example_audio_us': self.idiom_example_audio_us,
         }
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Production-stage orchestrator: scrape -> build -> validate -> deck.
+"""Production orchestrator: scrape -> example-audio -> build -> validate -> deck -> import.
 
 Run with:
     python -m src.pipeline
@@ -18,8 +18,9 @@ PROJECT_ROOT = paths.root
 NOTES_JSONL = paths.anki_notes_jsonl
 NOTES_TXT = paths.anki_notes_txt
 
-ALL_STAGES = ["scrape", "build", "validate", "deck"]
-DEFAULT_STAGES = ["build", "validate", "deck"]
+ALL_STAGES = ["scrape", "example-audio", "build", "validate", "deck", "import"]
+# Live import remains explicit because it mutates the user's Anki collection.
+DEFAULT_STAGES = ["example-audio", "build", "validate", "deck"]
 
 
 def _canonical_stage(stage: str) -> str:
@@ -43,6 +44,13 @@ def run_build(dry_run: bool) -> int:
     from src.deck_builder.build_command import main as run_build_notes
     argv = ["--dry-run"] if dry_run else []
     return run_build_notes(argv)
+
+
+def run_example_audio(dry_run: bool) -> int:
+    print("=== Pipeline: Running example-audio stage ===", file=sys.stderr)
+    from src.deck_builder.example_audio_command import main as run_example_audio_command
+    argv = ["--dry-run"] if dry_run else []
+    return run_example_audio_command(argv)
 
 def run_validate(dry_run: bool) -> int:
     print("=== Pipeline: Running validate stage ===", file=sys.stderr)
@@ -80,6 +88,13 @@ def run_deck(dry_run: bool) -> int:
     argv = ["--dry-run"] if dry_run else []
     return run_update_anki_deck(argv)
 
+
+def run_import(dry_run: bool) -> int:
+    print("=== Pipeline: Running import stage ===", file=sys.stderr)
+    from src.deck_builder.anki_import_command import main as run_anki_import
+    argv = ["--dry-run"] if dry_run else []
+    return run_anki_import(argv)
+
 def resolve_stages(stage: str | None = None, from_stage: str | None = None, to_stage: str | None = None) -> list[str]:
     """Resolve active stages based on CLI arguments and defaults."""
     if stage:
@@ -95,7 +110,7 @@ def resolve_stages(stage: str | None = None, from_stage: str | None = None, to_s
             return [stage]
     else:
         if from_stage or to_stage:
-            start_stage = _canonical_stage(from_stage or "build")
+            start_stage = _canonical_stage(from_stage or "example-audio")
             end_stage = _canonical_stage(to_stage or "deck")
             start_idx = ALL_STAGES.index(start_stage)
             end_idx = ALL_STAGES.index(end_stage)
@@ -126,12 +141,16 @@ def main(argv: list[str] | None = None) -> int:
     for stage in stages_to_run:
         if stage == "scrape":
             code = run_scrape(args.dry_run)
+        elif stage == "example-audio":
+            code = run_example_audio(args.dry_run)
         elif stage == "build":
             code = run_build(args.dry_run)
         elif stage == "validate":
             code = run_validate(args.dry_run)
         elif stage == "deck":
             code = run_deck(args.dry_run)
+        elif stage == "import":
+            code = run_import(args.dry_run)
         else:
             print(f"Error: Unknown stage '{stage}'", file=sys.stderr)
             return 1

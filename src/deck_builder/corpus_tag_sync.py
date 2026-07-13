@@ -81,7 +81,8 @@ def _parse_txt_card(line: str, tags_col: int = 16) -> dict | None:
     parts = line.rstrip('\r\n').split("\t")
     if len(parts) < 16:
         return None
-    # Pad to 19 columns
+    # Pad legacy rows through the antonyms column; appended audio fields are
+    # irrelevant to corpus routing and are preserved when present.
     if len(parts) < 19:
         parts = parts + [''] * (19 - len(parts))
 

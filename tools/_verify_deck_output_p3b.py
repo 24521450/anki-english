@@ -16,6 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import ProjectPaths
+from src.deck_builder.build_contracts import CARD_FIELDS
 from src.deck_builder.build_validation import validate_artifact_paths
 from src.deck_builder.sense_labels import parse_existing_prefix
 
@@ -64,8 +65,11 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
         data_rows.append(parts)
         
         # Check tab column count
-        if len(parts) != 19:
-            errors.append(f"Row {idx} does not have exactly 19 columns (found {len(parts)})")
+        if len(parts) != len(CARD_FIELDS):
+            errors.append(
+                f"Row {idx} does not have exactly {len(CARD_FIELDS)} columns "
+                f"(found {len(parts)})"
+            )
             
         # Check critical fields non-empty
         # 0: GUID, 1: notetype, 2: deck, 3: word, 4: pos, 14: cefr, 16: tags

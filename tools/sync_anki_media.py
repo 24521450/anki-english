@@ -16,6 +16,15 @@ from src.config import ProjectPaths
 ANKI_CONNECT_URL = "http://127.0.0.1:8765"
 DEFAULT_DECK = "English Academic Vocabulary"
 SOUND_RE = re.compile(r"\[sound:([^\]]+)\]")
+AUDIO_SRC_RE = re.compile(r"<audio\b[^>]*\bsrc=[\"']([^\"']+)[\"'][^>]*>", re.IGNORECASE)
+AUDIO_FIELDS = (
+    "AudioUK",
+    "AudioUS",
+    "ExampleAudioUK",
+    "ExampleAudioUS",
+    "IdiomExampleAudioUK",
+    "IdiomExampleAudioUS",
+)
 
 
 class AnkiConnectError(RuntimeError):
@@ -53,9 +62,10 @@ def collect_audio_references(notes: Iterable[dict]) -> dict[str, set[str]]:
     for note in notes:
         fields = note.get("fields") or {}
         word = ((fields.get("Word") or {}).get("value") or "").strip() or "<unknown>"
-        for field_name in ("AudioUK", "AudioUS"):
+        for field_name in AUDIO_FIELDS:
             value = ((fields.get(field_name) or {}).get("value") or "").strip()
-            for name in SOUND_RE.findall(value):
+            names = SOUND_RE.findall(value) + AUDIO_SRC_RE.findall(value)
+            for name in names:
                 if not _valid_media_name(name):
                     raise ValueError(f"Invalid Anki media filename {name!r} on {word}")
                 references.setdefault(name, set()).add(word)

@@ -60,6 +60,14 @@ _Avoid_: Pronunciation, phonetic text
 A `.audio-btn-wrapper` chip with a Tabler volume icon, in either UK (`.audio-btn-uk`, blue accent) or US (`.audio-btn-us`, red accent) variant. Missing audio is hidden rather than rendered as a disabled placeholder.
 _Avoid_: Speaker button, sound icon
 
+**Example Audio**:
+Manual-play UK/US speech attached to one displayed Example or Idiom Example. It is generated from a cleaned copy of the displayed text, while the visible card text remains unchanged. Example Audio is distinct from headword dictionary audio and never participates in automatic playback.
+_Avoid_: Example TTS, sentence pronunciation
+
+**Example Audio Identity**:
+The content-addressed identity of one Example Audio clip. It is determined by the cleaned spoken text and the fixed synthesis contract, so duplicate examples share media while changes to text, voice, rate, pitch, engine, or cleaner version produce a new identity.
+_Avoid_: Audio index, example filename, TTS GUID
+
 ### Card-level features (footer row)
 
 **Feature Tag**:

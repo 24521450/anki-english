@@ -92,3 +92,33 @@ def test_validate_audio_gate_rejects_tts_reference_and_file(tmp_path: Path):
     assert not report.ok
     assert any(issue.code == "audio_tts_reference" for issue in report.issues)
     assert any(issue.code == "audio_tts_file_present" for issue in report.issues)
+
+
+def test_validate_audio_gate_accepts_tracked_html_example_audio(tmp_path: Path):
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    filename = "example_uk_0123456789abcdef01234567.mp3"
+    (audio_dir / filename).write_bytes(b"ID3" + b"x" * 509)
+    card = _card()._replace(
+        example_audio_uk=f'<audio preload="none" src="{filename}"></audio>',
+    )
+
+    report = validate_audio_gate([card], audio_dir, {filename})
+
+    assert report.ok
+    assert report.reference_count == 1
+
+
+def test_validate_audio_gate_rejects_truncated_example_audio(tmp_path: Path):
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    filename = "example_uk_0123456789abcdef01234567.mp3"
+    (audio_dir / filename).write_bytes(b"ID3truncated")
+    card = _card()._replace(
+        example_audio_uk=f'<audio preload="none" src="{filename}"></audio>',
+    )
+
+    report = validate_audio_gate([card], audio_dir, {filename})
+
+    assert not report.ok
+    assert any(issue.code == "audio_invalid_example_mp3" for issue in report.issues)

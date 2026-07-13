@@ -78,6 +78,10 @@
   <div id="raw-idioms-back">{{Idioms}}</div>
   <div id="raw-synonyms-back">{{Synonyms}}</div>
   <div id="raw-antonyms-back">{{Antonyms}}</div>
+  <div id="raw-example-audio-uk-back">{{ExampleAudioUK}}</div>
+  <div id="raw-example-audio-us-back">{{ExampleAudioUS}}</div>
+  <div id="raw-idiom-example-audio-uk-back">{{IdiomExampleAudioUK}}</div>
+  <div id="raw-idiom-example-audio-us-back">{{IdiomExampleAudioUS}}</div>
 </div>
 
 <script>
@@ -92,10 +96,71 @@
     html = html.replace(/\s*(<br\s*\/?>)\s*/gi, '$1');
     return trim(html);
   }
+  function getRawAudioHtml(id) {
+    var e = document.getElementById(id);
+    if (!e) return '';
+    var html = e.innerHTML || '';
+    html = html.replace(/\s*(<br\s*\/?>)\s*/gi, '$1');
+    return trim(html);
+  }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function(c) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
+  }
+  function extractAudioSource(html) {
+    var match = String(html || '').match(/<audio\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/i);
+    return match ? match[1] : '';
+  }
+  function parseMainAudio(raw) {
+    var chunks = raw ? raw.split('|') : [], parsed = [];
+    for (var i = 0; i < chunks.length; i++) {
+      var cells = chunks[i].split(/(?:<br\s*\/?>){2}/i), sources = [];
+      for (var j = 0; j < cells.length; j++) sources.push(extractAudioSource(cells[j]));
+      parsed.push(sources);
+    }
+    return parsed;
+  }
+  function parseIdiomAudio(raw) {
+    var entries = raw ? raw.split('$$') : [], parsed = [];
+    for (var i = 0; i < entries.length; i++) {
+      var cells = entries[i].split('|'), sources = [];
+      for (var j = 0; j < cells.length; j++) sources.push(extractAudioSource(cells[j]));
+      parsed.push(sources);
+    }
+    return parsed;
+  }
+  function exampleAudioControls(ukSource, usSource, label) {
+    if (!ukSource && !usSource) return '';
+    var html = '<span class="example-audio-controls">';
+    if (ukSource) {
+      html += '<button type="button" class="example-audio-btn example-audio-uk" data-audio-src="'
+           + escapeHtml(ukSource) + '" aria-label="Play UK audio for ' + escapeHtml(label)
+           + '" title="Play UK example audio">UK</button>';
+    }
+    if (usSource) {
+      html += '<button type="button" class="example-audio-btn example-audio-us" data-audio-src="'
+           + escapeHtml(usSource) + '" aria-label="Play US audio for ' + escapeHtml(label)
+           + '" title="Play US example audio">US</button>';
+    }
+    return html + '</span>';
+  }
+  function wireExampleAudioButtons() {
+    var buttons = document.querySelectorAll('.example-audio-btn[data-audio-src]');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function() {
+        var src = this.getAttribute('data-audio-src');
+        if (!src) return;
+        if (window.__eavmExampleAudio) {
+          window.__eavmExampleAudio.pause();
+          window.__eavmExampleAudio.currentTime = 0;
+        }
+        var player = new Audio(src);
+        window.__eavmExampleAudio = player;
+        var playResult = player.play();
+        if (playResult && playResult.catch) playResult.catch(function() {});
+      });
+    }
   }
 
   var registers = {
@@ -221,6 +286,8 @@
   var rawWord = getRaw('raw-word-back');
   var rawSyns = getRaw('raw-synonyms-back');
   var rawAnts = getRaw('raw-antonyms-back');
+  var mainAudioUk = parseMainAudio(getRawAudioHtml('raw-example-audio-uk-back'));
+  var mainAudioUs = parseMainAudio(getRawAudioHtml('raw-example-audio-us-back'));
   var sensesEl = document.getElementById('senses-container');
 
   if (sensesEl && rawDef) {
@@ -298,7 +365,6 @@
       var idx = defs[di].i;
       var def = defs[di].t;
       var ex  = (idx < exParts.length) ? trim(exParts[idx]) : '';
-      if (ex && wordRe) ex = ex.replace(wordRe, function(m) { return '<span class="word-highlight">' + m + '</span>'; });
       var synWords = (idx < synParts.length) ? trim(synParts[idx]).split(',') : [];
       var antWords = (idx < antParts.length) ? trim(antParts[idx]).split(',') : [];
       for (var sw = 0; sw < synWords.length; sw++) synWords[sw] = trim(synWords[sw]);
@@ -311,10 +377,23 @@
       if (!hasRelationMeta) {
         for (var aw2 = 0; aw2 < antWords.length; aw2++) { if (antWords[aw2]) { hasRelationMeta = true; break; } }
       }
-      if (hasRelationMeta) ex = renderRelations(ex, synWords, antWords);
+      var exHtml = '';
+      if (ex) {
+        var exLines = ex.split(/(?:<br\s*\/?>){2}/i);
+        for (var el = 0; el < exLines.length; el++) {
+          var exLine = trim(exLines[el]);
+          if (!exLine) continue;
+          if (wordRe) exLine = exLine.replace(wordRe, function(m) { return '<span class="word-highlight">' + m + '</span>'; });
+          if (hasRelationMeta) exLine = renderRelations(exLine, synWords, antWords);
+          var ukSource = (idx < mainAudioUk.length && el < mainAudioUk[idx].length) ? mainAudioUk[idx][el] : '';
+          var usSource = (idx < mainAudioUs.length && el < mainAudioUs[idx].length) ? mainAudioUs[idx][el] : '';
+          exHtml += '<div class="example-line"><span class="example-text">\u201c' + exLine + '\u201d</span>'
+                 + exampleAudioControls(ukSource, usSource, 'sense ' + (di + 1) + ' example ' + (el + 1)) + '</div>';
+        }
+      }
       sHtml += '<div class="sense-row">'
              + '<div class="sense-def">' + parseDef(def) + '</div>'
-             + '<div class="sense-ex">'  + (ex ? '\u201c' + ex + '\u201d' : '') + '</div>'
+             + '<div class="sense-ex">' + exHtml + '</div>'
              + '</div>';
     }
     sensesEl.innerHTML = sHtml;
@@ -372,6 +451,8 @@
   // Rendered with .idiom-box > .idiom-list > .idiom-row > (.idiom-phrase,
   // .idiom-explanation, .idiom-examples > .idiom-example).
   var rawIdioms = getRaw('raw-idioms-back');
+  var idiomAudioUk = parseIdiomAudio(getRawAudioHtml('raw-idiom-example-audio-uk-back'));
+  var idiomAudioUs = parseIdiomAudio(getRawAudioHtml('raw-idiom-example-audio-us-back'));
   var idiomsEl = document.getElementById('idioms-container');
   if (rawIdioms && idiomsEl) {
     var entries = rawIdioms.split('$$');
@@ -390,7 +471,12 @@
                  var eParts = exs.split('|'), ex = '';
                  for (var e = 0; e < eParts.length; e++) {
                    var t = trim(eParts[e]);
-                   if (t) ex += '<div class="idiom-example">\u201c' + t + '\u201d</div>';
+                   if (t) {
+                     var ukSource = (i < idiomAudioUk.length && e < idiomAudioUk[i].length) ? idiomAudioUk[i][e] : '';
+                     var usSource = (i < idiomAudioUs.length && e < idiomAudioUs[i].length) ? idiomAudioUs[i][e] : '';
+                     ex += '<div class="idiom-example example-line"><span class="example-text">\u201c' + t + '\u201d</span>'
+                        + exampleAudioControls(ukSource, usSource, 'idiom "' + phrase + '" example ' + (e + 1)) + '</div>';
+                   }
                  }
                  return ex;
                })()
@@ -399,6 +485,8 @@
     }
     idiomsEl.innerHTML = iHtml;
   }
+
+  wireExampleAudioButtons();
 
 })();
 </script>

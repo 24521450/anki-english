@@ -33,6 +33,18 @@ def test_collect_audio_references_deduplicates_files_and_tracks_words():
     }
 
 
+def test_collect_audio_references_includes_example_and_idiom_html_audio():
+    note = _note("offset")
+    note["fields"].update({
+        "ExampleAudioUK": {"value": '<audio preload="none" src="example_uk_a.mp3"></audio>'},
+        "IdiomExampleAudioUS": {"value": '<audio src="example_us_b.mp3"></audio>'},
+    })
+    assert collect_audio_references([note]) == {
+        "example_uk_a.mp3": {"offset"},
+        "example_us_b.mp3": {"offset"},
+    }
+
+
 def test_collect_audio_references_rejects_paths_in_sound_fields():
     with pytest.raises(ValueError, match="Invalid Anki media filename"):
         collect_audio_references([_note("bad", "[sound:../bad.mp3]")])

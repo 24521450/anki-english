@@ -12,6 +12,7 @@ from src.deck_builder.build_validation import (
     validate_build_result,
 )
 from src.deck_builder.registry_build import load_registry_build_inputs
+from src.deck_builder.example_audio import plan_cards_example_audio, referenced_example_audio_names
 
 
 def _card(guid: str = "g1", audio: str = "") -> BuiltCard:
@@ -39,7 +40,15 @@ def _card(guid: str = "g1", audio: str = "") -> BuiltCard:
 
 
 def _result(cards: list[BuiltCard]) -> BuildNotesResult:
+    cards, _ = plan_cards_example_audio(cards)
     return BuildNotesResult(cards, serialize_jsonl(cards), serialize_txt(cards), 0, 0, 0, 0, 0, len(cards), 0)
+
+
+def _result_with_audio(cards: list[BuiltCard], audio_dir: Path) -> BuildNotesResult:
+    result = _result(cards)
+    for filename in referenced_example_audio_names(result.built_cards):
+        (audio_dir / filename).write_bytes(b"ID3" + b"x" * 509)
+    return result
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -67,6 +76,7 @@ def _write_registry(path: Path, cards: list[BuiltCard]) -> None:
 
 
 def _write_artifacts(tmp_path: Path, cards: list[BuiltCard]) -> tuple[Path, Path, Path, Path]:
+    cards, _ = plan_cards_example_audio(cards)
     jsonl_path = tmp_path / "anki_notes.jsonl"
     txt_path = tmp_path / "anki_notes.txt"
     registry_path = tmp_path / "card_registry.jsonl"
@@ -86,7 +96,7 @@ def test_validate_build_result_accepts_valid_result(tmp_path: Path):
     _write_jsonl(manual, [])
 
     inputs = load_registry_build_inputs(registry, manual)
-    report = validate_build_result(_result([card]), inputs, tmp_path)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
 
     assert report.ok
     assert report.card_count == 1
@@ -100,7 +110,7 @@ def test_validate_build_result_rejects_single_example_break(tmp_path: Path):
     _write_jsonl(manual, [])
 
     inputs = load_registry_build_inputs(registry, manual)
-    report = validate_build_result(_result([card]), inputs, tmp_path)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
 
     assert not report.ok
     assert any(issue.code == "noncanonical_example_break" for issue in report.issues)
@@ -114,7 +124,7 @@ def test_validate_build_result_accepts_double_example_break(tmp_path: Path):
     _write_jsonl(manual, [])
 
     inputs = load_registry_build_inputs(registry, manual)
-    report = validate_build_result(_result([card]), inputs, tmp_path)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
 
     assert report.ok
 
@@ -131,7 +141,7 @@ def test_validate_build_result_accepts_idiom_only_card(tmp_path: Path):
     _write_jsonl(manual, [])
 
     inputs = load_registry_build_inputs(registry, manual)
-    report = validate_build_result(_result([card]), inputs, tmp_path)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
 
     assert report.ok
 
