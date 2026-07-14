@@ -1,4 +1,4 @@
-<div class="anki-card-container">
+<div class="anki-card-container" data-cefr="{{CEFRLevel}}">
   <!-- Top bar -->
   <div class="top-bar">
     <div class="top-bar-left">
@@ -32,6 +32,12 @@
       {{#AudioUS}}
       <span class="audio-btn-wrapper audio-btn-us" id="audio-us-wrapper"><i class="ti ti-volume"></i> US {{AudioUS}}</span>
       {{/AudioUS}}
+      <!-- Card-local Example Audio accent selector (shown by JS when audio exists) -->
+      <div class="example-audio-toolbar" id="example-audio-toolbar" hidden>
+        <button type="button" class="example-accent-toggle" id="example-accent-toggle" role="switch" aria-checked="false" aria-label="Example audio accent: UK">
+          <span class="example-accent-label" id="example-accent-label">UK</span>
+        </button>
+      </div>
     </div>
 
     <!-- Senses: L3 grid (def left / ex right), built by JS -->
@@ -130,35 +136,91 @@
     }
     return parsed;
   }
-  function exampleAudioControls(ukSource, usSource, label) {
-    if (!ukSource && !usSource) return '';
-    var html = '<span class="example-audio-controls">';
-    if (ukSource) {
-      html += '<button type="button" class="example-audio-btn example-audio-uk" data-audio-src="'
-           + escapeHtml(ukSource) + '" aria-label="Play UK audio for ' + escapeHtml(label)
-           + '" title="Play UK example audio">UK</button>';
+  function exampleAudioLine(contentHtml, ukSource, usSource, label, extraClass) {
+    if (!ukSource && !usSource) {
+      if (extraClass === 'idiom-example') {
+        return '<div class="idiom-example example-line"><span class="example-text">' + contentHtml + '</span></div>';
+      }
+      return '<div class="example-line"><span class="example-text">' + contentHtml + '</span></div>';
     }
-    if (usSource) {
-      html += '<button type="button" class="example-audio-btn example-audio-us" data-audio-src="'
-           + escapeHtml(usSource) + '" aria-label="Play US audio for ' + escapeHtml(label)
-           + '" title="Play US example audio">US</button>';
+    var audioAttributes = ' data-audio-uk="' + escapeHtml(ukSource) + '" data-audio-us="'
+                        + escapeHtml(usSource) + '" aria-label="Play ' + escapeHtml(label) + '"';
+    if (extraClass === 'idiom-example') {
+      return '<button type="button" class="idiom-example example-line example-audio-trigger"' + audioAttributes
+           + '><span class="example-text">' + contentHtml + '</span></button>';
     }
-    return html + '</span>';
+    return '<button type="button" class="example-line example-audio-trigger"' + audioAttributes
+         + '><span class="example-text">' + contentHtml + '</span></button>';
   }
-  function wireExampleAudioButtons() {
-    var buttons = document.querySelectorAll('.example-audio-btn[data-audio-src]');
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener('click', function() {
-        var src = this.getAttribute('data-audio-src');
+  function getExampleAudioSource(trigger, accent) {
+    return trigger ? (trigger.getAttribute('data-audio-' + accent) || '') : '';
+  }
+  function clearExampleAudioState(player) {
+    if (window.__eavmExampleAudio !== player) return;
+    if (activeExampleAudioTrigger) activeExampleAudioTrigger.classList.remove('is-playing');
+    activeExampleAudioTrigger = null;
+    window.__eavmExampleAudio = null;
+  }
+  function stopExampleAudio() {
+    var player = window.__eavmExampleAudio;
+    window.__eavmExampleAudio = null;
+    if (activeExampleAudioTrigger) activeExampleAudioTrigger.classList.remove('is-playing');
+    activeExampleAudioTrigger = null;
+    if (!player) return;
+    player.pause();
+    player.currentTime = 0;
+  }
+  function playExampleAudio(trigger, src) {
+    stopExampleAudio();
+    var player = new Audio(src);
+    activeExampleAudioTrigger = trigger;
+    window.__eavmExampleAudio = player;
+    player.addEventListener('playing', function() {
+      if (window.__eavmExampleAudio === player) trigger.classList.add('is-playing');
+    });
+    player.addEventListener('ended', function() { clearExampleAudioState(player); });
+    player.addEventListener('pause', function() { clearExampleAudioState(player); });
+    player.addEventListener('error', function() { clearExampleAudioState(player); });
+    var playResult = player.play();
+    if (playResult && playResult.catch) {
+      playResult.catch(function() { clearExampleAudioState(player); });
+    }
+  }
+  var activeExampleAudioTrigger = null;
+  var exampleAudioAccent = 'uk';
+  function setExampleAudioAccent(accent) {
+    if (accent !== 'uk' && accent !== 'us') return;
+    stopExampleAudio();
+    exampleAudioAccent = accent;
+    var toggle = document.getElementById('example-accent-toggle');
+    var isUs = accent === 'us';
+    if (toggle) {
+      toggle.classList.toggle('is-us', isUs);
+      toggle.setAttribute('aria-checked', isUs ? 'true' : 'false');
+      toggle.setAttribute('aria-label', 'Example audio accent: ' + accent.toUpperCase());
+    }
+    var label = document.getElementById('example-accent-label');
+    if (label) label.textContent = accent.toUpperCase();
+  }
+  function wireExampleAudio() {
+    var triggers = document.querySelectorAll('.example-audio-trigger');
+    if (!triggers.length) return;
+
+    var toolbar = document.getElementById('example-audio-toolbar');
+    if (toolbar) toolbar.hidden = false;
+    setExampleAudioAccent('uk');
+
+    var toggle = document.getElementById('example-accent-toggle');
+    if (toggle) {
+      toggle.addEventListener('click', function() {
+        setExampleAudioAccent(exampleAudioAccent === 'uk' ? 'us' : 'uk');
+      });
+    }
+    for (var j = 0; j < triggers.length; j++) {
+      triggers[j].addEventListener('click', function() {
+        var src = getExampleAudioSource(this, exampleAudioAccent);
         if (!src) return;
-        if (window.__eavmExampleAudio) {
-          window.__eavmExampleAudio.pause();
-          window.__eavmExampleAudio.currentTime = 0;
-        }
-        var player = new Audio(src);
-        window.__eavmExampleAudio = player;
-        var playResult = player.play();
-        if (playResult && playResult.catch) playResult.catch(function() {});
+        playExampleAudio(this, src);
       });
     }
   }
@@ -387,8 +449,8 @@
           if (hasRelationMeta) exLine = renderRelations(exLine, synWords, antWords);
           var ukSource = (idx < mainAudioUk.length && el < mainAudioUk[idx].length) ? mainAudioUk[idx][el] : '';
           var usSource = (idx < mainAudioUs.length && el < mainAudioUs[idx].length) ? mainAudioUs[idx][el] : '';
-          exHtml += '<div class="example-line"><span class="example-text">\u201c' + exLine + '\u201d</span>'
-                 + exampleAudioControls(ukSource, usSource, 'sense ' + (di + 1) + ' example ' + (el + 1)) + '</div>';
+          exHtml += exampleAudioLine('\u201c' + exLine + '\u201d', ukSource, usSource,
+                                    'sense ' + (di + 1) + ' example ' + (el + 1), '');
         }
       }
       sHtml += '<div class="sense-row">'
@@ -474,8 +536,8 @@
                    if (t) {
                      var ukSource = (i < idiomAudioUk.length && e < idiomAudioUk[i].length) ? idiomAudioUk[i][e] : '';
                      var usSource = (i < idiomAudioUs.length && e < idiomAudioUs[i].length) ? idiomAudioUs[i][e] : '';
-                     ex += '<div class="idiom-example example-line"><span class="example-text">\u201c' + t + '\u201d</span>'
-                        + exampleAudioControls(ukSource, usSource, 'idiom "' + phrase + '" example ' + (e + 1)) + '</div>';
+                     ex += exampleAudioLine('\u201c' + t + '\u201d', ukSource, usSource,
+                                            'idiom "' + phrase + '" example ' + (e + 1), 'idiom-example');
                    }
                  }
                  return ex;
@@ -486,7 +548,7 @@
     idiomsEl.innerHTML = iHtml;
   }
 
-  wireExampleAudioButtons();
+  wireExampleAudio();
 
 })();
 </script>

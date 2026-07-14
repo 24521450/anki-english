@@ -27,10 +27,16 @@ Kịch bản đóng gói bộ thẻ [update_anki_deck.py](file:///c:/Users/admin
 > **Mọi thay đổi design bắt đầu từ `../index.html` (vùng 2).** Các tệp `.txt` trong thư mục này derive từ đó. Sau khi sửa `index.html`, sync tương ứng vào `styling.txt` rồi chạy `python -m tools.check_design_sync` để verify.
 
 Audio câu ví dụ dùng bốn field nối cuối note type: `ExampleAudioUK`,
-`ExampleAudioUS`, `IdiomExampleAudioUK`, và `IdiomExampleAudioUS`. Mặt sau chỉ
-hiển thị nút UK/US cạnh đúng câu đã căn hàng; audio không autoplay và mỗi lần
-chỉ phát một clip. Main Example căn theo `|` rồi `<br><br>`; Idiom Example căn
-theo `$$` rồi `|`.
+`ExampleAudioUS`, `IdiomExampleAudioUK`, và `IdiomExampleAudioUS`. Mặt sau hiển
+thị một switch ngang trong Audio Row. Switch chỉ có một thumb mang nhãn accent
+hiện tại: mặc định `UK`, bấm/tap thì thumb trượt và đổi nhãn thành `US`; không
+hiện đồng thời accent còn lại và không lưu lựa chọn giữa các card. Nhấn trực
+tiếp vào câu Example hoặc Idiom Example để phát accent đang chọn. Khi audio
+thực sự phát, toàn bộ câu chuyển sang màu CEFR của card; từ vựng mục tiêu vẫn
+giữ chữ đậm và underline. Hover không đổi màu, còn end, pause, lỗi hoặc đổi
+clip sẽ trả câu về màu bình thường. Audio không autoplay và mỗi lần chỉ có một
+clip phát. Main Example căn theo `|` rồi `<br><br>`; Idiom Example căn theo
+`$$` rồi `|`.
 
 ---
 

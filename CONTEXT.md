@@ -84,6 +84,14 @@ _Avoid_: Card panel, content box
 A `.sense-row` grid row with `55fr 45fr` columns — definition on the left, example on the right. Multiple sense rows are stacked in `.senses-box` with 1px dividers.
 _Avoid_: Definition row, sense line
 
+**Example Accent Toggle**:
+A card-local single-label `.example-accent-toggle` in the Audio Row that selects UK or US Example Audio for every main and idiom example on that card. Its only visible thumb carries the current accent label and slides horizontally when toggled. It defaults to UK on each card; clicking an `.example-audio-trigger` sentence plays the selected accent without adding the clip to Anki's autoplay queue.
+_Avoid_: Two visible accent options, per-sentence audio buttons, persisted accent preference
+
+**Playing Example State**:
+The temporary `.is-playing` state on the active Example Audio trigger. It colors the whole sentence with the card's CEFR color only while audio is playing; the Learning-Pattern Headword remains bold and underlined. The state clears on end, pause, error, rejected playback, accent change, or replacement by another clip.
+_Avoid_: Hover playback color, permanent example highlight
+
 **Idiom Box**:
 A `.section-box.idiom-box` with amber/yellow theme. Contains an `.idiom-list` of `.idiom-row` items, each with `.idiom-phrase` (the phrase), `.idiom-explanation` (the meaning), and optional `.idiom-examples` (italic usage examples). Triggers when the raw note has an `Idioms` field.
 _Avoid_: Phrase box, idiom section

@@ -83,6 +83,14 @@
 .cefr-badge-C2         { color: #fda4af; border: 1px solid #9f1239; background: #9f123920; }
 .cefr-badge-UNCLASSIFIED { color: #c4c7c7; border: 1px solid #444748; background: #2b2a2a20; }
 
+.anki-card-container[data-cefr="A1"] {--example-playing-color: #5eead4;}
+.anki-card-container[data-cefr="A2"] {--example-playing-color: #67e8f9;}
+.anki-card-container[data-cefr="B1"] {--example-playing-color: #93c5fd;}
+.anki-card-container[data-cefr="B2"] {--example-playing-color: #c4b5fd;}
+.anki-card-container[data-cefr="C1"] {--example-playing-color: #fcd34d;}
+.anki-card-container[data-cefr="C2"] {--example-playing-color: #fda4af;}
+.anki-card-container[data-cefr="UNCLASSIFIED"] {--example-playing-color: #c4c7c7;}
+
 /* ── POS chips ── */
 .pos-chip {
   font-family: 'JetBrains Mono', monospace;
@@ -237,9 +245,14 @@
 
 /* ── #3 Audio buttons ── */
 .audio-row {
+  position: relative;
   display: flex;
+  align-items: center;
   gap: 10px;
   justify-content: center;
+  min-height: 50px;
+  padding: 0 78px;
+  box-sizing: border-box;
   margin: 0;
 }
 .audio-btn-wrapper {
@@ -508,7 +521,7 @@
   border-left: none;
 }
 .sense-ex {
-  font-size: 14.5px;
+  font-size: 23.25px;
   line-height: 1.7;
   color: #94a3b8;
   font-style: italic;
@@ -518,40 +531,85 @@
 .example-line {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
 }
 .example-line + .example-line { margin-top: 8px; }
 .example-text { flex: 1; min-width: 0; }
-.example-audio-controls {
-  display: inline-flex;
+.example-audio-toolbar {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
   align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  padding-top: 2px;
 }
-.example-audio-btn {
+.example-audio-toolbar[hidden] { display: none; }
+.example-accent-toggle {
+  position: relative;
   appearance: none;
+  display: block;
+  width: 70px;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0;
+  border: 1px solid #333232;
+  border-radius: 9999px;
+  background: #181717;
+  cursor: pointer;
+}
+.example-accent-label {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 24px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.04em;
-  color: #94a3b8;
-  background: #181717;
-  border: 1px solid #333232;
+  white-space: nowrap;
+  color: #e5e2e1;
+  background: #333232;
   border-radius: 9999px;
-  padding: 4px 6px;
-  cursor: pointer;
+  pointer-events: none;
+  transition: transform 150ms ease;
 }
-.example-audio-btn:hover,
-.example-audio-btn:focus-visible { color: #e5e2e1; outline: none; }
-.example-audio-uk { border-color: #1e3a5f; }
-.example-audio-uk:hover,
-.example-audio-uk:focus-visible { border-color: #3b82f6; }
-.example-audio-us { border-color: #450a0a; }
-.example-audio-us:hover,
-.example-audio-us:focus-visible { border-color: #ef4444; }
+.example-accent-toggle.is-us .example-accent-label { transform: translateX(34px); }
+.example-accent-toggle:focus-visible {
+  outline: 1px solid #64748b;
+  outline-offset: 3px;
+  border-radius: 9999px;
+}
+.example-audio-trigger {
+  width: 100%;
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  line-height: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+.example-audio-trigger.is-playing,
+.example-audio-trigger.is-playing .example-text * {
+  color: var(--example-playing-color);
+}
+.example-audio-trigger .example-text * { transition: color 120ms ease; }
+.example-audio-trigger:focus-visible {
+  outline: 1px solid #64748b;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
 /* ── Idioms section (Oxford-style: phrase + explanation + examples) ── */
 .idiom-box {
   background: #1a1810;
@@ -619,4 +677,7 @@
 @media (prefers-reduced-motion: reduce) {
   .word-header-back,
   .card-content-back > :not(.word-header-back) { animation: none; }
+  .example-accent-label { transition: none; }
+  .example-audio-trigger { transition: none; }
+  .example-audio-trigger .example-text * { transition: none; }
 }
