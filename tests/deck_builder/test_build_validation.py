@@ -129,6 +129,22 @@ def test_validate_build_result_accepts_double_example_break(tmp_path: Path):
     assert report.ok
 
 
+def test_validate_build_result_rejects_unrenderable_relation_metadata(tmp_path: Path):
+    card = _card()._replace(example="The result was clear.", synonyms="plain")
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert not report.ok
+    assert any(
+        issue.code == "relation_metadata_unrepresented" for issue in report.issues
+    )
+
+
 def test_validate_build_result_accepts_idiom_only_card(tmp_path: Path):
     card = _card()._replace(
         definition="",
@@ -144,6 +160,26 @@ def test_validate_build_result_accepts_idiom_only_card(tmp_path: Path):
     report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
 
     assert report.ok
+
+
+def test_validate_build_result_rejects_more_than_two_idioms(tmp_path: Path):
+    card = _card()._replace(
+        idioms=(
+            "first :: meaning :: example$$"
+            "second :: meaning :: example$$"
+            "third :: meaning :: example"
+        )
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert not report.ok
+    assert any(issue.code == "idiom_limit_exceeded" for issue in report.issues)
 
 
 def test_validate_artifact_paths_rejects_txt_field_drift(tmp_path: Path):

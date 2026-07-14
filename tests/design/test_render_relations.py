@@ -216,20 +216,18 @@ def test_ambiguous_match_not_colored():
     assert out == ex
 
 
-def test_subset_guarantee_not_colored():
-    """Metadata `guarantee, promise`, paren `(guarantee)` -> NOT colored."""
+def test_subset_guarantee_colored():
+    """One example may render a subset of its sense-level metadata union."""
     ex = "She gave assurance (guarantee)."
     out = _run_node_render_relations(ex, ["guarantee", "promise"], [])
-    assert "relation-synonym" not in out
-    assert out == ex
+    assert '<span class="relation-synonym">(guarantee)</span>' in out
 
 
-def test_subset_promise_not_colored():
-    """Metadata `guarantee, promise`, paren `(promise)` -> NOT colored."""
+def test_subset_promise_colored():
+    """A second example may render another subset of the same metadata union."""
     ex = "She gave assurance (promise)."
     out = _run_node_render_relations(ex, ["guarantee", "promise"], [])
-    assert "relation-synonym" not in out
-    assert out == ex
+    assert '<span class="relation-synonym">(promise)</span>' in out
 
 
 def test_reordered_set_equality_promise_guarantee():

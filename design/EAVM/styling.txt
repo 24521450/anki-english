@@ -521,7 +521,7 @@
   border-left: none;
 }
 .sense-ex {
-  font-size: 23.25px;
+  font-size: 15.5px;
   line-height: 1.7;
   color: #94a3b8;
   font-style: italic;
@@ -584,6 +584,7 @@
   border-radius: 9999px;
 }
 .example-audio-trigger {
+  display: block;
   width: 100%;
   appearance: none;
   margin: 0;

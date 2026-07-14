@@ -155,7 +155,7 @@ def test_sense_grouping_review_matches_canonical_owner_payloads():
     ]
     assert Counter("audit" if "gloss_after" in row else "review" for row in owners) == {
         "audit": 32,
-        "review": 14,
+        "review": 13,
     }
     for owner in owners:
         _assert_owner_payload(owner, _card_for_owner(owner, rows["cards"]))

@@ -32,9 +32,21 @@ def test_production_cards_derive_idioms_tag_from_payload():
         if line.strip()
     ]
     assert len(cards) == 2461
-    assert sum(bool(card["idioms"]) for card in cards) == 112
-    assert sum("idioms" in card["tags"].split() for card in cards) == 112
+    assert sum(bool(card["idioms"]) for card in cards) == 410
+    assert sum("idioms" in card["tags"].split() for card in cards) == 410
     assert all(
         bool(card["idioms"]) == ("idioms" in card["tags"].split())
         for card in cards
     )
+    assert all(
+        len([entry for entry in card["idioms"].split("$$") if entry.strip()]) <= 2
+        for card in cards
+    )
+
+    implicate = next(
+        card
+        for card in cards
+        if card["word"] == "implicate" and card["cefr"] == "UNCLASSIFIED"
+    )
+    assert implicate["idioms"].split(" :: ", 1)[0] == "be implicated in something"
+    assert "idioms" in implicate["tags"].split()

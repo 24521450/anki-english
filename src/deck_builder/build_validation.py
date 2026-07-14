@@ -12,6 +12,7 @@ from src.deck_builder.build_issues import BuildIssue
 from src.deck_builder.build_contracts import (
     CARD_FIELDS,
     CANONICAL_TXT_HEADER,
+    MAX_IDIOMS_PER_CARD,
     BuildNotesResult,
     BuiltCard,
     serialize_jsonl,
@@ -29,6 +30,7 @@ from src.deck_builder.card_registry import (
     validate_registry_rows,
 )
 from src.deck_builder.registry_build import RegistryBuildInputs, RegistryTarget
+from src.deck_builder.relation_validation import validate_lexical_relation_metadata
 
 
 @dataclass(frozen=True, slots=True)
@@ -181,11 +183,34 @@ def _validate_cards(
                 identity=identity,
             ))
 
+        for relation_issue in validate_lexical_relation_metadata(
+            card.example,
+            card.synonyms,
+            card.antonyms,
+        ):
+            issues.append(BuildIssue(
+                "error",
+                relation_issue.code,
+                f"row {idx} {relation_issue.message}",
+                identity=identity,
+            ))
+
         if not card.definition.strip() and not card.idioms.strip():
             issues.append(BuildIssue(
                 "error",
                 "missing_learning_content",
                 f"row {idx} must have either Definition or Idioms content",
+                identity=identity,
+            ))
+
+        idiom_count = len([
+            entry for entry in card.idioms.split("$$") if entry.strip()
+        ])
+        if idiom_count > MAX_IDIOMS_PER_CARD:
+            issues.append(BuildIssue(
+                "error",
+                "idiom_limit_exceeded",
+                f"row {idx} has {idiom_count} idioms; maximum is {MAX_IDIOMS_PER_CARD}",
                 identity=identity,
             ))
 

@@ -627,12 +627,10 @@ def test_resolve_cards_ipa_handles_already_wrapped_and_unwrapped_inputs():
 
 
 # =============================================================================
-# Cycle 13 — Idioms CEFR filter (per 2026-06-20): drop cefr=None idioms
+# Cycle 13 — Idiom selection: max two, with conditional CEFR priority
 # =============================================================================
 
-def test_resolve_cards_idiom_field_drops_idioms_with_null_cefr():
-    """Per user (2026-06-20), only idioms with an assigned CEFR level survive
-    in the Idioms field. Idioms with cefr=None are filtered out."""
+def test_resolve_cards_idiom_field_prioritizes_cefr_then_fills_from_null_cefr():
     from src.deck_builder import resolve_cards
 
     rec = _record(
@@ -644,9 +642,9 @@ def test_resolve_cards_idiom_field_drops_idioms_with_null_cefr():
             {"phrase": "above all", "text": "most importantly",
              "examples": ["Above all, keep in touch."], "cefr": "C1"},
             {"phrase": "above board", "text": "honest and open",
-             "examples": ["The deal was above board."], "cefr": None},  # dropped
+             "examples": ["The deal was above board."], "cefr": None},
             {"phrase": "above the law", "text": "not subject to the law",
-             "examples": [], "cefr": None},  # dropped
+             "examples": [], "cefr": None},
         ],
     )
 
@@ -655,7 +653,7 @@ def test_resolve_cards_idiom_field_drops_idioms_with_null_cefr():
     assert len(notes) == 1
     idioms_field = notes[0]["Idioms"]
     assert "above all" in idioms_field
-    assert "above board" not in idioms_field
+    assert "above board" in idioms_field
     assert "above the law" not in idioms_field
 
 

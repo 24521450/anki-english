@@ -77,7 +77,8 @@ const trigger = {{
   classList: makeClassList(),
   listeners: {{}},
   getAttribute(name) {{ return this.attrs[name] || ''; }},
-  addEventListener(name, listener) {{ this.listeners[name] = listener; }}
+  addEventListener(name, listener) {{ this.listeners[name] = listener; }},
+  click() {{ if (this.listeners.click) this.listeners.click.call(this); }}
 }};
 const toggle = {{
   classList: makeClassList(),
@@ -218,12 +219,31 @@ def test_whole_example_sentence_is_the_audio_trigger():
     assert "function exampleAudioLine(" in template
     assert 'class="example-line example-audio-trigger"' in template
     assert 'class="idiom-example example-line example-audio-trigger"' in template
+    assert 'role="button" tabindex="0"' in template
+    assert '<button type="button" class="example-line example-audio-trigger"' not in template
+    assert '<button type="button" class="idiom-example example-line example-audio-trigger"' not in template
     assert 'data-audio-uk="' in template
     assert 'data-audio-us="' in template
     assert "exampleAudioLine('\\u201c' + exLine" in template
     assert "'idiom-example'" in template
     assert "example-audio-btn" not in template
     assert "exampleAudioControls" not in template
+
+
+def test_example_audio_trigger_supports_keyboard_activation():
+    states = _run_node_audio_lifecycle(
+        """
+let prevented = false;
+trigger.listeners.keydown.call(trigger, {key: ' ', preventDefault() { prevented = true; }});
+const spaceSource = players[0].src;
+trigger.listeners.keydown.call(trigger, {key: 'Escape', preventDefault() { throw new Error('unexpected'); }});
+const afterEscape = players.length;
+trigger.listeners.keydown.call(trigger, {key: 'Enter', preventDefault() {}});
+console.log(JSON.stringify([prevented, spaceSource, afterEscape, players.length]));
+"""
+    )
+
+    assert states == [True, "uk.mp3", 1, 2]
 
 
 def test_audio_alignment_uses_main_and_idiom_field_grammars():
@@ -407,9 +427,12 @@ def test_example_audio_controls_have_global_toggle_and_invisible_trigger_css():
     assert ".example-accent-option" not in css
     assert ".example-audio-trigger:hover" not in css
     assert "cursor: pointer;" in css
+    trigger = re.search(r"\.example-audio-trigger\s*\{([^}]*)\}", css, re.DOTALL)
+    assert trigger is not None
+    assert "display: block;" in trigger.group(1)
 
 
-def test_main_example_font_size_is_one_and_a_half_times_definition():
+def test_main_example_font_size_matches_definition():
     css = STYLING.read_text(encoding="utf-8")
 
     definition = re.search(r"\.sense-def\s*\{[^}]*font-size:\s*([^;]+);", css, re.DOTALL)
@@ -418,10 +441,7 @@ def test_main_example_font_size_is_one_and_a_half_times_definition():
     assert definition is not None
     assert example is not None
     assert definition.group(1) == "15.5px"
-    assert example.group(1) == "23.25px"
-    assert float(example.group(1).removesuffix("px")) == 1.5 * float(
-        definition.group(1).removesuffix("px")
-    )
+    assert example.group(1) == definition.group(1)
     trigger = re.search(r"\.example-audio-trigger\s*\{([^}]*)\}", css, re.DOTALL)
     assert trigger is not None
     assert "font-size: inherit;" in trigger.group(1)

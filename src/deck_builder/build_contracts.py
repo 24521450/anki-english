@@ -20,6 +20,7 @@ POS_NORM = {
 DEF_SEPARATOR = '|'
 EX_SEP = '|'
 COLL_SEPARATOR = '|'
+MAX_IDIOMS_PER_CARD = 2
 
 CANONICAL_TXT_HEADER: tuple[str, ...] = (
     "#separator:tab",

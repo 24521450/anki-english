@@ -49,8 +49,9 @@ def _format_idioms_field(idioms: list) -> str:
     Empty / missing fields are dropped from each entry.
     Empty input → ''.
 
-    Filter: only idioms with a CEFR level assigned (A1..C2 / UNCLASSIFIED).
-    Idioms with cefr=None are dropped per user decision (2026-06-20).
+    Selection: keep all idioms when there are at most two. When there are
+    more than two, prefer entries with a CEFR and preserve Oxford order for
+    ties. Ungraded idioms remain eligible for any unfilled slot.
     """
     return _shared_format_idioms(idioms)
 
@@ -182,7 +183,8 @@ def _populate_note_fields(
 
     # Idioms: phrase :: text :: ex1 | ex2 $$ phrase2 :: text2 :: ex1
     # Empties drop from the inner triple; empties across the whole list → ''.
-    # Per user (2026-06-20): only idioms with a CEFR level survive.
+    # Keep at most two idioms, prioritizing CEFR-tagged entries only when the
+    # source record contains more than two.
     note["Idioms"] = _format_idioms_field(record.get("idioms") or [])
     note["Tags"] = sync_idioms_feature_tag(note["Tags"], note["Idioms"])
 

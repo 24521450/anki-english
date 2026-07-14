@@ -1,7 +1,11 @@
 """Formatting helpers for deck-builder fields."""
 from __future__ import annotations
 
-from src.deck_builder.build_contracts import COLL_SEPARATOR, EX_SEP
+from src.deck_builder.build_contracts import (
+    COLL_SEPARATOR,
+    EX_SEP,
+    MAX_IDIOMS_PER_CARD,
+)
 from src.scraper._common import flatten_collocations
 
 
@@ -28,10 +32,15 @@ def format_collocations(colls: dict) -> str:
 def format_idioms(idioms: list) -> str:
     if not idioms:
         return ""
+    selected = list(idioms)
+    if len(selected) > MAX_IDIOMS_PER_CARD:
+        selected = sorted(
+            enumerate(selected),
+            key=lambda item: (not bool(item[1].get("cefr")), item[0]),
+        )
+        selected = [idiom for _, idiom in selected[:MAX_IDIOMS_PER_CARD]]
     parts: list[str] = []
-    for idiom in idioms:
-        if idiom.get("cefr") is None:
-            continue
+    for idiom in selected:
         phrase = (idiom.get("phrase") or "").strip()
         text = (idiom.get("text") or "").strip()
         examples = idiom.get("examples") or []

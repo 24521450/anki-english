@@ -649,6 +649,16 @@ def test_production_overrides_loaded_and_used_once():
                 f"Card {c.word} ({c.guid}): {n_cells} relation cells vs {len(ex_chunks)} example chunks"
             )
 
+    pledge = next(
+        c for c in res.built_cards
+        if c.word == "pledge" and c.pos == "noun, verb" and c.cefr == "C1"
+    )
+    assert pledge.example == (
+        "a pledge (commitment) of support<br><br>"
+        "Japan has pledged $100 million in humanitarian aid."
+    )
+    assert pledge.synonyms == "commitment"
+
 
 def test_annotate_vicious_brutal():
     """Vicious example 'a vicious attack' + synonym 'brutal' annotates to 'a vicious (brutal) attack'."""

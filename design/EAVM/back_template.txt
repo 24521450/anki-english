@@ -93,6 +93,118 @@
 <script>
 (function() {
   function trim(s) { return s ? s.replace(/^\s+|\s+$/g, '') : ''; }
+  function escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+  function buildHeadwordForms(rawWord, rawPos) {
+    var headword = trim(rawWord).replace(/\s+\([^()]+\)\s*$/, '');
+    if (!headword) return [];
+
+    var forms = [];
+    var seen = {};
+    function add(form) {
+      var value = trim(form).toLowerCase();
+      if (!value || seen[value]) return;
+      seen[value] = true;
+      forms.push(value);
+    }
+
+    add(headword);
+    if (/\s/.test(headword)) return forms;
+
+    var base = headword.toLowerCase();
+    var posParts = String(rawPos || '').toLowerCase().split(/\s*[,\/]\s*/);
+    var isNoun = posParts.indexOf('noun') !== -1;
+    var isVerb = posParts.indexOf('verb') !== -1 || posParts.indexOf('phrasal verb') !== -1;
+    var isAdjective = posParts.indexOf('adjective') !== -1;
+    var isAdverb = posParts.indexOf('adverb') !== -1;
+    var last = base.charAt(base.length - 1);
+    var beforeLast = base.charAt(base.length - 2);
+    var consonantY = last === 'y' && beforeLast && !/[aeiou]/.test(beforeLast);
+
+    if (isNoun) {
+      add(base + 's');
+      add(base + 'es');
+      if (consonantY) add(base.slice(0, -1) + 'ies');
+      if (/fe$/.test(base)) add(base.slice(0, -2) + 'ves');
+      else if (/f$/.test(base)) add(base.slice(0, -1) + 'ves');
+    }
+
+    if (isVerb) {
+      add(base + 's');
+      add(base + 'es');
+      add(base + 'ed');
+      add(base + 'ing');
+      if (/e$/.test(base)) {
+        add(base + 'd');
+        add(base.slice(0, -1) + 'ing');
+      }
+      if (consonantY) {
+        add(base.slice(0, -1) + 'ies');
+        add(base.slice(0, -1) + 'ied');
+      }
+      if (/ie$/.test(base)) add(base.slice(0, -2) + 'ying');
+      if (last && /[a-z]/.test(last) && !/[aeiouwxy]/.test(last)) {
+        add(base + last + 'ed');
+        add(base + last + 'ing');
+      }
+      if (/c$/.test(base)) {
+        add(base + 'ked');
+        add(base + 'king');
+      }
+    }
+
+    if (isAdjective || isAdverb) {
+      add(base + 'er');
+      add(base + 'est');
+      if (/e$/.test(base)) {
+        add(base + 'r');
+        add(base + 'st');
+      }
+      if (consonantY) {
+        add(base.slice(0, -1) + 'ier');
+        add(base.slice(0, -1) + 'iest');
+      }
+      if (last && /[a-z]/.test(last) && !/[aeiouwxy]/.test(last)) {
+        add(base + last + 'er');
+        add(base + last + 'est');
+      }
+    }
+
+    var irregular = {
+      'bind': ['bound'],
+      'cling': ['clung'],
+      'creep': ['crept'],
+      'equip': ['equipped'],
+      'flee': ['fled'],
+      'forbid': ['forbade'],
+      'leap': ['leapt'],
+      'mimic': ['mimicking'],
+      'overcome': ['overcame'],
+      'oversee': ['oversaw'],
+      'phenomenon': ['phenomena'],
+      'shrink': ['shrank'],
+      'spoil': ['spoilt'],
+      'swing': ['swung'],
+      'tread': ['trod'],
+      'weave': ['woven']
+    };
+    var irregularForms = irregular[base] || [];
+    for (var i = 0; i < irregularForms.length; i++) add(irregularForms[i]);
+
+    forms.sort(function(a, b) { return b.length - a.length; });
+    return forms;
+  }
+  function highlightHeadword(exHtml, rawWord, rawPos) {
+    var forms = buildHeadwordForms(rawWord, rawPos);
+    if (!forms.length) return exHtml;
+    var escapedForms = [];
+    for (var i = 0; i < forms.length; i++) escapedForms.push(escapeRegExp(forms[i]));
+    var re = new RegExp('(^|[^A-Za-z-])(' + escapedForms.join('|') + ')(?=$|[^A-Za-z-])', 'gi');
+    return String(exHtml || '').replace(re, function(match, prefix, surface) {
+      return prefix + '<span class="word-highlight">' + surface + '</span>';
+    });
+  }
   function getRaw(id) { var e = document.getElementById(id); return e ? trim(e.textContent || e.innerText) : ''; }
   function getRawExampleHtml(id) {
     var e = document.getElementById(id);
@@ -146,11 +258,11 @@
     var audioAttributes = ' data-audio-uk="' + escapeHtml(ukSource) + '" data-audio-us="'
                         + escapeHtml(usSource) + '" aria-label="Play ' + escapeHtml(label) + '"';
     if (extraClass === 'idiom-example') {
-      return '<button type="button" class="idiom-example example-line example-audio-trigger"' + audioAttributes
-           + '><span class="example-text">' + contentHtml + '</span></button>';
+      return '<span class="idiom-example example-line example-audio-trigger" role="button" tabindex="0"' + audioAttributes
+           + '><span class="example-text">' + contentHtml + '</span></span>';
     }
-    return '<button type="button" class="example-line example-audio-trigger"' + audioAttributes
-         + '><span class="example-text">' + contentHtml + '</span></button>';
+    return '<span class="example-line example-audio-trigger" role="button" tabindex="0"' + audioAttributes
+         + '><span class="example-text">' + contentHtml + '</span></span>';
   }
   function getExampleAudioSource(trigger, accent) {
     return trigger ? (trigger.getAttribute('data-audio-' + accent) || '') : '';
@@ -221,6 +333,11 @@
         var src = getExampleAudioSource(this, exampleAudioAccent);
         if (!src) return;
         playExampleAudio(this, src);
+      });
+      triggers[j].addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        this.click();
       });
     }
   }
@@ -359,12 +476,11 @@
     var defs = [];
     for (var d = 0; d < defParts.length; d++) { if (trim(defParts[d])) defs.push({i:d, t:trim(defParts[d])}); }
 
-    var wordRe = rawWord ? new RegExp(rawWord.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi') : null;
     var sHtml = '';
 
     // Render synonym/antonym parentheticals with their colored class.
-    // Render synonym/antonym parentheticals with their colored class.
-    // Wrap each paren whose items match an entire relation channel (synonym or antonym) via set equality.
+    // Wrap each paren when all its items belong to one relation channel.
+    // A channel may be the union of relations shown across multiple examples in the same sense.
     // Supports single words `(word)`, `(= word)` and grouped lists `(w1, w2)`, `(= w1, w2)`.
     function renderRelations(exHtml, synWords, antWords) {
       if (!exHtml) return exHtml;
@@ -396,29 +512,29 @@
         }
         if (!cleanSet.length) return match;
 
-        var isExactSyn = synList.length > 0 && cleanSet.length === synList.length;
-        if (isExactSyn) {
+        var isSynSubset = synList.length > 0;
+        if (isSynSubset) {
           for (var j = 0; j < cleanSet.length; j++) {
             if (synList.indexOf(cleanSet[j]) === -1) {
-              isExactSyn = false;
+              isSynSubset = false;
               break;
             }
           }
         }
 
-        var isExactAnt = antList.length > 0 && cleanSet.length === antList.length;
-        if (isExactAnt) {
+        var isAntSubset = antList.length > 0;
+        if (isAntSubset) {
           for (var k = 0; k < cleanSet.length; k++) {
             if (antList.indexOf(cleanSet[k]) === -1) {
-              isExactAnt = false;
+              isAntSubset = false;
               break;
             }
           }
         }
 
-        if (isExactSyn && isExactAnt) return match;
-        if (isExactSyn) return '<span class="relation-synonym">' + match + '</span>';
-        if (isExactAnt) return '<span class="relation-antonym">' + match + '</span>';
+        if (isSynSubset && isAntSubset) return match;
+        if (isSynSubset) return '<span class="relation-synonym">' + match + '</span>';
+        if (isAntSubset) return '<span class="relation-antonym">' + match + '</span>';
         return match;
       });
     }
@@ -445,7 +561,7 @@
         for (var el = 0; el < exLines.length; el++) {
           var exLine = trim(exLines[el]);
           if (!exLine) continue;
-          if (wordRe) exLine = exLine.replace(wordRe, function(m) { return '<span class="word-highlight">' + m + '</span>'; });
+          exLine = highlightHeadword(exLine, rawWord, rawPos);
           if (hasRelationMeta) exLine = renderRelations(exLine, synWords, antWords);
           var ukSource = (idx < mainAudioUk.length && el < mainAudioUk[idx].length) ? mainAudioUk[idx][el] : '';
           var usSource = (idx < mainAudioUs.length && el < mainAudioUs[idx].length) ? mainAudioUs[idx][el] : '';

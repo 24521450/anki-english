@@ -43,7 +43,7 @@ A list of antonyms (`definitions[].antonyms`) extracted at the individual sense 
 _Avoid_: opposite word, contrast word
 
 **Lexical Relation Metadata**:
-The two raw Anki fields `Synonyms` and `Antonyms` (note-type columns 13 and 14, TXT columns 18 and 19) that drive the `.relation-synonym` / `.relation-antonym` colorization in the back card. Each field is pipe-aligned with the `Example` field — one cell per example chunk, empty when the chunk has no relation. The build stage populates them from `get_relation_specs_for_card` (per-Oxford-example synonyms and antonyms) and the per-chunk override JSONL files. The back template reads them via `{{Synonyms}}` / `{{Antonyms}}` (hidden raw `<div>`s) and the JS wraps the matching parenthetical in the example text with the relation class — supporting both `(word)` and `(= word)` Oxford paren forms. Empty cells render as no-op (no inference, no fake wrap).
+The two raw Anki fields `Synonyms` and `Antonyms` (note-type columns 13 and 14, TXT columns 18 and 19) that drive the `.relation-synonym` / `.relation-antonym` colorization in the back card. Each non-empty field is pipe-aligned with the `Example` field — one cell per example chunk, empty when the chunk has no relation. A metadata cell is the union of that sense's relation terms across all examples joined inside the chunk with `<br><br>`; each visible parenthetical may therefore be any non-empty subset of its channel, not necessarily the whole cell. The build stage populates the fields from `get_relation_specs_for_card` (per-Oxford-example synonyms and antonyms) and the per-chunk override JSONL files. The back template reads them via `{{Synonyms}}` / `{{Antonyms}}` (hidden raw `<div>`s) and wraps a parenthetical only when all its comma-separated items belong exclusively to one channel, supporting both `(word)` and `(= word)` Oxford forms. Build validation rejects misaligned cells, unrepresented terms, mixed annotations, and synonym/antonym ambiguity; unrelated natural parentheticals remain unchanged. Empty fields render as no-op (no inference, no fake wrap).
 _Avoid_: relation column, synonym field (singular), pair metadata
 
 ### Word-level labels (in the meta-row)
@@ -138,7 +138,7 @@ Five 5px circles (`.sense-count-dot`) rendered below the word on the front card 
 _Avoid_: Dot indicator, sense preview
 
 **Word Highlight**:
-Inline `.word-highlight` span (bold + underline) wrapping occurrences of the headword in the example text. Tinted with the accent-purple color.
+Inline `.word-highlight` span (bold + underline) wrapping complete surface forms of a single-token headword in the example text. Regular inflections and the deck's reviewed irregular forms are highlighted as a whole token; prefixed, compound, and derivational words are not matched as substrings. Tinted with the accent-purple color.
 _Avoid_: Bold word, headword mark
 
 ### Card content rules
@@ -146,6 +146,10 @@ _Avoid_: Bold word, headword mark
 **Example Alignment**:
 The `Definition` and `Example` fields are pipe-aligned: `Definition[i]` renders with `Example[i]`. Distinct senses use `|`. Multiple examples for the same sense remain in one Example segment and use `<br><br>` between sentences so the rendered card has visible vertical spacing. A single `<br>` is non-canonical and rejected by build validation.
 _Avoid_: one Example pipe segment per sentence, single `<br>` between same-sense examples
+
+**Idiom Selection**:
+Each card carries at most two entries in its Idiom Box. When an Oxford record has at most two idioms, keep every entry in Oxford order, including entries whose `cefr` is null. When it has more than two, rank CEFR-tagged idioms before ungraded idioms, preserve Oxford order within each rank, and keep the first two. Manual Card Payloads must already satisfy the same limit; build validation rejects rather than silently truncates an oversized manual field.
+_Avoid_: dropping every ungraded idiom, showing all source idioms
 
 **Card Identity**:
 A card is normally identified by the triple `(Word, CEFRLevel, LIST)`. **Exactly one card per `(Word, CEFRLevel, LIST)` triple** unless a reviewed identity variant is listed below. `LIST` is the primary corpus/list bucket derived from the card's tags via a fixed priority:
