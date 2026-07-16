@@ -188,6 +188,29 @@ def test_annotate_card_examples_unmapped_without_override():
     assert "Unresolved alignment" in errors[0]
 
 
+def test_approved_semantic_example_can_skip_legacy_source_alignment():
+    card = _card(
+        word="delve", pos="verb", cefr="UNCLASSIFIED",
+        example="She delved in her handbag.|A reviewed learner example.",
+    )
+    specs = [
+        {"text": "She delved in her handbag.", "synonyms": ["dig"], "antonyms": []},
+    ]
+
+    annotated, syn_meta, ant_meta, errors = annotate_card_examples(
+        card,
+        specs,
+        {},
+        {},
+        require_source_alignment=False,
+    )
+
+    assert not errors
+    assert annotated == "She delved (dig) in her handbag.|A reviewed learner example."
+    assert syn_meta == "dig|"
+    assert ant_meta == "|"
+
+
 def test_annotate_card_examples_skip_override():
     card = _card(
         word="delve", pos="verb", cefr="UNCLASSIFIED",

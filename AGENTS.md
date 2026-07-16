@@ -32,12 +32,35 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
 - `update_anki_deck.py` — top-level packager (`data/build/anki_notes.jsonl` → `ielts_deck.apkg`). Owned by `developer` rein.
 - `src/pipeline.py` — production-stage orchestrator: `scrape → example-audio → build → validate → deck → import`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`). The default stops at `deck`; `import` is explicit because it mutates the live Anki collection.
   - **scrape**: Oxford/Cambridge + AWL ingestion, audio. Keeps all senses / all CEFR entries (raw).
-  - **example-audio**: derives final Example/Idiom Example speech from the registry build plan and generates missing Edge TTS media. Run this stage, stage changed `audio/example_*.mp3` in Git, then continue from `build` so release validation can enforce tracked media.
-  - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md) and [Sense Sorting](./CONTEXT.md)** — splits by CEFR, retains all CEFR-matching senses (no per-card def cap), orders by sensenum_local asc. See `design/README.md § Card design rules` for the rule reference.
+  - **example-audio**: derives final Example/Idiom Example speech from the registry build plan, with main Examples owned by the promoted Semantic Registry, and generates missing Edge TTS media. Run this stage, stage changed `audio/example_*.mp3` in Git, then continue from `build` so release validation can enforce tracked media.
+  - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md) and [Sense Sorting](./CONTEXT.md)**, then replaces the final Definition/Example payload with `data/curated/semantic_registry.jsonl`. The production command fails closed when that registry is missing or invalid. See `design/README.md § Card design rules` for the rule reference.
   - **validate**: checks registry, card identity, JSONL/TXT parity, audio references, and deterministic output before publish.
   - **deck**: bakes `.apkg` via `update_anki_deck.py`.
   - **import**: imports the validated `.apkg` through AnkiConnect and verifies the EAVM note type, note GUID coverage, and media. Requires Anki + AnkiConnect to be running; never edits `collection.anki2` directly.
   - Archived one-shot fixers are unsupported and are not wrapped by the pipeline.
+
+### Bilingual semantic audit and promotion
+
+- `python -m tools.semantic_audit scaffold` creates the canonical pending ledger
+  at `data/review/bilingual_semantic_audit.jsonl` from Card Registry, the current
+  built notes, and Oxford/Cambridge source records.
+- `python -m tools.semantic_audit export-xlsx` creates the editable review view
+  at `scratch/bilingual_semantic_audit.xlsx`; `import-xlsx` validates immutable
+  fingerprints and writes decisions back transactionally to JSONL.
+- `python -m tools.semantic_audit validate --require-complete` is the promotion
+  gate. Pending/uncertain decisions, unapproved repairs, or unaccounted source
+  senses fail.
+- `python -m tools.semantic_audit promote` deterministically writes the complete,
+  approved payload to `data/curated/semantic_registry.jsonl`. Re-running it from
+  the same ledger must be byte-identical.
+- `python -m tools.semantic_audit definition-audit` creates a report-only audit
+  in `scratch/` for unusually long or connector-heavy Definition text. It may
+  consume an explicit scratch review file via `--reviews`; it never writes the
+  canonical ledger or Semantic Registry.
+- Since the ADR 0011 cutover on 2026-07-15, Semantic Registry owns production
+  Definition/Example content. The legacy β/γ/M3 and review layers still support
+  source indexing and non-semantic metadata during the remaining decoupling;
+  they must not override the promoted final semantic payload.
 
 ## Architecture context
 
@@ -200,6 +223,9 @@ literal-newline gotcha in template JS.
 The established first 15 fields and model ID `1607392819` are immutable. New
 fields must be appended. Example Audio uses `ExampleAudioUK`, `ExampleAudioUS`,
 `IdiomExampleAudioUK`, and `IdiomExampleAudioUS` after `Antonyms`.
+`DefinitionVI` follows those four fields. It is pipe-aligned with `Definition`
+and drives the always-visible Vietnamese Gloss Line; the established
+`Definition` field retains its legacy `EN (VI)` payload for compatibility.
 
 ### Anki package import workflow
 

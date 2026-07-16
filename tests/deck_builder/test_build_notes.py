@@ -58,6 +58,7 @@ def _txt_row(guid: str, word: str, pos: str, cefr: str) -> str:
         "",
         "",
         "",
+        "",
     ])
 
 

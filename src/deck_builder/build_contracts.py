@@ -21,6 +21,7 @@ DEF_SEPARATOR = '|'
 EX_SEP = '|'
 COLL_SEPARATOR = '|'
 MAX_IDIOMS_PER_CARD = 2
+MAX_IDIOM_EXAMPLES_PER_IDIOM = 1
 
 CANONICAL_TXT_HEADER: tuple[str, ...] = (
     "#separator:tab",
@@ -46,10 +47,11 @@ class BuildNotesPaths(NamedTuple):
     synonym_example_overrides_path: Path | None = None
     antonym_example_overrides_path: Path | None = None
     sense_label_overrides_path: Path | None = None
+    semantic_registry_path: Path | None = None
 
 
 class BuiltCard(NamedTuple):
-    """One Anki note, encoded as the canonical 23-column TXT row."""
+    """One Anki note, encoded as the canonical 24-column TXT row."""
 
     guid: str
     notetype: str
@@ -74,6 +76,7 @@ class BuiltCard(NamedTuple):
     example_audio_us: str = ""
     idiom_example_audio_uk: str = ""
     idiom_example_audio_us: str = ""
+    definition_vi: str = ""
 
     def to_tsv(self) -> str:
         return '\t'.join([
@@ -83,6 +86,7 @@ class BuiltCard(NamedTuple):
             self.idioms, self.tags, self.synonyms, self.antonyms,
             self.example_audio_uk, self.example_audio_us,
             self.idiom_example_audio_uk, self.idiom_example_audio_us,
+            self.definition_vi,
         ])
 
     def to_dict(self) -> dict:
@@ -110,6 +114,7 @@ class BuiltCard(NamedTuple):
             'example_audio_us': self.example_audio_us,
             'idiom_example_audio_uk': self.idiom_example_audio_uk,
             'idiom_example_audio_us': self.idiom_example_audio_us,
+            'definition_vi': self.definition_vi,
         }
 
 

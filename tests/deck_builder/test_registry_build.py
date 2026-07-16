@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 
 from src.deck_builder.build_issues import BuildValidationError
+from src.deck_builder.build_contracts import BuildNotesPaths
+from src.deck_builder.build_notes import build_notes
 from src.deck_builder.registry_build import load_registry_build_inputs
 
 
@@ -49,6 +51,71 @@ def _manual_row(word: str) -> dict:
     }
 
 
+def _semantic_row(word: str) -> dict:
+    return {
+        "schema_version": 1,
+        "guid": f"guid-{word}",
+        "word": word,
+        "cefr": "A1",
+        "list": "NO_LIST",
+        "variant": "",
+        "pos": "noun",
+        "audit_sha256": "a" * 64,
+        "source_fingerprint": "b" * 64,
+        "senses": [{
+            "semantic_sense_id": f"sem_{word}",
+            "order": 1,
+            "definition_en": "reviewed definition",
+            "definition_vi": "nghĩa đã duyệt",
+            "examples": ["Reviewed example."],
+            "source_sense_ids": [f"ox_{word}"],
+            "cambridge_match": "exact",
+            "translation_provenance": "cambridge_reference",
+        }],
+    }
+
+
+def _build_fixture_paths(tmp_path: Path) -> BuildNotesPaths:
+    source = tmp_path / "oxford.jsonl"
+    source.write_text("", encoding="utf-8")
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    gamma = tmp_path / "gamma.json"
+    audit = tmp_path / "audit.jsonl"
+    ox3 = tmp_path / "ox3.md"
+    ox5 = tmp_path / "ox5.md"
+    awl = tmp_path / "awl.md"
+    audio = tmp_path / "audio"
+    audio.mkdir()
+    gamma.write_text('{"verdicts":[]}', encoding="utf-8")
+    audit.write_text("", encoding="utf-8")
+    ox3.write_text("", encoding="utf-8")
+    ox5.write_text("", encoding="utf-8")
+    awl.write_text("", encoding="utf-8")
+    _write_jsonl(registry, [_registry_row("word")])
+    manual_row = _manual_row("word")
+    manual_row.update({
+        "definition": "legacy definition",
+        "example": "Legacy example (former).",
+        "collocations": "word choice",
+        "ipa": "/wɜːd/",
+        "synonyms": "former",
+        "antonyms": "",
+    })
+    _write_jsonl(manual, [manual_row])
+    return BuildNotesPaths(
+        oxford_jsonl_path=source,
+        deck_audit_jsonl_path=audit,
+        gamma_verdicts_path=gamma,
+        oxford_3000_md=ox3,
+        oxford_5000_md=ox5,
+        awl_md=awl,
+        audio_dir=audio,
+        card_registry_path=registry,
+        manual_cards_path=manual,
+    )
+
+
 def test_load_registry_build_inputs_rejects_unknown_manual_key(tmp_path: Path):
     registry = tmp_path / "card_registry.jsonl"
     manual = tmp_path / "manual_cards.jsonl"
@@ -85,9 +152,6 @@ def test_load_registry_build_inputs_keeps_active_file_order(tmp_path: Path):
 
 
 def test_public_build_notes_uses_registry_without_txt(tmp_path: Path):
-    from src.deck_builder.build_contracts import BuildNotesPaths
-    from src.deck_builder.build_notes import build_notes
-
     source = tmp_path / "oxford.jsonl"
     source.write_text("", encoding="utf-8")
     registry = tmp_path / "card_registry.jsonl"
@@ -121,3 +185,44 @@ def test_public_build_notes_uses_registry_without_txt(tmp_path: Path):
 
     assert result.built_cards_count == 1
     assert result.built_cards[0].definition == "definition"
+
+
+def test_semantic_registry_overlays_content_before_audio_and_preserves_metadata(
+    tmp_path: Path,
+):
+    paths = _build_fixture_paths(tmp_path)
+    semantic_registry = tmp_path / "semantic_registry.jsonl"
+    _write_jsonl(semantic_registry, [_semantic_row("word")])
+
+    legacy_card = build_notes(paths).built_cards[0]
+    card = build_notes(paths._replace(
+        semantic_registry_path=semantic_registry,
+    )).built_cards[0]
+
+    assert card.definition == "reviewed definition (nghĩa đã duyệt)"
+    assert card.example == "Reviewed example."
+    assert card.example_audio_uk != legacy_card.example_audio_uk
+    assert card.example_audio_us != legacy_card.example_audio_us
+    assert card.ipa == legacy_card.ipa == "/wɜːd/"
+    assert card.collocations == legacy_card.collocations == "word choice"
+    assert card.deck == legacy_card.deck
+    assert card.tags == legacy_card.tags
+    # The reviewed example no longer renders the manual relation annotation.
+    assert card.synonyms == ""
+    assert card.antonyms == ""
+
+
+def test_semantic_registry_validation_failure_is_a_build_validation_error(
+    tmp_path: Path,
+):
+    paths = _build_fixture_paths(tmp_path)
+    semantic_registry = tmp_path / "semantic_registry.jsonl"
+    _write_jsonl(semantic_registry, [])
+
+    with pytest.raises(BuildValidationError) as excinfo:
+        build_notes(paths._replace(semantic_registry_path=semantic_registry))
+
+    assert any(
+        issue.code == "semantic_registry_invalid"
+        for issue in excinfo.value.issues
+    )

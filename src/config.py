@@ -34,6 +34,14 @@ class ProjectPaths:
         return self.root / "data" / "curated" / "card_registry.jsonl"
 
     @property
+    def bilingual_semantic_audit(self) -> Path:
+        return self.root / "data" / "review" / "bilingual_semantic_audit.jsonl"
+
+    @property
+    def semantic_registry(self) -> Path:
+        return self.root / "data" / "curated" / "semantic_registry.jsonl"
+
+    @property
     def gamma_verdicts(self) -> Path:
         return self.root / "data" / "review" / "gamma_verdicts.json"
 

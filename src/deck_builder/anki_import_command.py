@@ -29,6 +29,7 @@ ANKI_CONNECT_URL = "http://127.0.0.1:8765"
 ANKI_CONNECT_API_VERSION = 6
 EAVM_FIELDS = EAVM_FIELD_NAMES
 ESTABLISHED_EAVM_FIELDS = EAVM_FIELDS[:15]
+LEGACY_EAVM_FIELDS = EAVM_FIELDS[:-1]
 ROOT_DECK = "English Academic Vocabulary"
 SOUND_RE = re.compile(r"\[sound:([^\]]+)\]")
 AUDIO_SRC_RE = re.compile(r"<audio\b[^>]*\bsrc=[\"']([^\"']+)[\"'][^>]*>", re.IGNORECASE)
@@ -53,6 +54,7 @@ JSON_TO_ANKI_FIELD: tuple[tuple[str, str], ...] = (
     ("example_audio_us", "ExampleAudioUS"),
     ("idiom_example_audio_uk", "IdiomExampleAudioUK"),
     ("idiom_example_audio_us", "IdiomExampleAudioUS"),
+    ("definition_vi", "DefinitionVI"),
 )
 
 
@@ -381,7 +383,11 @@ def preflight_and_backup(
         )
     if EAVM_MODEL_NAME in model_names:
         current_fields = tuple(client.call("modelFieldNames", modelName=EAVM_MODEL_NAME) or [])
-        if current_fields not in (ESTABLISHED_EAVM_FIELDS, EAVM_FIELDS):
+        if current_fields not in (
+            ESTABLISHED_EAVM_FIELDS,
+            LEGACY_EAVM_FIELDS,
+            EAVM_FIELDS,
+        ):
             raise AnkiConnectError(
                 f"Existing {EAVM_MODEL_NAME!r} has an incompatible field contract: "
                 f"{list(current_fields)!r}"
@@ -405,7 +411,7 @@ def preflight_and_backup(
 
 
 def migrate_established_eavm_fields(client: AnkiConnectClient) -> None:
-    """Append the four example-audio fields to the established 15-field model."""
+    """Append every missing post-establishment field in canonical order."""
     if EAVM_MODEL_NAME not in set(client.call("modelNames") or []):
         return
     current_fields = tuple(
@@ -413,14 +419,18 @@ def migrate_established_eavm_fields(client: AnkiConnectClient) -> None:
     )
     if current_fields == EAVM_FIELDS:
         return
-    if current_fields != ESTABLISHED_EAVM_FIELDS:
+    if current_fields == ESTABLISHED_EAVM_FIELDS:
+        start = len(ESTABLISHED_EAVM_FIELDS)
+    elif current_fields == LEGACY_EAVM_FIELDS:
+        start = len(LEGACY_EAVM_FIELDS)
+    else:
         raise AnkiConnectError(
             f"Cannot migrate incompatible {EAVM_MODEL_NAME!r} fields: "
             f"{list(current_fields)!r}"
         )
     for index, field_name in enumerate(
-        EAVM_FIELDS[len(ESTABLISHED_EAVM_FIELDS):],
-        start=len(ESTABLISHED_EAVM_FIELDS),
+        EAVM_FIELDS[start:],
+        start=start,
     ):
         client.call(
             "modelFieldAdd",

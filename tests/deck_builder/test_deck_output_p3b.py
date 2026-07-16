@@ -14,7 +14,7 @@ VALID_ROW = (
     "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\t"
     "src1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms\t"
     "example_audio_uk\texample_audio_us\tidiom_example_audio_uk\t"
-    "idiom_example_audio_us"
+    "idiom_example_audio_us\tdefinition_vi"
 )
 
 
@@ -84,21 +84,37 @@ def test_audit_alignment_rejects_duplicate_audit_key():
         verify_audit_alignment([], [duplicate, dict(duplicate)])
 
 
-def test_definition_mismatch_against_audit():
-    data_rows = [[
-        "G1", "M", "D", "behalf", "noun", "ipa",
-        "definition mismatch here", "ex", "c", "wf", "uk", "us",
-        "s1", "s2", "C1", "id", "tag",
-    ]]
-    audit_rows = [{
-        "word": "behalf",
-        "pos": "noun",
-        "cefr": "C1",
-        "gloss_after": "in someone's place; representing them",
+def test_definition_mismatch_against_semantic_registry():
+    parts = VALID_ROW.split("\t")
+    parts[0] = "G1"
+    parts[6] = "definition mismatch here"
+    parts[23] = "nghĩa"
+    semantic_rows = [{
+        "guid": "G1",
+        "senses": [{
+            "definition_en": "in someone's place",
+            "definition_vi": "thay mặt ai đó",
+        }],
     }]
 
     with pytest.raises(SystemExit):
-        verify_definition_sync(data_rows, audit_rows)
+        verify_definition_sync([parts], semantic_rows)
+
+
+def test_definition_sync_accepts_exact_semantic_registry_payload():
+    parts = VALID_ROW.split("\t")
+    parts[0] = "G1"
+    parts[6] = "first meaning (nghĩa một)|second meaning (nghĩa hai)"
+    parts[23] = "nghĩa một|nghĩa hai"
+    semantic_rows = [{
+        "guid": "G1",
+        "senses": [
+            {"definition_en": "first meaning", "definition_vi": "nghĩa một"},
+            {"definition_en": "second meaning", "definition_vi": "nghĩa hai"},
+        ],
+    }]
+
+    verify_definition_sync([parts], semantic_rows)
 
 
 def test_build_output_parser():

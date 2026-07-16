@@ -84,6 +84,10 @@ _Avoid_: Card panel, content box
 A `.sense-row` grid row with `55fr 45fr` columns — definition on the left, example on the right. Multiple sense rows are stacked in `.senses-box` with 1px dividers.
 _Avoid_: Definition row, sense line
 
+**Vietnamese Gloss Line**:
+The always-visible secondary line beneath the English learner definition in a Sense Row. It is labeled `VI` and visually quieter than the English definition so the two languages remain paired without reading as one sentence.
+_Avoid_: Vietnamese reveal, translation button
+
 **Example Accent Toggle**:
 A card-local single-label `.example-accent-toggle` in the Audio Row that selects UK or US Example Audio for every main and idiom example on that card. Its only visible thumb carries the current accent label and slides horizontally when toggled. It defaults to UK on each card; clicking an `.example-audio-trigger` sentence plays the selected accent without adding the clip to Anki's autoplay queue.
 _Avoid_: Two visible accent options, per-sentence audio buttons, persisted accent preference
@@ -147,9 +151,21 @@ _Avoid_: Bold word, headword mark
 The `Definition` and `Example` fields are pipe-aligned: `Definition[i]` renders with `Example[i]`. Distinct senses use `|`. Multiple examples for the same sense remain in one Example segment and use `<br><br>` between sentences so the rendered card has visible vertical spacing. A single `<br>` is non-canonical and rejected by build validation.
 _Avoid_: one Example pipe segment per sentence, single `<br>` between same-sense examples
 
+**Definition Sense Audit**:
+A report-only review of unusually long or connector-heavy Definition text. It
+checks whether semicolon-separated clauses are independent senses or belong in
+one bilingual sense, preserves Oxford/Cambridge evidence IDs, and requires
+Definition/Example pipe alignment. Draft proposals live in `scratch/`; this
+audit does not change the Semantic Registry or review ledger.
+_Avoid_: automatic definition rewrite, splitting every semicolon
+
 **Idiom Selection**:
 Each card carries at most two entries in its Idiom Box. When an Oxford record has at most two idioms, keep every entry in Oxford order, including entries whose `cefr` is null. When it has more than two, rank CEFR-tagged idioms before ungraded idioms, preserve Oxford order within each rank, and keep the first two. Manual Card Payloads must already satisfy the same limit; build validation rejects rather than silently truncates an oversized manual field.
 _Avoid_: dropping every ungraded idiom, showing all source idioms
+
+**Idiom Example Cap**:
+Each selected idiom displays at most one example. The build stage scans that idiom's source examples in Oxford order and keeps the first non-empty example not already selected for an earlier idiom on the same card. Duplicate comparison collapses whitespace and ignores case while preserving punctuation; the original trimmed Oxford text remains the display value. Main Examples do not participate in this deduplication. If no candidate remains, keep the idiom without an example. Scraper/source records retain every example. Manual Card Payloads must already satisfy the cap and card-local uniqueness; validation rejects rather than truncates them.
+_Avoid_: trimming source examples, deduplicating against the main Example, replacing an idiom with a lower-priority idiom because its examples are unavailable
 
 **Card Identity**:
 A card is normally identified by the triple `(Word, CEFRLevel, LIST)`. **Exactly one card per `(Word, CEFRLevel, LIST)` triple** unless a reviewed identity variant is listed below. `LIST` is the primary corpus/list bucket derived from the card's tags via a fixed priority:
@@ -262,6 +278,41 @@ _Current implementation: `src/deck_builder/beta_score.py` provides β,
 decisions live in the canonical review inputs._
 
 ### Gloss pipeline
+
+**Bilingual Semantic Audit**:
+A fail-closed review of every active Card Identity and every relevant dictionary
+sense. It independently checks English semantic coverage, Vietnamese semantic
+equivalence, learner-friendly simplicity, and Example/POS alignment. Oxford is
+the primary sense authority; Cambridge English–Vietnamese is supporting
+translation evidence. The canonical review ledger is
+`data/review/bilingual_semantic_audit.jsonl`; the XLSX file in `scratch/` is an
+editable round-trip view, never the source of truth. A complete approved ledger
+is promoted deterministically into Semantic Registry; incomplete review state
+never reaches production.
+_Avoid_: quality spreadsheet, translation pass, M3 audit
+
+**Semantic Source Coverage**:
+The per-card accounting that maps each relevant Oxford/Cambridge source sense to
+one or more reviewed semantic senses, or excludes it with an explicit reason.
+`sensenum_local` is evidence, not identity; source references use content hashes
+plus source coordinates because Oxford may omit or repeat sense numbers. A
+pending source disposition blocks promotion.
+_Avoid_: auto sense zip, sense-number key
+
+**Semantic Registry**:
+The canonical production semantic payload promoted from a complete Bilingual
+Semantic Audit, stored at `data/curated/semantic_registry.jsonl`. It owns ordered
+English/Vietnamese sense content, examples, POS coverage, and source provenance.
+Card Identity remains in Card Registry; non-semantic source-derived fields and
+explicit metadata exceptions remain outside Semantic Registry. Production
+cutover is governed by ADR 0011.
+_Avoid_: gloss ledger, full card dump, XLSX source
+
+**ChatGPT Semantic Reviewer**:
+The reviewer role that authors bilingual semantic verdicts for ADR 0011. It is
+separate from historical M3/γ sense-merging. Scaffold heuristics may find
+structural risks but must never mark linguistic content as reviewed.
+_Avoid_: M3 reviewer, automatic translator
 
 The layer that produces learner-friendly paraphrases of Oxford's verbose
 definitions, shown on the back card instead of the full Oxford text.

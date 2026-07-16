@@ -12,11 +12,16 @@ from src.deck_builder.build_issues import BuildIssue
 from src.deck_builder.build_contracts import (
     CARD_FIELDS,
     CANONICAL_TXT_HEADER,
+    MAX_IDIOM_EXAMPLES_PER_IDIOM,
     MAX_IDIOMS_PER_CARD,
     BuildNotesResult,
     BuiltCard,
     serialize_jsonl,
     serialize_txt,
+)
+from src.deck_builder.formatting import (
+    normalize_idiom_example_key,
+    parse_serialized_idiom_examples,
 )
 from src.deck_builder.audio_gate import validate_audio_gate
 from src.deck_builder.example_audio import validate_example_audio_alignment
@@ -203,6 +208,30 @@ def _validate_cards(
                 identity=identity,
             ))
 
+        if card.definition_vi:
+            definition_cells = card.definition.split("|")
+            definition_vi_cells = card.definition_vi.split("|")
+            if len(definition_cells) != len(definition_vi_cells):
+                issues.append(BuildIssue(
+                    "error",
+                    "definition_vi_alignment_mismatch",
+                    (
+                        f"row {idx} DefinitionVI has {len(definition_vi_cells)} cells "
+                        f"for {len(definition_cells)} Definition cells"
+                    ),
+                    identity=identity,
+                ))
+            elif any(
+                definition.strip() and not vietnamese.strip()
+                for definition, vietnamese in zip(definition_cells, definition_vi_cells)
+            ):
+                issues.append(BuildIssue(
+                    "error",
+                    "definition_vi_empty_cell",
+                    f"row {idx} has an empty DefinitionVI cell for a populated Definition",
+                    identity=identity,
+                ))
+
         idiom_count = len([
             entry for entry in card.idioms.split("$$") if entry.strip()
         ])
@@ -213,6 +242,35 @@ def _validate_cards(
                 f"row {idx} has {idiom_count} idioms; maximum is {MAX_IDIOMS_PER_CARD}",
                 identity=identity,
             ))
+
+        seen_idiom_example_keys: set[str] = set()
+        for idiom_idx, examples in enumerate(
+            parse_serialized_idiom_examples(card.idioms), 1
+        ):
+            if len(examples) > MAX_IDIOM_EXAMPLES_PER_IDIOM:
+                issues.append(BuildIssue(
+                    "error",
+                    "idiom_example_limit_exceeded",
+                    (
+                        f"row {idx} idiom {idiom_idx} has {len(examples)} examples; "
+                        f"maximum is {MAX_IDIOM_EXAMPLES_PER_IDIOM}"
+                    ),
+                    identity=identity,
+                ))
+            if len(examples) == 1:
+                key = normalize_idiom_example_key(examples[0])
+                if key in seen_idiom_example_keys:
+                    issues.append(BuildIssue(
+                        "error",
+                        "idiom_example_duplicate",
+                        (
+                            f"row {idx} idiom {idiom_idx} repeats an example "
+                            "used by an earlier idiom"
+                        ),
+                        identity=identity,
+                    ))
+                else:
+                    seen_idiom_example_keys.add(key)
 
         for field in validate_example_audio_alignment(card):
             issues.append(BuildIssue(

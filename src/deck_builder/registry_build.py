@@ -254,7 +254,12 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
     """Build cards from registry/manual inputs without reading generated outputs."""
     from src.deck_builder.corpus_tag_sync import apply_corpus_routing_and_tags
     from src.deck_builder.review_overrides import apply_review_overrides, load_review_overrides
+    from src.deck_builder.relation_validation import validate_lexical_relation_metadata
     from src.deck_builder.sense_labels import apply_sense_labels, load_sense_label_overrides
+    from src.deck_builder.semantic_registry import (
+        apply_semantic_registry,
+        validate_semantic_registry_rows,
+    )
     from src.deck_builder.simplify_senses import MergedSense
     from src.deck_builder.synonym_annotator import (
         annotate_card_examples,
@@ -272,6 +277,44 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         ])
 
     inputs = load_registry_build_inputs(paths.card_registry_path, paths.manual_cards_path)
+    semantic_registry_rows: list[dict] | None = None
+    semantic_registry_path = getattr(paths, "semantic_registry_path", None)
+    if semantic_registry_path is not None:
+        try:
+            semantic_registry_rows = load_registry_jsonl(semantic_registry_path)
+        except (OSError, json.JSONDecodeError) as exc:
+            raise BuildValidationError([
+                BuildIssue(
+                    severity="error",
+                    code="semantic_registry_load_failed",
+                    message=str(exc),
+                    source=semantic_registry_path,
+                )
+            ]) from exc
+        try:
+            semantic_errors = validate_semantic_registry_rows(
+                semantic_registry_rows,
+                [target.row for target in inputs.targets],
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise BuildValidationError([
+                BuildIssue(
+                    severity="error",
+                    code="semantic_registry_invalid",
+                    message=str(exc),
+                    source=semantic_registry_path,
+                )
+            ]) from exc
+        if semantic_errors:
+            raise BuildValidationError([
+                BuildIssue(
+                    severity="error",
+                    code="semantic_registry_invalid",
+                    message=message,
+                    source=semantic_registry_path,
+                )
+                for message in semantic_errors
+            ])
     audio_files = _audio_dir_filenames(paths.audio_dir)
     review_overrides = load_review_overrides(getattr(paths, "review_overrides_path", None))
     vocab_3000 = _parse_vocab_list(paths.oxford_3000_md)
@@ -631,6 +674,32 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
             ))
         cards = restored_cards
 
+    if semantic_registry_rows is not None:
+        try:
+            cards = apply_semantic_registry(cards, semantic_registry_rows)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise BuildValidationError([
+                BuildIssue(
+                    severity="error",
+                    code="semantic_registry_apply_failed",
+                    message=str(exc),
+                    source=semantic_registry_path,
+                )
+            ]) from exc
+        cards = [
+            card._replace(synonyms="", antonyms="")
+            if (
+                card.guid in manual_payload_by_guid
+                and validate_lexical_relation_metadata(
+                    card.example,
+                    card.synonyms,
+                    card.antonyms,
+                )
+            )
+            else card
+            for card in cards
+        ]
+
     synonym_overrides_file = getattr(paths, "synonym_example_overrides_path", None)
     antonym_overrides_file = getattr(paths, "antonym_example_overrides_path", None)
     synonym_overrides = load_relation_overrides(synonym_overrides_file)
@@ -649,6 +718,7 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
             specs,
             synonym_overrides,
             antonym_overrides,
+            require_source_alignment=semantic_registry_rows is None,
         )
         annotation_errors.extend(errors)
         annotated_cards.append(card._replace(

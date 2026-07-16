@@ -599,6 +599,37 @@
   padding-right: 14px;
   hyphens: auto;
 }
+.sense-en {
+  display: block;
+}
+.sense-vi {
+  display: block;
+  margin-top: 6px;
+  padding: 5px 9px;
+  border-left: 2px solid #7c6fc3;
+  border-radius: 0 6px 6px 0;
+  background: #1d1a2a;
+  color: #c4b5fd;
+  font-size: 13px;
+  line-height: 1.5;
+  font-style: normal;
+  hyphens: none;
+  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+.sense-vi-label {
+  display: inline-block;
+  margin-right: 7px;
+  color: #a78bfa;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  vertical-align: 1px;
+}
+.sense-vi-text {
+  color: inherit;
+}
 .sense-ex:empty {
   border-left: none;
 }
@@ -609,6 +640,26 @@
   font-style: italic;
   border-left: 1px solid #1e1d1d;
   padding-left: 14px;
+}
+@media (max-width: 560px) {
+  .sense-row {
+    grid-template-columns: 1fr;
+    padding: 12px 14px;
+  }
+  .sense-def {
+    padding-right: 0;
+  }
+  .sense-ex {
+    border-left: 0;
+    border-top: 1px solid #1e1d1d;
+    margin-top: 10px;
+    padding: 10px 0 0;
+  }
+  .sense-ex:empty {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+  }
 }
 .example-line {
   display: flex;
@@ -897,7 +948,7 @@
         <li><code style="color:#fbbf24">.corpus-badge</code> + <code style="color:#fbbf24">.corpus-opal</code> + <code style="color:#fbbf24">.corpus-oxf</code> + <code style="color:#fbbf24">.corpus-awl</code></li>
         <li><code style="color:#fbbf24">.register-tag</code> + <code style="color:#fbbf24">.rt-amber</code> + <code style="color:#fbbf24">.rt-warm</code> + <code style="color:#fbbf24">.rt-red</code> + <code style="color:#fbbf24">.rt-subject</code> + <code style="color:#fbbf24">.rt-idiom</code></li>
         <li><code style="color:#fbbf24">.usage-tag</code> + <code style="color:#fbbf24">.feature-row</code> + <code style="color:#fbbf24">.feature-tag</code></li>
-        <li><code style="color:#fbbf24">.senses-box</code> + <code style="color:#fbbf24">.sense-row</code> + <code style="color:#fbbf24">.sense-def</code> + <code style="color:#fbbf24">.sense-ex</code> + <code style="color:#fbbf24">.example-audio-toolbar</code> + <code style="color:#fbbf24">.example-accent-toggle</code> + <code style="color:#fbbf24">.example-accent-label</code> + <code style="color:#fbbf24">.example-audio-trigger</code></li>
+        <li><code style="color:#fbbf24">.senses-box</code> + <code style="color:#fbbf24">.sense-row</code> + <code style="color:#fbbf24">.sense-def</code> + <code style="color:#fbbf24">.sense-en</code> + <code style="color:#fbbf24">.sense-vi</code> + <code style="color:#fbbf24">.sense-ex</code> + <code style="color:#fbbf24">.example-audio-toolbar</code> + <code style="color:#fbbf24">.example-accent-toggle</code> + <code style="color:#fbbf24">.example-accent-label</code> + <code style="color:#fbbf24">.example-audio-trigger</code></li>
         <li><code style="color:#fbbf24">.idiom-box</code> + <code style="color:#fbbf24">.idiom-list</code> + <code style="color:#fbbf24">.idiom-row</code> + <code style="color:#fbbf24">.idiom-phrase</code> + <code style="color:#fbbf24">.idiom-explanation</code> + <code style="color:#fbbf24">.idiom-examples</code> + <code style="color:#fbbf24">.idiom-example</code></li>
       </ul>
     </div>
@@ -1030,11 +1081,11 @@
       </div>
       <div class="section-box senses-box">
         <div class="sense-row">
-          <div class="sense-def">a feeling or opinion about something or someone</div>
+          <div class="sense-def"><div class="sense-en">a feeling or opinion about something or someone</div><div class="sense-vi" lang="vi"><span class="sense-vi-label">VI</span><span class="sense-vi-text">thái độ, quan điểm</span></div></div>
           <div class="sense-ex"><span class="example-line example-audio-trigger" role="button" tabindex="0"><span class="example-text">"she had a positive attitude toward work"</span></span></div>
         </div>
         <div class="sense-row">
-          <div class="sense-def">a way of thinking or behaving that reflects this</div>
+          <div class="sense-def"><div class="sense-en">a way of thinking or behaving that reflects this</div><div class="sense-vi" lang="vi"><span class="sense-vi-label">VI</span><span class="sense-vi-text">cách suy nghĩ hoặc cư xử</span></div></div>
           <div class="sense-ex"><span class="example-line example-audio-trigger" role="button" tabindex="0"><span class="example-text">"the company has changed its <span class="word-highlight">attitude</span> to diversity"</span></span></div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 Core artifact, Card Identity, registry coverage, order, and card-count
 validation belong to ``src.deck_builder.build_validation``. P3B adds
-legacy audit/gloss checks without reimplementing registry contracts.
+legacy audit-key checks plus exact Semantic Registry payload sync.
 """
 from __future__ import annotations
 
@@ -18,7 +18,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import ProjectPaths
 from src.deck_builder.build_contracts import CARD_FIELDS
 from src.deck_builder.build_validation import validate_artifact_paths
-from src.deck_builder.sense_labels import parse_existing_prefix
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -29,8 +28,7 @@ paths = ProjectPaths(PROJECT_ROOT)
 DECK_TXT = paths.anki_notes_txt
 DECK_JSONL = paths.anki_notes_jsonl
 MASTER_AUDIT = paths.deck_audit_jsonl
-
-from src.deck_builder.gloss_hygiene import normalize_gloss
+SEMANTIC_REGISTRY = paths.semantic_registry
 
 
 def run_command_capture(cmd: list[str], cwd: Path) -> tuple[int, str]:
@@ -43,6 +41,15 @@ def load_audit_rows() -> list[dict]:
     if not MASTER_AUDIT.exists():
         return rows
     with MASTER_AUDIT.open(encoding='utf-8') as fp:
+        for line in fp:
+            if line.strip():
+                rows.append(json.loads(line))
+    return rows
+
+
+def load_semantic_registry_rows() -> list[dict]:
+    rows = []
+    with SEMANTIC_REGISTRY.open(encoding="utf-8") as fp:
         for line in fp:
             if line.strip():
                 rows.append(json.loads(line))
@@ -167,141 +174,80 @@ def verify_audit_alignment(data_rows: list[list[str]], audit_rows: list[dict]):
         print(f"    Sample not-in-audit cards: {missing_in_audit[:10]}")
 
 
-def verify_definition_sync(data_rows: list[list[str]], audit_rows: list[dict]):
-    # Load audit glosses
-    audit_gloss_map = {}
-    for r in audit_rows:
-        k = (r['word'].strip().lower(), r['pos'].strip().lower(), r['cefr'].strip().upper())
-        audit_gloss_map[k] = r.get('gloss_after') or ''
+def verify_definition_sync(
+    data_rows: list[list[str]], semantic_rows: list[dict]
+) -> None:
+    """Verify final bilingual fields against their canonical content owner."""
+    expected_by_guid: dict[str, tuple[str, str]] = {}
+    duplicate_guids: list[str] = []
+    for row in semantic_rows:
+        guid = (row.get("guid") or "").strip()
+        if guid in expected_by_guid:
+            duplicate_guids.append(guid)
+            continue
+        senses = row.get("senses") or []
+        definition = "|".join(
+            f"{sense['definition_en']} ({sense['definition_vi']})"
+            for sense in senses
+        )
+        definition_vi = "|".join(sense["definition_vi"] for sense in senses)
+        expected_by_guid[guid] = (definition, definition_vi)
 
-    # Load review overrides by GUID
-    from src.config import ProjectPaths
-    paths_reg = ProjectPaths()
-    review_file = paths_reg.non_oxford_non_c2_overrides
-    review_overrides = {}
-    if review_file.exists():
-        with review_file.open(encoding='utf-8') as f:
-            for line in f:
-                if line.strip():
-                    item = json.loads(line)
-                    guid = item.get("guid")
-                    if guid:
-                        review_overrides[guid] = item
+    if duplicate_guids:
+        print(f"Semantic Registry duplicate GUIDs: {sorted(set(duplicate_guids))[:10]}")
+        sys.exit(1)
 
-    registry_key_by_guid = {}
-    if paths_reg.card_registry.exists():
-        with paths_reg.card_registry.open(encoding='utf-8') as f:
-            for line in f:
-                if line.strip():
-                    item = json.loads(line)
-                    guid = (item.get("guid") or "").strip()
-                    if guid:
-                        registry_key_by_guid[guid] = (
-                            (item.get("word") or "").strip(),
-                            (item.get("cefr") or "").strip().upper(),
-                            (item.get("list") or "").strip(),
-                            (item.get("variant") or "").strip(),
-                        )
-
-    manual_def_by_guid = {}
-    if paths_reg.manual_cards.exists():
-        manual_by_key = {}
-        with paths_reg.manual_cards.open(encoding='utf-8') as f:
-            for line in f:
-                if line.strip():
-                    item = json.loads(line)
-                    key = (
-                        (item.get("word") or "").strip(),
-                        (item.get("cefr") or "").strip().upper(),
-                        (item.get("list") or "").strip(),
-                        (item.get("variant") or "").strip(),
-                    )
-                    manual_by_key[key] = item
-        for guid, key in registry_key_by_guid.items():
-            manual = manual_by_key.get(key)
-            if manual is not None:
-                manual_def_by_guid[guid] = manual.get("definition") or ""
-
-    synced_count = 0
-    not_in_audit_count = 0
-    mismatches = []
-
-    # Re-implement lookup_gloss logic for comparison
-    def resolve_expected_definition(word: str, pos: str, cefr: str) -> str | None:
-        # Since TXT is built post-POS/lemmatize fixes, (word, pos, cefr) should match resolved keys.
-        pos_parts = [p.strip().lower() for p in pos.split(',') if p.strip()]
-        
-        # 1. Direct match
-        if (word, pos, cefr) in audit_gloss_map:
-            return audit_gloss_map[(word, pos, cefr)]
-            
-        # 2. Individual POS parts
-        matched_glosses = []
-        seen_glosses = set()
-        for p in pos_parts:
-            # Check keys
-            for gk in [(word, p, cefr)]:
-                if gk in audit_gloss_map:
-                    g = audit_gloss_map[gk]
-                    if g not in seen_glosses:
-                        matched_glosses.append(g)
-                        seen_glosses.add(g)
-                    break
-                    
-        if matched_glosses:
-            return ' | '.join(matched_glosses)
-        return None
+    guid_index = CARD_FIELDS.index("guid")
+    word_index = CARD_FIELDS.index("word")
+    definition_index = CARD_FIELDS.index("definition")
+    definition_vi_index = CARD_FIELDS.index("definition_vi")
+    seen_guids: set[str] = set()
+    missing_guids: list[str] = []
+    mismatches: list[dict] = []
 
     for parts in data_rows:
-        guid = parts[0]
-        word = parts[3].strip().lower()
-        pos = parts[4].strip().lower()
-        cefr = parts[14].strip().upper()
-        txt_def = parts[6]
-
-        override_definition = review_overrides.get(guid, {}).get("Definition")
-        if override_definition is not None:
-            expected_def = override_definition
-        elif guid in manual_def_by_guid:
-            expected_def = manual_def_by_guid[guid]
-        else:
-            expected_def = resolve_expected_definition(word, pos, cefr)
-
-        if expected_def is None:
-            not_in_audit_count += 1
+        guid = parts[guid_index]
+        seen_guids.add(guid)
+        expected = expected_by_guid.get(guid)
+        if expected is None:
+            missing_guids.append(guid)
             continue
-
-        # Strip sense label prefixes before gloss normalization
-        txt_chunks = [ch.strip() for ch in txt_def.split("|") if ch.strip()]
-        clean_txt_chunks = [parse_existing_prefix(ch)[1] for ch in txt_chunks]
-        txt_def_clean = " | ".join(clean_txt_chunks)
-        expected_chunks = [ch.strip() for ch in expected_def.split("|") if ch.strip()]
-        clean_expected_chunks = [parse_existing_prefix(ch)[1] for ch in expected_chunks]
-        expected_def_clean = " | ".join(clean_expected_chunks)
-
-        txt_norm = normalize_gloss(txt_def_clean).gloss
-        expected_norm = normalize_gloss(expected_def_clean).gloss
-        
-        if txt_norm != expected_norm:
+        txt_definition = parts[definition_index]
+        txt_definition_vi = parts[definition_vi_index]
+        expected_definition, expected_definition_vi = expected
+        if (
+            txt_definition != expected_definition
+            or txt_definition_vi != expected_definition_vi
+        ):
             mismatches.append({
-                'word': word,
-                'pos': pos,
-                'cefr': cefr,
-                'txt_def': txt_def,
-                'expected_def': expected_def,
-                'txt_norm': txt_norm,
-                'expected_norm': expected_norm
+                "guid": guid,
+                "word": parts[word_index],
+                "txt_definition": txt_definition,
+                "expected_definition": expected_definition,
+                "txt_definition_vi": txt_definition_vi,
+                "expected_definition_vi": expected_definition_vi,
             })
-        else:
-            synced_count += 1
 
-    print(f"  Definition sync: synced={synced_count}  not-in-audit={not_in_audit_count}  mismatches={len(mismatches)}")
-    if mismatches:
-        print("Definition Mismatches Found:")
-        for m in mismatches[:10]:
-            print(f"  - ({m['word']}, {m['pos']}, {m['cefr']}):")
-            print(f"      TXT:      {m['txt_def']!r}")
-            print(f"      Expected: {m['expected_def']!r}")
+    extra_guids = sorted(set(expected_by_guid) - seen_guids)
+    synced_count = len(data_rows) - len(missing_guids) - len(mismatches)
+    print(
+        "  Semantic Registry sync: "
+        f"synced={synced_count} missing={len(missing_guids)} "
+        f"extra={len(extra_guids)} mismatches={len(mismatches)}"
+    )
+    if missing_guids or extra_guids or mismatches:
+        if missing_guids:
+            print(f"  Build GUIDs missing from Semantic Registry: {missing_guids[:10]}")
+        if extra_guids:
+            print(f"  Semantic Registry GUIDs missing from build: {extra_guids[:10]}")
+        if mismatches:
+            print("Semantic Registry Definition Mismatches Found:")
+            for mismatch in mismatches[:10]:
+                print(f"  - ({mismatch['word']}, {mismatch['guid']}):")
+                print(f"      TXT Definition:      {mismatch['txt_definition']!r}")
+                print(f"      Registry Definition: {mismatch['expected_definition']!r}")
+                print(f"      TXT DefinitionVI:      {mismatch['txt_definition_vi']!r}")
+                print(f"      Registry DefinitionVI: {mismatch['expected_definition_vi']!r}")
         sys.exit(1)
 
 
@@ -377,8 +323,9 @@ def main() -> int:
         f"jsonl_sha256={report.jsonl_sha256} txt_sha256={report.txt_sha256}"
     )
 
-    # Load Audit rows
+    # Load canonical and legacy review artifacts.
     audit_rows = load_audit_rows()
+    semantic_rows = load_semantic_registry_rows()
 
     print("[1] Verifying TXT structural integrity...")
     data_rows = verify_txt_structure(lines)
@@ -386,8 +333,8 @@ def main() -> int:
     print("[2] Verifying legacy audit alignment...")
     verify_audit_alignment(data_rows, audit_rows)
 
-    print("[3] Verifying Definition Sync...")
-    verify_definition_sync(data_rows, audit_rows)
+    print("[3] Verifying Semantic Registry Definition Sync...")
+    verify_definition_sync(data_rows, semantic_rows)
 
     verify_build_drift(report.card_count)
 

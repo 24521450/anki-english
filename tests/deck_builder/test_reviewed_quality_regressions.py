@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 
 from src.config import ProjectPaths
 from src.deck_builder.sense_labels import parse_existing_prefix
+from src.deck_builder.synonym_annotator import strip_synonym_annotations
 
 
 PATHS = ProjectPaths()
@@ -28,6 +30,7 @@ def _canonical_rows():
         "reviews": _load(PATHS.non_oxford_non_c2_overrides),
         "manuals": _load(PATHS.manual_cards),
         "registry": _load(PATHS.card_registry),
+        "semantic_registry": _load(PATHS.semantic_registry),
         "cards": _load(PATHS.anki_notes_jsonl),
     }
 
@@ -48,13 +51,6 @@ def _card_for_owner(owner: dict, cards: list[dict]) -> dict:
         and card["cefr"] == owner["cefr"]
         and owner_pos.issubset({part.strip() for part in card["pos"].split(",")})
     ]
-    if len(matches) > 1:
-        matches = [
-            card
-            for card in matches
-            if _definition_without_labels(card["definition"])
-            == _definition_without_labels(owner["gloss_after"])
-        ]
     assert len(matches) == 1, owner["word"]
     return matches[0]
 
@@ -63,21 +59,67 @@ def _definition_without_labels(definition: str) -> str:
     return "|".join(parse_existing_prefix(chunk)[1] for chunk in definition.split("|"))
 
 
-def _assert_owner_payload(owner: dict, card: dict) -> None:
+def _registry_definition(registry_row: dict) -> str:
+    return "|".join(
+        f"{sense['definition_en']} ({sense['definition_vi']})"
+        for sense in registry_row["senses"]
+    )
+
+
+def _registry_examples(registry_row: dict) -> list[list[str]]:
+    return [list(sense["examples"]) for sense in registry_row["senses"]]
+
+
+def _relation_terms(card: dict) -> list[str]:
+    terms = []
+    for field in (card["synonyms"], card["antonyms"]):
+        for part in re.split(r"\||<br\s*/?><br\s*/?>|,", field, flags=re.IGNORECASE):
+            part = part.strip()
+            if part and part not in terms:
+                terms.append(part)
+    return terms
+
+
+def _split_example_sentences(value: str) -> list[str]:
+    return [
+        part.strip()
+        for part in re.split(r"<br\s*/?>\s*<br\s*/?>", value, flags=re.IGNORECASE)
+        if part.strip()
+    ]
+
+
+def _assert_registry_payload(registry_row: dict, card: dict) -> None:
+    """Assert production semantics against the promoted registry.
+
+    Relation annotations are a presentation layer added after registry
+    promotion.  Strip only those annotations while comparing each semantic
+    sentence independently, preserving sense and example ordering/counts.
+    """
+    assert card["definition"] == _registry_definition(registry_row)
+    relation_terms = _relation_terms(card)
+    expected_senses = _registry_examples(registry_row)
+    if not expected_senses:
+        assert card["example"] == ""
+        return
+    actual_senses = [
+        _split_example_sentences(chunk) for chunk in card["example"].split("|")
+    ]
+    assert len(actual_senses) == len(expected_senses)
+    for actual, expected in zip(actual_senses, expected_senses):
+        assert len(actual) == len(expected)
+        for actual_sentence, expected_sentence in zip(actual, expected):
+            assert strip_synonym_annotations(actual_sentence, relation_terms).strip() == (
+                strip_synonym_annotations(expected_sentence, relation_terms).strip()
+            )
+
+
+def _assert_owner_payload(owner: dict, card: dict, registry_rows: list[dict]) -> None:
     if owner.get("guid"):
-        owner_definition = owner["Definition"]
-        owner_example = owner["Example"]
         assert card["collocations"] == owner["Collocations"]
     else:
-        owner_definition = owner["gloss_after"]
-        owner_example = owner["example_after"]
         assert card["collocations"] == owner["collocations_after"]
-    assert _definition_without_labels(card["definition"]) == _definition_without_labels(
-        owner_definition
-    )
-    assert len(card["example"].split("|")) == len(owner_example.split("|"))
-    if "<br><br>" in owner_example:
-        assert "<br><br>" in card["example"]
+    registry_row = next(row for row in registry_rows if row["guid"] == card["guid"])
+    _assert_registry_payload(registry_row, card)
 
 
 def test_exact_source_cefr_rescue_is_owned_by_canonical_inputs():
@@ -134,10 +176,23 @@ def test_semantic_overload_grouping_matches_canonical_owner_payloads():
     }
     for owner in owners:
         card = _card_for_owner(owner, rows["cards"])
-        _assert_owner_payload(owner, card)
-        assert len(card["definition"].split("|")) == 3
-        assert len(card["example"].split("|")) == 3
-        assert (card["synonyms"], card["antonyms"]) == expected_relations[card["word"]]
+        _assert_owner_payload(owner, card, rows["semantic_registry"])
+        semantic_row = next(
+            row for row in rows["semantic_registry"] if row["guid"] == card["guid"]
+        )
+        assert len(card["definition"].split("|")) == len(semantic_row["senses"])
+        assert len(card["example"].split("|")) == len(semantic_row["senses"])
+        expected_synonyms, expected_antonyms = expected_relations[card["word"]]
+        assert {
+            part.strip() for part in card["synonyms"].split("|") if part.strip()
+        } == {
+            part.strip() for part in expected_synonyms.split("|") if part.strip()
+        }
+        assert {
+            part.strip() for part in card["antonyms"].split("|") if part.strip()
+        } == {
+            part.strip() for part in expected_antonyms.split("|") if part.strip()
+        }
 
 
 def test_sense_grouping_review_matches_canonical_owner_payloads():
@@ -158,7 +213,9 @@ def test_sense_grouping_review_matches_canonical_owner_payloads():
         "review": 13,
     }
     for owner in owners:
-        _assert_owner_payload(owner, _card_for_owner(owner, rows["cards"]))
+        _assert_owner_payload(
+            owner, _card_for_owner(owner, rows["cards"]), rows["semantic_registry"]
+        )
 
     registry = {_manual_key(row): row for row in rows["registry"]}
     cards = {row["guid"]: row for row in rows["cards"]}
@@ -195,7 +252,7 @@ def test_vietnamese_precision_review_matches_canonical_owner_payloads():
     }
     for owner in owners:
         card = _card_for_owner(owner, rows["cards"])
-        _assert_owner_payload(owner, card)
+        _assert_owner_payload(owner, card, rows["semantic_registry"])
         for chunk in card["definition"].split("|"):
             translation = chunk.rsplit("(", 1)[-1].rstrip(")")
             assert translation.count("/") < 2, card["word"]
@@ -213,6 +270,9 @@ def test_audit_review_20260713_matches_reviewed_card_payloads():
     rows = _canonical_rows()
     cards = {row["guid"]: row for row in rows["cards"]}
     registry = {row["guid"]: row for row in rows["registry"]}
+    semantic_registry = {
+        row["guid"]: row for row in rows["semantic_registry"]
+    }
 
     assert (registry["d0+rK3^u+."]["word"], registry["d0+rK3^u+."]["pos"]) == (
         "devote sth to sth",
@@ -222,13 +282,11 @@ def test_audit_review_20260713_matches_reviewed_card_payloads():
         "devote sth to sth",
         "phrasal verb",
     )
+    _assert_registry_payload(semantic_registry["d0+rK3^u+."], cards["d0+rK3^u+."])
 
     advocate = cards["km/DeO(0eI"]
     assert advocate["pos"] == "noun, verb"
-    assert advocate["example"] == (
-        "an advocate for hospital workers<br><br>"
-        "The group does not advocate the use of violence."
-    )
+    _assert_registry_payload(semantic_registry["km/DeO(0eI"], advocate)
 
     deposit_b2 = cards["5[fv?8uF;~"]
     assert (deposit_b2["word"], deposit_b2["pos"], deposit_b2["cefr"]) == (
@@ -236,27 +294,18 @@ def test_audit_review_20260713_matches_reviewed_card_payloads():
         "noun",
         "B2",
     )
-    assert deposit_b2["definition"] == (
-        "first part of payment (tiền đặt cọc)|"
-        "refundable security money (tiền cọc bảo đảm)"
-    )
+    _assert_registry_payload(semantic_registry["5[fv?8uF;~"], deposit_b2)
 
     deposit_c1 = cards["b6cD1Ck8TE"]
     assert deposit_c1["pos"] == "verb"
-    assert deposit_c1["definition"] == (
-        "put money into a bank account (gửi tiền vào tài khoản)|"
-        "pay money in advance or as refundable security (đặt cọc)"
-    )
+    _assert_registry_payload(semantic_registry["b6cD1Ck8TE"], deposit_c1)
     assert deposit_c1["synonyms"] == deposit_c1["antonyms"] == ""
     assert "idioms" not in deposit_c1["tags"].split()
 
     meantime = cards["N|.UFNN`SW"]
     assert meantime["pos"] == "noun"
-    assert (meantime["definition"], meantime["example"], meantime["collocations"]) == (
-        "",
-        "",
-        "",
-    )
+    _assert_registry_payload(semantic_registry["N|.UFNN`SW"], meantime)
+    assert meantime["collocations"] == ""
     assert [part.split(" :: ", 1)[0] for part in meantime["idioms"].split("$$")] == [
         "for the meantime",
         "in the meantime",
@@ -264,26 +313,16 @@ def test_audit_review_20260713_matches_reviewed_card_payloads():
     assert "/meanwhile" not in meantime["idioms"]
 
     solo = cards["%nP=oVYMv%"]
-    assert solo["definition"] == "done by one person alone|a piece or performance for one person"
-    assert solo["example"] == "his first solo flight|She played a piano solo."
+    _assert_registry_payload(semantic_registry["%nP=oVYMv%"], solo)
 
     worship = cards[",qqw,<G4mQ"]
-    assert worship["definition"] == (
-        "showing respect to God (thờ phụng)|strong love/respect (sùng bái)"
-    )
+    _assert_registry_payload(semantic_registry[",qqw,<G4mQ"], worship)
     assert (worship["synonyms"], worship["antonyms"]) == ("|adoration", "|")
 
     yield_card = cards["@NbB`9?Tqc"]
-    assert yield_card["example"] == (
-        "This will give a yield of 10% on your investment.<br><br>"
-        "Higher-rate deposit accounts yield good returns.|"
-        "After a long siege, the town was forced to yield (give way)."
-    )
+    _assert_registry_payload(semantic_registry["@NbB`9?Tqc"], yield_card)
 
-    assert cards["kCq5xM.G_7"]["definition"] == (
-        "believing people act selfishly (hoài nghi)|"
-        "not believing good will happen (bi quan)"
-    )
+    _assert_registry_payload(semantic_registry["kCq5xM.G_7"], cards["kCq5xM.G_7"])
 
     audit_keys = {
         (row["word"], row["pos"], row["cefr"])

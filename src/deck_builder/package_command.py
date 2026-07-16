@@ -34,7 +34,7 @@ EAVM_FIELD_NAMES: tuple[str, ...] = (
     "Word", "PartOfSpeech", "IPA", "Definition", "Example", "Collocations",
     "WordFamily", "AudioUK", "AudioUS", "AudioSource", "Source", "CEFRLevel",
     "Idioms", "Synonyms", "Antonyms", "ExampleAudioUK", "ExampleAudioUS",
-    "IdiomExampleAudioUK", "IdiomExampleAudioUS",
+    "IdiomExampleAudioUK", "IdiomExampleAudioUS", "DefinitionVI",
 )
 
 
@@ -173,6 +173,7 @@ def main(argv: list[str] | None = None) -> int:
                 r.get("example_audio_us") or "",
                 r.get("idiom_example_audio_uk") or "",
                 r.get("idiom_example_audio_us") or "",
+                r.get("definition_vi") or "",
             ]
 
             # Validate audio files

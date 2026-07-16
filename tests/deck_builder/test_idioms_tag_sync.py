@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 from src.deck_builder.build_metadata import sync_idioms_feature_tag
@@ -32,8 +33,8 @@ def test_production_cards_derive_idioms_tag_from_payload():
         if line.strip()
     ]
     assert len(cards) == 2461
-    assert sum(bool(card["idioms"]) for card in cards) == 410
-    assert sum("idioms" in card["tags"].split() for card in cards) == 410
+    assert sum(bool(card["idioms"]) for card in cards) == 409
+    assert sum("idioms" in card["tags"].split() for card in cards) == 409
     assert all(
         bool(card["idioms"]) == ("idioms" in card["tags"].split())
         for card in cards
@@ -42,6 +43,20 @@ def test_production_cards_derive_idioms_tag_from_payload():
         len([entry for entry in card["idioms"].split("$$") if entry.strip()]) <= 2
         for card in cards
     )
+    for card in cards:
+        seen_examples: set[str] = set()
+        for entry in card["idioms"].split("$$") if card["idioms"] else []:
+            parts = entry.split("::", 2)
+            examples = [
+                example.strip()
+                for example in (parts[2] if len(parts) == 3 else "").split("|")
+                if example.strip()
+            ]
+            assert len(examples) <= 1
+            for example in examples:
+                key = re.sub(r"\s+", " ", example).strip().casefold()
+                assert key not in seen_examples
+                seen_examples.add(key)
 
     implicate = next(
         card
@@ -50,3 +65,39 @@ def test_production_cards_derive_idioms_tag_from_payload():
     )
     assert implicate["idioms"].split(" :: ", 1)[0] == "be implicated in something"
     assert "idioms" in implicate["tags"].split()
+
+    blink = next(card for card in cards if card["word"] == "blink of an eye")
+    assert blink["idioms"] == ""
+    assert "idioms" not in blink["tags"].split()
+
+
+def test_curated_manual_idioms_keep_the_first_example():
+    cards = [
+        json.loads(line)
+        for line in (ROOT / "data/build/anki_notes.jsonl").read_text(
+            encoding="utf-8"
+        ).splitlines()
+        if line.strip()
+    ]
+    by_word = {card["word"]: card for card in cards}
+
+    expected = {
+        "meantime": "My first novel was rejected by six publishers. In the meantime I had written a play.",
+        "accordance": "in accordance with legal requirements",
+    }
+    for word, example in expected.items():
+        assert example in by_word[word]["idioms"]
+        assert "|" not in by_word[word]["idioms"].split("::", 2)[-1]
+
+
+def test_blink_of_an_eye_manual_card_has_no_unrelated_idiom_box():
+    cards = [
+        json.loads(line)
+        for line in (ROOT / "data/review/manual_cards.jsonl").read_text(
+            encoding="utf-8"
+        ).splitlines()
+        if line.strip()
+    ]
+    blink = next(card for card in cards if card["word"] == "blink of an eye")
+    assert blink["idioms"] == ""
+    assert "idioms" not in blink["tags"].split()

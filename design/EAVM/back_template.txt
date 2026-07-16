@@ -76,6 +76,7 @@
 <div style="display:none;">
   <div id="raw-pos-back">{{PartOfSpeech}}</div>
   <div id="raw-definition-back">{{Definition}}</div>
+  <div id="raw-definition-vi-back">{{DefinitionVI}}</div>
   <div id="raw-example-back">{{Example}}</div>
   <div id="raw-collocations-back">{{Collocations}}</div>
   <div id="raw-word-family-back">{{WordFamily}}</div>
@@ -370,6 +371,26 @@
     return (ok && html) ? html + ' ' + trim(text.substring(m[0].length)) : text;
   }
 
+  function splitDefinitionGloss(text) {
+    var value = trim(text);
+    if (!value || value.charAt(value.length - 1) !== ')') return {en:value, vi:''};
+    var depth = 0;
+    for (var i = value.length - 1; i >= 0; i--) {
+      var ch = value.charAt(i);
+      if (ch === ')') depth++;
+      else if (ch === '(') {
+        depth--;
+        if (depth === 0) {
+          var en = trim(value.substring(0, i));
+          var vi = trim(value.substring(i + 1, value.length - 1));
+          return (en && vi) ? {en:en, vi:vi} : {en:value, vi:''};
+        }
+        if (depth < 0) return {en:value, vi:''};
+      }
+    }
+    return {en:value, vi:''};
+  }
+
   function renderIpa(raw) {
     raw = trim(raw);
     if (!raw) return '';
@@ -461,6 +482,7 @@
 
   // 4. L3 Senses grid
   var rawDef  = getRaw('raw-definition-back');
+  var rawDefVi = getRaw('raw-definition-vi-back');
   var rawEx   = getRawExampleHtml('raw-example-back');
   var rawWord = getRaw('raw-word-back');
   var rawSyns = getRaw('raw-synonyms-back');
@@ -470,7 +492,8 @@
   var sensesEl = document.getElementById('senses-container');
 
   if (sensesEl && rawDef) {
-    var defParts = rawDef.split('|'), exParts = rawEx ? rawEx.split('|') : [];
+    var defParts = rawDef.split('|'), defViParts = rawDefVi ? rawDefVi.split('|') : [];
+    var exParts = rawEx ? rawEx.split('|') : [];
     var synParts = rawSyns ? rawSyns.split('|') : [];
     var antParts = rawAnts ? rawAnts.split('|') : [];
     var defs = [];
@@ -542,6 +565,9 @@
     for (var di = 0; di < defs.length; di++) {
       var idx = defs[di].i;
       var def = defs[di].t;
+      var defPair = splitDefinitionGloss(def);
+      var defVi = (idx < defViParts.length) ? trim(defViParts[idx]) : '';
+      if (!defVi) defVi = defPair.vi;
       var ex  = (idx < exParts.length) ? trim(exParts[idx]) : '';
       var synWords = (idx < synParts.length) ? trim(synParts[idx]).split(',') : [];
       var antWords = (idx < antParts.length) ? trim(antParts[idx]).split(',') : [];
@@ -569,8 +595,9 @@
                                     'sense ' + (di + 1) + ' example ' + (el + 1), '');
         }
       }
+      var viHtml = defVi ? '<div class="sense-vi" lang="vi" aria-label="Vietnamese gloss"><span class="sense-vi-label" aria-hidden="true">VI</span><span class="sense-vi-text">' + escapeHtml(defVi) + '</span></div>' : '';
       sHtml += '<div class="sense-row">'
-             + '<div class="sense-def">' + parseDef(def) + '</div>'
+             + '<div class="sense-def"><div class="sense-en">' + parseDef(defPair.en) + '</div>' + viHtml + '</div>'
              + '<div class="sense-ex">' + exHtml + '</div>'
              + '</div>';
     }

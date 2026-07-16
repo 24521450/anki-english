@@ -49,3 +49,24 @@ def test_validate_manual_cards_rows_rejects_bad_provenance():
 def test_validate_manual_cards_or_raise_rejects_duplicates():
     with pytest.raises(BuildValidationError):
         validate_manual_cards_or_raise([_manual_row("x", "one"), _manual_row("x", "two")])
+
+
+def test_validate_manual_cards_rows_rejects_multiple_examples_per_idiom():
+    row = _manual_row()
+    row["idioms"] = "phrase :: meaning :: First.|Second."
+
+    issues = validate_manual_cards_rows([row])
+
+    assert any(issue.code == "idiom_example_limit_exceeded" for issue in issues)
+
+
+def test_validate_manual_cards_rows_rejects_duplicate_examples_between_idioms():
+    row = _manual_row()
+    row["idioms"] = (
+        "first :: meaning :: Shared   sentence.$$"
+        "second :: meaning :: shared sentence."
+    )
+
+    issues = validate_manual_cards_rows([row])
+
+    assert any(issue.code == "idiom_example_duplicate" for issue in issues)

@@ -47,6 +47,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--synonym-overrides", type=Path, default=paths_registry.synonym_example_overrides)
     ap.add_argument("--antonym-overrides", type=Path, default=paths_registry.antonym_example_overrides)
     ap.add_argument("--sense-label-overrides", type=Path, default=paths_registry.sense_label_overrides)
+    ap.add_argument("--semantic-registry", type=Path, default=paths_registry.semantic_registry)
     args = ap.parse_args(argv)
 
     out_txt = args.txt if args.txt is not None else args.out_txt
@@ -58,6 +59,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.review_overrides.exists():
         print(f"Error: Review overrides file missing: {args.review_overrides}", file=sys.stderr)
+        return 1
+    if not args.semantic_registry.is_file():
+        print(f"Error: Semantic Registry file missing: {args.semantic_registry}", file=sys.stderr)
         return 1
 
     paths = BuildNotesPaths(
@@ -74,6 +78,7 @@ def main(argv: list[str] | None = None) -> int:
         synonym_example_overrides_path=args.synonym_overrides,
         antonym_example_overrides_path=args.antonym_overrides,
         sense_label_overrides_path=args.sense_label_overrides,
+        semantic_registry_path=args.semantic_registry,
     )
 
     print("=== Loading inputs ===", file=sys.stderr)

@@ -9,6 +9,7 @@ import pytest
 
 from src.deck_builder.anki_import_command import (
     EAVM_FIELDS,
+    LEGACY_EAVM_FIELDS,
     EAVM_MODEL_NAME,
     AnkiConnectClient,
     AnkiConnectError,
@@ -36,6 +37,7 @@ def _row(**updates) -> dict:
         "example_audio_uk": '<audio preload="none" src="example_uk_a.mp3"></audio>',
         "example_audio_us": '<audio preload="none" src="example_us_a.mp3"></audio>',
         "idiom_example_audio_uk": "", "idiom_example_audio_us": "",
+        "definition_vi": "chiến thắng",
     }
     row.update(updates)
     return row
@@ -50,7 +52,7 @@ def _live_note(row: dict) -> dict:
         "word", "pos", "ipa", "definition", "example", "collocations", "wordfamily",
         "uk_audio", "us_audio", "source1", "source2", "cefr", "idioms", "synonyms",
         "antonyms", "example_audio_uk", "example_audio_us", "idiom_example_audio_uk",
-        "idiom_example_audio_us",
+        "idiom_example_audio_us", "definition_vi",
     )
     return {
         "modelName": EAVM_MODEL_NAME,
@@ -110,6 +112,18 @@ def test_preflight_allows_first_install_without_backup(tmp_path: Path):
     assert list(tmp_path.iterdir()) == []
 
 
+def test_preflight_allows_current_19_field_model(tmp_path: Path):
+    class Client:
+        def call(self, action, **params):
+            if action == "version": return 6
+            if action == "modelNames": return [EAVM_MODEL_NAME]
+            if action == "modelFieldNames": return list(LEGACY_EAVM_FIELDS)
+            if action == "deckNames": return []
+            raise AssertionError(action)
+
+    assert preflight_and_backup(Client(), tmp_path) is None
+
+
 def test_preflight_rejects_prefix_compatible_extra_fields(tmp_path: Path):
     class Client:
         def call(self, action, **params):
@@ -121,7 +135,7 @@ def test_preflight_rejects_prefix_compatible_extra_fields(tmp_path: Path):
         preflight_and_backup(Client(), tmp_path)
 
 
-def test_migrate_established_model_appends_audio_fields_in_order():
+def test_migrate_established_model_appends_all_new_fields_in_order():
     fields = list(EAVM_FIELDS[:15])
     calls = []
 
@@ -140,7 +154,31 @@ def test_migrate_established_model_appends_audio_fields_in_order():
     assert fields == list(EAVM_FIELDS)
     additions = [params for action, params in calls if action == "modelFieldAdd"]
     assert [params["fieldName"] for params in additions] == list(EAVM_FIELDS[15:])
-    assert [params["index"] for params in additions] == [15, 16, 17, 18]
+    assert [params["index"] for params in additions] == [15, 16, 17, 18, 19]
+
+
+def test_migrate_legacy_19_field_model_appends_definition_vi_only():
+    fields = list(LEGACY_EAVM_FIELDS)
+    additions = []
+
+    class Client:
+        def call(self, action, **params):
+            if action == "modelNames": return [EAVM_MODEL_NAME]
+            if action == "modelFieldNames": return list(fields)
+            if action == "modelFieldAdd":
+                additions.append(params)
+                fields.insert(params["index"], params["fieldName"])
+                return None
+            raise AssertionError(action)
+
+    migrate_established_eavm_fields(Client())
+
+    assert fields == list(EAVM_FIELDS)
+    assert additions == [{
+        "modelName": EAVM_MODEL_NAME,
+        "fieldName": "DefinitionVI",
+        "index": 19,
+    }]
 
 
 def test_sync_model_design_updates_existing_template_name_and_css(tmp_path: Path):
@@ -232,6 +270,7 @@ def test_sync_example_audio_fields_matches_established_signature_and_batches_upd
             "ExampleAudioUS": row["example_audio_us"],
             "IdiomExampleAudioUK": "",
             "IdiomExampleAudioUS": "",
+            "DefinitionVI": row["definition_vi"],
         }}},
     }]
 
@@ -282,6 +321,7 @@ def test_sync_existing_notes_updates_all_fields_and_routes_cards(tmp_path: Path)
     update = next(params["actions"][0] for action, params in calls if action == "multi")
     assert update["action"] == "updateNote"
     assert update["params"]["note"]["fields"]["Definition"] == "win"
+    assert update["params"]["note"]["fields"]["DefinitionVI"] == "chiến thắng"
     assert ("changeDeck", {"cards": [456], "deck": row["deck"]}) in calls
 
 

@@ -516,6 +516,37 @@
   padding-right: 14px;
   hyphens: auto;
 }
+.sense-en {
+  display: block;
+}
+.sense-vi {
+  display: block;
+  margin-top: 6px;
+  padding: 5px 9px;
+  border-left: 2px solid #7c6fc3;
+  border-radius: 0 6px 6px 0;
+  background: #1d1a2a;
+  color: #c4b5fd;
+  font-size: 13px;
+  line-height: 1.5;
+  font-style: normal;
+  hyphens: none;
+  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+.sense-vi-label {
+  display: inline-block;
+  margin-right: 7px;
+  color: #a78bfa;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  vertical-align: 1px;
+}
+.sense-vi-text {
+  color: inherit;
+}
 /* #1 Fix: empty sense-ex — hide orphaned border-left */
 .sense-ex:empty {
   border-left: none;
@@ -527,6 +558,26 @@
   font-style: italic;
   border-left: 1px solid #1e1d1d;
   padding-left: 14px;
+}
+@media (max-width: 560px) {
+  .sense-row {
+    grid-template-columns: 1fr;
+    padding: 12px 14px;
+  }
+  .sense-def {
+    padding-right: 0;
+  }
+  .sense-ex {
+    border-left: 0;
+    border-top: 1px solid #1e1d1d;
+    margin-top: 10px;
+    padding: 10px 0 0;
+  }
+  .sense-ex:empty {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+  }
 }
 .example-line {
   display: flex;

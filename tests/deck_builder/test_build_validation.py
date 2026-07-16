@@ -129,6 +129,26 @@ def test_validate_build_result_accepts_double_example_break(tmp_path: Path):
     assert report.ok
 
 
+def test_validate_build_result_rejects_misaligned_definition_vi(tmp_path: Path):
+    card = _card()._replace(
+        definition="first (một)|second (hai)",
+        definition_vi="một",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert not report.ok
+    assert any(
+        issue.code == "definition_vi_alignment_mismatch"
+        for issue in report.issues
+    )
+
+
 def test_validate_build_result_rejects_unrenderable_relation_metadata(tmp_path: Path):
     card = _card()._replace(example="The result was clear.", synonyms="plain")
     registry = tmp_path / "card_registry.jsonl"
@@ -180,6 +200,66 @@ def test_validate_build_result_rejects_more_than_two_idioms(tmp_path: Path):
 
     assert not report.ok
     assert any(issue.code == "idiom_limit_exceeded" for issue in report.issues)
+
+
+def test_validate_build_result_rejects_more_than_one_example_per_idiom(tmp_path: Path):
+    card = _card()._replace(
+        idioms="phrase :: meaning :: First example.|Second example."
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert not report.ok
+    assert any(
+        issue.code == "idiom_example_limit_exceeded" for issue in report.issues
+    )
+
+
+def test_validate_build_result_rejects_duplicate_idiom_examples(tmp_path: Path):
+    card = _card()._replace(
+        idioms=(
+            "first :: meaning :: Shared   sentence.$$"
+            "second :: meaning :: shared sentence."
+        )
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert not report.ok
+    assert any(issue.code == "idiom_example_duplicate" for issue in report.issues)
+
+
+def test_validate_build_result_rejects_tampered_idiom_accent_audio(tmp_path: Path):
+    card = _card()._replace(idioms="phrase :: meaning :: One example.")
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    result = _result_with_audio([card], tmp_path)
+    tampered_cards = [result.built_cards[0]._replace(idiom_example_audio_uk="")]
+    result = result._replace(
+        built_cards=tampered_cards,
+        jsonl_text=serialize_jsonl(tampered_cards),
+        txt_text=serialize_txt(tampered_cards),
+    )
+    report = validate_build_result(result, inputs, tmp_path)
+
+    assert not report.ok
+    assert any(
+        issue.code == "example_audio_alignment_mismatch" for issue in report.issues
+    )
 
 
 def test_validate_artifact_paths_rejects_txt_field_drift(tmp_path: Path):

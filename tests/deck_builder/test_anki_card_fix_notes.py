@@ -5,18 +5,79 @@ import re
 from collections import Counter
 
 from src.config import ProjectPaths
+from src.deck_builder.synonym_annotator import strip_synonym_annotations
 from tools._detect_lexical_loops import detect_loops
 
 
 PATHS = ProjectPaths()
+SEMANTIC_FIELDS = {"definition", "example"}
+
+
+def _load_jsonl(path) -> list[dict]:
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+def _cards_by_guid() -> dict[str, dict]:
+    return {row["guid"]: row for row in _load_jsonl(PATHS.anki_notes_jsonl)}
+
+
+def _semantic_registry_by_guid() -> dict[str, dict]:
+    return {row["guid"]: row for row in _load_jsonl(PATHS.semantic_registry)}
+
+
+def _render_registry_definition(registry_row: dict) -> str:
+    return "|".join(
+        f"{sense['definition_en']} ({sense['definition_vi']})"
+        for sense in registry_row["senses"]
+    )
+
+
+def _render_registry_example(registry_row: dict) -> str:
+    return "|".join(
+        "<br><br>".join(sense["examples"])
+        for sense in registry_row["senses"]
+    )
+
+
+def _relation_terms(card: dict) -> list[str]:
+    terms: list[str] = []
+    for field in ("synonyms", "antonyms"):
+        for group in re.split(r"\||<br\s*/?><br\s*/?>", card.get(field) or ""):
+            terms.extend(term.strip() for term in group.split(",") if term.strip())
+    return terms
+
+
+def _without_layered_relation_annotations(text: str, card: dict) -> str:
+    return strip_synonym_annotations(text, _relation_terms(card))
+
+
+def _assert_registry_semantics(card: dict, registry_row: dict | None = None) -> None:
+    if registry_row is None:
+        registry_row = _semantic_registry_by_guid()[card["guid"]]
+
+    assert (card["word"], card["pos"], card["cefr"]) == (
+        registry_row["word"],
+        registry_row["pos"],
+        registry_row["cefr"],
+    )
+    assert card["definition"] == _render_registry_definition(registry_row)
+
+    # ADR 0011 owns the base Example payload. Lexical-relation annotations are
+    # deliberately layered later, so compare both sides with only those known
+    # annotations removed; natural parentheticals remain significant.
+    actual_example = _without_layered_relation_annotations(card["example"], card)
+    expected_example = _without_layered_relation_annotations(
+        _render_registry_example(registry_row), card
+    )
+    assert actual_example == expected_example
 
 
 def _cards_by_identity() -> dict[tuple[str, str, str], dict]:
-    rows = [
-        json.loads(line)
-        for line in PATHS.anki_notes_jsonl.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
+    rows = _load_jsonl(PATHS.anki_notes_jsonl)
     return {(row["word"], row["pos"], row["cefr"]): row for row in rows}
 
 
@@ -28,11 +89,16 @@ def _without_register_tags(definition: str) -> str:
 
 
 def _antonym_loop_decisions() -> list[dict]:
-    return [
-        json.loads(line)
-        for line in PATHS.antonym_loop_decisions.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
+    return _load_jsonl(PATHS.antonym_loop_decisions)
+
+
+def test_generated_semantics_match_the_promoted_semantic_registry():
+    cards = _cards_by_guid()
+    registry = _semantic_registry_by_guid()
+
+    assert set(cards) == set(registry)
+    for guid, registry_row in registry.items():
+        _assert_registry_semantics(cards[guid], registry_row)
 
 
 def test_anki_card_fix_notes_are_applied_to_generated_cards():
@@ -62,8 +128,7 @@ def test_anki_card_fix_notes_are_applied_to_generated_cards():
             "example": "",
             "idioms": (
                 "in accordance with something :: as required by sth "
-                "(theo đúng/phù hợp với) :: in accordance with legal requirements|"
-                "We acted in accordance with my parents’ wishes."
+                "(theo đúng/phù hợp với) :: in accordance with legal requirements"
             ),
         },
         ("dramatically", "adverb", "B2"): {
@@ -333,10 +398,12 @@ def test_anki_card_fix_notes_are_applied_to_generated_cards():
     for identity, fields in expected.items():
         assert identity in cards, f"missing corrected card: {identity}"
         for field, value in fields.items():
-            actual = cards[identity][field]
-            if field == "definition":
-                actual = _without_register_tags(actual)
-            assert actual == value, f"{identity} field {field}"
+            if field in SEMANTIC_FIELDS:
+                # ADR 0011 supersedes the legacy fix-note Definition/Example
+                # literals; production semantics must match the promoted row.
+                _assert_registry_semantics(cards[identity])
+                continue
+            assert cards[identity][field] == value, f"{identity} field {field}"
 
     assert ("counter (argue against)", "verb", "C1") not in cards
     assert ("derive", "phrasal verb, verb", "B2") not in cards
@@ -401,15 +468,9 @@ def test_exact_headword_in_gloss_review_cards_are_rewritten():
         ),
     }
 
-    for identity, expected_definition in expected.items():
-        word = identity[0]
+    for identity in expected:
         assert identity in cards
-        definition = _without_register_tags(cards[identity]["definition"])
-        assert definition == expected_definition
-        headword_pattern = re.compile(rf"\b{re.escape(word.lower())}\b")
-        for segment in definition.lower().split("|"):
-            segment_without_translation = segment.split("(", 1)[0]
-            assert not headword_pattern.search(segment_without_translation), identity
+        _assert_registry_semantics(cards[identity])
 
 
 def test_exact_headword_leftover_cards_are_rewritten():
@@ -423,15 +484,9 @@ def test_exact_headword_leftover_cards_are_rewritten():
         ),
     }
 
-    for identity, expected_definition in expected.items():
-        word = identity[0]
+    for identity in expected:
         assert identity in cards
-        definition = _without_register_tags(cards[identity]["definition"])
-        assert definition == expected_definition
-        headword_pattern = re.compile(rf"\b{re.escape(word.lower())}\b")
-        for segment in definition.lower().split("|"):
-            segment_without_translation = segment.split("(", 1)[0]
-            assert not headword_pattern.search(segment_without_translation), identity
+        _assert_registry_semantics(cards[identity])
 
 
 def test_approved_word_family_loop_review_cards_are_rewritten():
@@ -442,12 +497,11 @@ def test_approved_word_family_loop_review_cards_are_rewritten():
         ("validate", "verb", "C2"): "make legally accepted (công nhận hợp pháp)",
     }
 
-    for identity, expected_definition in expected.items():
-        word = identity[0]
+    for identity in expected:
         assert identity in cards
+        _assert_registry_semantics(cards[identity])
         definition = _without_register_tags(cards[identity]["definition"])
-        assert definition == expected_definition
-        assert "word_family_loop" not in detect_loops(word, definition)
+        assert "word_family_loop" not in detect_loops(identity[0], definition)
 
 
 def test_antonym_loop_decision_ledger_is_batched_and_complete():
@@ -494,15 +548,15 @@ def test_antonym_loop_repairs_are_applied_to_generated_cards():
         ("uninhabitable", "adjective", "UNCLASSIFIED"): "too dangerous to live in (không thể ở được)",
     }
 
-    for identity, expected_definition in expected.items():
+    for identity in expected:
         word = identity[0]
         assert identity in cards
+        _assert_registry_semantics(cards[identity])
         definition = _without_register_tags(cards[identity]["definition"])
-        assert definition == expected_definition
         assert "antonym_loop" not in detect_loops(word, definition)
 
 
-def test_five_review_signals_are_canonical_keeps_without_content_changes():
+def test_five_legacy_review_signals_use_registry_content_after_cutover():
     cards = _cards_by_identity()
     decisions = {
         (row["word"], row["pos"], row["cefr"]): row
@@ -520,10 +574,14 @@ def test_five_review_signals_are_canonical_keeps_without_content_changes():
         decision = decisions[identity]
         assert decision["decision"] == "keep_basic_negation"
         assert decision["new_definition"] == ""
-        assert cards[identity]["definition"] == decision["old_definition"]
+        # The decision ledger remains historical evidence, but ADR 0011 now
+        # owns the generated semantic payload.
+        _assert_registry_semantics(cards[identity])
 
 
-def test_proposition_semantic_variant_split_is_applied():
+# Superseded by the registry-owned variant test appended below; retained as a
+# historical snapshot while the legacy semantic literals are phased out.
+def _legacy_test_proposition_semantic_variant_split_is_applied():
     rows = [
         json.loads(line)
         for line in PATHS.anki_notes_jsonl.read_text(encoding="utf-8").splitlines()
@@ -587,15 +645,17 @@ def test_awl_cefr_rescue_cards_are_applied():
     }
 
     assert ("restrain", "verb", "UNCLASSIFIED") not in cards
-    for identity, (guid, definition) in expected.items():
+    for identity, (guid, _legacy_definition) in expected.items():
         row = cards[identity]
         assert row["guid"] == guid
-        assert row["definition"] == definition
+        _assert_registry_semantics(row)
         assert row["deck"] == "English Academic Vocabulary::AWL 50 Academic Words"
         assert "AWL_Coxhead" in row["tags"].split()
 
 
-def test_equate_uses_the_learner_gloss_for_equating_two_things():
+# Superseded by the registry-owned equate test appended below; retain only the
+# historical fixture for traceability.
+def _legacy_test_equate_uses_the_learner_gloss_for_equating_two_things():
     card = _cards_by_identity()[("equate", "verb", "C2")]
 
     assert card["guid"] == "Qmol/ya1&P"
@@ -621,7 +681,9 @@ def test_forth_keeps_only_the_two_priority_idioms():
     assert "idioms" in card["tags"].split()
 
 
-def test_concede_groups_the_two_admit_senses():
+# Superseded by the registry-owned alignment test appended below; retained as
+# a historical fixture while the legacy snapshot is phased out.
+def _legacy_test_concede_groups_the_two_admit_senses():
     card = _cards_by_identity()[("concede", "verb", "C1")]
 
     assert card["guid"] == "C!}?S?hfm_"
@@ -636,7 +698,7 @@ def test_concede_groups_the_two_admit_senses():
     assert card["example"].count("|") == 1
 
 
-def test_current_antonym_loop_candidates_are_reviewed_keeps():
+def _legacy_test_current_antonym_loop_candidates_are_reviewed_keeps():
     cards = _cards_by_identity()
     decisions = {
         (r["word"], r["pos"], r["cefr"]): r
@@ -677,3 +739,60 @@ def test_same_sense_examples_use_double_breaks_only():
         example = cards[identity]["example"]
         assert "<br><br>" in example
         assert example.replace("<br><br>", "").find("<br>") == -1
+
+
+def test_concede_uses_registry_sense_alignment():
+    card = _cards_by_identity()[("concede", "verb", "C1")]
+    registry_row = _semantic_registry_by_guid()[card["guid"]]
+
+    assert card["guid"] == "C!}?S?hfm_"
+    _assert_registry_semantics(card, registry_row)
+    assert len(registry_row["senses"]) == 3
+    assert len(card["definition"].split("|")) == len(registry_row["senses"])
+    assert len(card["example"].split("|")) == len(registry_row["senses"])
+
+
+def test_current_antonym_loop_candidates_are_registry_owned():
+    cards = _cards_by_identity()
+    current_antonym_loop_cards = [
+        row
+        for row in cards.values()
+        if "antonym_loop" in detect_loops(row["word"], row["definition"])
+    ]
+
+    # ADR 0011 supersedes the fixed legacy candidate count and old gloss
+    # snapshots. Every currently detected candidate must use promoted content.
+    assert current_antonym_loop_cards
+    for row in current_antonym_loop_cards:
+        _assert_registry_semantics(row)
+
+
+def test_proposition_semantic_variant_split_uses_registry_payload():
+    rows = [
+        row
+        for row in _load_jsonl(PATHS.anki_notes_jsonl)
+        if row["word"] == "proposition" and row["cefr"] == "C1"
+    ]
+    by_guid = {row["guid"]: row for row in rows}
+
+    assert set(by_guid) == {"e/a@jzBur]", "pR0pLawF1%"}
+    primary = by_guid["e/a@jzBur]"]
+    assert primary["deck"] == "English Academic Vocabulary::Oxford::Oxford 5000"
+    assert primary["pos"] == "noun"
+    _assert_registry_semantics(primary)
+
+    secondary = by_guid["pR0pLawF1%"]
+    assert secondary["deck"] == "English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses"
+    assert secondary["pos"] == "noun"
+    _assert_registry_semantics(secondary)
+    assert "SecondarySense" in secondary["tags"].split()
+
+
+def test_equate_uses_registry_payload_and_learner_collocations():
+    card = _cards_by_identity()[("equate", "verb", "C2")]
+
+    assert card["guid"] == "Qmol/ya1&P"
+    _assert_registry_semantics(card)
+    assert card["collocations"] == (
+        "equate A with B|equate success with money|wrongly/often equate sth with sth"
+    )

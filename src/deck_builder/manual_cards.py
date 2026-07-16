@@ -6,12 +6,20 @@ from pathlib import Path
 from typing import Iterable
 
 from src.deck_builder.build_issues import BuildIssue, BuildValidationError
+from src.deck_builder.build_contracts import (
+    MAX_IDIOM_EXAMPLES_PER_IDIOM,
+    MAX_IDIOMS_PER_CARD,
+)
 from src.deck_builder.card_identity import (
     CardIdentity,
     normalize_cefr,
     normalize_list_name,
     normalize_variant,
     normalize_word,
+)
+from src.deck_builder.formatting import (
+    normalize_idiom_example_key,
+    parse_serialized_idiom_examples,
 )
 
 MANUAL_CARD_FIELDS: tuple[str, ...] = (
@@ -98,6 +106,49 @@ def validate_manual_cards_rows(rows: list[dict]) -> list[BuildIssue]:
                     message=f"row {idx} field {field!r} must be a string",
                     identity=identity,
                 ))
+
+        idioms = row.get("idioms")
+        if isinstance(idioms, str):
+            idiom_entries = [entry for entry in idioms.split("$$") if entry.strip()]
+            if len(idiom_entries) > MAX_IDIOMS_PER_CARD:
+                issues.append(BuildIssue(
+                    severity="error",
+                    code="idiom_limit_exceeded",
+                    message=(
+                        f"row {idx} has {len(idiom_entries)} idioms; "
+                        f"maximum is {MAX_IDIOMS_PER_CARD}"
+                    ),
+                    identity=identity,
+                ))
+
+            seen_example_keys: set[str] = set()
+            for idiom_idx, examples in enumerate(
+                parse_serialized_idiom_examples(idioms), 1
+            ):
+                if len(examples) > MAX_IDIOM_EXAMPLES_PER_IDIOM:
+                    issues.append(BuildIssue(
+                        severity="error",
+                        code="idiom_example_limit_exceeded",
+                        message=(
+                            f"row {idx} idiom {idiom_idx} has {len(examples)} "
+                            f"examples; maximum is {MAX_IDIOM_EXAMPLES_PER_IDIOM}"
+                        ),
+                        identity=identity,
+                    ))
+                if len(examples) == 1:
+                    key = normalize_idiom_example_key(examples[0])
+                    if key in seen_example_keys:
+                        issues.append(BuildIssue(
+                            severity="error",
+                            code="idiom_example_duplicate",
+                            message=(
+                                f"row {idx} idiom {idiom_idx} repeats an example "
+                                "used by an earlier idiom"
+                            ),
+                            identity=identity,
+                        ))
+                    else:
+                        seen_example_keys.add(key)
 
         provenance = row.get("provenance")
         if not isinstance(provenance, dict):

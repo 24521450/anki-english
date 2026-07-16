@@ -38,6 +38,11 @@ clip sẽ trả câu về màu bình thường. Audio không autoplay và mỗi 
 clip phát. Main Example căn theo `|` rồi `<br><br>`; Idiom Example căn theo
 `$$` rồi `|`.
 
+`DefinitionVI` được append sau bốn field audio. Field này pipe-aligned với
+`Definition` và render thành một Vietnamese Gloss Line luôn hiển thị bên dưới
+English definition. `Definition` vẫn giữ payload `EN (VI)` để tương thích với
+các audit/tool cũ; template ưu tiên `DefinitionVI` và có fallback cho note cũ.
+
 ---
 
 ## Hướng dẫn Tái sử dụng & Đồng bộ hóa thủ công trong Anki

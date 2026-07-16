@@ -2,6 +2,11 @@
 
 **Applied:** 2026-06-18
 
+> **Superseded for final Definition/Example ownership by ADR 0011 on
+> 2026-07-15.** The implementation history and non-semantic source/metadata
+> mechanics below remain relevant during decoupling, but production semantic
+> content now comes from the promoted Semantic Registry.
+
 > **Historical implementation note (2026-07-12):** this ADR intentionally
 > preserves the names of one-shot phase commands that existed when the decision
 > was applied. Those executables were retired from `HEAD` after their accepted

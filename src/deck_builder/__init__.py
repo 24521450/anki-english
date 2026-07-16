@@ -41,17 +41,18 @@ def _format_idioms_field(idioms: list) -> str:
     """Serialize idioms list to the deck format the back template parses.
 
     Per grill session decision (2026-06-19):
-        phrase :: text :: ex1 | ex2 $$ phrase2 :: text2 :: ex1
+        phrase :: text :: example $$ phrase2 :: text2 :: example
     Delimiters:
         $$  separates idioms (top-level)
         ::  separates phrase / text / examples within an idiom
-        |   separates examples within an idiom (mirrors other list fields)
+        |   is reserved for legacy multi-example payload validation
     Empty / missing fields are dropped from each entry.
     Empty input → ''.
 
     Selection: keep all idioms when there are at most two. When there are
     more than two, prefer entries with a CEFR and preserve Oxford order for
-    ties. Ungraded idioms remain eligible for any unfilled slot.
+    ties. Ungraded idioms remain eligible for any unfilled slot. Each selected
+    idiom keeps at most its first non-empty, card-locally unique example.
     """
     return _shared_format_idioms(idioms)
 
@@ -181,7 +182,7 @@ def _populate_note_fields(
     # is in the record, the field is no longer populated.
     note["WordFamily"] = ""
 
-    # Idioms: phrase :: text :: ex1 | ex2 $$ phrase2 :: text2 :: ex1
+    # Idioms: phrase :: text :: example $$ phrase2 :: text2 :: example
     # Empties drop from the inner triple; empties across the whole list → ''.
     # Keep at most two idioms, prioritizing CEFR-tagged entries only when the
     # source record contains more than two.

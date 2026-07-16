@@ -28,6 +28,7 @@ def test_eavm_model_identity_matches_existing_anki_note_type():
     assert update_anki_deck.EAVM_MODEL_ID != update_anki_deck.generate_deterministic_id(
         update_anki_deck.EAVM_MODEL_NAME
     )
+    assert update_anki_deck.EAVM_FIELD_NAMES[-1] == "DefinitionVI"
 
 def test_extract_audio_filename():
     assert update_anki_deck.extract_audio_filename("[sound:hello.mp3]") == "hello.mp3"
@@ -70,6 +71,7 @@ def test_update_anki_deck_success(tmp_path, monkeypatch):
         "pos": "verb",
         "cefr": "C1",
         "definition": "take control by force|overcome",
+        "definition_vi": "chiếm quyền kiểm soát|vượt qua",
         "example": "to conquer the world",
         "ipa": "/ˈkɒŋkə(r)/",
         "uk_audio": "[sound:uk_conquer.mp3]",
@@ -303,6 +305,7 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "pos": "verb",
         "cefr": "C1",
         "definition": "take control by force|overcome",
+        "definition_vi": "chiếm quyền kiểm soát|vượt qua",
         "example": "to conquer the world",
         "ipa": "/ˈkɒŋkə(r)/",
         "uk_audio": "[sound:uk_conquer.mp3]",
@@ -370,6 +373,7 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "",
     ]
     assert created["fields"][15:19] == ["", "", "", ""]
+    assert created["fields"][19] == "chiếm quyền kiểm soát|vượt qua"
     assert created["guid"] == "test_guid_12345"
     assert created["tags"] == ["C1", "verb", "academic"]
 

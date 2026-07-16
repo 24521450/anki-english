@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from src.config import ProjectPaths
+from src.deck_builder import example_audio_command
 from src.deck_builder.build_contracts import BuiltCard
 from src.deck_builder.example_audio import (
     VOICES,
@@ -39,19 +41,32 @@ def test_planner_rejects_annotation_only_example():
 def test_planner_aligns_main_and_idiom_examples_and_deduplicates():
     card = _card(
         example="First sentence.<br><br>Shared sentence.|",
-        idioms="one :: meaning :: Shared sentence.|Second idiom example.$$two :: meaning",
+        idioms="one :: meaning :: Shared sentence.$$two :: meaning",
     )
     planned, tasks = plan_card_example_audio(card)
 
     assert planned.example_audio_uk.count("<audio ") == 2
     assert planned.example_audio_uk.endswith("|")
-    assert planned.idiom_example_audio_uk.count("<audio ") == 2
+    assert planned.idiom_example_audio_uk.count("<audio ") == 1
     assert planned.idiom_example_audio_uk.endswith("$$")
     # Shared sentence is reused across the main field and Idiom Box.
     _, all_tasks = plan_cards_example_audio([card])
-    assert len(tasks) == 8
-    assert len(all_tasks) == 6
+    assert len(tasks) == 6
+    assert len(all_tasks) == 4
     assert all(task.filename.startswith(f"example_{task.accent}_") for task in all_tasks)
+
+
+def test_planner_preserves_empty_first_idiom_audio_slot_for_both_accents():
+    card = _card(
+        idioms="one :: meaning$$two :: meaning :: Second idiom example.",
+    )
+
+    planned, _ = plan_card_example_audio(card)
+
+    assert planned.idiom_example_audio_uk.startswith("$$<audio ")
+    assert planned.idiom_example_audio_us.startswith("$$<audio ")
+    assert planned.idiom_example_audio_uk.count("<audio ") == 1
+    assert planned.idiom_example_audio_us.count("<audio ") == 1
 
 
 def test_hash_changes_with_accent_and_is_stable():
@@ -98,6 +113,21 @@ def test_dry_run_has_no_side_effects(tmp_path: Path):
     report = asyncio.run(generate_example_audio([_card(example="Plan only.")], audio_dir, dry_run=True))
     assert report.generated == 2
     assert not audio_dir.exists()
+
+
+def test_production_example_audio_fails_closed_without_semantic_registry(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+):
+    monkeypatch.setattr(
+        example_audio_command,
+        "ProjectPaths",
+        lambda: ProjectPaths(tmp_path),
+    )
+
+    assert example_audio_command.main(["--dry-run"]) == 1
+    assert "Semantic Registry file missing" in capsys.readouterr().err
 
 
 def test_failed_generation_keeps_stale_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):

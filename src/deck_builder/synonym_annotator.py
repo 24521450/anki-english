@@ -575,6 +575,7 @@ def _annotate_same_sense_examples(
     antonym_overrides: dict[str, list[dict]],
     syn_used_idxs: set[int],
     ant_used_idxs: set[int],
+    require_source_alignment: bool,
 ) -> tuple[str, list[str], list[str], list[str]]:
     """Annotate examples joined by HTML breaks while keeping one pipe cell."""
     annotated_parts: list[str] = []
@@ -636,7 +637,7 @@ def _annotate_same_sense_examples(
             errors,
         )
 
-        if spec is None:
+        if spec is None and require_source_alignment:
             unresolved_syns = has_any_syns and not syn_consumed
             unresolved_ants = has_any_ants and not ant_consumed
             if unresolved_syns or unresolved_ants:
@@ -662,6 +663,8 @@ def annotate_card_examples(
     specs: list[dict],
     synonym_overrides: dict[str, list[dict]] | None = None,
     antonym_overrides: dict[str, list[dict]] | None = None,
+    *,
+    require_source_alignment: bool = True,
 ) -> tuple[str, str, str, list[str]]:
     """Annotate card examples with synonyms AND antonyms of exact Oxford senses.
 
@@ -723,6 +726,7 @@ def annotate_card_examples(
                     antonym_overrides,
                     syn_used_idxs,
                     ant_used_idxs,
+                    require_source_alignment,
                 )
             )
             annotated_chunks.append(annotated_chunk)
@@ -780,7 +784,7 @@ def annotate_card_examples(
             errors,
         )
 
-        if chunk_spec is None:
+        if chunk_spec is None and require_source_alignment:
             # chunk_spec is None — chunk doesn't map to any Oxford example.
             # Per legacy semantics: report unresolved only if some spec carries
             # relations AND no override was used to suppress annotation.

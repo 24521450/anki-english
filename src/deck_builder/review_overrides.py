@@ -108,6 +108,7 @@ def apply_review_overrides(all_cards: list[BuiltCard], overrides: dict[str, dict
                 tags=c.tags,
                 synonyms=c.synonyms,
                 antonyms=c.antonyms,
+                definition_vi=c.definition_vi,
             )
             updated_cards.append(c_new)
             applied_guids.add(c.guid)

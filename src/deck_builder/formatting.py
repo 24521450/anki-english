@@ -4,6 +4,7 @@ from __future__ import annotations
 from src.deck_builder.build_contracts import (
     COLL_SEPARATOR,
     EX_SEP,
+    MAX_IDIOM_EXAMPLES_PER_IDIOM,
     MAX_IDIOMS_PER_CARD,
 )
 from src.scraper._common import flatten_collocations
@@ -29,6 +30,27 @@ def format_collocations(colls: dict) -> str:
     return COLL_SEPARATOR.join(out)
 
 
+def normalize_idiom_example_key(value: str) -> str:
+    """Normalize only for card-local duplicate comparison."""
+    return " ".join((value or "").split()).casefold()
+
+
+def parse_serialized_idiom_examples(value: str) -> list[list[str]]:
+    """Return non-empty example cells for each serialized idiom entry."""
+    groups: list[list[str]] = []
+    for entry in value.split("$$") if value else []:
+        if not entry.strip():
+            continue
+        parts = entry.split("::", 2)
+        raw_examples = parts[2] if len(parts) == 3 else ""
+        groups.append([
+            example.strip()
+            for example in raw_examples.split("|")
+            if example.strip()
+        ])
+    return groups
+
+
 def format_idioms(idioms: list) -> str:
     if not idioms:
         return ""
@@ -40,11 +62,21 @@ def format_idioms(idioms: list) -> str:
         )
         selected = [idiom for _, idiom in selected[:MAX_IDIOMS_PER_CARD]]
     parts: list[str] = []
+    seen_example_keys: set[str] = set()
     for idiom in selected:
         phrase = (idiom.get("phrase") or "").strip()
         text = (idiom.get("text") or "").strip()
-        examples = idiom.get("examples") or []
-        ex_str = "|".join((ex or "").strip() for ex in examples if (ex or "").strip())
+        selected_examples: list[str] = []
+        for example in idiom.get("examples") or []:
+            display_text = (example or "").strip()
+            key = normalize_idiom_example_key(display_text)
+            if not key or key in seen_example_keys:
+                continue
+            selected_examples.append(display_text)
+            seen_example_keys.add(key)
+            if len(selected_examples) == MAX_IDIOM_EXAMPLES_PER_IDIOM:
+                break
+        ex_str = "|".join(selected_examples)
         inner = " :: ".join(part for part in [phrase, text, ex_str] if part)
         if inner:
             parts.append(inner)

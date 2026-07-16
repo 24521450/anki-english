@@ -29,6 +29,9 @@ jsonschema>=4.23.0       # JSON schema validation for source corpora and tools
 # Async / performance (future use)
 aiohttp>=3.13.3          # Async HTTP (drop-in upgrade for high-volume scraping)
 
+# Review workbook
+openpyxl>=3.1.5          # Bilingual semantic-audit XLSX round-trip
+
 # Testing (optional)
 pytest>=9.0.3            # Test suite
 
