@@ -51,7 +51,11 @@ class BuildNotesPaths(NamedTuple):
 
 
 class BuiltCard(NamedTuple):
-    """One Anki note, encoded as the canonical 24-column TXT row."""
+    """One Anki note, encoded as the canonical TXT row.
+
+    ``production_answer`` is appended after the established fields so the
+    first 26 columns remain byte/position compatible with prior artifacts.
+    """
 
     guid: str
     notetype: str
@@ -77,6 +81,11 @@ class BuiltCard(NamedTuple):
     idiom_example_audio_uk: str = ""
     idiom_example_audio_us: str = ""
     definition_vi: str = ""
+    cambridge_url: str = ""
+    oxford_pos_urls: str = ""
+    # Canonical answer used by Anki's native ``{{type:ProductionAnswer}}``
+    # comparison on the sibling Vietnamese-to-English card.
+    production_answer: str = ""
 
     def to_tsv(self) -> str:
         return '\t'.join([
@@ -87,6 +96,8 @@ class BuiltCard(NamedTuple):
             self.example_audio_uk, self.example_audio_us,
             self.idiom_example_audio_uk, self.idiom_example_audio_us,
             self.definition_vi,
+            self.cambridge_url, self.oxford_pos_urls,
+            self.production_answer,
         ])
 
     def to_dict(self) -> dict:
@@ -115,6 +126,9 @@ class BuiltCard(NamedTuple):
             'idiom_example_audio_uk': self.idiom_example_audio_uk,
             'idiom_example_audio_us': self.idiom_example_audio_us,
             'definition_vi': self.definition_vi,
+            'cambridge_url': self.cambridge_url,
+            'oxford_pos_urls': self.oxford_pos_urls,
+            'production_answer': self.production_answer,
         }
 
 

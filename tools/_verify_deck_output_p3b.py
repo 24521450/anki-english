@@ -18,6 +18,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.config import ProjectPaths
 from src.deck_builder.build_contracts import CARD_FIELDS
 from src.deck_builder.build_validation import validate_artifact_paths
+from src.deck_builder.production import derive_production_answer
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -69,6 +70,12 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
             continue
         
         parts = line.split('\t')
+        # Read-only compatibility for the immediately preceding artifact
+        # contract.  Canonical build/publish validation still requires the
+        # appended ProductionAnswer column; this audit tool can inspect a
+        # historical 26-column export by deriving the deterministic value.
+        if len(parts) == len(CARD_FIELDS) - 1:
+            parts.append(derive_production_answer(parts[3] if len(parts) > 3 else ""))
         data_rows.append(parts)
         
         # Check tab column count

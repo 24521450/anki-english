@@ -6,11 +6,14 @@ builds a genanki Model/Decks, validates media assets under audio/,
 and compiles them into ielts_deck.apkg.
 """
 from __future__ import annotations
+
+from dataclasses import dataclass
 import hashlib
 import json
 import re
 import sys
 from pathlib import Path
+
 import genanki
 
 from src.config import ProjectPaths
@@ -22,6 +25,12 @@ AUDIO_DIR = paths.audio_dir
 PROJECT_ROOT = paths.root
 FRONT_TEMPLATE = PROJECT_ROOT / "design" / "EAVM" / "front_template.txt"
 BACK_TEMPLATE = PROJECT_ROOT / "design" / "EAVM" / "back_template.txt"
+PRODUCTION_FRONT_TEMPLATE = (
+    PROJECT_ROOT / "design" / "EAVM" / "production_front_template.txt"
+)
+PRODUCTION_ANSWER_PREFIX = (
+    PROJECT_ROOT / "design" / "EAVM" / "production_answer_prefix.txt"
+)
 STYLING_TXT = PROJECT_ROOT / "design" / "EAVM" / "styling.txt"
 DESIGN_INDEX = PROJECT_ROOT / "design" / "index.html"
 OUTPUT_APKG = PROJECT_ROOT / "ielts_deck.apkg"
@@ -30,12 +39,121 @@ OUTPUT_APKG = PROJECT_ROOT / "ielts_deck.apkg"
 # field order makes Anki create a suffixed duplicate during package import.
 EAVM_MODEL_NAME = "English Academic Vocabulary Model"
 EAVM_MODEL_ID = 1607392819
-EAVM_FIELD_NAMES: tuple[str, ...] = (
-    "Word", "PartOfSpeech", "IPA", "Definition", "Example", "Collocations",
-    "WordFamily", "AudioUK", "AudioUS", "AudioSource", "Source", "CEFRLevel",
-    "Idioms", "Synonyms", "Antonyms", "ExampleAudioUK", "ExampleAudioUS",
-    "IdiomExampleAudioUK", "IdiomExampleAudioUS", "DefinitionVI",
+EAVM_JSON_TO_FIELD: tuple[tuple[str, str], ...] = (
+    ("word", "Word"),
+    ("pos", "PartOfSpeech"),
+    ("ipa", "IPA"),
+    ("definition", "Definition"),
+    ("example", "Example"),
+    ("collocations", "Collocations"),
+    ("wordfamily", "WordFamily"),
+    ("uk_audio", "AudioUK"),
+    ("us_audio", "AudioUS"),
+    ("source1", "AudioSource"),
+    ("source2", "Source"),
+    ("cefr", "CEFRLevel"),
+    ("idioms", "Idioms"),
+    ("synonyms", "Synonyms"),
+    ("antonyms", "Antonyms"),
+    ("example_audio_uk", "ExampleAudioUK"),
+    ("example_audio_us", "ExampleAudioUS"),
+    ("idiom_example_audio_uk", "IdiomExampleAudioUK"),
+    ("idiom_example_audio_us", "IdiomExampleAudioUS"),
+    ("definition_vi", "DefinitionVI"),
+    ("cambridge_url", "CambridgeURL"),
+    ("oxford_pos_urls", "OxfordPOSURLs"),
+    ("production_answer", "ProductionAnswer"),
 )
+EAVM_FIELD_NAMES: tuple[str, ...] = tuple(
+    field_name for _, field_name in EAVM_JSON_TO_FIELD
+)
+EAVM_TEMPLATE_NAMES = ("Recognition", "Production (VI -> EN)")
+
+
+@dataclass(frozen=True)
+class EavmTemplate:
+    """One canonical EAVM template in Anki ordinal order."""
+
+    name: str
+    front: str
+    back: str
+
+    def for_genanki(self) -> dict[str, str]:
+        return {"name": self.name, "qfmt": self.front, "afmt": self.back}
+
+    def for_anki_connect(self) -> dict[str, str]:
+        return {"Front": self.front, "Back": self.back}
+
+
+def load_eavm_templates(
+    recognition_front_path: Path | None = None,
+    recognition_back_path: Path | None = None,
+    production_front_path: Path | None = None,
+    production_answer_prefix_path: Path | None = None,
+) -> tuple[EavmTemplate, EavmTemplate]:
+    """Load the ordered Recognition and Production template contract."""
+
+    recognition_front = (recognition_front_path or FRONT_TEMPLATE).read_text(
+        encoding="utf-8"
+    )
+    recognition_back = (recognition_back_path or BACK_TEMPLATE).read_text(
+        encoding="utf-8"
+    )
+    production_front = (production_front_path or PRODUCTION_FRONT_TEMPLATE).read_text(
+        encoding="utf-8"
+    )
+    production_prefix = (
+        production_answer_prefix_path or PRODUCTION_ANSWER_PREFIX
+    ).read_text(encoding="utf-8")
+    native_type_count = (
+        production_front + production_prefix + recognition_back
+    ).count("{{type:ProductionAnswer}}")
+    if (
+        production_front.count("{{type:ProductionAnswer}}") != 1
+        or native_type_count != 1
+        or "{{type:ProductionAnswer}}" in recognition_front
+        or "{{FrontSide}}" in production_front
+    ):
+        raise ValueError(
+            "Production front template must contain exactly one native "
+            "{{type:ProductionAnswer}} replacement and no {{FrontSide}}"
+        )
+    production_back = production_prefix + recognition_back
+    if (production_front + production_back).count("{{FrontSide}}") != 1:
+        raise ValueError(
+            "Production answer must contain exactly one {{FrontSide}} replacement"
+        )
+    return (
+        EavmTemplate("Recognition", recognition_front, recognition_back),
+        EavmTemplate(
+            "Production (VI -> EN)",
+            production_front,
+            production_back,
+        ),
+    )
+
+
+def configure_genanki_requirements(model: genanki.Model) -> None:
+    """Tell genanki's static parser the conditional card-generation contract.
+
+    The Recognition template intentionally carries hidden raw fields and the
+    Production template carries JavaScript.  genanki's Mustache probe treats
+    those hidden references as required unless the requirements are explicit;
+    Anki itself still evaluates the native conditional sections at import.
+    """
+
+    field_index = {name: index for index, name in enumerate(EAVM_FIELD_NAMES)}
+    model._req = [
+        [0, "any", [field_index["Word"]]],
+        [
+            1,
+            "all",
+            sorted(
+                field_index[name]
+                for name in ("DefinitionVI", "Example", "ProductionAnswer")
+            ),
+        ],
+    ]
 
 
 def check_design_sync() -> bool:
@@ -98,15 +216,25 @@ def main(argv: list[str] | None = None) -> int:
     if not NOTES_JSONL.exists():
         print(f"Error: {NOTES_JSONL.name} not found. Run build step first.", file=sys.stderr)
         return 1
-    if not FRONT_TEMPLATE.exists() or not BACK_TEMPLATE.exists() or not STYLING_TXT.exists():
+    required_design_files = (
+        FRONT_TEMPLATE,
+        BACK_TEMPLATE,
+        PRODUCTION_FRONT_TEMPLATE,
+        PRODUCTION_ANSWER_PREFIX,
+        STYLING_TXT,
+    )
+    if any(not path.exists() for path in required_design_files):
         print("Error: EAVM template/styling files not found in design/EAVM/.", file=sys.stderr)
         return 1
 
     # 3. Read templates & CSS styling
     print("=== Step 2: Reading card design templates ===", file=sys.stderr)
-    front_html = FRONT_TEMPLATE.read_text(encoding="utf-8")
-    back_html = BACK_TEMPLATE.read_text(encoding="utf-8")
-    styling_css = load_production_css(STYLING_TXT)
+    try:
+        templates = load_eavm_templates()
+        styling_css = load_production_css(STYLING_TXT)
+    except (OSError, ValueError) as exc:
+        print(f"Error: Invalid EAVM design contract: {exc}", file=sys.stderr)
+        return 1
 
     # 4. Define genanki model
     # Tags are Anki metadata, exposed through the built-in {{Tags}} replacement.
@@ -116,15 +244,10 @@ def main(argv: list[str] | None = None) -> int:
         EAVM_MODEL_ID,
         EAVM_MODEL_NAME,
         fields=fields_schema,
-        templates=[
-            {
-                "name": "Card 1",
-                "qfmt": front_html,
-                "afmt": back_html,
-            }
-        ],
+        templates=[template.for_genanki() for template in templates],
         css=styling_css
     )
+    configure_genanki_requirements(model)
 
     # 5. Load notes and group by deck
     print(f"=== Step 3: Loading notes from {NOTES_JSONL.name} ===", file=sys.stderr)
@@ -153,28 +276,7 @@ def main(argv: list[str] | None = None) -> int:
 
             # Map JSONL keys to genanki fields order. Missing keys default
             # to empty string so legacy 12-field JSONL rows still validate.
-            note_fields = [
-                r.get("word") or "",
-                r.get("pos") or "",
-                r.get("ipa") or "",
-                r.get("definition") or "",
-                r.get("example") or "",
-                r.get("collocations") or "",
-                r.get("wordfamily") or "",
-                r.get("uk_audio") or "",
-                r.get("us_audio") or "",
-                r.get("source1") or "",
-                r.get("source2") or "",
-                r.get("cefr") or "",
-                r.get("idioms") or "",
-                r.get("synonyms") or "",
-                r.get("antonyms") or "",
-                r.get("example_audio_uk") or "",
-                r.get("example_audio_us") or "",
-                r.get("idiom_example_audio_uk") or "",
-                r.get("idiom_example_audio_us") or "",
-                r.get("definition_vi") or "",
-            ]
+            note_fields = [r.get(key) or "" for key, _ in EAVM_JSON_TO_FIELD]
 
             # Validate audio files
             for audio_field_name in ("uk_audio", "us_audio"):

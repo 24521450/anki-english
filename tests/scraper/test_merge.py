@@ -65,6 +65,7 @@ def test_single_record_passthrough():
     assert merged["word"] == "sick"
     assert len(merged["pos_data"]) == 1
     assert merged["pos_data"][0]["definitions"][0]["text"] == "ill"
+    assert merged["pos_data"][0]["source_url"] is None
 
 
 def test_aggregate_3_records_merge():
@@ -183,6 +184,25 @@ def test_pos_data_dedup_across_records():
     # Even though both records have same pos, dedupe by (pos, sensenum, text) → 1 def
     all_defs = [d for pd in merged["pos_data"] for d in pd["definitions"]]
     assert len(all_defs) == 1
+
+
+def test_pos_data_source_url_is_preserved_when_duplicate_provenance_agrees():
+    url = "https://www.oxfordlearnersdictionaries.com/definition/english/test_1"
+    pd = {"pos": "noun", "source_url": url, "register_tags": [], "definitions": [
+        {"n": 1, "sensenum_local": "1", "text": "trial", "register_tags": [], "cefr": "B1", "topics": [], "collocations": {}, "examples": [], "is_phrase": False, "is_idiom": False},
+    ]}
+    merged = merge_word_records([_rec("test", "noun", pos_data=[pd]), _rec("test", "noun", pos_data=[pd])])
+    assert merged["pos_data"][0]["source_url"] == url
+
+
+def test_pos_data_source_url_is_nulled_when_duplicate_provenance_conflicts():
+    base = {"pos": "noun", "register_tags": [], "definitions": [
+        {"n": 1, "sensenum_local": "1", "text": "trial", "register_tags": [], "cefr": "B1", "topics": [], "collocations": {}, "examples": [], "is_phrase": False, "is_idiom": False},
+    ]}
+    first = dict(base, source_url="https://www.oxfordlearnersdictionaries.com/definition/english/test_1")
+    second = dict(base, source_url="https://www.oxfordlearnersdictionaries.com/definition/english/test_2")
+    merged = merge_word_records([_rec("test", "noun", pos_data=[first]), _rec("test", "noun", pos_data=[second])])
+    assert merged["pos_data"][0]["source_url"] is None
 
 
 def test_empty_records_raises():

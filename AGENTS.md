@@ -30,7 +30,7 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
 - `docs/adr/` — Architecture Decision Records. One file per decision, named `NNNN-title.md` (e.g. `0001-lxml-parser-backend.md`). Add a new ADR whenever a decision meets all 3 criteria: hard to reverse, surprising without context, and a real trade-off.
 - `vocab_list/` — source word lists (Oxford 3000/5000 markdown, AWL json/yml)
 - `update_anki_deck.py` — top-level packager (`data/build/anki_notes.jsonl` → `ielts_deck.apkg`). Owned by `developer` rein.
-- `src/pipeline.py` — production-stage orchestrator: `scrape → example-audio → build → validate → deck → import`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`). The default stops at `deck`; `import` is explicit because it mutates the live Anki collection.
+- `src/pipeline.py` — production-stage orchestrator: `scrape → example-audio → build → validate → deck → import`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`). The command's default range stops at `deck`, but the agent workflow must always follow a successful deck build with the explicit `import` stage so the live Anki collection receives the update.
   - **scrape**: Oxford/Cambridge + AWL ingestion, audio. Keeps all senses / all CEFR entries (raw).
   - **example-audio**: derives final Example/Idiom Example speech from the registry build plan, with main Examples owned by the promoted Semantic Registry, and generates missing Edge TTS media. Run this stage, stage changed `audio/example_*.mp3` in Git, then continue from `build` so release validation can enforce tracked media.
   - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md) and [Sense Sorting](./CONTEXT.md)**, then replaces the final Definition/Example payload with `data/curated/semantic_registry.jsonl`. The production command fails closed when that registry is missing or invalid. See `design/README.md § Card design rules` for the rule reference.
@@ -220,6 +220,18 @@ fields inside Anki — edit the templates and re-run the packager. See
 `design/EAVM/README.md § Lưu ý quan trọng khi chỉnh sửa JavaScript` for the
 literal-newline gotcha in template JS.
 
+The EAVM model keeps one canonical note/Card Registry identity and now emits
+two sibling cards: ordinal 0 `Recognition` and ordinal 1
+`Production (VI -> EN)`. The Production card is generated only when
+`DefinitionVI`, `Example`, and the appended `ProductionAnswer` are populated;
+it uses native `{{type:ProductionAnswer}}` comparison. `ProductionAnswer` is
+field 23 (zero-based index 22), after the established 22 fields, and is
+derived from the final displayed `Word` by removing only a trailing display
+qualifier. Preserve learning-pattern slots such as `devote sth to sth`.
+Production migration is performed by the explicit AnkiConnect import stage;
+never create a second EAVM Note Type or remove/re-add the established
+template.
+
 The established first 15 fields and model ID `1607392819` are immutable. New
 fields must be appended. Example Audio uses `ExampleAudioUK`, `ExampleAudioUS`,
 `IdiomExampleAudioUK`, and `IdiomExampleAudioUS` after `Antonyms`.
@@ -231,8 +243,11 @@ and drives the always-visible Vietnamese Gloss Line; the established
 
 `python -m src.pipeline import` is the supported live update path. It calls
 AnkiConnect `importPackage` with the generated `.apkg`, then verifies the note
-type fields, canonical GUID coverage, and referenced media. Keep `import` out of
-the default pipeline range and use `--dry-run` before the first live import.
+type fields, canonical GUID coverage, and referenced media. After every
+successful production `build → validate → deck` workflow, always run the
+explicit `import` stage; do not leave a completed deck only on disk. Anki and
+AnkiConnect must be running, and the workflow must fail visibly if the import or
+post-import verification fails. Never edit `collection.anki2` directly.
 
 ### Anki deletion/update workflow
 When deleting or merging notes in the local Anki app, use AnkiConnect if

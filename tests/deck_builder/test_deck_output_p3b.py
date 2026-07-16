@@ -14,7 +14,7 @@ VALID_ROW = (
     "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\t"
     "src1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms\t"
     "example_audio_uk\texample_audio_us\tidiom_example_audio_uk\t"
-    "idiom_example_audio_us\tdefinition_vi"
+    "idiom_example_audio_us\tdefinition_vi\tcambridge_url\toxford_pos_urls"
 )
 
 

@@ -127,6 +127,9 @@ def test_review_override_can_replace_ipa():
         tags="Source::Oxford CEFR::B2 Oxford_5000",
         synonyms="",
         antonyms="",
+        example_audio_uk="example-uk.mp3",
+        cambridge_url="https://dictionary.cambridge.org/dictionary/english/extract",
+        oxford_pos_urls="https://www.oxfordlearnersdictionaries.com/definition/english/extract_2",
     )
     override = {
         "extract-guid": {
@@ -141,6 +144,9 @@ def test_review_override_can_replace_ipa():
     updated = apply_review_overrides([card], override)
 
     assert updated[0].ipa == "UK: /ˈekstrækt/ | US: /ˈekstrækt/"
+    assert updated[0].example_audio_uk == "example-uk.mp3"
+    assert updated[0].cambridge_url == "https://dictionary.cambridge.org/dictionary/english/extract"
+    assert updated[0].oxford_pos_urls == "https://www.oxfordlearnersdictionaries.com/definition/english/extract_2"
 
 def test_build_determinism():
     paths_reg = ProjectPaths(PROJECT_ROOT)

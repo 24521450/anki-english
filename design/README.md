@@ -240,6 +240,28 @@ Giá trị dưới đây là **sau khi sync** (mirror vùng 2 của `index.html`
 
 ## Card design rules
 
+### Production sibling card (VI -> EN)
+
+The EAVM note type emits two sibling cards from the same note. Ordinal 0 is
+`Recognition`; ordinal 1 is `Production (VI -> EN)`. The production front is
+loaded from `EAVM/production_front_template.txt` and uses Anki's native
+`{{type:ProductionAnswer}}` control. Its prompt pairs each pipe-aligned
+`DefinitionVI` gloss with the corresponding `Example`, masking the reviewed
+English answer while retaining the sense alignment. The answer template is
+`{{FrontSide}}` followed by the unchanged Recognition back.
+
+`ProductionAnswer` is an appended model field. It is derived at build time
+from the final displayed `Word` by removing only a trailing display
+qualifier; learning-pattern slots such as `devote sth to sth` remain intact.
+A production card is generated only when `DefinitionVI`, `Example`, and
+`ProductionAnswer` are all populated. Notes that do not meet that predicate
+still receive the Recognition card.
+
+When changing the production layout, keep the sibling template name/order,
+the single native type-answer replacement, and the exact CSS sync contract.
+Live collections are migrated through `python -m src.pipeline import`, which
+backs up the deck and appends fields/templates in place.
+
 Hai quy tắc cứng khi **tạo card** (build stage — biến raw notes thành Anki-ready rows). Quy tắc này **không áp dụng khi scrape**: scraper giữ raw đầy đủ để debug/research, filter ở build.
 
 ### Rule 1 — Sense Sorting (no limit)

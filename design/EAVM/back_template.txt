@@ -16,7 +16,7 @@
   <!-- Content Back -->
   <div class="card-content-back">
     <div class="word-header-back">
-      <div class="word-back">{{Word}}</div>
+      <div class="word-back">{{#CambridgeURL}}<a href="{{CambridgeURL}}" target="_blank" rel="noopener noreferrer" aria-label="Open headword in Cambridge Dictionary">{{Word}}</a>{{/CambridgeURL}}{{^CambridgeURL}}{{Word}}{{/CambridgeURL}}</div>
       <hr class="divider divider-{{CEFRLevel}}">
       <div class="meta-row">
         {{#IPA}}<span class="ipa-text" id="ipa-display">{{IPA}}</span>{{/IPA}}
@@ -89,6 +89,7 @@
   <div id="raw-example-audio-us-back">{{ExampleAudioUS}}</div>
   <div id="raw-idiom-example-audio-uk-back">{{IdiomExampleAudioUK}}</div>
   <div id="raw-idiom-example-audio-us-back">{{IdiomExampleAudioUS}}</div>
+  <div id="raw-oxford-pos-urls-back">{{OxfordPOSURLs}}</div>
 </div>
 
 <script>
@@ -207,6 +208,35 @@
     });
   }
   function getRaw(id) { var e = document.getElementById(id); return e ? trim(e.textContent || e.innerText) : ''; }
+  function renderPosChips(posDiv, rawPos, rawUrls) {
+    if (!posDiv || !rawPos) return;
+    var parts = rawPos.split(/[,\/]/), clean = [];
+    for (var i = 0; i < parts.length; i++) {
+      var part = trim(parts[i]);
+      if (part) clean.push(part);
+    }
+    var urls = rawUrls ? rawUrls.split('|') : [];
+    posDiv.textContent = '';
+    for (var j = 0; j < clean.length; j++) {
+      var url = trim(urls[j] || '');
+      var chip = document.createElement(url ? 'a' : 'span');
+      chip.className = 'pos-chip';
+      if (url) {
+        chip.href = url;
+        chip.target = '_blank';
+        chip.rel = 'noopener noreferrer';
+        chip.setAttribute('aria-label', 'Open Oxford entry for ' + clean[j]);
+      }
+      if (clean.length > 1) {
+        var number = document.createElement('span');
+        number.className = 'pos-chip-num';
+        number.textContent = j + 1;
+        chip.appendChild(number);
+      }
+      chip.appendChild(document.createTextNode(clean[j]));
+      posDiv.appendChild(chip);
+    }
+  }
   function getRawExampleHtml(id) {
     var e = document.getElementById(id);
     if (!e) return '';
@@ -414,18 +444,10 @@
 
   // 1. POS chips
   var rawPos = getRaw('raw-pos-back');
+  var rawPosUrls = getRaw('raw-oxford-pos-urls-back');
   var posDiv = document.getElementById('top-bar-pos-back');
   var topBarLeft = posDiv ? posDiv.parentNode : null;
-  if (posDiv && rawPos) {
-    var parts = rawPos.split(/[,\/]/), clean = [];
-    for (var i = 0; i < parts.length; i++) { var p = trim(parts[i]); if (p) clean.push(p); }
-    if (clean.length > 1) {
-      var h = '';
-      for (var j = 0; j < clean.length; j++)
-        h += '<span class="pos-chip"><span class="pos-chip-num">' + (j+1) + '</span>' + clean[j] + '</span>';
-      posDiv.innerHTML = h;
-    }
-  }
+  renderPosChips(posDiv, rawPos, rawPosUrls);
 
   // 2. Corpus badges + separator between POS and corpus
   var rawTags = getRaw('raw-tags-back');

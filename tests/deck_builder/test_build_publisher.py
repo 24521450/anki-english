@@ -38,6 +38,8 @@ def _card(guid: str, word: str, definition: str) -> BuiltCard:
         "Source::Oxford CEFR::A1 CEFR::oxford",
         "",
         "",
+        cambridge_url=f"https://dictionary.cambridge.org/dictionary/english/{word}",
+        oxford_pos_urls=f"https://www.oxfordlearnersdictionaries.com/definition/english/{word}_1",
     )
 
 

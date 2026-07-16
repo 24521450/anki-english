@@ -108,7 +108,14 @@ def apply_review_overrides(all_cards: list[BuiltCard], overrides: dict[str, dict
                 tags=c.tags,
                 synonyms=c.synonyms,
                 antonyms=c.antonyms,
+                example_audio_uk=c.example_audio_uk,
+                example_audio_us=c.example_audio_us,
+                idiom_example_audio_uk=c.idiom_example_audio_uk,
+                idiom_example_audio_us=c.idiom_example_audio_us,
                 definition_vi=c.definition_vi,
+                cambridge_url=c.cambridge_url,
+                oxford_pos_urls=c.oxford_pos_urls,
+                production_answer=c.production_answer,
             )
             updated_cards.append(c_new)
             applied_guids.add(c.guid)

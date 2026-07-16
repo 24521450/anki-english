@@ -32,6 +32,7 @@ from src.deck_builder.build_metadata import (
 )
 from src.deck_builder.build_issues import BuildIssue, BuildValidationError
 from src.deck_builder.example_audio import plan_cards_example_audio
+from src.deck_builder.dictionary_links import OxfordLinkIndex, cambridge_url
 from src.deck_builder.formatting import (
     format_examples as _format_examples,
     format_idioms as _format_idioms,
@@ -52,6 +53,7 @@ from src.deck_builder.word_lookup import (
     get_word_candidates,
     resolve_primary_record,
 )
+from src.deck_builder.production import apply_production_answers
 from src.deck_builder.card_identity import (
     CardIdentity,
     normalize_cefr,
@@ -332,6 +334,15 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
     sense_source_record = indexes["sense_source_record"]
     word_pos_set = indexes["word_pos_set"]
     source_label_specs_index = indexes["source_label_specs_index"]
+    oxford_link_index = OxfordLinkIndex(by_word)
+    semantic_source_ids_by_guid = {
+        row.get("guid", ""): {
+            source_id
+            for sense in row.get("senses") or []
+            for source_id in sense.get("source_sense_ids") or []
+        }
+        for row in semantic_registry_rows or []
+    }
 
     audit_rows = []
     if paths.deck_audit_jsonl_path and paths.deck_audit_jsonl_path.exists():
@@ -377,7 +388,10 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         key = identity.as_key()
         manual = inputs.manual_by_key.get(key)
         row_pos = (row.get("pos") or "").strip()
+        pos_parts = [part.strip() for part in row_pos.split(",") if part.strip()]
         if manual is not None:
+            candidates = get_word_candidates(identity.word.casefold())
+            resolved_word = next((candidate for candidate in candidates if candidate in by_word), candidates[0])
             card = BuiltCard(
                 guid=(row.get("guid") or "").strip(),
                 notetype="English Academic Vocabulary Model",
@@ -398,6 +412,12 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
                 tags=manual.get("tags") or f"Source::{manual.get('source1') or 'Oxford'} CEFR::{identity.cefr} CEFR::oxford",
                 synonyms=manual.get("synonyms") or "",
                 antonyms=manual.get("antonyms") or "",
+                cambridge_url=cambridge_url(resolved_word),
+                oxford_pos_urls=oxford_link_index.aligned_urls(
+                    resolved_word,
+                    pos_parts,
+                    semantic_source_ids_by_guid.get((row.get("guid") or "").strip(), set()),
+                ),
             )
             manual_payload_by_guid[card.guid] = manual
             guid_to_relation_specs[card.guid] = []
@@ -405,7 +425,6 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
             continue
 
         word_lower = identity.word.lower()
-        pos_parts = [part.strip() for part in row_pos.split(",") if part.strip()]
         candidates = get_word_candidates(word_lower)
         matched_records: list[dict] = []
         resolved_word = word_lower
@@ -620,6 +639,12 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
             tags=tags,
             synonyms="",
             antonyms="",
+            cambridge_url=cambridge_url(resolved_word),
+            oxford_pos_urls=oxford_link_index.aligned_urls(
+                resolved_word,
+                resolved_pos_parts if resolved_pos_parts else pos_parts,
+                semantic_source_ids_by_guid.get(guid, set()),
+            ),
         ))
 
     if issues:
@@ -751,4 +776,9 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         for card in cards
     ]
     cards, _ = plan_cards_example_audio(cards)
+    # ProductionAnswer is derived only after semantic-registry, review,
+    # relation, corpus, and audio transforms have completed.  This keeps the
+    # field deterministic while ensuring every emitted card uses its final
+    # displayed Word value (including reviewed identity changes).
+    cards = apply_production_answers(cards)
     return _serialize_result(cards, counters=counters)

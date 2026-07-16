@@ -7,6 +7,7 @@ Schema v2: see `tests/fixtures/golden_oxford_v2.json` (5 records, generated 2026
 from __future__ import annotations
 
 import re
+from urllib.parse import urlsplit
 from typing import Any, Optional
 
 from lxml import html as lxml_html
@@ -540,6 +541,29 @@ def _extract_pos_sections(root) -> list[dict]:
     return sections
 
 
+def _extract_canonical_url(root) -> str | None:
+    """Return the page's official Oxford canonical URL, if trustworthy."""
+    valid_urls: set[str] = set()
+    for element in root.xpath("//link[contains(concat(' ', normalize-space(@rel), ' '), ' canonical ')]"):
+        href = (element.get("href") or "").strip()
+        if any(character.isspace() or character in "\"'<>" for character in href):
+            continue
+        try:
+            parsed = urlsplit(href)
+        except ValueError:
+            continue
+        if (
+            parsed.scheme == "https"
+            and parsed.hostname == "www.oxfordlearnersdictionaries.com"
+            and parsed.path.startswith("/definition/english/")
+            and parsed.path != "/definition/english/"
+            and not parsed.query
+            and not parsed.fragment
+        ):
+            valid_urls.add(href)
+    return next(iter(valid_urls)) if len(valid_urls) == 1 else None
+
+
 def _find_pos_for_ol(ol_el) -> str:
     """Find the POS label for a given main ol by walking up to find sibling span.pos.
 
@@ -647,6 +671,9 @@ def parse_oxford(html_bytes: bytes, source_files: Optional[list[str]] = None) ->
 
     # Phase 7a: scope sense extraction to actual POS section boundaries
     pos_data = _extract_pos_sections(root)
+    canonical_url = _extract_canonical_url(root)
+    for section in pos_data:
+        section["source_url"] = canonical_url
 
     # Idiom extraction (phrase + def + examples)
     # Oxford's idiom block structure:

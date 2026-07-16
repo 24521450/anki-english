@@ -1,0 +1,3 @@
+<div class="production-frontside-answer">
+  {{FrontSide}}
+</div>

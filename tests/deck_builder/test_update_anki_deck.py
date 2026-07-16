@@ -13,6 +13,30 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.deck_builder import package_command as update_anki_deck
 
+
+def _patch_production_templates(tmp_path: Path, monkeypatch) -> tuple[Path, Path]:
+    production_front = tmp_path / "production_front_template.txt"
+    production_front.write_text(
+        "{{#DefinitionVI}}{{#Example}}{{#ProductionAnswer}}"
+        "{{DefinitionVI}}{{type:ProductionAnswer}}"
+        "{{/ProductionAnswer}}{{/Example}}{{/DefinitionVI}}",
+        encoding="utf-8",
+    )
+    production_prefix = tmp_path / "production_answer_prefix.txt"
+    production_prefix.write_text("<div>{{FrontSide}}</div>", encoding="utf-8")
+    monkeypatch.setattr(
+        update_anki_deck, "PRODUCTION_FRONT_TEMPLATE", production_front
+    )
+    monkeypatch.setattr(
+        update_anki_deck, "PRODUCTION_ANSWER_PREFIX", production_prefix
+    )
+    return production_front, production_prefix
+
+
+@pytest.fixture(autouse=True)
+def _production_design_paths(tmp_path: Path, monkeypatch):
+    _patch_production_templates(tmp_path, monkeypatch)
+
 def test_generate_deterministic_id():
     name = "Test Deck"
     deck_id = update_anki_deck.generate_deterministic_id(name)
@@ -28,7 +52,66 @@ def test_eavm_model_identity_matches_existing_anki_note_type():
     assert update_anki_deck.EAVM_MODEL_ID != update_anki_deck.generate_deterministic_id(
         update_anki_deck.EAVM_MODEL_NAME
     )
-    assert update_anki_deck.EAVM_FIELD_NAMES[-1] == "DefinitionVI"
+    assert update_anki_deck.EAVM_FIELD_NAMES[-4:] == (
+        "DefinitionVI", "CambridgeURL", "OxfordPOSURLs", "ProductionAnswer",
+    )
+    assert update_anki_deck.EAVM_FIELD_NAMES[22] == "ProductionAnswer"
+    assert update_anki_deck.EAVM_TEMPLATE_NAMES == (
+        "Recognition", "Production (VI -> EN)",
+    )
+
+
+def test_template_loader_is_ordered_and_composes_production_answer(tmp_path: Path):
+    front = tmp_path / "front.txt"
+    back = tmp_path / "back.txt"
+    production_front = tmp_path / "production-front.txt"
+    production_prefix = tmp_path / "production-prefix.txt"
+    front.write_text("recognition front", encoding="utf-8")
+    back.write_text("recognition back", encoding="utf-8")
+    production_front.write_text("prompt {{type:ProductionAnswer}}", encoding="utf-8")
+    production_prefix.write_text("{{FrontSide}} answer ", encoding="utf-8")
+
+    templates = update_anki_deck.load_eavm_templates(
+        front, back, production_front, production_prefix
+    )
+
+    assert tuple(template.name for template in templates) == (
+        "Recognition", "Production (VI -> EN)",
+    )
+    assert templates[0].back == "recognition back"
+    assert templates[1].back == "{{FrontSide}} answer recognition back"
+
+
+def test_genanki_model_emits_production_only_for_eligible_notes():
+    templates = (
+        update_anki_deck.EavmTemplate("Recognition", "{{Word}}", "{{Definition}}"),
+        update_anki_deck.EavmTemplate(
+            "Production (VI -> EN)",
+            "{{#DefinitionVI}}{{#Example}}{{#ProductionAnswer}}"
+            "prompt {{type:ProductionAnswer}}"
+            "{{/ProductionAnswer}}{{/Example}}{{/DefinitionVI}}",
+            "{{FrontSide}}",
+        ),
+    )
+    model = genanki.Model(
+        update_anki_deck.EAVM_MODEL_ID,
+        update_anki_deck.EAVM_MODEL_NAME,
+        fields=[{"name": name} for name in update_anki_deck.EAVM_FIELD_NAMES],
+        templates=[template.for_genanki() for template in templates],
+    )
+    update_anki_deck.configure_genanki_requirements(model)
+    values = [""] * len(update_anki_deck.EAVM_FIELD_NAMES)
+    values[0] = "conquer"
+    values[3] = "win"
+    values[4] = "They conquered it."
+    values[19] = "chiến thắng"
+    values[22] = "conquer"
+    eligible = genanki.Note(model=model, fields=values.copy(), guid="eligible")
+    values[19] = ""
+    ineligible = genanki.Note(model=model, fields=values, guid="ineligible")
+
+    assert [card.ord for card in eligible.cards] == [0, 1]
+    assert [card.ord for card in ineligible.cards] == [0]
 
 def test_extract_audio_filename():
     assert update_anki_deck.extract_audio_filename("[sound:hello.mp3]") == "hello.mp3"
@@ -72,6 +155,7 @@ def test_update_anki_deck_success(tmp_path, monkeypatch):
         "cefr": "C1",
         "definition": "take control by force|overcome",
         "definition_vi": "chiếm quyền kiểm soát|vượt qua",
+        "production_answer": "conquer",
         "example": "to conquer the world",
         "ipa": "/ˈkɒŋkə(r)/",
         "uk_audio": "[sound:uk_conquer.mp3]",
@@ -306,6 +390,7 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "cefr": "C1",
         "definition": "take control by force|overcome",
         "definition_vi": "chiếm quyền kiểm soát|vượt qua",
+        "production_answer": "conquer",
         "example": "to conquer the world",
         "ipa": "/ˈkɒŋkə(r)/",
         "uk_audio": "[sound:uk_conquer.mp3]",
@@ -317,6 +402,10 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "deck": "IELTS Academic::C1",
         "guid": "test_guid_12345"
     }
+    note_data["cambridge_url"] = "https://dictionary.cambridge.org/dictionary/english/conquer"
+    note_data["oxford_pos_urls"] = (
+        "https://www.oxfordlearnersdictionaries.com/definition/english/conquer"
+    )
     notes_file.write_text(json.dumps(note_data) + "\n", encoding="utf-8")
 
     # Setup mock audio files
@@ -374,6 +463,11 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
     ]
     assert created["fields"][15:19] == ["", "", "", ""]
     assert created["fields"][19] == "chiếm quyền kiểm soát|vượt qua"
+    assert created["fields"][20:] == [
+        "https://dictionary.cambridge.org/dictionary/english/conquer",
+        "https://www.oxfordlearnersdictionaries.com/definition/english/conquer",
+        "conquer",
+    ]
     assert created["guid"] == "test_guid_12345"
     assert created["tags"] == ["C1", "verb", "academic"]
 

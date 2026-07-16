@@ -1,0 +1,370 @@
+{{#DefinitionVI}}
+{{#Example}}
+{{#ProductionAnswer}}
+<div class="anki-card-container production-card" data-cefr="{{CEFRLevel}}">
+  <div class="production-prompt-shell">
+    <div class="top-bar production-top-bar">
+      <div class="top-bar-left production-pos-list" id="production-pos-list">
+        {{#PartOfSpeech}}<span class="pos-chip">{{PartOfSpeech}}</span>{{/PartOfSpeech}}
+      </div>
+      <div class="top-bar-right">
+        <span class="top-badge cefr-badge-{{CEFRLevel}}">{{CEFRLevel}}</span>
+      </div>
+    </div>
+
+    <div class="production-prompt-content">
+      <div class="production-direction" aria-label="Vietnamese to English">
+        <span class="production-direction-label" lang="vi">VI</span>
+        <span class="production-direction-arrow" aria-hidden="true">&rarr;</span>
+        <span class="production-direction-label">EN</span>
+      </div>
+      <div class="production-instruction">Recall the English expression.</div>
+      <div class="production-senses" id="production-senses"></div>
+    </div>
+  </div>
+
+  <div class="production-type-shell">
+    <label class="production-type-label" for="typeans">Type the English expression</label>
+    <div class="production-type-input">{{type:ProductionAnswer}}</div>
+  </div>
+</div>
+
+<div class="production-raw-data" hidden aria-hidden="true">
+  <div id="raw-production-definition-vi">{{DefinitionVI}}</div>
+  <div id="raw-production-example">{{Example}}</div>
+  <div id="raw-production-answer">{{ProductionAnswer}}</div>
+  <div id="raw-production-pos">{{PartOfSpeech}}</div>
+</div>
+
+<script>
+(function() {
+  function trimProduction(value) {
+    return value ? String(value).replace(/^\s+|\s+$/g, '') : '';
+  }
+  function escapeProductionRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+  function isProductionSlot(value) {
+    return /^(?:sth|sb(?:['\u2019]s)?|something|somebody|someone|somewhere|one(?:['\u2019]s)?|oneself|yourself|yourselves|himself|herself|itself|ourselves|themselves)$/i.test(trimProduction(value));
+  }
+  function containsProductionSlot(value) {
+    return /\b(?:sth|sb(?:['\u2019]s)?|something|somebody|someone|somewhere|one(?:['\u2019]s)?|oneself|yourself|yourselves|himself|herself|itself|ourselves|themselves)\b/i.test(String(value || ''));
+  }
+  function normalizeProductionAnswer(rawAnswer) {
+    var answer = trimProduction(rawAnswer);
+    var match = answer.match(/^(.+?)\s+\(([^()]+)\)\s*$/);
+    if (match && !containsProductionSlot(match[2])) answer = trimProduction(match[1]);
+    return answer;
+  }
+  function productionAnchors(rawAnswer) {
+    var answer = normalizeProductionAnswer(rawAnswer).replace(/[()[\]{}]/g, ' ');
+    var tokens = answer.split(/\s+/);
+    var anchors = [];
+    var seen = {};
+    for (var i = 0; i < tokens.length; i++) {
+      var token = trimProduction(tokens[i]).replace(/^[,;:!?]+|[,;:!?]+$/g, '');
+      var key = token.toLowerCase();
+      if (!token || isProductionSlot(token) || seen[key]) continue;
+      seen[key] = true;
+      anchors.push(token);
+    }
+    return anchors;
+  }
+  function buildProductionForms(rawAnchor, rawPos, allowInflection) {
+    var anchor = trimProduction(rawAnchor).toLowerCase();
+    if (!anchor) return [];
+
+    var forms = [];
+    var seen = {};
+    function add(form) {
+      var value = trimProduction(form).toLowerCase();
+      if (!value || seen[value]) return;
+      seen[value] = true;
+      forms.push(value);
+    }
+
+    add(anchor);
+    // Reviewed surface variants apply to every lexical token in a learning
+    // pattern (for example, the second token in ``manual labor``), while
+    // grammatical inflection is intentionally limited to the first token.
+    var reviewedVariants = {
+      'have': ['has', 'had', 'having'],
+      'labor': ['labour', 'labours', 'laboured', 'labouring'],
+      'labour': ['labor', 'labors', 'labored', 'laboring'],
+      'percent': ['per cent'],
+      'saint': ['st.', 'st']
+    };
+    var variantForms = reviewedVariants[anchor] || [];
+    for (var v = 0; v < variantForms.length; v++) add(variantForms[v]);
+    if (!allowInflection) return forms;
+
+    var posParts = String(rawPos || '').toLowerCase().split(/\s*[,\/]\s*/);
+    var isNoun = posParts.indexOf('noun') !== -1;
+    var isNumber = posParts.indexOf('number') !== -1;
+    var isVerb = posParts.indexOf('verb') !== -1 || posParts.indexOf('phrasal verb') !== -1;
+    var isAdjective = posParts.indexOf('adjective') !== -1;
+    var isAdverb = posParts.indexOf('adverb') !== -1;
+    var last = anchor.charAt(anchor.length - 1);
+    var beforeLast = anchor.charAt(anchor.length - 2);
+    var consonantY = last === 'y' && beforeLast && !/[aeiou]/.test(beforeLast);
+
+    if (isNoun || isNumber) {
+      add(anchor + 's');
+      add(anchor + 'es');
+      if (consonantY) add(anchor.slice(0, -1) + 'ies');
+      if (/fe$/.test(anchor)) add(anchor.slice(0, -2) + 'ves');
+      else if (/f$/.test(anchor)) add(anchor.slice(0, -1) + 'ves');
+    }
+    if (isVerb) {
+      add(anchor + 's');
+      add(anchor + 'es');
+      add(anchor + 'ed');
+      add(anchor + 'ing');
+      if (/e$/.test(anchor)) {
+        add(anchor + 'd');
+        add(anchor.slice(0, -1) + 'ing');
+      }
+      if (consonantY) {
+        add(anchor.slice(0, -1) + 'ies');
+        add(anchor.slice(0, -1) + 'ied');
+      }
+      if (/ie$/.test(anchor)) add(anchor.slice(0, -2) + 'ying');
+      if (last && /[a-z]/.test(last) && !/[aeiouwxy]/.test(last)) {
+        add(anchor + last + 'ed');
+        add(anchor + last + 'ing');
+      }
+      if (/c$/.test(anchor)) {
+        add(anchor + 'ked');
+        add(anchor + 'king');
+      }
+    }
+    if (isAdjective || isAdverb) {
+      add(anchor + 'er');
+      add(anchor + 'est');
+      if (/e$/.test(anchor)) {
+        add(anchor + 'r');
+        add(anchor + 'st');
+      }
+      if (consonantY) {
+        add(anchor.slice(0, -1) + 'ier');
+        add(anchor.slice(0, -1) + 'iest');
+      }
+      if (last && /[a-z]/.test(last) && !/[aeiouwxy]/.test(last)) {
+        add(anchor + last + 'er');
+        add(anchor + last + 'est');
+      }
+    }
+
+    var irregular = {
+      'bind': ['bound'],
+      'breed': ['bred'],
+      'cling': ['clung'],
+      'creep': ['crept'],
+      'equip': ['equipped'],
+      'flee': ['fled'],
+      'forbid': ['forbade'],
+      'leap': ['leapt'],
+      'mimic': ['mimicking'],
+      'overcome': ['overcame'],
+      'oversee': ['oversaw'],
+      'phenomenon': ['phenomena'],
+      'shrink': ['shrank'],
+      'spoil': ['spoilt'],
+      'swing': ['swung'],
+      'tread': ['trod'],
+      'uphold': ['upheld'],
+      'weave': ['woven']
+    };
+    var irregularForms = irregular[anchor] || [];
+    for (var j = 0; j < irregularForms.length; j++) add(irregularForms[j]);
+
+    forms.sort(function(a, b) { return b.length - a.length; });
+    return forms;
+  }
+  function mapProductionTextNodes(rawHtml, transform) {
+    var parts = String(rawHtml || '').split(/(<[^>]*>)/g);
+    for (var i = 0; i < parts.length; i++) {
+      if (parts[i] && parts[i].charAt(0) !== '<') parts[i] = transform(parts[i]);
+    }
+    return parts.join('');
+  }
+  function replaceProductionAnchor(rawText, forms) {
+    if (!forms.length) return {text: String(rawText || ''), count: 0};
+    var escaped = [];
+    for (var i = 0; i < forms.length; i++) escaped.push(escapeProductionRegExp(forms[i]));
+    var count = 0;
+    var wordChars = 'A-Za-z0-9\\u00C0-\\u024F\\u0300-\\u036F\\u1E00-\\u1EFF';
+    var pattern = new RegExp(
+      '(^|[^' + wordChars + '])(' + escaped.join('|') + ')(?=$|[^' + wordChars + '])',
+      'gi'
+    );
+    var text = mapProductionTextNodes(rawText, function(textNode) {
+      return textNode.replace(pattern, function(match, prefix) {
+        count += 1;
+        return prefix + '[\u2026]';
+      });
+    });
+    return {text: text, count: count};
+  }
+  function maskProductionAnchors(rawText, rawAnswer, rawPos) {
+    var anchors = productionAnchors(rawAnswer);
+    var text = String(rawText || '');
+    var counts = [];
+    var total = 0;
+    for (var i = 0; i < anchors.length; i++) {
+      var result = replaceProductionAnchor(
+        text,
+        buildProductionForms(anchors[i], rawPos, i === 0)
+      );
+      text = result.text;
+      counts.push(result.count);
+      total += result.count;
+    }
+    return {text: text, counts: counts, maskCount: total, anchorCount: anchors.length};
+  }
+  function clozeProductionText(rawText, rawAnswer, rawPos) {
+    var result = maskProductionAnchors(rawText, rawAnswer, rawPos);
+    var complete = result.anchorCount > 0;
+    for (var i = 0; i < result.counts.length; i++) {
+      if (result.counts[i] === 0) complete = false;
+    }
+    return {text: result.text, complete: complete, maskCount: result.maskCount};
+  }
+  function maskVietnameseLeaks(rawText, rawAnswer, rawPos) {
+    return maskProductionAnchors(rawText, rawAnswer, rawPos).text;
+  }
+  function decodeProductionEntities(value) {
+    return String(value || '')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;|&apos;/gi, "'")
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&amp;/gi, '&')
+      .replace(/&#x([0-9a-f]+);/gi, function(match, code) { return String.fromCharCode(parseInt(code, 16)); })
+      .replace(/&#([0-9]+);/g, function(match, code) { return String.fromCharCode(parseInt(code, 10)); });
+  }
+  function normalizeProductionExampleText(rawHtml) {
+    var html = String(rawHtml || '');
+    html = html.replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+    return trimProduction(html);
+  }
+  function productionVisibleText(rawHtml) {
+    return trimProduction(decodeProductionEntities(
+      String(rawHtml || '').replace(/<[^>]*>/g, '')
+    ));
+  }
+  function splitProductionExampleLines(rawHtml) {
+    var normalized = normalizeProductionExampleText(rawHtml);
+    if (!normalized) return [];
+    var rawLines = normalized.split(/(?:<br\s*\/?>\s*){2,}/i);
+    var lines = [];
+    for (var i = 0; i < rawLines.length; i++) {
+      var line = trimProduction(rawLines[i].replace(/<br\s*\/?>/gi, ' '));
+      if (productionVisibleText(line)) lines.push(line);
+    }
+    return lines;
+  }
+  function buildProductionRows(rawVi, rawExampleHtml, rawAnswer, rawPos) {
+    var viChunks = String(rawVi || '').split('|');
+    var exampleChunks = String(rawExampleHtml || '').split('|');
+    var rows = [];
+    for (var i = 0; i < viChunks.length; i++) {
+      var vi = trimProduction(decodeProductionEntities(viChunks[i]).replace(/<[^>]*>/g, ''));
+      if (!vi) continue;
+      var lines = splitProductionExampleLines(exampleChunks[i] || '');
+      var examples = [];
+      for (var j = 0; j < lines.length; j++) {
+        var clozed = clozeProductionText(lines[j], rawAnswer, rawPos);
+        if (clozed.complete && clozed.maskCount > 0) examples.push(clozed.text);
+      }
+      rows.push({
+        vi: maskVietnameseLeaks(vi, rawAnswer, rawPos),
+        examples: examples
+      });
+    }
+    return rows;
+  }
+  function getProductionText(id) {
+    var element = document.getElementById(id);
+    return element ? trimProduction(element.textContent || element.innerText) : '';
+  }
+  function getProductionHtml(id) {
+    var element = document.getElementById(id);
+    return element ? trimProduction(element.innerHTML || '') : '';
+  }
+  function renderProductionPos(rawPos) {
+    var container = document.getElementById('production-pos-list');
+    if (!container || !rawPos) return;
+    var rawParts = rawPos.split(/[,\/]/);
+    var parts = [];
+    for (var i = 0; i < rawParts.length; i++) {
+      var part = trimProduction(rawParts[i]);
+      if (part) parts.push(part);
+    }
+    container.textContent = '';
+    for (var j = 0; j < parts.length; j++) {
+      var chip = document.createElement('span');
+      chip.className = 'pos-chip';
+      if (parts.length > 1) {
+        var number = document.createElement('span');
+        number.className = 'pos-chip-num';
+        number.textContent = j + 1;
+        chip.appendChild(number);
+      }
+      chip.appendChild(document.createTextNode(parts[j]));
+      container.appendChild(chip);
+    }
+  }
+  function renderProductionRows(rows) {
+    var container = document.getElementById('production-senses');
+    if (!container) return;
+    container.textContent = '';
+    for (var i = 0; i < rows.length; i++) {
+      var row = document.createElement('div');
+      row.className = rows[i].examples.length
+        ? 'production-sense-row'
+        : 'production-sense-row production-sense-row-vi-only';
+
+      var gloss = document.createElement('div');
+      gloss.className = 'production-gloss';
+      var glossLabel = document.createElement('span');
+      glossLabel.className = 'production-gloss-label';
+      glossLabel.textContent = 'VI';
+      var glossText = document.createElement('span');
+      glossText.className = 'production-gloss-text';
+      glossText.lang = 'vi';
+      glossText.textContent = rows[i].vi;
+      gloss.appendChild(glossLabel);
+      gloss.appendChild(glossText);
+      row.appendChild(gloss);
+
+      if (rows[i].examples.length) {
+        var examples = document.createElement('div');
+        examples.className = 'production-example-list';
+        for (var j = 0; j < rows[i].examples.length; j++) {
+          var example = document.createElement('div');
+          example.className = 'production-example';
+          example.innerHTML = rows[i].examples[j];
+          examples.appendChild(example);
+        }
+        row.appendChild(examples);
+      }
+      container.appendChild(row);
+    }
+  }
+
+  var rawAnswer = getProductionText('raw-production-answer');
+  var rawPos = getProductionText('raw-production-pos');
+  renderProductionPos(rawPos);
+  renderProductionRows(buildProductionRows(
+    getProductionText('raw-production-definition-vi'),
+    getProductionHtml('raw-production-example'),
+    rawAnswer,
+    rawPos
+  ));
+})();
+</script>
+{{/ProductionAnswer}}
+{{/Example}}
+{{/DefinitionVI}}

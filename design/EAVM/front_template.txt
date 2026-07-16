@@ -13,7 +13,7 @@
   </div>
   <div class="card-content-front">
     <div class="front-word-group">
-      <div class="word-front">{{Word}}</div>
+      <div class="word-front">{{#CambridgeURL}}<a href="{{CambridgeURL}}" target="_blank" rel="noopener noreferrer" aria-label="Open headword in Cambridge Dictionary">{{Word}}</a>{{/CambridgeURL}}{{^CambridgeURL}}{{Word}}{{/CambridgeURL}}</div>
       <div class="sense-count" id="sense-count-front"></div>
     </div>
   </div>
@@ -24,27 +24,49 @@
   <div id="raw-pos-front">{{PartOfSpeech}}</div>
   <div id="raw-tags-front">{{Tags}}</div>
   <div id="raw-definition-front">{{Definition}}</div>
+  <div id="raw-oxford-pos-urls-front">{{OxfordPOSURLs}}</div>
 </div>
 
 <script>
 (function() {
   function trim(s) { return s ? s.replace(/^\s+|\s+$/g, '') : ''; }
   function getRaw(id) { var e = document.getElementById(id); return e ? trim(e.textContent || e.innerText) : ''; }
+  function renderPosChips(posDiv, rawPos, rawUrls) {
+    if (!posDiv || !rawPos) return;
+    var parts = rawPos.split(/[,\/]/), clean = [];
+    for (var i = 0; i < parts.length; i++) {
+      var part = trim(parts[i]);
+      if (part) clean.push(part);
+    }
+    var urls = rawUrls ? rawUrls.split('|') : [];
+    posDiv.textContent = '';
+    for (var j = 0; j < clean.length; j++) {
+      var url = trim(urls[j] || '');
+      var chip = document.createElement(url ? 'a' : 'span');
+      chip.className = 'pos-chip';
+      if (url) {
+        chip.href = url;
+        chip.target = '_blank';
+        chip.rel = 'noopener noreferrer';
+        chip.setAttribute('aria-label', 'Open Oxford entry for ' + clean[j]);
+      }
+      if (clean.length > 1) {
+        var number = document.createElement('span');
+        number.className = 'pos-chip-num';
+        number.textContent = j + 1;
+        chip.appendChild(number);
+      }
+      chip.appendChild(document.createTextNode(clean[j]));
+      posDiv.appendChild(chip);
+    }
+  }
 
   // 1. POS chips
   var rawPos = getRaw('raw-pos-front');
+  var rawPosUrls = getRaw('raw-oxford-pos-urls-front');
   var posDiv = document.getElementById('top-bar-pos-front');
   var topBarLeft = posDiv ? posDiv.parentNode : null;
-  if (posDiv && rawPos) {
-    var parts = rawPos.split(/[,\/]/), clean = [];
-    for (var i = 0; i < parts.length; i++) { var p = trim(parts[i]); if (p) clean.push(p); }
-    if (clean.length > 1) {
-      var h = '';
-      for (var j = 0; j < clean.length; j++)
-        h += '<span class="pos-chip"><span class="pos-chip-num">' + (j+1) + '</span>' + clean[j] + '</span>';
-      posDiv.innerHTML = h;
-    }
-  }
+  renderPosChips(posDiv, rawPos, rawPosUrls);
 
   // 2. Corpus badges + separator
   var rawTags = getRaw('raw-tags-front');

@@ -166,6 +166,7 @@
         "additionalProperties": false,
         "required": [
           "pos",
+          "source_url",
           "register_tags",
           "definitions"
         ],
@@ -173,6 +174,14 @@
           "pos": {
             "type": "string",
             "description": "POS label (e.g. 'noun', 'verb', 'adjective,adverb')"
+          },
+          "source_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^https://www\\.oxfordlearnersdictionaries\\.com/definition/english/[^?#]+$",
+            "description": "Canonical Oxford entry URL owning this POS section; null when absent or untrusted."
           },
           "register_tags": {
             "type": "array",

@@ -253,6 +253,7 @@ def merge_word_records(records: list[dict]) -> dict:
         #   3. Old parser outputs preserved in audit JSONL.
         result = copy.deepcopy(records[0])
         for pd in result.get("pos_data", []):
+            pd.setdefault("source_url", None)
             for d in pd.get("definitions", []):
                 if "synonyms" not in d:
                     d["synonyms"] = []
@@ -411,9 +412,34 @@ def merge_word_records(records: list[dict]) -> dict:
                     d_item["n"] = n
                 pos_data_merged.append({
                     "pos": pd["pos"],
+                    "source_url": pd.get("source_url"),
                     "register_tags": _dedup_preserve_order(pd.get("register_tags", [])),
                     "definitions": new_defs,
                 })
+
+    # A merged POS section may receive the same definition from multiple
+    # source pages. Preserve provenance only when every contributing page
+    # agrees; an ambiguous link is safer as null than as a wrong dictionary URL.
+    for merged_pd in pos_data_merged:
+        matching_urls: set[str | None] = set()
+        merged_keys = {
+            (merged_pd["pos"], d.get("sensenum_local"), d.get("text"))
+            for d in merged_pd.get("definitions", [])
+        }
+        for record in records:
+            for source_pd in record.get("pos_data", []):
+                source_keys = {
+                    (source_pd.get("pos"), d.get("sensenum_local"), d.get("text"))
+                    for d in source_pd.get("definitions", [])
+                }
+                if merged_keys & source_keys:
+                    matching_urls.add(source_pd.get("source_url"))
+        non_null_urls = {url for url in matching_urls if url}
+        merged_pd["source_url"] = (
+            next(iter(non_null_urls))
+            if len(non_null_urls) == 1 and None not in matching_urls
+            else None
+        )
 
     # Renumber pos_data entries by canonical POS order
     pos_data_merged = sorted(

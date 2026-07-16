@@ -17,6 +17,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 
 from src.deck_builder.card_identity import primary_list_from_tags
 from src.deck_builder.simplify_senses import _flatten_senses
+from src.deck_builder.source_sense_identity import source_sense_id
 from src.deck_builder.word_lookup import get_word_candidates
 
 
@@ -101,22 +102,6 @@ def split_definition_chunk(chunk: str) -> tuple[str, str]:
 
 def _normalized_source_definition(value: object) -> str:
     return re.sub(r"[^a-z0-9]+", " ", str(value or "").casefold()).strip()
-
-
-def source_sense_id(record: dict, flat_sense) -> str:
-    definition = record["pos_data"][flat_sense.pd_idx]["definitions"][flat_sense.def_idx]
-    identity = {
-        "word": record.get("word"),
-        "homonym_index": record.get("homonym_index"),
-        "source_files": record.get("source_files") or [],
-        "pos": flat_sense.pos,
-        "pd_idx": flat_sense.pd_idx,
-        "def_idx": flat_sense.def_idx,
-        "sensenum_local": definition.get("sensenum_local"),
-        "text": definition.get("text"),
-    }
-    prefix = "cam_" if (record.get("source") or "").casefold() == "cambridge" else "ox_"
-    return prefix + _digest(identity)
 
 
 def _source_senses(records: list[dict], word: str) -> list[dict]:

@@ -11,8 +11,12 @@ Các tệp ở đây đã được sửa lỗi và phản ánh chính xác 100% 
 
 1. **`front_template.txt`**: Mã nguồn HTML + JavaScript của **Mặt trước** thẻ.
 2. **`back_template.txt`**: Mã nguồn HTML + JavaScript của **Mặt sau** thẻ.
-3. **`styling.txt`**: Mã nguồn CSS quy định giao diện, màu sắc, font chữ và các hiệu ứng hiển thị (Chips, Badge, Definition Box,...).
-4. **`README.md`**: Tệp tài liệu hướng dẫn này.
+3. **`production_front_template.txt`**: Mặt trước của card sibling
+   `Production (VI -> EN)`, gồm native `{{type:ProductionAnswer}}`.
+4. **`production_answer_prefix.txt`**: Phần đầu mặt sau Production, hiển thị
+   `{{FrontSide}}` trước toàn bộ back Recognition.
+5. **`styling.txt`**: Mã nguồn CSS quy định giao diện, màu sắc, font chữ và các hiệu ứng hiển thị (Chips, Badge, Definition Box,...).
+6. **`README.md`**: Tệp tài liệu hướng dẫn này.
 
 ---
 
@@ -21,6 +25,8 @@ Các tệp ở đây đã được sửa lỗi và phản ánh chính xác 100% 
 Kịch bản đóng gói bộ thẻ [update_anki_deck.py](file:///c:/Users/admin/Downloads/ielts-deck/update_anki_deck.py) đã được cập nhật để đọc trực tiếp các tệp tin trong thư mục này mỗi khi chạy:
 * `front_template.txt` -> Đưa vào làm `qfmt` (Question Format) cho Note Types.
 * `back_template.txt` -> Đưa vào làm `afmt` (Answer Format) cho Note Types.
+* `production_front_template.txt` + `production_answer_prefix.txt` -> tạo
+  sibling card Production ở ordinal 1.
 * `styling.txt` -> Đưa vào làm CSS Styling cho Note Types.
 
 > [!TIP]
@@ -80,3 +86,15 @@ Khi bạn nhập tệp `.apkg` mới, nếu Anki không tự động ghi đè gi
 >   if (wf.indexOf("\n") !== -1)
 >   ```
 > Nếu gõ sai, toàn bộ JavaScript trên thẻ sẽ bị crash (không hoạt động), dẫn đến việc collocations hay định nghĩa chỉ hiện chữ thường thô kèm ký tự ngăn cách `|`.
+## Production sibling card (VI -> EN)
+
+`production_front_template.txt` is the ordinal-1 front and contains the
+single native `{{type:ProductionAnswer}}` replacement. Its aligned Vietnamese
+glosses and clozed examples come from `DefinitionVI` and `Example`; the answer
+uses `{{FrontSide}}` followed by the unchanged Recognition back. The appended
+`ProductionAnswer` field is derived from the final displayed `Word`, and a
+card is generated only when all three production fields are populated.
+
+Live migration is explicit: run `python -m src.pipeline import`. The importer
+backs up the deck, appends fields, renames ordinal 0 in place, and adds ordinal
+1 without removing/recreating the established template.

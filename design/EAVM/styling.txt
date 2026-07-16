@@ -107,6 +107,18 @@
   align-items: center;
   gap: 6px;
 }
+.pos-chip[href] {
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+.pos-chip[href]:hover,
+.pos-chip[href]:focus-visible {
+  color: #f1f5f9;
+  border-color: #a78bfa;
+  background: #2d2850;
+  outline: none;
+}
 .pos-chip-num {
   font-size: 9px;
   font-weight: 700;
@@ -133,6 +145,21 @@
   letter-spacing: -0.025em;
   color: #f1f5f9;
   text-align: center;
+}
+.word-front > a[href],
+.word-back > a[href] {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: #a78bfa80;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.word-front > a[href]:hover,
+.word-front > a[href]:focus-visible,
+.word-back > a[href]:hover,
+.word-back > a[href]:focus-visible {
+  text-decoration-color: #a78bfa;
+  outline: none;
 }
 
 /* #A: Sense count dots on front card — only shown when multi-sense */
@@ -732,4 +759,37 @@
   .example-accent-label { transition: none; }
   .example-audio-trigger { transition: none; }
   .example-audio-trigger .example-text * { transition: none; }
+}
+
+/* Vietnamese -> English Production sibling card */
+.production-card { text-align: left; }
+.production-prompt-shell { display: flex; flex-direction: column; }
+.production-top-bar { border-bottom-color: #2e2b42; }
+.production-pos-list { gap: 6px; }
+.production-prompt-content { padding: 24px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+.production-direction { display: flex; align-items: center; justify-content: center; gap: 9px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.production-direction-label { color: #c4b5fd; border: 1px solid #4338ca; background: #1e1b4b; border-radius: 6px; padding: 3px 8px; }
+.production-direction-arrow { color: #64748b; font-size: 14px; }
+.production-instruction { color: #94a3b8; font-size: 13px; line-height: 1.5; text-align: center; }
+.production-senses { display: flex; flex-direction: column; gap: 10px; }
+.production-sense-row { display: grid; grid-template-columns: minmax(0, 38fr) minmax(0, 62fr); gap: 14px; align-items: start; padding: 13px 14px; border: 1px solid #25233a; border-radius: 10px; background: #181717; }
+.production-sense-row-vi-only { grid-template-columns: 1fr; }
+.production-gloss { color: #c4b5fd; font-size: 15px; line-height: 1.55; overflow-wrap: anywhere; }
+.production-gloss-label { display: inline-block; margin-right: 7px; color: #a78bfa; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; letter-spacing: .08em; vertical-align: 2px; }
+.production-gloss-text { color: inherit; }
+.production-example-list { display: flex; flex-direction: column; gap: 8px; min-width: 0; border-left: 1px solid #2e2d2d; padding-left: 14px; }
+.production-example { color: #94a3b8; font-size: 15px; font-style: italic; line-height: 1.65; }
+.production-type-shell { display: flex; flex-direction: column; gap: 8px; padding: 0 20px 24px; }
+.production-type-label { color: #64748b; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .06em; text-align: center; text-transform: uppercase; }
+.production-type-input { min-height: 42px; display: flex; align-items: center; justify-content: center; }
+.production-type-input #typeans { width: min(100%, 420px); box-sizing: border-box; border: 1px solid #4b3c86; border-radius: 8px; background: #100f19; color: #f1f5f9; padding: 10px 12px; font-family: 'Hanken Grotesk', -apple-system, sans-serif; font-size: 16px; text-align: center; }
+.production-type-input #typeans:focus { border-color: #a78bfa; outline: 2px solid #a78bfa40; outline-offset: 2px; }
+.production-frontside-answer .production-prompt-shell { display: none; }
+.production-frontside-answer + hr#answer { margin: 0 auto 20px; max-width: 800px; border: 0; border-top: 1px solid #2e2d2d; }
+.production-raw-data[hidden] { display: none; }
+@media (max-width: 560px) {
+  .production-prompt-content { padding: 18px 14px 16px; }
+  .production-sense-row { grid-template-columns: 1fr; gap: 8px; }
+  .production-example-list { border-left: 0; border-top: 1px solid #2e2d2d; padding: 8px 0 0; }
+  .production-type-shell { padding: 0 14px 18px; }
 }

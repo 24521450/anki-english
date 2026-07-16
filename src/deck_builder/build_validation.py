@@ -19,6 +19,7 @@ from src.deck_builder.build_contracts import (
     serialize_jsonl,
     serialize_txt,
 )
+from src.deck_builder.dictionary_links import is_official_cambridge_url, is_official_oxford_url
 from src.deck_builder.formatting import (
     normalize_idiom_example_key,
     parse_serialized_idiom_examples,
@@ -36,6 +37,10 @@ from src.deck_builder.card_registry import (
 )
 from src.deck_builder.registry_build import RegistryBuildInputs, RegistryTarget
 from src.deck_builder.relation_validation import validate_lexical_relation_metadata
+from src.deck_builder.production import (
+    derive_production_answer,
+    production_eligible,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -150,6 +155,17 @@ def _parse_txt_cards(text: str, source: Path | str | None = None) -> tuple[list[
         if not line.strip():
             continue
         parts = line.split("\t")
+        if len(parts) == len(CARD_FIELDS) - 1:
+            # Read-only compatibility for the immediately preceding 26-column
+            # artifact contract.  The in-memory row receives the deterministic
+            # appended field; canonical serialization/validation still writes
+            # and requires all 27 columns, so production artifacts cannot pass
+            # publish validation in the legacy shape.
+            legacy_card = BuiltCard(*parts)
+            cards.append(legacy_card._replace(
+                production_answer=derive_production_answer(legacy_card.word)
+            ))
+            continue
         if len(parts) != len(CARD_FIELDS):
             issues.append(BuildIssue("error", "txt_bad_column_count", f"line {line_no} has {len(parts)} columns", source=source))
             continue
@@ -176,6 +192,34 @@ def _validate_cards(
         for field in ("guid", "notetype", "deck", "word", "pos", "cefr"):
             if not getattr(card, field).strip():
                 issues.append(BuildIssue("error", "required_field_empty", f"row {idx} field {field!r} is empty", identity=identity))
+
+        pos_cells = [part.strip() for part in card.pos.split(",") if part.strip()]
+        oxford_url_cells = card.oxford_pos_urls.split("|")
+        if len(oxford_url_cells) != len(pos_cells):
+            issues.append(BuildIssue(
+                "error",
+                "oxford_pos_url_alignment_mismatch",
+                f"row {idx} OxfordPOSURLs has {len(oxford_url_cells)} cells for {len(pos_cells)} POS values",
+                identity=identity,
+            ))
+        for url in oxford_url_cells:
+            if any(char in url for char in ("\t", "\n", "\r", "|")) or (url and not is_official_oxford_url(url)):
+                issues.append(BuildIssue(
+                    "error",
+                    "invalid_oxford_pos_url",
+                    f"row {idx} contains an invalid Oxford POS URL",
+                    identity=identity,
+                ))
+        if (
+            any(char in card.cambridge_url for char in ("\t", "\n", "\r", "|"))
+            or not is_official_cambridge_url(card.cambridge_url)
+        ):
+            issues.append(BuildIssue(
+                "error",
+                "invalid_cambridge_url",
+                f"row {idx} contains an invalid Cambridge URL",
+                identity=identity,
+            ))
 
         example_without_double_breaks = re.sub(
             r"(?:<br\s*/?>\s*){2}", "", card.example, flags=re.IGNORECASE
@@ -231,6 +275,46 @@ def _validate_cards(
                     f"row {idx} has an empty DefinitionVI cell for a populated Definition",
                     identity=identity,
                 ))
+
+        expected_production_answer = derive_production_answer(card.word)
+        has_production_prompt_content = bool(
+            card.definition_vi.strip() and card.example.strip()
+        )
+        if has_production_prompt_content and not card.production_answer.strip():
+            issues.append(BuildIssue(
+                "error",
+                "production_answer_missing",
+                (
+                    f"row {idx} has Vietnamese/example content but no "
+                    "ProductionAnswer"
+                ),
+                identity=identity,
+            ))
+        elif production_eligible(card) and card.production_answer != expected_production_answer:
+            issues.append(BuildIssue(
+                "error",
+                "production_answer_mismatch",
+                (
+                    f"row {idx} ProductionAnswer {card.production_answer!r} "
+                    f"must equal the canonical value {expected_production_answer!r}"
+                ),
+                identity=identity,
+            ))
+        elif (
+            card.production_answer.strip()
+            and card.production_answer != expected_production_answer
+        ):
+            # Ineligible legacy/unit-test rows may omit the appended field, but
+            # a populated value must never drift from its deterministic source.
+            issues.append(BuildIssue(
+                "error",
+                "production_answer_mismatch",
+                (
+                    f"row {idx} ProductionAnswer {card.production_answer!r} "
+                    f"must equal the canonical value {expected_production_answer!r}"
+                ),
+                identity=identity,
+            ))
 
         idiom_count = len([
             entry for entry in card.idioms.split("$$") if entry.strip()

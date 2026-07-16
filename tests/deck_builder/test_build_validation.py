@@ -36,6 +36,7 @@ def _card(guid: str = "g1", audio: str = "") -> BuiltCard:
         "Source::Oxford CEFR::A1 CEFR::oxford",
         "",
         "",
+        cambridge_url="https://dictionary.cambridge.org/dictionary/english/word",
     )
 
 
@@ -180,6 +181,28 @@ def test_validate_build_result_accepts_idiom_only_card(tmp_path: Path):
     report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
 
     assert report.ok
+
+
+def test_validate_build_result_rejects_misaligned_oxford_pos_urls(tmp_path: Path):
+    card = _card()._replace(pos="noun, verb", oxford_pos_urls="https://www.oxfordlearnersdictionaries.com/definition/english/word_1")
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+    assert any(issue.code == "oxford_pos_url_alignment_mismatch" for issue in report.issues)
+
+
+def test_validate_build_result_requires_cambridge_url(tmp_path: Path):
+    card = _card()._replace(cambridge_url="")
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+    assert any(issue.code == "invalid_cambridge_url" for issue in report.issues)
 
 
 def test_validate_build_result_rejects_more_than_two_idioms(tmp_path: Path):

@@ -52,6 +52,9 @@ def _parse_oxford_record(filename: str) -> dict:
         raw = f.read()
     record = parse_oxford(raw, source_files=[filename])
     record["source_url"] = None  # not test target
+    # Canonical POS provenance was added after the frozen v2 golden fixture.
+    for pos_data in record["pos_data"]:
+        pos_data.pop("source_url", None)
     return record
 
 
@@ -102,6 +105,47 @@ def test_oxford_parser_returns_none_for_non_word_page():
     raw = b"<html><body><p>No headword here</p></body></html>"
     parsed = parse_oxford(raw, source_files=["synthetic_non_word.html"])
     assert parsed is None
+
+
+def test_oxford_parser_attaches_trusted_canonical_url_to_each_pos_section():
+    raw = b"""
+    <html><head><link rel="canonical"
+      href="https://www.oxfordlearnersdictionaries.com/definition/english/torture_1"></head>
+    <body><h1 class="headword">torture</h1><div class="top-container">
+      <div class="top-g"><span class="pos">noun</span></div>
+      <ol class="sense_single"><li class="sense"><span class="def">pain</span></li></ol>
+    </div></body></html>
+    """
+    parsed = parse_oxford(raw)
+    assert parsed["source_url"] is None
+    assert parsed["pos_data"][0]["source_url"] == (
+        "https://www.oxfordlearnersdictionaries.com/definition/english/torture_1"
+    )
+
+
+def test_oxford_parser_rejects_untrusted_canonical_url():
+    raw = b"""
+    <html><head><link rel="canonical"
+      href="https://example.com/definition/english/torture_1"></head>
+    <body><h1 class="headword">torture</h1><div class="top-container">
+      <div class="top-g"><span class="pos">noun</span></div>
+      <ol class="sense_single"><li class="sense"><span class="def">pain</span></li></ol>
+    </div></body></html>
+    """
+    assert parse_oxford(raw)["pos_data"][0]["source_url"] is None
+
+
+def test_oxford_parser_rejects_conflicting_valid_canonical_urls():
+    raw = b"""
+    <html><head>
+      <link rel="canonical" href="https://www.oxfordlearnersdictionaries.com/definition/english/torture_1">
+      <link rel="canonical" href="https://www.oxfordlearnersdictionaries.com/definition/english/torture_2">
+    </head><body><h1 class="headword">torture</h1><div class="top-container">
+      <div class="top-g"><span class="pos">noun</span></div>
+      <ol class="sense_single"><li class="sense"><span class="def">pain</span></li></ol>
+    </div></body></html>
+    """
+    assert parse_oxford(raw)["pos_data"][0]["source_url"] is None
 
 
 # -----------------------------------------------------------------------------
