@@ -1,7 +1,12 @@
 # 0007: Reviewed POS split variants
 
-- Status: Accepted
+- Status: Accepted; `torture` portion superseded 2026-07-06
 - Date: 2026-07-05
+
+> Amendment (2026-07-06): the reviewed `torture|C1|Oxford_5000` split was
+> reversed. `torture` now follows the default merged `noun, verb` Card Identity
+> under the original noun GUID. The `trail` split remains active. See
+> `CONTEXT.md` for the current allowlist.
 
 ## Context
 

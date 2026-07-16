@@ -274,7 +274,7 @@ Hệ quả:
 - Multi-POS word (vd `absent` = adjective/verb/preposition, `yield` = noun/verb) → mặc định 1 card duy nhất cho mỗi `(CEFR, LIST)`, POS chips list tất cả POS trong top-bar (xem [Vùng 4 sample card](#cấu-trúc-indexhtml-5-vùng) — card ② `absent` minh hoạ).
 - Identity variants đã review:
   - `converse|UNCLASSIFIED|AWL_Coxhead` tách `verb` và `adjective, noun` vì hai Oxford homonym có stress, nghĩa và audio khác nhau.
-  - `trail|C1|Oxford_5000` và `torture|C1|Oxford_5000` tách `noun`/`verb` vì từng POS có hệ sense, example và collocation độc lập sau review thủ công.
+  - `trail|C1|Oxford_5000` tách `noun`/`verb` vì từng POS có hệ sense, example và collocation độc lập sau review thủ công; `torture|C1|Oxford_5000` đã được review lại và merge thành một card `noun, verb` theo quy tắc mặc định.
   - Đây là allowlist ngoại lệ, không phải rule tách mọi multi-POS word.
   - `(firm, B2, Oxford_5000)` — adjective ("solid|unlikely to change")
   - `(firm, B2, Oxford_3000)` — noun ("a business or company")

@@ -1,6 +1,6 @@
 name = "scraper-ingestion"
 description = "Oxford and Cambridge scraper ingestion specialist for anki-english."
-model = "gpt-5.6-terra"
+model = "gpt-5.6-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "danger-full-access"
 nickname_candidates = ["Plato", "Parser", "Ingress"]

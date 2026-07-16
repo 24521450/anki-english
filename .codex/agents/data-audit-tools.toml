@@ -1,6 +1,6 @@
 name = "data-audit-tools"
 description = "Data integrity, audit script, and operational tooling specialist for anki-english."
-model = "gpt-5.6-terra"
+model = "gpt-5.6-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "danger-full-access"
 nickname_candidates = ["Russell", "Auditor", "Tools"]
