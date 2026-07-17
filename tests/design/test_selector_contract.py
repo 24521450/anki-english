@@ -14,6 +14,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 EAVM_DIR = PROJECT_ROOT / "design" / "EAVM"
 FRONT_TEMPLATE = EAVM_DIR / "front_template.txt"
 BACK_TEMPLATE = EAVM_DIR / "back_template.txt"
+PRODUCTION_TEMPLATE = EAVM_DIR / "production_front_template.txt"
 STYLING_TXT = EAVM_DIR / "styling.txt"
 
 CEFR_LEVELS = {"A1", "A2", "B1", "B2", "C1", "C2", "UNCLASSIFIED"}
@@ -38,6 +39,7 @@ def _template_text() -> str:
         [
             FRONT_TEMPLATE.read_text(encoding="utf-8"),
             BACK_TEMPLATE.read_text(encoding="utf-8"),
+            PRODUCTION_TEMPLATE.read_text(encoding="utf-8"),
         ]
     )
 
@@ -71,9 +73,15 @@ def _classes_from_html_string_literals(text: str) -> set[str]:
 def _classes_from_js_class_maps(text: str) -> set[str]:
     classes: set[str] = set()
 
-    # corpusMap entries: ['corpus-badge corpus-oxf', 'Oxford 3000']
-    for match in re.finditer(r"\['([A-Za-z0-9_-]+(?:\s+[A-Za-z0-9_-]+)*)'\s*,", text):
-        classes.update(match.group(1).split())
+    # corpusMap entries: ['corpus-badge corpus-oxf', 'Oxford 3000'].
+    # Scope the scan to that map; other arrays in template JS (for example
+    # reviewed spelling variants) are data, not CSS class declarations.
+    for map_match in re.finditer(r"corpusMap\s*=\s*\{(.*?)\};", text, re.DOTALL):
+        for match in re.finditer(
+            r"\['([A-Za-z0-9_-]+(?:\s+[A-Za-z0-9_-]+)*)'\s*,",
+            map_match.group(1),
+        ):
+            classes.update(match.group(1).split())
 
     # registers / posMap entries: 'formal':'rt-amber', 'n':'wf-pos-n'
     for match in re.finditer(r"'[^']+'\s*:\s*'([A-Za-z0-9_-]+)'", text):

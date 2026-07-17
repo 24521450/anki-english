@@ -150,6 +150,73 @@ def test_validate_build_result_rejects_misaligned_definition_vi(tmp_path: Path):
     )
 
 
+def test_validate_build_result_accepts_pipe_aligned_sense_pos(tmp_path: Path):
+    card = _card()._replace(
+        pos="noun, verb",
+        definition="first (một)|second (hai)",
+        definition_vi="một|hai",
+        example="First example.|Second example.",
+        sense_pos="noun|verb",
+        production_answer="word",
+        oxford_pos_urls="|",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert report.ok
+
+
+def test_validate_build_result_rejects_sense_pos_alignment_and_empty_cells(
+    tmp_path: Path,
+):
+    card = _card()._replace(
+        definition="first (một)|second (hai)",
+        definition_vi="một|hai",
+        example="First example.|Second example.",
+        sense_pos="noun|",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert any(issue.code == "sense_pos_empty_cell" for issue in report.issues)
+
+    misaligned = card._replace(sense_pos="noun")
+    report = validate_build_result(
+        _result_with_audio([misaligned], tmp_path), inputs, tmp_path
+    )
+    assert any(
+        issue.code == "sense_pos_alignment_mismatch" for issue in report.issues
+    )
+
+
+def test_validate_build_result_rejects_sense_pos_outside_card_order(tmp_path: Path):
+    card = _card()._replace(
+        pos="noun, verb",
+        definition_vi="nghĩa",
+        sense_pos="verb, noun",
+        oxford_pos_urls="|",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert any(issue.code == "sense_pos_invalid_cell" for issue in report.issues)
+
+
 def test_validate_build_result_rejects_unrenderable_relation_metadata(tmp_path: Path):
     card = _card()._replace(example="The result was clear.", synonyms="plain")
     registry = tmp_path / "card_registry.jsonl"
@@ -171,6 +238,7 @@ def test_validate_build_result_accepts_idiom_only_card(tmp_path: Path):
         definition="",
         example="",
         idioms="phrase :: meaning :: example",
+        idiom_meaning_vi="bilingual_gloss :: nghĩa",
     )
     registry = tmp_path / "card_registry.jsonl"
     manual = tmp_path / "manual_cards.jsonl"
@@ -181,6 +249,29 @@ def test_validate_build_result_accepts_idiom_only_card(tmp_path: Path):
     report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
 
     assert report.ok
+
+
+def test_validate_build_result_rejects_invalid_idiom_vi_contract(tmp_path: Path):
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    base = _card()._replace(idioms="phrase :: meaning")
+    _write_registry(registry, [base])
+    _write_jsonl(manual, [])
+    inputs = load_registry_build_inputs(registry, manual)
+
+    cases = {
+        "": "idiom_meaning_vi_alignment_mismatch",
+        "unknown :: nghĩa": "idiom_meaning_vi_invalid_mode",
+        "bilingual_gloss": "idiom_meaning_vi_malformed_cell",
+        "bilingual_gloss :: ": "idiom_meaning_vi_invalid_text",
+    }
+    for value, expected_code in cases.items():
+        report = validate_build_result(
+            _result_with_audio([base._replace(idiom_meaning_vi=value)], tmp_path),
+            inputs,
+            tmp_path,
+        )
+        assert any(issue.code == expected_code for issue in report.issues)
 
 
 def test_validate_build_result_rejects_misaligned_oxford_pos_urls(tmp_path: Path):
@@ -211,7 +302,11 @@ def test_validate_build_result_rejects_more_than_two_idioms(tmp_path: Path):
             "first :: meaning :: example$$"
             "second :: meaning :: example$$"
             "third :: meaning :: example"
-        )
+        ),
+        idiom_meaning_vi=(
+            "bilingual_gloss :: một$$bilingual_gloss :: hai$$"
+            "bilingual_gloss :: ba"
+        ),
     )
     registry = tmp_path / "card_registry.jsonl"
     manual = tmp_path / "manual_cards.jsonl"
@@ -227,7 +322,8 @@ def test_validate_build_result_rejects_more_than_two_idioms(tmp_path: Path):
 
 def test_validate_build_result_rejects_more_than_one_example_per_idiom(tmp_path: Path):
     card = _card()._replace(
-        idioms="phrase :: meaning :: First example.|Second example."
+        idioms="phrase :: meaning :: First example.|Second example.",
+        idiom_meaning_vi="bilingual_gloss :: nghĩa",
     )
     registry = tmp_path / "card_registry.jsonl"
     manual = tmp_path / "manual_cards.jsonl"
@@ -248,7 +344,10 @@ def test_validate_build_result_rejects_duplicate_idiom_examples(tmp_path: Path):
         idioms=(
             "first :: meaning :: Shared   sentence.$$"
             "second :: meaning :: shared sentence."
-        )
+        ),
+        idiom_meaning_vi=(
+            "bilingual_gloss :: một$$bilingual_gloss :: hai"
+        ),
     )
     registry = tmp_path / "card_registry.jsonl"
     manual = tmp_path / "manual_cards.jsonl"
@@ -263,7 +362,10 @@ def test_validate_build_result_rejects_duplicate_idiom_examples(tmp_path: Path):
 
 
 def test_validate_build_result_rejects_tampered_idiom_accent_audio(tmp_path: Path):
-    card = _card()._replace(idioms="phrase :: meaning :: One example.")
+    card = _card()._replace(
+        idioms="phrase :: meaning :: One example.",
+        idiom_meaning_vi="bilingual_gloss :: nghĩa",
+    )
     registry = tmp_path / "card_registry.jsonl"
     manual = tmp_path / "manual_cards.jsonl"
     _write_registry(registry, [card])

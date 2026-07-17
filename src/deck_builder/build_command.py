@@ -18,6 +18,7 @@ paths_registry = ProjectPaths()
 PROJECT_ROOT = paths_registry.root
 
 JSONL_PATH = paths_registry.oxford_jsonl
+CAMBRIDGE_JSONL_PATH = paths_registry.cambridge_jsonl
 GAMMA_VERDICTS_PATH = paths_registry.gamma_verdicts
 OUT_JSONL = paths_registry.anki_notes_jsonl
 OUT_TXT = paths_registry.anki_notes_txt
@@ -32,6 +33,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--dry-run", action="store_true", help="Compute but do not write")
     ap.add_argument("--jsonl", type=Path, default=JSONL_PATH)
+    ap.add_argument("--cambridge-jsonl", type=Path, default=CAMBRIDGE_JSONL_PATH)
     ap.add_argument("--out-jsonl", type=Path, default=OUT_JSONL)
     ap.add_argument("--out-txt", type=Path, default=OUT_TXT)
     ap.add_argument(
@@ -79,6 +81,7 @@ def main(argv: list[str] | None = None) -> int:
         antonym_example_overrides_path=args.antonym_overrides,
         sense_label_overrides_path=args.sense_label_overrides,
         semantic_registry_path=args.semantic_registry,
+        cambridge_jsonl_path=args.cambridge_jsonl,
     )
 
     print("=== Loading inputs ===", file=sys.stderr)

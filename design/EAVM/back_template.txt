@@ -41,7 +41,15 @@
     </div>
 
     <!-- Senses: L3 grid (def left / ex right), built by JS -->
-    <div class="section-box senses-box" id="senses-container"></div>
+    {{#Definition}}
+    <div class="section-box senses-box" id="senses-container">
+      <!-- Readable fallback if the enhancement script cannot run. -->
+      <div class="sense-row">
+        <div class="sense-def">{{Definition}}</div>
+        <div class="sense-ex">{{Example}}</div>
+      </div>
+    </div>
+    {{/Definition}}
 
     <!-- Word Family (before Collocations) -->
     {{#WordFamily}}
@@ -83,6 +91,7 @@
   <div id="raw-tags-back">{{Tags}}</div>
   <div id="raw-word-back">{{Word}}</div>
   <div id="raw-idioms-back">{{Idioms}}</div>
+  <div id="raw-idiom-meaning-vi-back">{{IdiomMeaningVI}}</div>
   <div id="raw-synonyms-back">{{Synonyms}}</div>
   <div id="raw-antonyms-back">{{Antonyms}}</div>
   <div id="raw-example-audio-uk-back">{{ExampleAudioUK}}</div>
@@ -112,11 +121,33 @@
     }
 
     add(headword);
+
+    // Keep reviewed spelling variants aligned with the Production sibling.
+    // For learning-pattern phrases, replace one lexical token at a time so
+    // forms such as ``has the floor`` and ``manual labour`` are highlighted
+    // as complete phrases.
+    var reviewedVariants = {
+      'have': ['has', 'had', 'having'],
+      'labor': ['labour', 'labors', 'laboured', 'labouring'],
+      'labour': ['labor', 'labors', 'labored', 'laboring'],
+      'percent': ['per cent'],
+      'saint': ['st.', 'st']
+    };
+    var headwordParts = headword.split(/\s+/);
+    for (var hp = 0; hp < headwordParts.length; hp++) {
+      var partVariants = reviewedVariants[headwordParts[hp].toLowerCase()] || [];
+      for (var hv = 0; hv < partVariants.length; hv++) {
+        var variantParts = headwordParts.slice();
+        variantParts[hp] = partVariants[hv];
+        add(variantParts.join(' '));
+      }
+    }
     if (/\s/.test(headword)) return forms;
 
     var base = headword.toLowerCase();
     var posParts = String(rawPos || '').toLowerCase().split(/\s*[,\/]\s*/);
     var isNoun = posParts.indexOf('noun') !== -1;
+    var isNumber = posParts.indexOf('number') !== -1;
     var isVerb = posParts.indexOf('verb') !== -1 || posParts.indexOf('phrasal verb') !== -1;
     var isAdjective = posParts.indexOf('adjective') !== -1;
     var isAdverb = posParts.indexOf('adverb') !== -1;
@@ -124,7 +155,7 @@
     var beforeLast = base.charAt(base.length - 2);
     var consonantY = last === 'y' && beforeLast && !/[aeiou]/.test(beforeLast);
 
-    if (isNoun) {
+    if (isNoun || isNumber) {
       add(base + 's');
       add(base + 'es');
       if (consonantY) add(base.slice(0, -1) + 'ies');
@@ -175,6 +206,7 @@
 
     var irregular = {
       'bind': ['bound'],
+      'breed': ['bred'],
       'cling': ['clung'],
       'creep': ['crept'],
       'equip': ['equipped'],
@@ -189,6 +221,7 @@
       'spoil': ['spoilt'],
       'swing': ['swung'],
       'tread': ['trod'],
+      'uphold': ['upheld'],
       'weave': ['woven']
     };
     var irregularForms = irregular[base] || [];
@@ -294,6 +327,62 @@
     }
     return '<span class="example-line example-audio-trigger" role="button" tabindex="0"' + audioAttributes
          + '><span class="example-text">' + contentHtml + '</span></span>';
+  }
+  function parseIdiomMeaningVi(raw, entryCount) {
+    var cells = raw ? raw.split('$$') : [];
+    if (!raw || cells.length !== entryCount) return [];
+
+    var parsed = [];
+    for (var i = 0; i < cells.length; i++) {
+      var parts = cells[i].split('::');
+      var mode = parts.length === 2 ? trim(parts[0]) : '';
+      var vi = parts.length === 2 ? trim(parts[1]) : '';
+      if ((mode === 'vi_equivalent' || mode === 'bilingual_gloss') && vi) {
+        parsed.push({mode: mode, vi: vi});
+      } else {
+        parsed.push(null);
+      }
+    }
+    return parsed;
+  }
+  function renderIdioms(rawIdioms, rawMeaningVi, idiomAudioUk, idiomAudioUs) {
+    var entries = rawIdioms ? rawIdioms.split('$$') : [];
+    var translations = parseIdiomMeaningVi(rawMeaningVi, entries.length);
+    var html = '';
+    for (var i = 0; i < entries.length; i++) {
+      var parts = entries[i].split('::');
+      var phrase = trim(parts[0] || '');
+      var def = trim(parts[1] || '');
+      var exs = trim(parts[2] || '');
+      if (!phrase) continue;
+
+      var translation = translations[i] || null;
+      var showEnglish = !translation || translation.mode === 'bilingual_gloss';
+      var viHtml = translation
+        ? '<div class="idiom-vi" lang="vi" aria-label="Vietnamese idiom meaning"><span class="idiom-vi-label" aria-hidden="true">VI</span><span class="idiom-vi-text">' + escapeHtml(translation.vi) + '</span></div>'
+        : '';
+      html += '<div class="idiom-row">'
+           + '<div class="idiom-phrase">' + escapeHtml(phrase) + '</div>'
+           + (showEnglish && def ? '<div class="idiom-explanation">' + escapeHtml(def) + '</div>' : '')
+           + viHtml
+           + (exs ? '<div class="idiom-examples">'
+           + (function() {
+               var eParts = exs.split('|'), examples = '';
+               for (var e = 0; e < eParts.length; e++) {
+                 var text = trim(eParts[e]);
+                 if (text) {
+                   var ukSource = (i < idiomAudioUk.length && e < idiomAudioUk[i].length) ? idiomAudioUk[i][e] : '';
+                   var usSource = (i < idiomAudioUs.length && e < idiomAudioUs[i].length) ? idiomAudioUs[i][e] : '';
+                   examples += exampleAudioLine('\u201c' + text + '\u201d', ukSource, usSource,
+                                                'idiom "' + phrase + '" example ' + (e + 1), 'idiom-example');
+                 }
+               }
+               return examples;
+             })()
+           + '</div>' : '')
+           + '</div>';
+    }
+    return html;
   }
   function getExampleAudioSource(trigger, accent) {
     return trigger ? (trigger.getAttribute('data-audio-' + accent) || '') : '';
@@ -651,7 +740,7 @@
   // 6. Collocations chips
   var rawCol = getRaw('raw-collocations-back');
   var colEl  = document.getElementById('collocations-container');
-  if (rawCol && colEl && rawCol.indexOf('|') !== -1) {
+  if (rawCol && colEl) {
     var colParts = rawCol.split('|'), cHtml = '';
     for (var q = 0; q < colParts.length; q++) {
       var cv = trim(colParts[q]);
@@ -674,43 +763,15 @@
   }
 
   // 8. Idioms parser
-  // Format: phrase :: text :: ex1 | ex2 $$ phrase2 :: text2 :: ex1
-  // Rendered with .idiom-box > .idiom-list > .idiom-row > (.idiom-phrase,
-  // .idiom-explanation, .idiom-examples > .idiom-example).
+  // Idioms: phrase :: English meaning :: ex1 | ex2 $$ phrase2 :: meaning :: ex1
+  // IdiomMeaningVI: mode :: Vietnamese meaning $$ mode :: Vietnamese meaning
   var rawIdioms = getRaw('raw-idioms-back');
+  var rawIdiomMeaningVi = getRaw('raw-idiom-meaning-vi-back');
   var idiomAudioUk = parseIdiomAudio(getRawAudioHtml('raw-idiom-example-audio-uk-back'));
   var idiomAudioUs = parseIdiomAudio(getRawAudioHtml('raw-idiom-example-audio-us-back'));
   var idiomsEl = document.getElementById('idioms-container');
   if (rawIdioms && idiomsEl) {
-    var entries = rawIdioms.split('$$');
-    var iHtml = '';
-    for (var i = 0; i < entries.length; i++) {
-      var parts = entries[i].split('::');
-      var phrase = trim(parts[0] || '');
-      var def    = trim(parts[1] || '');
-      var exs    = trim(parts[2] || '');
-      if (!phrase) continue;
-      iHtml += '<div class="idiom-row">'
-             + '<div class="idiom-phrase">' + phrase + '</div>'
-             + (def ? '<div class="idiom-explanation">' + def + '</div>' : '')
-             + (exs ? '<div class="idiom-examples">'
-             + (function() {
-                 var eParts = exs.split('|'), ex = '';
-                 for (var e = 0; e < eParts.length; e++) {
-                   var t = trim(eParts[e]);
-                   if (t) {
-                     var ukSource = (i < idiomAudioUk.length && e < idiomAudioUk[i].length) ? idiomAudioUk[i][e] : '';
-                     var usSource = (i < idiomAudioUs.length && e < idiomAudioUs[i].length) ? idiomAudioUs[i][e] : '';
-                     ex += exampleAudioLine('\u201c' + t + '\u201d', ukSource, usSource,
-                                            'idiom "' + phrase + '" example ' + (e + 1), 'idiom-example');
-                   }
-                 }
-                 return ex;
-               })()
-             + '</div>' : '')
-             + '</div>';
-    }
-    idiomsEl.innerHTML = iHtml;
+    idiomsEl.innerHTML = renderIdioms(rawIdioms, rawIdiomMeaningVi, idiomAudioUk, idiomAudioUs);
   }
 
   wireExampleAudio();

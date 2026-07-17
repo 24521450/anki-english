@@ -5,12 +5,13 @@ import re
 from collections import Counter
 
 from src.config import ProjectPaths
+from src.deck_builder.semantic_registry import render_registry_idiom_fields
 from src.deck_builder.synonym_annotator import strip_synonym_annotations
 from tools._detect_lexical_loops import detect_loops
 
 
 PATHS = ProjectPaths()
-SEMANTIC_FIELDS = {"definition", "example"}
+SEMANTIC_FIELDS = {"definition", "example", "idioms"}
 
 
 def _load_jsonl(path) -> list[dict]:
@@ -74,6 +75,8 @@ def _assert_registry_semantics(card: dict, registry_row: dict | None = None) -> 
         _render_registry_example(registry_row), card
     )
     assert actual_example == expected_example
+    expected_idioms, _ = render_registry_idiom_fields(registry_row.get("idioms") or [])
+    assert card["idioms"] == expected_idioms
 
 
 def _cards_by_identity() -> dict[tuple[str, str, str], dict]:
@@ -127,8 +130,8 @@ def test_anki_card_fix_notes_are_applied_to_generated_cards():
             "definition": "",
             "example": "",
             "idioms": (
-                "in accordance with something :: as required by sth "
-                "(theo đúng/phù hợp với) :: in accordance with legal requirements"
+                "in accordance with something :: as required by or according "
+                "to :: in accordance with legal requirements"
             ),
         },
         ("dramatically", "adverb", "B2"): {
@@ -399,7 +402,7 @@ def test_anki_card_fix_notes_are_applied_to_generated_cards():
         assert identity in cards, f"missing corrected card: {identity}"
         for field, value in fields.items():
             if field in SEMANTIC_FIELDS:
-                # ADR 0011 supersedes the legacy fix-note Definition/Example
+                # ADR 0011/0015 supersede the legacy fix-note semantic
                 # literals; production semantics must match the promoted row.
                 _assert_registry_semantics(cards[identity])
                 continue
@@ -674,7 +677,7 @@ def test_forth_keeps_only_the_two_priority_idioms():
     assert card["idioms"].split("$$") == [
         "and so forth :: used at the end of a list to show that it continues in the same way :: "
         "We discussed everything—when to go, what to see and so on.",
-        "back and forth :: from one place to another and back again repeatedly :: "
+        "back and forth :: repeatedly between two places :: "
         "ferries sailing back and forth between the islands",
     ]
     assert "from that day/time forth" not in card["idioms"]
@@ -786,6 +789,15 @@ def test_proposition_semantic_variant_split_uses_registry_payload():
     assert secondary["pos"] == "noun"
     _assert_registry_semantics(secondary)
     assert "SecondarySense" in secondary["tags"].split()
+
+
+def test_stack_c2_verb_keeps_only_verb_owned_idiom():
+    card = _cards_by_guid()["DAL,%7`QPB"]
+
+    assert card["word"] == "stack"
+    assert card["pos"] == "verb"
+    assert card["idioms"].startswith("stack it :: ")
+    assert "blow your top" not in card["idioms"]
 
 
 def test_equate_uses_registry_payload_and_learner_collocations():

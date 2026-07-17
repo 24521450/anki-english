@@ -121,11 +121,11 @@ def test_audio_first_non_null():
 def test_idioms_dedup_by_phrase():
     """Same idiom phrase in 2 files → 1 entry in merged."""
     r1 = _rec("like", "verb", idioms=[
-        {"phrase": "be like", "pos": None, "text": None, "register_tags": [], "cefr": None},
+        {"phrase": "be like", "pos": "verb", "text": None, "register_tags": [], "cefr": None},
     ])
-    r2 = _rec("like", "noun", idioms=[
-        {"phrase": "be like", "pos": None, "text": None, "register_tags": [], "cefr": None},
-        {"phrase": "more like it", "pos": None, "text": None, "register_tags": [], "cefr": None},
+    r2 = _rec("like", "verb", idioms=[
+        {"phrase": "be like", "pos": "verb", "text": None, "register_tags": [], "cefr": None},
+        {"phrase": "more like it", "pos": "verb", "text": None, "register_tags": [], "cefr": None},
     ])
 
     merged = merge_word_records([r1, r2])
@@ -134,6 +134,22 @@ def test_idioms_dedup_by_phrase():
     assert "be like" in phrases
     assert "more like it" in phrases
     assert phrases.count("be like") == 1  # deduped
+
+
+def test_idioms_preserve_same_phrase_owned_by_different_parts_of_speech():
+    noun = _rec("sample", "noun", idioms=[
+        {"phrase": "sample phrase", "pos": "noun", "text": "noun meaning", "examples": [], "cefr": None},
+    ])
+    verb = _rec("sample", "verb", idioms=[
+        {"phrase": "sample phrase", "pos": "verb", "text": "verb meaning", "examples": [], "cefr": None},
+    ])
+
+    merged = merge_word_records([noun, verb])
+
+    assert [(item["phrase"], item["pos"]) for item in merged["idioms"]] == [
+        ("sample phrase", "noun"),
+        ("sample phrase", "verb"),
+    ]
 
 
 def test_up_noun_edge_preserved():

@@ -113,6 +113,7 @@ def test_regular_inflections_highlight_the_complete_surface_word():
 def test_current_deck_irregular_forms_are_highlighted_completely():
     irregulars = [
         ("bind", "bound", "verb"),
+        ("breed", "bred", "verb"),
         ("cling", "clung", "verb"),
         ("creep", "crept", "verb"),
         ("equip", "equipped", "verb"),
@@ -127,12 +128,31 @@ def test_current_deck_irregular_forms_are_highlighted_completely():
         ("spoil", "spoilt", "verb"),
         ("swing", "swung", "verb"),
         ("tread", "trod", "verb"),
+        ("uphold", "upheld", "verb"),
         ("weave", "woven", "verb"),
     ]
     cases = [[f"They used {surface} here.", word, pos] for word, surface, pos in irregulars]
 
     assert _run_highlight_cases(cases) == [
         f"They used {_highlight(surface)} here." for _, surface, _ in irregulars
+    ]
+
+
+def test_reviewed_spelling_variants_match_production_forms():
+    cases = [
+        ["The senator has the floor.", "have the floor", "phrase"],
+        ["The amount of labour involved was high.", "labor", "noun"],
+        ["Only 40 per cent voted.", "percent", "adjective, adverb"],
+        ["St John was a saint.", "saint", "noun"],
+        ["Billions of people were affected.", "billion", "number"],
+    ]
+
+    assert _run_highlight_cases(cases) == [
+        f"The senator {_highlight('has the floor')}.",
+        f"The amount of {_highlight('labour')} involved was high.",
+        f"Only 40 {_highlight('per cent')} voted.",
+        f"{_highlight('St')} John was a {_highlight('saint')}.",
+        f"{_highlight('Billions')} of people were affected.",
     ]
 
 

@@ -51,10 +51,30 @@ def parse_serialized_idiom_examples(value: str) -> list[list[str]]:
     return groups
 
 
-def format_idioms(idioms: list) -> str:
+def format_idioms(idioms: list, card_pos: list[str] | None = None) -> str:
     if not idioms:
         return ""
-    selected = list(idioms)
+    allowed_pos = {
+        value.strip().casefold()
+        for value in (card_pos or [])
+        if value and value.strip()
+    }
+    selected: list[dict] = []
+    seen_phrases: set[str] = set()
+    for idiom in idioms:
+        owner_pos = {
+            part.strip().casefold()
+            for part in (idiom.get("pos") or "").split(",")
+            if part.strip()
+        }
+        if allowed_pos and (not owner_pos or owner_pos.isdisjoint(allowed_pos)):
+            continue
+        phrase_key = (idiom.get("phrase") or "").strip().casefold()
+        if phrase_key and phrase_key in seen_phrases:
+            continue
+        if phrase_key:
+            seen_phrases.add(phrase_key)
+        selected.append(idiom)
     if len(selected) > MAX_IDIOMS_PER_CARD:
         selected = sorted(
             enumerate(selected),

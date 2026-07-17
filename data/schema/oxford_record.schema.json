@@ -417,6 +417,7 @@
         "additionalProperties": false,
         "required": [
           "phrase",
+          "pos",
           "text",
           "examples",
           "cefr"
@@ -425,6 +426,10 @@
           "phrase": {
             "type": "string",
             "description": "Idiom phrase as it appears on Oxford page"
+          },
+          "pos": {
+            "type": "string",
+            "description": "Part of speech of the Oxford entry that owns this idiom block."
           },
           "text": {
             "type": [
@@ -458,7 +463,7 @@
           }
         }
       },
-      "description": "Top-level idiom phrases (extracted via span.idm-g for Oxford). Each entry: phrase + text + examples + cefr. Cambridge does not have this section."
+      "description": "Top-level idiom phrases (extracted via span.idm-g for Oxford). Each entry retains its owning entry POS so merged records cannot leak idioms across card parts of speech. Cambridge does not have this section."
     },
     "_skip": {
       "type": "boolean",

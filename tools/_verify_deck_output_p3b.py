@@ -19,6 +19,8 @@ from src.config import ProjectPaths
 from src.deck_builder.build_contracts import CARD_FIELDS
 from src.deck_builder.build_validation import validate_artifact_paths
 from src.deck_builder.production import derive_production_answer
+from src.deck_builder.sense_pos import fallback_sense_pos
+from src.deck_builder.semantic_registry import render_registry_idiom_fields
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -70,12 +72,18 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
             continue
         
         parts = line.split('\t')
-        # Read-only compatibility for the immediately preceding artifact
-        # contract.  Canonical build/publish validation still requires the
-        # appended ProductionAnswer column; this audit tool can inspect a
-        # historical 26-column export by deriving the deterministic value.
-        if len(parts) == len(CARD_FIELDS) - 1:
+        # Read-only compatibility for the three preceding append-only
+        # contracts. Canonical build/publish validation still requires all
+        # current columns.
+        if len(parts) == len(CARD_FIELDS) - 3:
             parts.append(derive_production_answer(parts[3] if len(parts) > 3 else ""))
+        if len(parts) == len(CARD_FIELDS) - 2:
+            parts.append(fallback_sense_pos(
+                parts[CARD_FIELDS.index("pos")],
+                parts[CARD_FIELDS.index("definition_vi")],
+            ))
+        if len(parts) == len(CARD_FIELDS) - 1:
+            parts.append("")
         data_rows.append(parts)
         
         # Check tab column count
@@ -185,7 +193,7 @@ def verify_definition_sync(
     data_rows: list[list[str]], semantic_rows: list[dict]
 ) -> None:
     """Verify final bilingual fields against their canonical content owner."""
-    expected_by_guid: dict[str, tuple[str, str]] = {}
+    expected_by_guid: dict[str, tuple[str, str, str, str]] = {}
     duplicate_guids: list[str] = []
     for row in semantic_rows:
         guid = (row.get("guid") or "").strip()
@@ -198,7 +206,13 @@ def verify_definition_sync(
             for sense in senses
         )
         definition_vi = "|".join(sense["definition_vi"] for sense in senses)
-        expected_by_guid[guid] = (definition, definition_vi)
+        idioms, idiom_meaning_vi = render_registry_idiom_fields(row.get("idioms") or [])
+        expected_by_guid[guid] = (
+            definition,
+            definition_vi,
+            idioms,
+            idiom_meaning_vi,
+        )
 
     if duplicate_guids:
         print(f"Semantic Registry duplicate GUIDs: {sorted(set(duplicate_guids))[:10]}")
@@ -208,6 +222,8 @@ def verify_definition_sync(
     word_index = CARD_FIELDS.index("word")
     definition_index = CARD_FIELDS.index("definition")
     definition_vi_index = CARD_FIELDS.index("definition_vi")
+    idioms_index = CARD_FIELDS.index("idioms")
+    idiom_meaning_vi_index = CARD_FIELDS.index("idiom_meaning_vi")
     seen_guids: set[str] = set()
     missing_guids: list[str] = []
     mismatches: list[dict] = []
@@ -221,10 +237,17 @@ def verify_definition_sync(
             continue
         txt_definition = parts[definition_index]
         txt_definition_vi = parts[definition_vi_index]
-        expected_definition, expected_definition_vi = expected
+        (
+            expected_definition,
+            expected_definition_vi,
+            expected_idioms,
+            expected_idiom_meaning_vi,
+        ) = expected
         if (
             txt_definition != expected_definition
             or txt_definition_vi != expected_definition_vi
+            or parts[idioms_index] != expected_idioms
+            or parts[idiom_meaning_vi_index] != expected_idiom_meaning_vi
         ):
             mismatches.append({
                 "guid": guid,
@@ -233,6 +256,10 @@ def verify_definition_sync(
                 "expected_definition": expected_definition,
                 "txt_definition_vi": txt_definition_vi,
                 "expected_definition_vi": expected_definition_vi,
+                "txt_idioms": parts[idioms_index],
+                "expected_idioms": expected_idioms,
+                "txt_idiom_meaning_vi": parts[idiom_meaning_vi_index],
+                "expected_idiom_meaning_vi": expected_idiom_meaning_vi,
             })
 
     extra_guids = sorted(set(expected_by_guid) - seen_guids)
@@ -255,6 +282,10 @@ def verify_definition_sync(
                 print(f"      Registry Definition: {mismatch['expected_definition']!r}")
                 print(f"      TXT DefinitionVI:      {mismatch['txt_definition_vi']!r}")
                 print(f"      Registry DefinitionVI: {mismatch['expected_definition_vi']!r}")
+                print(f"      TXT Idioms:             {mismatch['txt_idioms']!r}")
+                print(f"      Registry Idioms:        {mismatch['expected_idioms']!r}")
+                print(f"      TXT IdiomMeaningVI:     {mismatch['txt_idiom_meaning_vi']!r}")
+                print(f"      Registry IdiomMeaningVI:{mismatch['expected_idiom_meaning_vi']!r}")
         sys.exit(1)
 
 

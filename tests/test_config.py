@@ -19,6 +19,8 @@ def test_project_paths_resolve_canonical_artifacts(tmp_path):
     assert paths.deck_audit_jsonl == tmp_path / "data" / "curated" / "deck_audit.jsonl"
     assert paths.card_registry == tmp_path / "data" / "curated" / "card_registry.jsonl"
     assert paths.bilingual_semantic_audit == tmp_path / "data" / "review" / "bilingual_semantic_audit.jsonl"
+    assert paths.vietnamese_naturalness_review == tmp_path / "data" / "review" / "vietnamese_naturalness_review.jsonl"
+    assert paths.bilingual_idiom_audit == tmp_path / "data" / "review" / "bilingual_idiom_audit.jsonl"
     assert paths.semantic_registry == tmp_path / "data" / "curated" / "semantic_registry.jsonl"
     assert paths.gamma_verdicts == tmp_path / "data" / "review" / "gamma_verdicts.json"
     assert paths.manual_card_fills == tmp_path / "data" / "review" / "manual_card_fills.json"

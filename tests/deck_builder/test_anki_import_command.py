@@ -46,6 +46,8 @@ def _row(**updates) -> dict:
         "idiom_example_audio_uk": "", "idiom_example_audio_us": "",
         "definition_vi": "chiến thắng",
         "production_answer": "conquer",
+        "sense_pos": "verb",
+        "idiom_meaning_vi": "",
         "cambridge_url": "https://dictionary.cambridge.org/dictionary/english/conquer",
         "oxford_pos_urls": "https://www.oxfordlearnersdictionaries.com/definition/english/conquer",
     }
@@ -63,7 +65,7 @@ def _live_note(row: dict) -> dict:
         "uk_audio", "us_audio", "source1", "source2", "cefr", "idioms", "synonyms",
         "antonyms", "example_audio_uk", "example_audio_us", "idiom_example_audio_uk",
         "idiom_example_audio_us", "definition_vi", "cambridge_url",
-        "oxford_pos_urls", "production_answer",
+        "oxford_pos_urls", "production_answer", "sense_pos", "idiom_meaning_vi",
     )
     return {
         "modelName": EAVM_MODEL_NAME,
@@ -234,6 +236,23 @@ def test_preflight_allows_canonical_field_prefixes(tmp_path: Path, field_count: 
     assert preflight_and_backup(Client(), tmp_path) is None
 
 
+@pytest.mark.parametrize("missing_tail", [1, 2])
+def test_preflight_allows_previous_complete_fields_with_production_templates(
+    tmp_path: Path, missing_tail: int,
+):
+    class Client:
+        def call(self, action, **params):
+            if action == "version": return 6
+            if action == "modelNamesAndIds": return {EAVM_MODEL_NAME: EAVM_MODEL_ID}
+            if action == "modelFieldNames": return list(EAVM_FIELDS[:-missing_tail])
+            if action == "modelTemplates": return _canonical_templates()
+            if action == "deckNames": return []
+            if action == "findNotes": return []
+            raise AssertionError(action)
+
+    assert preflight_and_backup(Client(), tmp_path) is None
+
+
 def test_preflight_rejects_prefix_compatible_extra_fields(tmp_path: Path):
     class Client:
         def call(self, action, **params):
@@ -265,7 +284,9 @@ def test_migrate_established_model_appends_all_new_fields_in_order():
     assert fields == list(EAVM_FIELDS)
     additions = [params for action, params in calls if action == "modelFieldAdd"]
     assert [params["fieldName"] for params in additions] == list(EAVM_FIELDS[15:])
-    assert [params["index"] for params in additions] == list(range(15, 23))
+    assert [params["index"] for params in additions] == list(
+        range(15, len(EAVM_FIELDS))
+    )
 
 
 def test_migrate_legacy_19_field_model_appends_remaining_fields():
@@ -291,7 +312,9 @@ def test_migrate_legacy_19_field_model_appends_remaining_fields():
     ]
 
 
-@pytest.mark.parametrize("field_count", [20, 21])
+@pytest.mark.parametrize(
+    "field_count", [20, 21, len(EAVM_FIELDS) - 2, len(EAVM_FIELDS) - 1]
+)
 def test_migrate_partial_current_model_appends_only_missing_fields(field_count: int):
     fields = list(EAVM_FIELDS[:field_count])
     additions = []
@@ -323,6 +346,8 @@ def test_snapshot_accepts_legacy_prefix_before_field_migration(tmp_path: Path):
     live["cards"] = [456]
     live["tags"] = []
     live["fields"].pop("ProductionAnswer")
+    live["fields"].pop("SensePOS")
+    live["fields"].pop("IdiomMeaningVI")
 
     class Client:
         def call(self, action, **params):
@@ -474,6 +499,8 @@ def test_sync_example_audio_fields_matches_established_signature_and_batches_upd
             "CambridgeURL": row["cambridge_url"],
             "OxfordPOSURLs": row["oxford_pos_urls"],
             "ProductionAnswer": row["production_answer"],
+            "SensePOS": row["sense_pos"],
+            "IdiomMeaningVI": row["idiom_meaning_vi"],
         }}},
     }]
 
@@ -527,6 +554,8 @@ def test_sync_existing_notes_updates_all_fields_and_routes_cards(tmp_path: Path)
     assert update["params"]["note"]["fields"]["DefinitionVI"] == "chiến thắng"
     assert update["params"]["note"]["fields"]["CambridgeURL"] == row["cambridge_url"]
     assert update["params"]["note"]["fields"]["OxfordPOSURLs"] == row["oxford_pos_urls"]
+    assert update["params"]["note"]["fields"]["SensePOS"] == row["sense_pos"]
+    assert update["params"]["note"]["fields"]["IdiomMeaningVI"] == ""
     assert ("changeDeck", {"cards": [456], "deck": row["deck"]}) in calls
 
 

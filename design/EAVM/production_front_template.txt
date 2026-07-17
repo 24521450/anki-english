@@ -13,18 +13,12 @@
     </div>
 
     <div class="production-prompt-content">
-      <div class="production-direction" aria-label="Vietnamese to English">
-        <span class="production-direction-label" lang="vi">VI</span>
-        <span class="production-direction-arrow" aria-hidden="true">&rarr;</span>
-        <span class="production-direction-label">EN</span>
-      </div>
-      <div class="production-instruction">Recall the English expression.</div>
-      <div class="production-senses" id="production-senses"></div>
+      <div class="production-senses" id="production-senses" role="list" aria-label="Vietnamese meanings"></div>
     </div>
   </div>
 
   <div class="production-type-shell">
-    <label class="production-type-label" for="typeans">Type the English expression</label>
+    <label class="production-type-label" for="typeans">English answer</label>
     <div class="production-type-input">{{type:ProductionAnswer}}</div>
   </div>
 </div>
@@ -325,28 +319,45 @@
       row.className = rows[i].examples.length
         ? 'production-sense-row'
         : 'production-sense-row production-sense-row-vi-only';
+      row.setAttribute('role', 'listitem');
 
       var gloss = document.createElement('div');
       gloss.className = 'production-gloss';
-      var glossLabel = document.createElement('span');
-      glossLabel.className = 'production-gloss-label';
-      glossLabel.textContent = 'VI';
       var glossText = document.createElement('span');
       glossText.className = 'production-gloss-text';
       glossText.lang = 'vi';
       glossText.textContent = rows[i].vi;
-      gloss.appendChild(glossLabel);
       gloss.appendChild(glossText);
       row.appendChild(gloss);
 
       if (rows[i].examples.length) {
         var examples = document.createElement('div');
         examples.className = 'production-example-list';
-        for (var j = 0; j < rows[i].examples.length; j++) {
-          var example = document.createElement('div');
-          example.className = 'production-example';
-          example.innerHTML = rows[i].examples[j];
-          examples.appendChild(example);
+        var primaryExample = document.createElement('div');
+        primaryExample.className = 'production-example';
+        primaryExample.innerHTML = rows[i].examples[0];
+        examples.appendChild(primaryExample);
+
+        if (rows[i].examples.length > 1) {
+          var extraCount = rows[i].examples.length - 1;
+          var details = document.createElement('details');
+          details.className = 'production-example-more';
+          var summary = document.createElement('summary');
+          summary.className = 'production-example-more-summary';
+          summary.textContent = '+' + extraCount;
+          summary.setAttribute('aria-label', extraCount + ' more examples');
+          details.appendChild(summary);
+
+          var extraExamples = document.createElement('div');
+          extraExamples.className = 'production-example-more-list';
+          for (var j = 1; j < rows[i].examples.length; j++) {
+            var example = document.createElement('div');
+            example.className = 'production-example';
+            example.innerHTML = rows[i].examples[j];
+            extraExamples.appendChild(example);
+          }
+          details.appendChild(extraExamples);
+          examples.appendChild(details);
         }
         row.appendChild(examples);
       }

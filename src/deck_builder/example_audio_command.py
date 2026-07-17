@@ -16,6 +16,7 @@ def main(argv: list[str] | None = None) -> int:
     paths = ProjectPaths()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-jsonl", type=Path, default=paths.oxford_jsonl)
+    parser.add_argument("--cambridge-jsonl", type=Path, default=paths.cambridge_jsonl)
     parser.add_argument("--audio-dir", type=Path, default=paths.audio_dir)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--no-prune", action="store_true")
@@ -43,6 +44,7 @@ def main(argv: list[str] | None = None) -> int:
             antonym_example_overrides_path=paths.antonym_example_overrides,
             sense_label_overrides_path=paths.sense_label_overrides,
             semantic_registry_path=paths.semantic_registry,
+            cambridge_jsonl_path=args.cambridge_jsonl,
         )
         cards = build_notes_from_registry(build_paths).built_cards
         report = asyncio.run(generate_example_audio(

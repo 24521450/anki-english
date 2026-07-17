@@ -1,4 +1,4 @@
-"""Report-only audit for over-compressed Semantic Registry definitions."""
+"""Report-only audit for verbose or structurally compressed definitions."""
 from __future__ import annotations
 
 import copy
@@ -12,9 +12,10 @@ from typing import Iterable
 from src.deck_builder.semantic_registry import validate_semantic_registry_rows
 
 
-DEFINITION_AUDIT_SCHEMA_VERSION = 1
+DEFINITION_AUDIT_SCHEMA_VERSION = 2
 LONG_DEFINITION_LENGTH = 80
 CONNECTOR_DEFINITION_LENGTH = 60
+DEFAULT_MIN_TOKENS = 12
 _AND_RE = re.compile(r"\band\b", re.IGNORECASE)
 
 
@@ -46,9 +47,15 @@ def _render_example(senses: Iterable[dict]) -> str:
     )
 
 
-def _candidate_triggers(definition: str) -> list[str]:
+def _candidate_triggers(
+    definition: str,
+    *,
+    min_tokens: int = DEFAULT_MIN_TOKENS,
+) -> list[str]:
     triggers: list[str] = []
     length = len(definition)
+    if len(definition.split()) >= min_tokens:
+        triggers.append("token_threshold")
     if ";" in definition:
         triggers.append("semicolon")
     if length >= LONG_DEFINITION_LENGTH:
@@ -381,8 +388,11 @@ def build_definition_audit(
     card_registry_rows: list[dict],
     *,
     input_hashes: dict[str, str],
+    min_tokens: int = DEFAULT_MIN_TOKENS,
 ) -> tuple[dict, list[dict]]:
     """Build deterministic report records without modifying canonical inputs."""
+    if not isinstance(min_tokens, int) or isinstance(min_tokens, bool) or min_tokens < 1:
+        raise ValueError("definition_audit_invalid_min_tokens")
     errors = _validate_input_parity(
         registry_rows,
         notes_rows,
@@ -401,7 +411,10 @@ def build_definition_audit(
         audit_row = audit_by_guid[card["guid"]]
         for sense in card.get("senses") or []:
             senses_scanned += 1
-            triggers = _candidate_triggers(sense["definition_en"])
+            triggers = _candidate_triggers(
+                sense["definition_en"],
+                min_tokens=min_tokens,
+            )
             if not triggers:
                 continue
             evidence, coverage = _relevant_evidence(audit_row, sense)
@@ -428,6 +441,7 @@ def build_definition_audit(
                     "build_definition": notes_by_guid[card["guid"]]["definition"],
                     "build_example": notes_by_guid[card["guid"]]["example"],
                     "definition_length": len(sense["definition_en"]),
+                    "definition_token_count": len(sense["definition_en"].split()),
                 },
                 "triggers": triggers,
                 "recommendation": recommendation,
@@ -468,6 +482,7 @@ def build_definition_audit(
         "thresholds": {
             "long_definition_length": LONG_DEFINITION_LENGTH,
             "connector_definition_length": CONNECTOR_DEFINITION_LENGTH,
+            "minimum_definition_tokens": min_tokens,
             "connectors": [";", "and", "/"],
         },
         "cards_scanned": len(registry_rows),
@@ -644,8 +659,8 @@ def render_definition_audit_markdown(summary: dict, candidates: list[dict]) -> s
         f"- Candidate senses: {summary['candidate_senses']}",
         f"- Recommendations: {json.dumps(summary['recommendations'], sort_keys=True)}",
         "",
-        "| Word | CEFR | POS | GUID | Sense | Trigger | Proposal | Current definition | Proposed definition | Proposed example | Semantic reason | Source evidence |",
-        "|---|---|---|---|---:|---|---|---|---|---|---|---|",
+        "| Word | CEFR | POS | GUID | Sense | Chars | Tokens | Trigger | Proposal | Current definition | Proposed definition | Proposed example | Semantic reason | Source evidence |",
+        "|---|---|---|---|---:|---:|---:|---|---|---|---|---|---|---|",
     ]
     for row in candidates:
         evidence = "; ".join(
@@ -662,6 +677,8 @@ def render_definition_audit_markdown(summary: dict, candidates: list[dict]) -> s
                 cell(row["pos"]),
                 cell(row["guid"]),
                 cell(row["order"]),
+                cell(row["current"]["definition_length"]),
+                cell(row["current"]["definition_token_count"]),
                 cell(", ".join(row["triggers"])),
                 cell(row["recommendation"]),
                 cell(row["current"]["rendered_definition"]),

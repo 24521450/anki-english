@@ -10,12 +10,13 @@ from tools._verify_deck_output_p3b import (
 from src.deck_builder.build_contracts import CARD_FIELDS
 
 
-VALID_ROW = (
+LEGACY_ROW = (
     "GUID\tnotetype\tdeck\tword\tpos\tipa\tdefn\tex\tcoll\twf\tuk\tus\t"
     "src1\tsrc2\tcefr\tidioms\ttags\tsynonyms\tantonyms\t"
     "example_audio_uk\texample_audio_us\tidiom_example_audio_uk\t"
     "idiom_example_audio_us\tdefinition_vi\tcambridge_url\toxford_pos_urls"
 )
+VALID_ROW = LEGACY_ROW + "\tword\tpos\t"
 
 
 def _unique_rows(count: int = 2) -> list[str]:
@@ -43,6 +44,16 @@ def test_txt_parser_skips_headers_and_preserves_field_count():
 
     assert len(data_rows) == 2
     assert all(len(row) == len(CARD_FIELDS) for row in data_rows)
+
+
+def test_txt_parser_upgrades_previous_27_column_row_for_read_only_audit():
+    row = LEGACY_ROW + "\tword"
+
+    data_rows = verify_txt_structure([row])
+
+    assert len(data_rows[0]) == len(CARD_FIELDS)
+    assert data_rows[0][CARD_FIELDS.index("production_answer")] == "word"
+    assert data_rows[0][CARD_FIELDS.index("sense_pos")] == "pos"
 
 
 def test_txt_parser_accepts_idiom_only_card():
@@ -95,6 +106,7 @@ def test_definition_mismatch_against_semantic_registry():
             "definition_en": "in someone's place",
             "definition_vi": "thay mặt ai đó",
         }],
+        "idioms": [],
     }]
 
     with pytest.raises(SystemExit):
@@ -106,12 +118,14 @@ def test_definition_sync_accepts_exact_semantic_registry_payload():
     parts[0] = "G1"
     parts[6] = "first meaning (nghĩa một)|second meaning (nghĩa hai)"
     parts[23] = "nghĩa một|nghĩa hai"
+    parts[15] = ""
     semantic_rows = [{
         "guid": "G1",
         "senses": [
             {"definition_en": "first meaning", "definition_vi": "nghĩa một"},
             {"definition_en": "second meaning", "definition_vi": "nghĩa hai"},
         ],
+        "idioms": [],
     }]
 
     verify_definition_sync([parts], semantic_rows)

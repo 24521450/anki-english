@@ -30,10 +30,10 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
 - `docs/adr/` — Architecture Decision Records. One file per decision, named `NNNN-title.md` (e.g. `0001-lxml-parser-backend.md`). Add a new ADR whenever a decision meets all 3 criteria: hard to reverse, surprising without context, and a real trade-off.
 - `vocab_list/` — source word lists (Oxford 3000/5000 markdown, AWL json/yml)
 - `update_anki_deck.py` — top-level packager (`data/build/anki_notes.jsonl` → `ielts_deck.apkg`). Owned by `developer` rein.
-- `src/pipeline.py` — production-stage orchestrator: `scrape → example-audio → build → validate → deck → import`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`). The command's default range stops at `deck`, but the agent workflow must always follow a successful deck build with the explicit `import` stage so the live Anki collection receives the update.
+- `src/pipeline.py` — production-stage orchestrator: `scrape → example-audio → build → validate → deck → import`. Run with `python -m src.pipeline`. Supports `--from=<stage>`, `--to=<stage>`, `--dry-run`, single-stage (`python -m src.pipeline build`). Every non-dry-run execution that includes `deck` automatically appends the `import` stage, including an explicit `--to=deck` or single-stage `deck` command. `--dry-run` never appends a live import.
   - **scrape**: Oxford/Cambridge + AWL ingestion, audio. Keeps all senses / all CEFR entries (raw).
   - **example-audio**: derives final Example/Idiom Example speech from the registry build plan, with main Examples owned by the promoted Semantic Registry, and generates missing Edge TTS media. Run this stage, stage changed `audio/example_*.mp3` in Git, then continue from `build` so release validation can enforce tracked media.
-  - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md) and [Sense Sorting](./CONTEXT.md)**, then replaces the final Definition/Example payload with `data/curated/semantic_registry.jsonl`. The production command fails closed when that registry is missing or invalid. See `design/README.md § Card design rules` for the rule reference.
+  - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md), the reviewed [Learner Relevance Filter](./CONTEXT.md), and [Sense Sorting](./CONTEXT.md)**, then replaces the final Definition/Example payload with `data/curated/semantic_registry.jsonl`. The production command fails closed when that registry is missing or invalid. See `design/README.md § Card design rules` for the rule reference.
   - **validate**: checks registry, card identity, JSONL/TXT parity, audio references, and deterministic output before publish.
   - **deck**: bakes `.apkg` via `update_anki_deck.py`.
   - **import**: imports the validated `.apkg` through AnkiConnect and verifies the EAVM note type, note GUID coverage, and media. Requires Anki + AnkiConnect to be running; never edits `collection.anki2` directly.
@@ -51,16 +51,55 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   gate. Pending/uncertain decisions, unapproved repairs, or unaccounted source
   senses fail.
 - `python -m tools.semantic_audit promote` deterministically writes the complete,
-  approved payload to `data/curated/semantic_registry.jsonl`. Re-running it from
-  the same ledger must be byte-identical.
+  approved sense and idiom payload to `data/curated/semantic_registry.jsonl`.
+  Re-running it from the same ledgers must be byte-identical.
+- `python -m tools.idiom_audit scaffold` creates the phrase-level pending
+  ledger at `data/review/bilingual_idiom_audit.jsonl` for idioms selected by
+  active cards. `export-xlsx` / `import-xlsx` provide a fingerprint-protected
+  review view, and `validate --require-complete` is mandatory before promotion.
+  `report --output scratch/bilingual_idiom_audit_report.md` lists every review
+  exception plus a deterministic 30-row high-confidence sample for sign-off.
+  An unchanged `bilingual_gloss` is not automatically reviewed: retaining the
+  previous wording requires a row-specific reason that names a shorter wording
+  considered and the exact material meaning it would lose, or cites an exact
+  user-locked canonical pair. Never bulk-pass unchanged rows.
 - `python -m tools.semantic_audit definition-audit` creates a report-only audit
-  in `scratch/` for unusually long or connector-heavy Definition text. It may
-  consume an explicit scratch review file via `--reviews`; it never writes the
-  canonical ledger or Semantic Registry.
+  in `scratch/` for unusually long, token-heavy, or connector-heavy Definition
+  text. The default 12-token trigger is review triage, not a length cap. The
+  report may consume an explicit scratch review file via `--reviews`; it never
+  writes the canonical ledger or Semantic Registry.
+- `python -m tools.semantic_audit sense-merge-audit` creates the fingerprint-bound,
+  report-only Semantic Sense Merge Audit in `scratch/`. After every candidate is
+  reviewed, pass `--reviews`, `--bundle-output`, `--reviewer`, `--reviewed-at`,
+  and `--approval approved` to create a canonical-compatible review bundle in
+  `scratch/`; apply that bundle through `apply-review`, then validate and promote.
+  Bundle generation remaps every affected source before removing a Semantic Sense.
+- `python -m tools.semantic_audit vietnamese-audit` creates the report-only
+  `DefinitionVI` naturalness queue in `scratch/`. The default eight-token
+  threshold is review triage, not a length cap and never an automatic rewrite.
+- `python -m tools.semantic_audit vietnamese-review-scaffold --scope all`
+  creates the fingerprint-bound canonical review ledger for every promoted
+  Semantic Sense at
+  `data/review/vietnamese_naturalness_review.jsonl`. Complete its explicit
+  `keep_natural` / `keep_explanatory` / `rewrite` decisions, then run
+  `python -m tools.semantic_audit apply-vietnamese-review`; stale, incomplete,
+  uncertain, or unapproved review state fails before the bilingual semantic
+  ledger changes or promotion proceeds. Unchanged text is not automatically
+  reviewed; an approved row is reused only while its per-sense fingerprint is
+  unchanged, and every new or changed sense must receive a new verdict.
+  `validate --require-complete` and `promote` both require exact coverage from
+  this all-sense ledger.
+- `python -m tools.semantic_audit vietnamese-review-scaffold --scope long`
+  remains available for long-gloss verbosity triage, but cannot satisfy the
+  canonical all-sense promotion gate. In this scope, `rewrite` must reduce the
+  whitespace-token count; `keep_explanatory` must record a strictly shorter
+  wording considered and the exact material distinction it would lose. Merely
+  changing punctuation or word order does not close a verbosity finding.
 - Since the ADR 0011 cutover on 2026-07-15, Semantic Registry owns production
-  Definition/Example content. The legacy β/γ/M3 and review layers still support
-  source indexing and non-semantic metadata during the remaining decoupling;
-  they must not override the promoted final semantic payload.
+  Definition/Example content and the promoted bilingual Idiom Box payload. The
+  legacy β/γ/M3 and review layers still support source indexing and non-semantic
+  metadata during the remaining decoupling; they must not override the promoted
+  final semantic payload.
 
 ## Architecture context
 
@@ -228,7 +267,7 @@ it uses native `{{type:ProductionAnswer}}` comparison. `ProductionAnswer` is
 field 23 (zero-based index 22), after the established 22 fields, and is
 derived from the final displayed `Word` by removing only a trailing display
 qualifier. Preserve learning-pattern slots such as `devote sth to sth`.
-Production migration is performed by the explicit AnkiConnect import stage;
+Production migration is performed by the dedicated AnkiConnect import stage;
 never create a second EAVM Note Type or remove/re-add the established
 template.
 
@@ -238,16 +277,21 @@ fields must be appended. Example Audio uses `ExampleAudioUK`, `ExampleAudioUS`,
 `DefinitionVI` follows those four fields. It is pipe-aligned with `Definition`
 and drives the always-visible Vietnamese Gloss Line; the established
 `Definition` field retains its legacy `EN (VI)` payload for compatibility.
+`IdiomMeaningVI` is appended after `SensePOS`. It is `$$`-aligned with the
+established `Idioms` field; each populated cell carries the reviewed Idiom
+Display Mode and Vietnamese text. Never change the existing `Idioms` or Idiom
+Example Audio delimiter grammar.
 
 ### Anki package import workflow
 
-`python -m src.pipeline import` is the supported live update path. It calls
+The pipeline's `import` stage is the supported live update path. It calls
 AnkiConnect `importPackage` with the generated `.apkg`, then verifies the note
-type fields, canonical GUID coverage, and referenced media. After every
-successful production `build → validate → deck` workflow, always run the
-explicit `import` stage; do not leave a completed deck only on disk. Anki and
-AnkiConnect must be running, and the workflow must fail visibly if the import or
-post-import verification fails. Never edit `collection.anki2` directly.
+type fields, canonical GUID coverage, and referenced media. Every successful
+non-dry-run workflow containing `deck` automatically continues into `import`;
+`python -m src.pipeline import` remains available for a standalone re-import.
+Anki and AnkiConnect must be running, and the workflow must fail visibly if the
+import or post-import verification fails. Never edit `collection.anki2`
+directly.
 
 ### Anki deletion/update workflow
 When deleting or merging notes in the local Anki app, use AnkiConnect if
@@ -279,16 +323,20 @@ breaks every template that references them. To mark a rule as preview-only
 before the rule. See `design/README.md` for the full workflow.
 
 ### Card design rules
-Two hard rules enforced at the **build stage** (the stage that turns raw notes
-into Anki-ready rows). The scraper is allowed to keep all senses / all CEFR
-entries — filtering happens at build, not at scrape.
+Three hard rules enforced in the reviewed semantic/build path that turns raw
+notes into Anki-ready rows. The scraper keeps all senses / all CEFR entries.
 
-1. **Sense Sorting** (replaces the legacy Sense Cap, removed 2026-06-21):
-   all CEFR-matching definitions are retained on the card. Senses are ordered
+1. **Learner Relevance Filter**: the Bilingual Semantic Audit may explicitly
+   remove a narrowly specialist or marginal sense when a useful learner meaning
+   remains. Source labels only create review candidates; they never trigger an
+   automatic deletion. Every affected source sense must be remapped or excluded
+   with a reason, and the card may not become empty.
+2. **Sense Sorting** (replaces the legacy Sense Cap, removed 2026-06-21):
+   all remaining learner-relevant CEFR-matching definitions are retained. Senses are ordered
    by `sensenum_local` (ascending, Oxford's frequency proxy), then by example
    count (descending) as tie-breaker. **No per-card def limit** — every sense
-   the (word, CEFR) group carries is kept.
-2. **Card Identity**: 1 CEFR level = 1 card by default. Multi-POS words (e.g.
+   in the reviewed production payload is kept.
+3. **Card Identity**: 1 CEFR level = 1 card by default. Multi-POS words (e.g.
    `absent` = adjective/verb/preposition) live in a single card per CEFR, with
    all POS chips listed in the top-bar. Same word with different CEFR levels
    produces multiple cards. Reviewed identity variants currently cover the
@@ -303,12 +351,12 @@ See `design/README.md § Card design rules` for the full rationale.
 get split into multiple cards of ≤3 each" (i.e. "pagination") produced a
 false-positive audit claiming 99.6% of `(word, CEFR)` duplicates were legitimate
 pagination. **WRONG.** Both the legacy Sense Cap and the current Sense Sorting
-**never paginate** — senses are either dropped (legacy) or all retained (current).
+**never paginate**. The reviewed Learner Relevance Filter may explicitly remove
+a niche sense, but Sense Sorting itself only orders and retains its input.
 All 490 observed duplicates were bugs that needed dedup.
 
 **Post-2026-06-21 reminder:** the cap was removed, but the "no pagination"
-invariant is unchanged. Sense Sorting adds senses but never splits them into
-multiple cards.
+invariant is unchanged. Sense Sorting never splits senses into multiple cards.
 
 **How to avoid this:**
 - When a CONTEXT.md rule could be interpreted two ways, verify against the

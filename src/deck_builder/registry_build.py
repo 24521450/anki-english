@@ -54,6 +54,7 @@ from src.deck_builder.word_lookup import (
     resolve_primary_record,
 )
 from src.deck_builder.production import apply_production_answers
+from src.deck_builder.sense_pos import build_source_sense_pos_index
 from src.deck_builder.card_identity import (
     CardIdentity,
     normalize_cefr,
@@ -161,6 +162,7 @@ def _load_source_indexes(paths, gamma: dict):
     issues: list[BuildIssue] = []
     by_word: dict[str, list[dict]] = {}
     idioms_db: dict[str, list[tuple[dict, dict]]] = {}
+    source_records: list[dict] = []
 
     with paths.oxford_jsonl_path.open(encoding="utf-8") as source_file:
         for line_no, line in enumerate(source_file, 1):
@@ -179,11 +181,56 @@ def _load_source_indexes(paths, gamma: dict):
             word = (record.get("word") or "").lower()
             if word:
                 by_word.setdefault(word, []).append(record)
+            source_records.append(record)
             for idiom in record.get("idioms") or []:
                 phrase = idiom.get("phrase") or ""
                 phrase_clean = re.sub(r"\s*\(.*?\)\s*", "", phrase.lower()).strip()
                 if phrase_clean:
                     idioms_db.setdefault(phrase_clean, []).append((record, idiom))
+
+    cambridge_path = getattr(paths, "cambridge_jsonl_path", None)
+    if cambridge_path is not None:
+        try:
+            with cambridge_path.open(encoding="utf-8") as source_file:
+                for line_no, line in enumerate(source_file, 1):
+                    if not line.strip():
+                        continue
+                    try:
+                        record = json.loads(line)
+                    except json.JSONDecodeError as exc:
+                        issues.append(BuildIssue(
+                            severity="error",
+                            code="source_json_malformed",
+                            message=f"invalid JSONL row {line_no}: {exc}",
+                            source=cambridge_path,
+                        ))
+                        continue
+                    if not isinstance(record, dict):
+                        issues.append(BuildIssue(
+                            severity="error",
+                            code="source_json_invalid_row",
+                            message=f"JSONL row {line_no} must be an object",
+                            source=cambridge_path,
+                        ))
+                        continue
+                    source_records.append(record)
+        except OSError as exc:
+            issues.append(BuildIssue(
+                severity="error",
+                code="source_json_unreadable",
+                message=f"cannot read Cambridge source JSONL: {exc}",
+                source=cambridge_path,
+            ))
+
+    try:
+        source_sense_pos_index = build_source_sense_pos_index(source_records)
+    except (KeyError, TypeError, ValueError) as exc:
+        issues.append(BuildIssue(
+            severity="error",
+            code="source_sense_pos_index_failed",
+            message=str(exc),
+        ))
+        source_sense_pos_index = {}
 
     by_word_simplified: dict[str, list[tuple[dict, list]]] = {}
     for word_lower, records in by_word.items():
@@ -232,6 +279,7 @@ def _load_source_indexes(paths, gamma: dict):
         "sense_source_record": sense_source_record,
         "word_pos_set": word_pos_set,
         "source_label_specs_index": _build_source_label_specs_index(by_word),
+        "source_sense_pos_index": source_sense_pos_index,
     }
 
 
@@ -334,6 +382,7 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
     sense_source_record = indexes["sense_source_record"]
     word_pos_set = indexes["word_pos_set"]
     source_label_specs_index = indexes["source_label_specs_index"]
+    source_sense_pos_index = indexes["source_sense_pos_index"]
     oxford_link_index = OxfordLinkIndex(by_word)
     semantic_source_ids_by_guid = {
         row.get("guid", ""): {
@@ -597,7 +646,10 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
                 audio_source = "Cambridge"
                 break
 
-        formatted_idioms = _format_idioms(record.get("idioms") or [])
+        formatted_idioms = _format_idioms(
+            record.get("idioms") or [],
+            card_pos=resolved_pos_parts,
+        )
         tags = _regenerate_tags(
             word=resolved_word,
             pos=resolved_pos,
@@ -701,7 +753,11 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
 
     if semantic_registry_rows is not None:
         try:
-            cards = apply_semantic_registry(cards, semantic_registry_rows)
+            cards = apply_semantic_registry(
+                cards,
+                semantic_registry_rows,
+                source_sense_pos_index,
+            )
         except (KeyError, TypeError, ValueError) as exc:
             raise BuildValidationError([
                 BuildIssue(

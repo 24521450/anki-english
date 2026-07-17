@@ -145,7 +145,10 @@ def test_exact_source_cefr_rescue_is_owned_by_canonical_inputs():
 
     approximate = cards["q-l2t)2u|/"]
     approximate_manual = manuals[_manual_key(registry["q-l2t)2u|/"])]
-    assert approximate["definition"] == approximate_manual["definition"]
+    # The promoted Semantic Registry now owns the concise bilingual payload;
+    # this card intentionally replaces the old mechanical “gần đúng/xấp xỉ”
+    # pair with the reviewed lexical gloss “xấp xỉ”.
+    assert approximate["definition"] == "not completely accurate but close (xấp xỉ)"
     assert approximate["example"] == approximate_manual["example"]
     assert approximate["source1"] == "Cambridge"
     assert "CEFR::cambridge" in approximate["tags"]

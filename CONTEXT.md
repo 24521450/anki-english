@@ -111,6 +111,37 @@ _Avoid_: Definition row, sense line
 The always-visible secondary line beneath the English learner definition in a Sense Row. It is labeled `VI` and visually quieter than the English definition so the two languages remain paired without reading as one sentence.
 _Avoid_: Vietnamese reveal, translation button
 
+**Idiom Vietnamese Gloss Line**:
+The always-visible `VI` line beneath one Idiom Box phrase. In
+`vi_equivalent` mode it is the only displayed explanation; in
+`bilingual_gloss` mode it follows a short English learner gloss. Both glosses
+state the core meaning naturally in their own language; the Vietnamese line is
+not a clause-by-clause translation of the English line. Neither language has a
+hard word cap, but extra detail remains only when removing it would lose a
+material condition or restriction. Learning-pattern slots already visible in
+the phrase, such as `somebody` or `something`, are not repeated as placeholder
+subjects, objects, or subordinate clauses in the gloss. It shares the
+Vietnamese Gloss Line's visual language but keeps idiom-specific selector
+names. Text equality with the previous ledger is not evidence that a row was
+reviewed. A retained gloss needs a row-specific reason naming a shorter wording
+considered and the material distinction it would lose, unless it cites an exact
+user-locked canonical pair.
+_Avoid_: literal translation line, placeholder clause, unchanged-equals-reviewed, idiom reveal
+
+**Idiom Display Mode**:
+The reviewed choice between `vi_equivalent` and `bilingual_gloss` for one
+learner-facing idiom. `vi_equivalent` is reserved for a natural Vietnamese
+proverb, idiom, saying, or fixed figurative expression with a clear equivalent
+or closely related meaning. The Vietnamese image, grammar, and pragmatic scope
+do not need to match exactly; only materially misleading or merely literal
+paraphrases use `bilingual_gloss` instead. A `bilingual_gloss` is a compact
+learner-facing EN/VI pair, not a full source-definition translation.
+_Avoid_: translation type, automatic equivalent
+
+**Sense POS**:
+The pipe-aligned part-of-speech metadata for each reviewed semantic sense. `SensePOS[i]` belongs to the same sense as `DefinitionVI[i]` and `Example[i]`; it is derived from that sense's reviewed Oxford/Cambridge source provenance, with the card-level POS as the explicit fallback when no source mapping exists. It is retained as model metadata; the current Production front does not render it.
+_Avoid_: inferred grammar label, replacement for the Top Bar POS
+
 **Example Accent Toggle**:
 A card-local single-label `.example-accent-toggle` in the Audio Row that selects UK or US Example Audio for every main and idiom example on that card. Its only visible thumb carries the current accent label and slides horizontally when toggled. It defaults to UK on each card; clicking an `.example-audio-trigger` sentence plays the selected accent without adding the clip to Anki's autoplay queue.
 _Avoid_: Two visible accent options, per-sentence audio buttons, persisted accent preference
@@ -120,7 +151,11 @@ The temporary `.is-playing` state on the active Example Audio trigger. It colors
 _Avoid_: Hover playback color, permanent example highlight
 
 **Idiom Box**:
-A `.section-box.idiom-box` with amber/yellow theme. Contains an `.idiom-list` of `.idiom-row` items, each with `.idiom-phrase` (the phrase), `.idiom-explanation` (the meaning), and optional `.idiom-examples` (italic usage examples). Triggers when the raw note has an `Idioms` field.
+A `.section-box.idiom-box` with amber/yellow theme. Contains an `.idiom-list`
+of `.idiom-row` items, each with `.idiom-phrase`, an optional
+`.idiom-explanation`, an Idiom Vietnamese Gloss Line, and optional
+`.idiom-examples`. The English explanation is omitted only for a complete
+`vi_equivalent` payload. Triggers when the raw note has an `Idioms` field.
 _Avoid_: Phrase box, idiom section
 
 **Word Family Box**:
@@ -182,13 +217,36 @@ _Avoid_: Bold word, headword mark
 The `Definition` and `Example` fields are pipe-aligned: `Definition[i]` renders with `Example[i]`. Distinct senses use `|`. Multiple examples for the same sense remain in one Example segment and use `<br><br>` between sentences so the rendered card has visible vertical spacing. A single `<br>` is non-canonical and rejected by build validation.
 _Avoid_: one Example pipe segment per sentence, single `<br>` between same-sense examples
 
+**Lexical Gloss**:
+The learner-facing English or Vietnamese meaning of one Semantic Sense. It uses
+the shortest natural dictionary wording that preserves the sense's material
+conditions, restrictions, and contrasts; it is authored independently in each
+language rather than copied clause by clause from a source definition. Source
+definitions are semantic evidence, not display text. A Vietnamese lexical
+equivalent may express the complete learner meaning without mirroring every
+English source clause; synonyms are included only when they improve clarity or
+recall. Length thresholds only create review queues. A longer explanatory gloss
+remains valid when its review names the exact distinction a shorter wording
+would lose.
+_Avoid_: source-definition transcription, machine-shaped paraphrase, hard word cap
+
 **Definition Sense Audit**:
-A report-only review of unusually long or connector-heavy Definition text. It
-checks whether semicolon-separated clauses are independent senses or belong in
-one bilingual sense, preserves Oxford/Cambridge evidence IDs, and requires
-Definition/Example pipe alignment. Draft proposals live in `scratch/`; this
-audit does not change the Semantic Registry or review ledger.
-_Avoid_: automatic definition rewrite, splitting every semicolon
+A report-only review of unusually long, token-heavy, or connector-heavy
+Definition text. It checks both lexical concision and whether
+semicolon-separated clauses are independent senses or belong in one bilingual
+sense, preserves Oxford/Cambridge evidence IDs, and requires
+Definition/Example pipe alignment. Candidate thresholds are triage only and
+never authorize an automatic rewrite or split.
+_Avoid_: automatic definition rewrite, splitting every semicolon, maximum English length
+
+**Semantic Sense Merge Audit**:
+A report-only, fingerprint-bound review of promoted Semantic Senses that may
+repeat one learner meaning. Vietnamese overlap and historical grouping are
+triage signals only. A merge proposal must preserve a natural bilingual
+Lexical Gloss, ordered examples, and every Semantic Source Coverage mapping;
+uncertain cases remain separate. The audit never changes Semantic Registry or
+Anki without a later approved Bilingual Semantic Audit review bundle.
+_Avoid_: duplicate-VI auto-merge, heuristic sense deletion, canonical audit mutation
 
 **Idiom Selection**:
 Each card carries at most two entries in its Idiom Box. When an Oxford record has at most two idioms, keep every entry in Oxford order, including entries whose `cefr` is null. When it has more than two, rank CEFR-tagged idioms before ungraded idioms, preserve Oxford order within each rank, and keep the first two. Manual Card Payloads must already satisfy the same limit; build validation rejects rather than silently truncates an oversized manual field.
@@ -251,8 +309,29 @@ or `Oxford::Oxford 3000 Basic` at A1/A2/B1. Cards without either corpus tag
 keep their existing TED YT, AWL, or plain Oxford deck.
 _Avoid_: flat Oxford 5000 deck, flat Oxford 3000 deck
 
+**Learner Relevance Filter**:
+An explicit human-review step in the Bilingual Semantic Audit that runs before
+Sense Sorting. It may remove a distinct source sense when that sense is too
+narrow for an IELTS / Academic English learner card: for example specialist
+occupational jargon, a marginal regional or institutional use, or a tiny
+domain subtype when a useful core meaning remains. A source domain or
+`specialized` label is only a review signal, never an automatic deletion rule;
+common academic science, health, politics, economics, computing, and
+language-learning senses remain relevant. Raw Oxford/Cambridge records keep
+every sense. Each reviewed removal must explicitly remap or exclude every
+affected source sense with a reason, and it must never leave the card empty.
+_Avoid_: domain-label filter, automatic specialist deletion, frequency cap
+
 **Sense Sorting**:
-All CEFR-matching definitions per **card** (per `(Word, CEFRLevel, LIST)` unit) are retained — there is **no per-card def limit**. (The legacy "Sense Cap" of ≤3 defs/card was removed on 2026-06-21 after audit feedback showed high-frequency words were losing critical senses.) Senses are **logically ordered**: first by Oxford's `sensenum_local` (ascending — Oxford's own frequency proxy, lower number = more common), then by example count (descending) as tie-breaker. Idiom defs (sensenum_local=None) sort last. Scraped records keep all senses; sorting is applied only at build.
+All learner-relevant, CEFR-matching definitions remaining on a **card** (per
+`(Word, CEFRLevel, LIST)` unit) are retained — there is **no per-card def
+limit**. (The legacy "Sense Cap" of ≤3 defs/card was removed on 2026-06-21
+after audit feedback showed high-frequency words were losing critical senses.)
+Senses are **logically ordered**: first by Oxford's `sensenum_local` (ascending
+— Oxford's own frequency proxy, lower number = more common), then by example
+count (descending) as tie-breaker. Idiom defs (`sensenum_local=None`) sort last.
+Scraped records keep all senses; the reviewed Learner Relevance Filter selects
+the production payload, and Sense Sorting never truncates that payload.
 
 **Worked example — `tackle`:**
 - Oxford has 5 senses: 1 at B2 ("to make a determined effort to deal with...") and 4 at C1 (verb + noun).
@@ -328,6 +407,38 @@ is promoted deterministically into Semantic Registry; incomplete review state
 never reaches production.
 _Avoid_: quality spreadsheet, translation pass, M3 audit
 
+**Vietnamese Naturalness Review**:
+A fail-closed, fingerprint-bound human/ChatGPT review of every promoted
+`DefinitionVI` Semantic Sense, including short text that may be correct yet
+read like a literal translation. Each sense is explicitly kept as natural,
+kept as a necessary explanatory gloss, rewritten, or left uncertain. Text
+equality is not review evidence: an approved verdict is reused only while that
+sense's fingerprint is unchanged, and every new or changed sense blocks
+promotion until reviewed. A separate whitespace-token threshold (currently 8
+or more tokens) remains report triage for verbosity, never a coverage boundary,
+length cap, or automatic rewrite rule. In that long-gloss queue, a rewrite must
+reduce the token count; keeping an explanatory gloss requires a shorter
+counterfactual plus the exact material distinction it would lose. Source
+coverage requires semantic accounting, not clause-by-clause Vietnamese wording.
+English definitions, examples, source mappings, Card Identity, and idioms remain
+unchanged. Cambridge English–Vietnamese is supporting evidence rather than a
+mandatory wording source.
+_Avoid_: unchanged-equals-reviewed, punctuation-only rewrite, generic “preserves nuance” reason, maximum Vietnamese length, automatic translation
+
+**Bilingual Idiom Audit**:
+A fail-closed phrase-level review of every idiom selected for an active card.
+One review row is shared by occurrences with the same normalized phrase and
+source meaning. It chooses one Idiom Display Mode and one canonical Vietnamese
+meaning, while preserving card-local order, examples, and audio alignment.
+_Avoid_: raw Oxford idiom translation, card-by-card duplicate review
+
+**Idiom Semantic Key**:
+The stable review identity formed from the normalized English phrase and its
+normalized source explanation. Phrase punctuation, alternatives, and learning
+slots remain significant, so the same written phrase with a genuinely
+different source meaning receives a different key.
+_Avoid_: phrase text alone, card GUID key
+
 **Semantic Source Coverage**:
 The per-card accounting that maps each relevant Oxford/Cambridge source sense to
 one or more reviewed semantic senses, or excludes it with an explicit reason.
@@ -338,11 +449,13 @@ _Avoid_: auto sense zip, sense-number key
 
 **Semantic Registry**:
 The canonical production semantic payload promoted from a complete Bilingual
-Semantic Audit, stored at `data/curated/semantic_registry.jsonl`. It owns ordered
-English/Vietnamese sense content, examples, POS coverage, and source provenance.
+Semantic Audit and Bilingual Idiom Audit, stored at
+`data/curated/semantic_registry.jsonl`. It owns ordered English/Vietnamese
+sense content, reviewed idiom display payload, examples, POS coverage, and
+source provenance.
 Card Identity remains in Card Registry; non-semantic source-derived fields and
 explicit metadata exceptions remain outside Semantic Registry. Production
-cutover is governed by ADR 0011.
+cutover is governed by ADR 0011 and its bilingual-idiom extension.
 _Avoid_: gloss ledger, full card dump, XLSX source
 
 **ChatGPT Semantic Reviewer**:
@@ -667,6 +780,16 @@ The detection of idioms in a record produces two distinct outputs that must not 
 
 Oxford idiom detection: walk parent chain from each `<span class="idm">` for `<div class="idioms">` ancestor (sets `is_idiom=True`); for top-level `idioms[]`, read `<span class="idm">` directly into the `phrase` field. Cambridge idiom detection: walk parent chain for `<div class="idiom-body">` or `<div class="phrase-di-body">` ancestor, read the `<h2 class="headword">` in the preceding `<div class="di-title">`.
 _Avoid_: Phrase flag, idiom marker
+
+**Idiom Ownership**:
+The Oxford entry POS that owns one top-level idiom block. Ownership is stored
+on every `idioms[]` item before multi-file records are merged. Deck selection
+filters idioms to the active card POS before applying the two-item display
+limit; a noun-entry idiom must not leak onto a verb-only card for the same
+spelling. The same phrase may retain more than one ownership record when
+Oxford lists it under multiple POS entries, but a multi-POS card renders that
+phrase only once.
+_Avoid_: word-level idiom, phrase-headword matching, cross-POS fallback
 
 **Phrasal Verb Page**:
 A separate Oxford cache file at `oxford_<base>-<particle>_(phrasal_verb).html` (e.g. `oxford_deprive-of_(phrasal_verb).html`) that holds the real definitions for a pattern-heavy verb. The base word's main page (e.g. `oxford_deprive.html`) is a stub that links to this page. Without it, the main word has empty `pos_data` and `idioms` — see **Skip Rule** and **Phrasal Verb Folding**. The `word` field of a phrasal-verb record includes the space (e.g. `"deprive of"`), and `pos` is `["phrasal verb"]`.

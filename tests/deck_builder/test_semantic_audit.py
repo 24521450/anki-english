@@ -241,6 +241,12 @@ def test_xlsx_round_trip_preserves_unicode_and_literal_formula(tmp_path):
     export_workbook(rows, path)
     workbook = load_workbook(path)
     sheet = workbook["Review"]
+    instructions = "\n".join(
+        str(cell.value or "") for row in workbook["Instructions"] for cell in row
+    )
+    assert "independent Lexical Glosses" in instructions
+    assert "generic claim that it 'preserves nuance' is not sufficient" in instructions
+    assert "changing only punctuation or word order" in instructions
     headers = [cell.value for cell in sheet[1]]
     values = {name: headers.index(name) + 1 for name in headers}
     sheet.cell(2, values["cambridge_match"]).value = "exact"
@@ -371,3 +377,114 @@ def test_apply_review_bundle_can_insert_a_missing_sense_before_an_existing_one()
     }])
 
     assert [sense["semantic_sense_id"] for sense in card["semantic_senses"]] == ["sem_inserted", existing_id]
+
+
+def _audit_with_specialized_second_sense():
+    rows = _audit()
+    card = rows[0]
+    retained_sense = card["semantic_senses"][0]
+    retained_source_id = card["source_senses"][0]["source_sense_id"]
+    card["source_coverage"][0].update({
+        "disposition": "mapped",
+        "target_semantic_sense_ids": [retained_sense["semantic_sense_id"]],
+        "reason": "Retained learner-relevant meaning.",
+    })
+    retained_sense["source_sense_ids"] = [retained_source_id]
+    retained_sense["checks"] = {key: "pass" for key in retained_sense["checks"]}
+    retained_sense["decision"] = "pass"
+    retained_sense["reviewer"] = "test-reviewer"
+    retained_sense["cambridge"].update({
+        "match": "exact",
+        "translation_provenance": "cambridge_reference",
+    })
+    card["coverage"]["status"] = "pass"
+    source = deepcopy(card["source_senses"][0])
+    source["source_sense_id"] = "ox_specialized"
+    source["definition"] = "a narrowly specialized technical meaning"
+    source["domain"] = "computing"
+    card["source_senses"].append(source)
+    card["coverage"]["candidate_source_sense_ids"].append(source["source_sense_id"])
+    card["source_coverage"].append({
+        "source_sense_id": source["source_sense_id"],
+        "disposition": "mapped",
+        "target_semantic_sense_ids": ["sem_specialized"],
+        "reason": "Temporarily mapped before relevance review.",
+    })
+    sense = deepcopy(card["semantic_senses"][0])
+    sense.update({
+        "semantic_sense_id": "sem_specialized",
+        "order": 2,
+        "source_sense_ids": [source["source_sense_id"]],
+    })
+    card["semantic_senses"].append(sense)
+    return rows
+
+
+def test_apply_review_bundle_can_remove_a_specialized_sense_and_compact_order():
+    rows = _audit_with_specialized_second_sense()
+    card = rows[0]
+    retained_id = card["semantic_senses"][0]["semantic_sense_id"]
+
+    apply_review_bundle(rows, [{
+        "guid": card["guid"],
+        "remove_senses": ["sem_specialized"],
+        "source_coverage": [{
+            "source_sense_id": "ox_specialized",
+            "disposition": "excluded",
+            "target_semantic_sense_ids": [],
+            "reason": "Overly specialized computing sense outside learner scope.",
+        }],
+    }])
+
+    assert [sense["semantic_sense_id"] for sense in card["semantic_senses"]] == [retained_id]
+    assert [sense["order"] for sense in card["semantic_senses"]] == [1]
+    assert card["source_coverage"][-1] == {
+        "source_sense_id": "ox_specialized",
+        "disposition": "excluded",
+        "target_semantic_sense_ids": [],
+        "reason": "Overly specialized computing sense outside learner scope.",
+    }
+    assert validate_audit_rows(rows, [_registry()]) == []
+    assert validate_audit_rows(rows, [_registry()], require_complete=True) == []
+
+
+def test_apply_review_bundle_rejects_removal_while_a_source_still_targets_it():
+    rows = _audit_with_specialized_second_sense()
+
+    with pytest.raises(ValueError, match="Source coverage still targets removed semantic sense"):
+        apply_review_bundle(rows, [{
+            "guid": rows[0]["guid"],
+            "remove_senses": ["sem_specialized"],
+        }])
+
+
+def test_apply_review_bundle_rejects_removing_every_semantic_sense():
+    rows = _audit()
+    semantic_id = rows[0]["semantic_senses"][0]["semantic_sense_id"]
+
+    with pytest.raises(ValueError, match="Cannot remove every semantic sense"):
+        apply_review_bundle(rows, [{
+            "guid": rows[0]["guid"],
+            "remove_senses": [semantic_id],
+        }])
+
+
+def test_apply_review_bundle_rejects_non_list_remove_senses():
+    rows = _audit_with_specialized_second_sense()
+
+    with pytest.raises(ValueError, match="remove_senses must be a list"):
+        apply_review_bundle(rows, [{
+            "guid": rows[0]["guid"],
+            "remove_senses": "sem_specialized",
+        }])
+
+
+@pytest.mark.parametrize("bad_value", [None, "", {}, 0, False])
+def test_apply_review_bundle_rejects_falsy_non_list_remove_senses(bad_value):
+    rows = _audit_with_specialized_second_sense()
+
+    with pytest.raises(ValueError, match="remove_senses must be a list"):
+        apply_review_bundle(rows, [{
+            "guid": rows[0]["guid"],
+            "remove_senses": bad_value,
+        }])

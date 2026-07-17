@@ -628,7 +628,12 @@ def export_workbook(audit_rows: list[dict], path: Path) -> None:
 
     instructions.append(["Bilingual Semantic Audit"])
     instructions.append(["Edit only the review fields in the Review sheet. JSONL remains canonical."])
-    instructions.append(["Use friendly English without a hard word cap; preserve every distinct Oxford sense at the card CEFR."])
+    instructions.append(["Use friendly English without a hard word cap; preserve every distinct learner-relevant Oxford sense at the card CEFR."])
+    instructions.append(["Write English and Vietnamese as independent Lexical Glosses: prefer a familiar concise dictionary equivalent over a clause-by-clause copy of the source definition."])
+    instructions.append(["Source definitions are semantic evidence, not learner-facing display text. Do not keep source objects, examples, or enumerations when one established lexical term preserves the same sense."])
+    instructions.append(["If a longer gloss is necessary, the review reason must name the exact condition, restriction, or contrast a shorter wording would lose; a generic claim that it 'preserves nuance' is not sufficient."])
+    instructions.append(["Do not close a long-gloss finding by changing only punctuation or word order when a concise lexical equivalent exists."])
+    instructions.append(["Domain labels are review signals, not automatic deletions. A niche sense may be removed only by an explicit review bundle that remaps or excludes every affected source."])
     instructions.append(["Vietnamese may use natural Hán-Việt or slang when it matches the sense."])
     instructions.column_dimensions["A"].width = 110
     for row in instructions.iter_rows():
@@ -740,7 +745,11 @@ def import_workbook(audit_rows: list[dict], path: Path) -> list[dict]:
 
 
 def apply_review_bundle(audit_rows: list[dict], decisions: list[dict]) -> list[dict]:
-    """Apply explicit ChatGPT card decisions; scaffold heuristics never call this."""
+    """Apply explicit card decisions; scaffold heuristics never call this.
+
+    ``remove_senses`` is deliberately review-only: every source that targeted a
+    removed sense must be explicitly remapped or excluded in the same bundle.
+    """
     cards = {card["guid"]: card for card in audit_rows}
     seen: set[str] = set()
     for decision_card in decisions:
@@ -767,6 +776,22 @@ def apply_review_bundle(audit_rows: list[dict], decisions: list[dict]) -> list[d
             card.setdefault("semantic_senses", []).append(added)
         semantic_by_id = {sense["semantic_sense_id"]: sense for sense in card.get("semantic_senses") or []}
         coverage_by_id = {item["source_sense_id"]: item for item in card.get("source_coverage") or []}
+        raw_remove_ids = decision_card.get("remove_senses", [])
+        if not isinstance(raw_remove_ids, list) or any(
+            not isinstance(semantic_id, str) or not semantic_id
+            for semantic_id in raw_remove_ids
+        ):
+            raise ValueError(f"remove_senses must be a list of semantic IDs for {guid}")
+        remove_ids = list(raw_remove_ids)
+        if len(remove_ids) != len(set(remove_ids)):
+            raise ValueError(f"Duplicate semantic sense removal for {guid}")
+        unknown_remove_ids = set(remove_ids) - set(semantic_by_id)
+        if unknown_remove_ids:
+            raise ValueError(
+                f"Unknown semantic sense for {guid}: {','.join(sorted(unknown_remove_ids))}"
+            )
+        if remove_ids and len(remove_ids) == len(semantic_by_id):
+            raise ValueError(f"Cannot remove every semantic sense for {guid}")
 
         for update in decision_card.get("source_coverage") or []:
             source_id = update.get("source_sense_id") or ""
@@ -780,6 +805,19 @@ def apply_review_bundle(audit_rows: list[dict], decisions: list[dict]) -> list[d
                 "target_semantic_sense_ids": targets,
                 "reason": update.get("reason") or "",
             })
+
+        removal_targets = [
+            source_id
+            for source_id, coverage in coverage_by_id.items()
+            if set(coverage.get("target_semantic_sense_ids") or []) & set(remove_ids)
+        ]
+        if removal_targets:
+            raise ValueError(
+                "Source coverage still targets removed semantic sense for "
+                f"{guid}: {','.join(sorted(removal_targets))}"
+            )
+        for semantic_id in remove_ids:
+            del semantic_by_id[semantic_id]
 
         for update in decision_card.get("senses") or []:
             semantic_id = update.get("semantic_sense_id") or ""
@@ -809,6 +847,8 @@ def apply_review_bundle(audit_rows: list[dict], decisions: list[dict]) -> list[d
         if any(not isinstance(order, int) or order < 1 for order in orders) or len(orders) != len(set(orders)):
             raise ValueError(f"Duplicate or invalid semantic sense order for {guid}")
         card["semantic_senses"] = sorted(semantic_by_id.values(), key=lambda sense: sense["order"])
+        for order, sense in enumerate(card["semantic_senses"], 1):
+            sense["order"] = order
 
         for sense in semantic_by_id.values():
             sense["source_sense_ids"] = sorted(

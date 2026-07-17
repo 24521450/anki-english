@@ -12,6 +12,7 @@ from src.deck_builder.build_issues import BuildIssue
 from src.deck_builder.build_contracts import (
     CARD_FIELDS,
     CANONICAL_TXT_HEADER,
+    IDIOM_DISPLAY_MODES,
     MAX_IDIOM_EXAMPLES_PER_IDIOM,
     MAX_IDIOMS_PER_CARD,
     BuildNotesResult,
@@ -41,6 +42,7 @@ from src.deck_builder.production import (
     derive_production_answer,
     production_eligible,
 )
+from src.deck_builder.sense_pos import fallback_sense_pos, valid_sense_pos_cell
 
 
 @dataclass(frozen=True, slots=True)
@@ -123,7 +125,12 @@ def _parse_jsonl_cards(text: str, source: Path | str | None = None) -> tuple[lis
             continue
         missing = [field for field in CARD_FIELDS if field not in row]
         extra = [field for field in row if field not in CARD_FIELDS]
-        if missing:
+        legacy_tail = ("production_answer", "sense_pos", "idiom_meaning_vi")
+        legacy_missing = tuple(field for field in legacy_tail if field in missing)
+        allowed_missing = {
+            frozenset(legacy_tail[start:]) for start in range(len(legacy_tail))
+        }
+        if missing and frozenset(missing) not in allowed_missing:
             issues.append(BuildIssue("error", "jsonl_missing_field", f"line {line_no} missing fields {missing}", source=source))
             continue
         if extra:
@@ -131,6 +138,15 @@ def _parse_jsonl_cards(text: str, source: Path | str | None = None) -> tuple[lis
         values = []
         for field in CARD_FIELDS:
             value = row.get(field)
+            if field == "production_answer" and field in legacy_missing:
+                value = derive_production_answer(row.get("word") or "")
+            elif field == "sense_pos" and field in legacy_missing:
+                value = fallback_sense_pos(
+                    row.get("pos") or "",
+                    row.get("definition_vi") or "",
+                )
+            elif field == "idiom_meaning_vi" and field in legacy_missing:
+                value = ""
             if not isinstance(value, str):
                 issues.append(BuildIssue("error", "jsonl_non_string_field", f"line {line_no} field {field!r} must be string", source=source))
                 value = "" if value is None else str(value)
@@ -155,16 +171,23 @@ def _parse_txt_cards(text: str, source: Path | str | None = None) -> tuple[list[
         if not line.strip():
             continue
         parts = line.split("\t")
-        if len(parts) == len(CARD_FIELDS) - 1:
-            # Read-only compatibility for the immediately preceding 26-column
-            # artifact contract.  The in-memory row receives the deterministic
-            # appended field; canonical serialization/validation still writes
-            # and requires all 27 columns, so production artifacts cannot pass
-            # publish validation in the legacy shape.
-            legacy_card = BuiltCard(*parts)
-            cards.append(legacy_card._replace(
-                production_answer=derive_production_answer(legacy_card.word)
-            ))
+        if len(parts) in {
+            len(CARD_FIELDS) - 3,
+            len(CARD_FIELDS) - 2,
+            len(CARD_FIELDS) - 1,
+        }:
+            # Read-only compatibility for the three preceding append-only
+            # contracts. Canonical serialization still writes every column.
+            if len(parts) == len(CARD_FIELDS) - 3:
+                parts.append(derive_production_answer(parts[CARD_FIELDS.index("word")]))
+            if len(parts) == len(CARD_FIELDS) - 2:
+                parts.append(fallback_sense_pos(
+                    parts[CARD_FIELDS.index("pos")],
+                    parts[CARD_FIELDS.index("definition_vi")],
+                ))
+            if len(parts) == len(CARD_FIELDS) - 1:
+                parts.append("")
+            cards.append(BuiltCard(*parts))
             continue
         if len(parts) != len(CARD_FIELDS):
             issues.append(BuildIssue("error", "txt_bad_column_count", f"line {line_no} has {len(parts)} columns", source=source))
@@ -276,6 +299,55 @@ def _validate_cards(
                     identity=identity,
                 ))
 
+            example_cells = card.example.split("|")
+            sense_pos_cells = card.sense_pos.split("|") if card.sense_pos else []
+            if len(example_cells) != len(definition_vi_cells):
+                issues.append(BuildIssue(
+                    "error",
+                    "example_sense_alignment_mismatch",
+                    (
+                        f"row {idx} Example has {len(example_cells)} cells "
+                        f"for {len(definition_vi_cells)} DefinitionVI cells"
+                    ),
+                    identity=identity,
+                ))
+            if len(sense_pos_cells) != len(definition_vi_cells):
+                issues.append(BuildIssue(
+                    "error",
+                    "sense_pos_alignment_mismatch",
+                    (
+                        f"row {idx} SensePOS has {len(sense_pos_cells)} cells "
+                        f"for {len(definition_vi_cells)} DefinitionVI cells"
+                    ),
+                    identity=identity,
+                ))
+            else:
+                for sense_index, sense_pos in enumerate(sense_pos_cells, 1):
+                    if not sense_pos.strip():
+                        issues.append(BuildIssue(
+                            "error",
+                            "sense_pos_empty_cell",
+                            f"row {idx} SensePOS cell {sense_index} is empty",
+                            identity=identity,
+                        ))
+                    elif not valid_sense_pos_cell(card.pos, sense_pos):
+                        issues.append(BuildIssue(
+                            "error",
+                            "sense_pos_invalid_cell",
+                            (
+                                f"row {idx} SensePOS cell {sense_index} "
+                                f"{sense_pos!r} is not an ordered subset of {card.pos!r}"
+                            ),
+                            identity=identity,
+                        ))
+        elif card.sense_pos:
+            issues.append(BuildIssue(
+                "error",
+                "sense_pos_without_definition_vi",
+                f"row {idx} has SensePOS without DefinitionVI content",
+                identity=identity,
+            ))
+
         expected_production_answer = derive_production_answer(card.word)
         has_production_prompt_content = bool(
             card.definition_vi.strip() and card.example.strip()
@@ -326,6 +398,57 @@ def _validate_cards(
                 f"row {idx} has {idiom_count} idioms; maximum is {MAX_IDIOMS_PER_CARD}",
                 identity=identity,
             ))
+
+        idiom_vi_cells = (
+            card.idiom_meaning_vi.split("$$") if card.idiom_meaning_vi else []
+        )
+        if not idiom_count and idiom_vi_cells:
+            issues.append(BuildIssue(
+                "error",
+                "idiom_meaning_vi_without_idioms",
+                f"row {idx} has IdiomMeaningVI without Idioms content",
+                identity=identity,
+            ))
+        elif idiom_count != len(idiom_vi_cells):
+            issues.append(BuildIssue(
+                "error",
+                "idiom_meaning_vi_alignment_mismatch",
+                (
+                    f"row {idx} IdiomMeaningVI has {len(idiom_vi_cells)} cells "
+                    f"for {idiom_count} Idioms entries"
+                ),
+                identity=identity,
+            ))
+        else:
+            for idiom_idx, cell in enumerate(idiom_vi_cells, 1):
+                parts = cell.split("::")
+                if len(parts) != 2:
+                    issues.append(BuildIssue(
+                        "error",
+                        "idiom_meaning_vi_malformed_cell",
+                        f"row {idx} IdiomMeaningVI cell {idiom_idx} is malformed",
+                        identity=identity,
+                    ))
+                    continue
+                mode, vietnamese = (part.strip() for part in parts)
+                if mode not in IDIOM_DISPLAY_MODES:
+                    issues.append(BuildIssue(
+                        "error",
+                        "idiom_meaning_vi_invalid_mode",
+                        f"row {idx} IdiomMeaningVI cell {idiom_idx} has invalid mode {mode!r}",
+                        identity=identity,
+                    ))
+                if (
+                    not vietnamese
+                    or any(char in vietnamese for char in "\t\r\n")
+                    or re.search(r"<br\s*/?>", vietnamese, flags=re.IGNORECASE)
+                ):
+                    issues.append(BuildIssue(
+                        "error",
+                        "idiom_meaning_vi_invalid_text",
+                        f"row {idx} IdiomMeaningVI cell {idiom_idx} has invalid Vietnamese text",
+                        identity=identity,
+                    ))
 
         seen_idiom_example_keys: set[str] = set()
         for idiom_idx, examples in enumerate(

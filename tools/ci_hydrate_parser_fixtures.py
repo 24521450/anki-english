@@ -40,6 +40,8 @@ def _normalize_oxford(record: dict) -> dict:
     out["source_url"] = None
     out.pop("file", None)
     out.pop("polymorphic_form", None)
+    for pos_data in out.get("pos_data") or []:
+        pos_data.pop("source_url", None)
     return out
 
 

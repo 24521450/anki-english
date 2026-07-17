@@ -22,6 +22,7 @@ EX_SEP = '|'
 COLL_SEPARATOR = '|'
 MAX_IDIOMS_PER_CARD = 2
 MAX_IDIOM_EXAMPLES_PER_IDIOM = 1
+IDIOM_DISPLAY_MODES = frozenset({"vi_equivalent", "bilingual_gloss"})
 
 CANONICAL_TXT_HEADER: tuple[str, ...] = (
     "#separator:tab",
@@ -48,13 +49,14 @@ class BuildNotesPaths(NamedTuple):
     antonym_example_overrides_path: Path | None = None
     sense_label_overrides_path: Path | None = None
     semantic_registry_path: Path | None = None
+    cambridge_jsonl_path: Path | None = None
 
 
 class BuiltCard(NamedTuple):
     """One Anki note, encoded as the canonical TXT row.
 
-    ``production_answer`` is appended after the established fields so the
-    first 26 columns remain byte/position compatible with prior artifacts.
+    New fields are appended after the established fields so every prior
+    column remains byte/position compatible with historical artifacts.
     """
 
     guid: str
@@ -86,6 +88,10 @@ class BuiltCard(NamedTuple):
     # Canonical answer used by Anki's native ``{{type:ProductionAnswer}}``
     # comparison on the sibling Vietnamese-to-English card.
     production_answer: str = ""
+    # Pipe-aligned full POS names for the final Semantic Registry senses.
+    sense_pos: str = ""
+    # ``$$``-aligned mode/Vietnamese payload for the legacy ``Idioms`` field.
+    idiom_meaning_vi: str = ""
 
     def to_tsv(self) -> str:
         return '\t'.join([
@@ -98,6 +104,8 @@ class BuiltCard(NamedTuple):
             self.definition_vi,
             self.cambridge_url, self.oxford_pos_urls,
             self.production_answer,
+            self.sense_pos,
+            self.idiom_meaning_vi,
         ])
 
     def to_dict(self) -> dict:
@@ -129,6 +137,8 @@ class BuiltCard(NamedTuple):
             'cambridge_url': self.cambridge_url,
             'oxford_pos_urls': self.oxford_pos_urls,
             'production_answer': self.production_answer,
+            'sense_pos': self.sense_pos,
+            'idiom_meaning_vi': self.idiom_meaning_vi,
         }
 
 

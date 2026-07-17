@@ -49,6 +49,13 @@ clip phát. Main Example căn theo `|` rồi `<br><br>`; Idiom Example căn theo
 English definition. `Definition` vẫn giữ payload `EN (VI)` để tương thích với
 các audit/tool cũ; template ưu tiên `DefinitionVI` và có fallback cho note cũ.
 
+`IdiomMeaningVI` được append sau `SensePOS` và căn theo `$$` với `Idioms`.
+Mỗi cell có dạng `vi_equivalent :: <VI>` hoặc `bilingual_gloss :: <VI>`.
+`vi_equivalent` giữ cụm idiom EN nhưng chỉ hiện câu Việt tương đương;
+`bilingual_gloss` hiện nghĩa EN trước rồi Vietnamese Gloss Line. Nếu metadata
+thiếu, sai mode, rỗng hoặc không căn đúng số idiom, template giữ giao diện EN
+cũ để không làm mất nghĩa. Example và Example Audio của idiom không đổi.
+
 ---
 
 ## Hướng dẫn Tái sử dụng & Đồng bộ hóa thủ công trong Anki
@@ -90,11 +97,21 @@ Khi bạn nhập tệp `.apkg` mới, nếu Anki không tự động ghi đè gi
 
 `production_front_template.txt` is the ordinal-1 front and contains the
 single native `{{type:ProductionAnswer}}` replacement. Its aligned Vietnamese
-glosses and clozed examples come from `DefinitionVI` and `Example`; the answer
-uses `{{FrontSide}}` followed by the unchanged Recognition back. The appended
-`ProductionAnswer` field is derived from the final displayed `Word`, and a
-card is generated only when all three production fields are populated.
+glosses and clozed examples come from the pipe-aligned `DefinitionVI` and
+`Example` fields. Every gloss remains visible;
+one safely masked example is shown per row and any additional safe examples
+are collapsed behind a compact `+N` disclosure. The answer uses `{{FrontSide}}`
+followed by the unchanged Recognition back. The appended `ProductionAnswer`
+field is derived from the final displayed `Word`, and a card is generated only
+when all three production fields are populated.
 
-Live migration is explicit: run `python -m src.pipeline import`. The importer
-backs up the deck, appends fields, renames ordinal 0 in place, and adds ordinal
-1 without removing/recreating the established template.
+Design assumes the learner already knows the deck's purpose and direction.
+Do not add visible direction banners, instructions, input labels, or fallback
+explanations to card faces. Visible labels are reserved for learning metadata
+or state (for example CEFR, POS, and `+N`); accessibility-only names remain.
+
+Live migration uses the pipeline's dedicated `import` stage. Any real pipeline
+run containing `deck` invokes it automatically; `python -m src.pipeline import`
+remains available for a standalone re-import. The importer backs up the deck,
+appends fields, renames ordinal 0 in place, and adds ordinal 1 without
+removing/recreating the established template.

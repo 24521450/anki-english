@@ -63,6 +63,8 @@ EAVM_JSON_TO_FIELD: tuple[tuple[str, str], ...] = (
     ("cambridge_url", "CambridgeURL"),
     ("oxford_pos_urls", "OxfordPOSURLs"),
     ("production_answer", "ProductionAnswer"),
+    ("sense_pos", "SensePOS"),
+    ("idiom_meaning_vi", "IdiomMeaningVI"),
 )
 EAVM_FIELD_NAMES: tuple[str, ...] = tuple(
     field_name for _, field_name in EAVM_JSON_TO_FIELD

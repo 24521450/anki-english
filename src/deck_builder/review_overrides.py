@@ -116,6 +116,8 @@ def apply_review_overrides(all_cards: list[BuiltCard], overrides: dict[str, dict
                 cambridge_url=c.cambridge_url,
                 oxford_pos_urls=c.oxford_pos_urls,
                 production_answer=c.production_answer,
+                sense_pos=c.sense_pos,
+                idiom_meaning_vi=c.idiom_meaning_vi,
             )
             updated_cards.append(c_new)
             applied_guids.add(c.guid)

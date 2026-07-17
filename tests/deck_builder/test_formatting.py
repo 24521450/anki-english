@@ -7,12 +7,14 @@ def _idiom(
     phrase: str,
     cefr: str | None,
     examples: list[str] | None = None,
+    pos: str | None = None,
 ) -> dict:
     return {
         "phrase": phrase,
         "text": f"meaning of {phrase}",
         "examples": examples if examples is not None else [f"Example for {phrase}."],
         "cefr": cefr,
+        "pos": pos,
     }
 
 
@@ -106,3 +108,37 @@ def test_format_idioms_keeps_idiom_without_example_when_all_candidates_duplicate
 
     assert _phrases(value) == ["first", "second"]
     assert _examples(value) == ["Shared sentence.", ""]
+
+
+def test_format_idioms_excludes_idioms_owned_by_another_part_of_speech():
+    value = format_idioms([
+        _idiom("blow your top", None, [], pos="noun"),
+        _idiom("stack it", None, ["I stacked it."], pos="verb"),
+    ], card_pos=["verb"])
+
+    assert _phrases(value) == ["stack it"]
+
+
+def test_format_idioms_deduplicates_phrase_owned_by_multiple_card_parts_of_speech():
+    value = format_idioms([
+        _idiom("shared phrase", None, [], pos="noun"),
+        _idiom("shared phrase", None, [], pos="verb"),
+    ], card_pos=["noun", "verb"])
+
+    assert _phrases(value) == ["shared phrase"]
+
+
+def test_format_idioms_matches_one_part_of_a_composite_owner_pos():
+    value = format_idioms([
+        _idiom("go it alone", None, [], pos="adjective, adverb"),
+    ], card_pos=["adjective"])
+
+    assert _phrases(value) == ["go it alone"]
+
+
+def test_format_idioms_rejects_missing_ownership_for_pos_scoped_card():
+    value = format_idioms([
+        _idiom("unowned phrase", None, [], pos=None),
+    ], card_pos=["verb"])
+
+    assert value == ""

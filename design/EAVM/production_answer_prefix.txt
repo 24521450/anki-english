@@ -1,3 +1,4 @@
 <div class="production-frontside-answer">
   {{FrontSide}}
 </div>
+<hr id="answer">

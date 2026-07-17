@@ -448,14 +448,17 @@ def merge_word_records(records: list[dict]) -> dict:
     )
     base["pos_data"] = pos_data_merged
 
-    # idioms: concatenate, dedupe by phrase
+    # Preserve entry ownership while deduplicating repeated parses of the same
+    # phrase from the same POS.
     base["idioms"] = []
-    seen_phrases: set = set()
+    seen_idioms: set[tuple[str, str]] = set()
     for r in records:
         for i in r.get("idioms", []):
             phrase = i.get("phrase")
-            if phrase and phrase not in seen_phrases:
-                seen_phrases.add(phrase)
+            owner_pos = i.get("pos") or ""
+            key = (phrase, owner_pos)
+            if phrase and key not in seen_idioms:
+                seen_idioms.add(key)
                 base["idioms"].append(i)
 
     # Apply skip flag rules (phrasal-verb-redirect + proper-noun)

@@ -22,21 +22,20 @@ def test_scrape_stage_calls_packaged_command_without_mutating_argv(monkeypatch):
     assert sys.argv == original_argv
 
 def test_resolve_stages_default():
-    # If no stage or flags, run default pipeline: build -> validate -> deck
+    # Resolution describes the requested build range; main adds live import.
     stages = resolve_stages(stage=None, from_stage=None, to_stage=None)
     assert stages == DEFAULT_STAGES
     assert "scrape" not in stages
     assert "import" not in stages
 
 def test_resolve_stages_single():
-    # Single stage runs just that stage
+    # Single-stage resolution remains literal.
     for s in ALL_STAGES:
         assert resolve_stages(stage=s) == [s]
 
 def test_resolve_stages_from_to_flags():
-    # From build to deck range
+    # Requested ranges retain their exact endpoints.
     assert resolve_stages(from_stage="build", to_stage="deck") == ["build", "validate", "deck"]
-    # Full range from scrape to deck
     assert resolve_stages(from_stage="scrape", to_stage="deck") == [
         "scrape", "example-audio", "build", "validate", "deck"
     ]
@@ -45,9 +44,104 @@ def test_resolve_stages_from_to_flags():
     assert resolve_stages(from_stage=None, to_stage="validate") == ["example-audio", "build", "validate"]
 
 
-def test_import_is_explicit_but_available_as_range_endpoint():
+def test_import_is_available_as_an_explicit_stage_or_range_endpoint():
     assert resolve_stages(stage="import") == ["import"]
     assert resolve_stages(from_stage="deck", to_stage="import") == ["deck", "import"]
+
+
+@pytest.mark.parametrize("stages", [
+    ["deck"],
+    ["build", "validate", "deck"],
+    ["scrape", "example-audio", "build", "validate", "deck"],
+])
+def test_required_import_is_appended_to_real_deck_runs(stages):
+    requested = list(stages)
+
+    assert pipeline._append_required_import(stages, dry_run=False) == [
+        *stages, "import"
+    ]
+    assert stages == requested
+
+
+def test_required_import_is_not_duplicated_or_added_to_dry_run():
+    assert pipeline._append_required_import(
+        ["deck", "import"], dry_run=False
+    ) == ["deck", "import"]
+    assert pipeline._append_required_import(
+        ["deck"], dry_run=True
+    ) == ["deck"]
+
+
+@pytest.mark.parametrize("argv", [
+    ["deck"],
+    ["--from", "deck", "--to", "deck"],
+])
+def test_pipeline_main_runs_import_after_deck(monkeypatch, argv):
+    calls = []
+    monkeypatch.setattr(
+        pipeline,
+        "run_deck",
+        lambda dry_run: calls.append(("deck", dry_run)) or 0,
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "run_import",
+        lambda dry_run: calls.append(("import", dry_run)) or 0,
+    )
+
+    assert main(argv) == 0
+    assert calls == [("deck", False), ("import", False)]
+
+
+def test_pipeline_main_dry_run_does_not_append_import(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        pipeline,
+        "run_deck",
+        lambda dry_run: calls.append(("deck", dry_run)) or 0,
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "run_import",
+        lambda dry_run: calls.append(("import", dry_run)) or 0,
+    )
+
+    assert main(["deck", "--dry-run"]) == 0
+    assert calls == [("deck", True)]
+
+
+def test_pipeline_main_does_not_import_after_failed_deck(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        pipeline,
+        "run_deck",
+        lambda dry_run: calls.append(("deck", dry_run)) or 7,
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "run_import",
+        lambda dry_run: calls.append(("import", dry_run)) or 0,
+    )
+
+    assert main(["deck"]) == 7
+    assert calls == [("deck", False)]
+
+
+def test_pipeline_main_propagates_import_failure(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        pipeline,
+        "run_deck",
+        lambda dry_run: calls.append(("deck", dry_run)) or 0,
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "run_import",
+        lambda dry_run: calls.append(("import", dry_run)) or 9,
+    )
+
+    assert main(["deck"]) == 9
+    assert calls == [("deck", False), ("import", False)]
 
 def test_resolve_stages_rejects_split():
     with pytest.raises(ValueError, match="Unknown stage 'split'"):

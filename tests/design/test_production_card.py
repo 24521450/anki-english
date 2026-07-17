@@ -7,10 +7,16 @@ import subprocess
 
 
 TEMPLATE = Path("design/EAVM/production_front_template.txt")
+ANSWER_PREFIX = Path("design/EAVM/production_answer_prefix.txt")
+STYLING = Path("design/EAVM/styling.txt")
 
 
 def _template() -> str:
     return TEMPLATE.read_text(encoding="utf-8")
+
+
+def _css_rule(css: str, selector: str) -> str:
+    return css.split(f"{selector} {{", 1)[1].split("}", 1)[0]
 
 
 def _script() -> str:
@@ -53,6 +59,98 @@ def test_production_template_javascript_is_valid():
         check=True,
         env=env,
     )
+
+
+def test_production_answer_prefix_mounts_separator_after_front_side():
+    prefix = ANSWER_PREFIX.read_text(encoding="utf-8")
+
+    assert prefix.count("{{FrontSide}}") == 1
+    assert prefix.count('id="answer"') == 1
+    assert prefix.index("{{FrontSide}}") < prefix.index('id="answer"')
+    assert prefix.strip().endswith('<hr id="answer">')
+
+
+def test_production_type_answer_css_distinguishes_input_and_comparison():
+    css = STYLING.read_text(encoding="utf-8")
+
+    assert ".production-type-input #typeans {" not in css
+    assert ".production-type-input input#typeans {" in css
+    assert ".production-type-input code#typeans {" in css
+
+    state_rules = {
+        state: _css_rule(css, f".production-type-input code#typeans .{state}")
+        for state in ("typeGood", "typeBad", "typeMissed")
+    }
+    assert len(set(state_rules.values())) == 3
+    for rule in state_rules.values():
+        assert "color:" in rule
+        assert "background:" in rule
+
+
+def test_production_front_uses_implicit_context_without_visible_instructions():
+    template = _template()
+    visible_markup = template.split('<div class="production-raw-data"', 1)[0]
+    css = STYLING.read_text(encoding="utf-8")
+
+    for removed_copy in (
+        "Recall the English expression.",
+        "Type the English expression",
+        "Prompt unavailable; reveal the answer to continue.",
+    ):
+        assert removed_copy not in visible_markup
+    assert "production-direction" not in visible_markup
+    assert "production-instruction" not in visible_markup
+    assert "production-gloss-label" not in template
+    assert "SensePOS" not in template
+    assert "production-sense-pos" not in template
+
+    hidden_label_rule = _css_rule(css, ".production-type-label")
+    assert "position: absolute" in hidden_label_rule
+    assert "overflow: hidden" in hidden_label_rule
+
+
+def test_every_vietnamese_sense_remains_when_examples_are_missing_or_unsafe():
+    rows = _run_node(
+        "buildProductionRows("
+        "'nghĩa một|nghĩa hai|nghĩa ba', "
+        "'answer one||unrelated wording', "
+        "'answer', "
+        "'noun, verb'"
+        ")"
+    )
+
+    assert rows == [
+        {"vi": "nghĩa một", "examples": ["[…] one"]},
+        {"vi": "nghĩa hai", "examples": []},
+        {"vi": "nghĩa ba", "examples": []},
+    ]
+
+
+def test_additional_safe_examples_use_collapsed_native_disclosure():
+    template = _template()
+    css = STYLING.read_text(encoding="utf-8")
+
+    assert "document.createElement('details')" in template
+    assert "summary.textContent = '+' + extraCount;" in template
+    assert "for (var j = 1; j < rows[i].examples.length; j++)" in template
+    assert "summary.setAttribute('aria-label', extraCount + ' more examples');" in template
+    focus_rule = _css_rule(css, ".production-example-more-summary:focus-visible")
+    assert "outline: 2px solid #a78bfa" in focus_rule
+
+
+def test_additional_safe_examples_never_reveal_the_answer():
+    rows = _run_node(
+        "buildProductionRows("
+        "'meaning', "
+        "'answer one<br><br>the answer grew<br><br>answers increased', "
+        "'answer', "
+        "'noun'"
+        ")"
+    )
+
+    examples = rows[0]["examples"]
+    assert len(examples) == 3
+    assert all("answer" not in example.lower() for example in examples)
 
 
 def test_reviewed_irregular_and_spelling_forms_are_clozed():

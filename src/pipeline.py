@@ -4,6 +4,7 @@
 Run with:
     python -m src.pipeline
 
+Every real run that packages a deck continues to verified Anki import.
 Supports stage ranges, dry-runs, and explicit cache parsing.
 """
 from __future__ import annotations
@@ -19,7 +20,8 @@ NOTES_JSONL = paths.anki_notes_jsonl
 NOTES_TXT = paths.anki_notes_txt
 
 ALL_STAGES = ["scrape", "example-audio", "build", "validate", "deck", "import"]
-# Live import remains explicit because it mutates the user's Anki collection.
+# The requested default range ends at packaging; main appends the mandatory
+# live import finalizer to real (non-dry-run) executions.
 DEFAULT_STAGES = ["example-audio", "build", "validate", "deck"]
 
 
@@ -120,19 +122,35 @@ def resolve_stages(stage: str | None = None, from_stage: str | None = None, to_s
         else:
             return DEFAULT_STAGES
 
+
+def _append_required_import(stages: list[str], *, dry_run: bool) -> list[str]:
+    """Append the live-import finalizer without mutating the requested range."""
+    effective = list(stages)
+    if not dry_run and "deck" in effective and "import" not in effective:
+        effective.append("import")
+    return effective
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Production-stage orchestrator")
     ap.add_argument("stage", nargs="?", help="Run a single stage")
     ap.add_argument("--from", dest="from_stage", help="Start stage")
     ap.add_argument("--to", dest="to_stage", help="End stage")
-    ap.add_argument("--dry-run", action="store_true", help="Run non-writing checks")
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run non-writing checks without appending the automatic live import",
+    )
     args = ap.parse_args(argv)
 
     try:
-        stages_to_run = resolve_stages(args.stage, args.from_stage, args.to_stage)
+        requested_stages = resolve_stages(args.stage, args.from_stage, args.to_stage)
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
         return 1
+    stages_to_run = _append_required_import(
+        requested_stages,
+        dry_run=args.dry_run,
+    )
 
     print(f"Pipeline active stages: {stages_to_run}", file=sys.stderr)
     if args.dry_run:

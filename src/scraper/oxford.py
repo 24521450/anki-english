@@ -608,6 +608,19 @@ def _find_pos_for_ol(ol_el) -> str:
     return ""
 
 
+def _find_pos_for_idiom(idm_g, fallback_pos: str = "unknown") -> str:
+    """Return the POS of the Oxford entry that owns an idiom block."""
+    for ancestor in idm_g.iterancestors():
+        if "entry" not in (ancestor.get("class") or "").split():
+            continue
+        for pos_el in ancestor.cssselect("div.top-container div.webtop span.pos"):
+            text = _text_of(pos_el).strip()
+            if text:
+                return text
+        break
+    return fallback_pos
+
+
 def _build_definition(n: int, sense_el) -> dict:
     """Build a single Definition dict from a li.sense element."""
     labels = extract_labels_for_sense(sense_el)
@@ -690,6 +703,12 @@ def parse_oxford(html_bytes: bytes, source_files: Optional[list[str]] = None) ->
     #   </span>
     # CEFR resolution: span.idm @ cefr (idiom-level) → li.sense @ fkcefr (sense-level)
     # → span.idm @ cefr (idiom-level as final fallback) → null.
+    idiom_owner_parts: list[str] = []
+    for section in pos_data:
+        owner_part = (section.get("pos") or "").strip()
+        if owner_part and owner_part != "unknown" and owner_part not in idiom_owner_parts:
+            idiom_owner_parts.append(owner_part)
+    idiom_fallback_pos = ", ".join(idiom_owner_parts) or "unknown"
     idioms = []
     for idm_g in root.cssselect(OXFORD["idm_block"]):
         phrase_el = _first(idm_g, OXFORD["idm_phrase"])
@@ -719,6 +738,7 @@ def parse_oxford(html_bytes: bytes, source_files: Optional[list[str]] = None) ->
                     examples.append(t)
         idioms.append({
             "phrase": phrase,
+            "pos": _find_pos_for_idiom(idm_g, idiom_fallback_pos),
             "text": def_text,
             "examples": examples,
             "cefr": cefr,

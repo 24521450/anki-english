@@ -136,3 +136,20 @@ class TestMultiPosBoundary:
         assert len(rec["idioms"]) > 0
         phrases = [i["phrase"] for i in rec["idioms"]]
         assert "be sick" in phrases
+
+    def test_stack_idioms_retain_owning_entry_pos(self):
+        noun = _parse("oxford_stack_(noun).html")
+        verb = _parse("oxford_stack_(verb).html")
+
+        assert [(item["phrase"], item["pos"]) for item in noun["idioms"]] == [
+            ("blow your top", "noun"),
+        ]
+        assert [(item["phrase"], item["pos"]) for item in verb["idioms"]] == [
+            ("stack it", "verb"),
+        ]
+
+    def test_number_page_idioms_fall_back_to_sense_pos(self):
+        record = _parse("oxford_four_(num).html")
+
+        assert record["idioms"]
+        assert {item["pos"] for item in record["idioms"]} == {"number"}

@@ -186,7 +186,10 @@ def _populate_note_fields(
     # Empties drop from the inner triple; empties across the whole list → ''.
     # Keep at most two idioms, prioritizing CEFR-tagged entries only when the
     # source record contains more than two.
-    note["Idioms"] = _format_idioms_field(record.get("idioms") or [])
+    note["Idioms"] = _shared_format_idioms(
+        record.get("idioms") or [],
+        card_pos=_pos_set(capped),
+    )
     note["Tags"] = sync_idioms_feature_tag(note["Tags"], note["Idioms"])
 
 

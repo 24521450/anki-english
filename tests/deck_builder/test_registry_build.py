@@ -9,6 +9,7 @@ from src.deck_builder.build_issues import BuildValidationError
 from src.deck_builder.build_contracts import BuildNotesPaths
 from src.deck_builder.build_notes import build_notes
 from src.deck_builder.registry_build import load_registry_build_inputs
+from src.deck_builder.idiom_audit import idiom_source_fingerprint
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -51,9 +52,9 @@ def _manual_row(word: str) -> dict:
     }
 
 
-def _semantic_row(word: str) -> dict:
+def _semantic_row(word: str, *, idioms: list[dict] | None = None) -> dict:
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "guid": f"guid-{word}",
         "word": word,
         "cefr": "A1",
@@ -62,6 +63,8 @@ def _semantic_row(word: str) -> dict:
         "pos": "noun",
         "audit_sha256": "a" * 64,
         "source_fingerprint": "b" * 64,
+        "idiom_audit_sha256": "c" * 64,
+        "idioms": list(idioms or []),
         "senses": [{
             "semantic_sense_id": f"sem_{word}",
             "order": 1,
@@ -212,6 +215,43 @@ def test_semantic_registry_overlays_content_before_audio_and_preserves_metadata(
     assert card.antonyms == ""
 
 
+def test_semantic_registry_overlays_manual_idiom_before_audio_planning(tmp_path: Path):
+    paths = _build_fixture_paths(tmp_path)
+    source_explanation = "you must take risks to achieve something"
+    example = "Nothing ventured, nothing gained."
+    manual = json.loads(paths.manual_cards_path.read_text(encoding="utf-8"))
+    manual["idioms"] = (
+        f"nothing ventured, nothing gained :: {source_explanation} :: {example}"
+    )
+    _write_jsonl(paths.manual_cards_path, [manual])
+    idiom = {
+        "idiom_id": "idm_" + "1" * 24,
+        "order": 1,
+        "source_fingerprint": idiom_source_fingerprint(
+            "nothing ventured, nothing gained", source_explanation, [example]
+        ),
+        "phrase_en": "nothing ventured, nothing gained",
+        "display_mode": "vi_equivalent",
+        "explanation_en": source_explanation,
+        "explanation_vi": "Không vào hang cọp, sao bắt được cọp con",
+        "examples": [example],
+        "translation_provenance": "reviewer_derived",
+    }
+    semantic_registry = tmp_path / "semantic_registry.jsonl"
+    _write_jsonl(semantic_registry, [_semantic_row("word", idioms=[idiom])])
+
+    card = build_notes(paths._replace(
+        semantic_registry_path=semantic_registry,
+    )).built_cards[0]
+
+    assert card.idioms == manual["idioms"]
+    assert card.idiom_meaning_vi == (
+        "vi_equivalent :: Không vào hang cọp, sao bắt được cọp con"
+    )
+    assert card.idiom_example_audio_uk
+    assert card.idiom_example_audio_us
+
+
 def test_semantic_registry_validation_failure_is_a_build_validation_error(
     tmp_path: Path,
 ):
@@ -225,4 +265,17 @@ def test_semantic_registry_validation_failure_is_a_build_validation_error(
     assert any(
         issue.code == "semantic_registry_invalid"
         for issue in excinfo.value.issues
+    )
+
+
+def test_specified_cambridge_source_must_be_readable(tmp_path: Path):
+    paths = _build_fixture_paths(tmp_path)._replace(
+        cambridge_jsonl_path=tmp_path / "missing-cambridge.jsonl",
+    )
+
+    with pytest.raises(BuildValidationError) as excinfo:
+        build_notes(paths)
+
+    assert any(
+        issue.code == "source_json_unreadable" for issue in excinfo.value.issues
     )

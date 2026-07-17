@@ -110,11 +110,18 @@ Giá trị dưới đây là **sau khi sync** (mirror vùng 2 của `index.html`
 
 ## Card design rules
 
-Hai quy tắc cứng khi **tạo card** (build stage — biến raw notes thành Anki-ready rows). Quy tắc này **không áp dụng khi scrape**: scraper giữ raw đầy đủ để debug/research, filter ở build.
+Ba quy tắc cứng áp dụng trong semantic review/build. Scraper vẫn giữ raw đầy đủ để debug/research.
+
+### Rule 0 — Learner Relevance Filter (reviewed only)
+
+Bilingual Semantic Audit có thể loại một sense quá hẹp hoặc quá chuyên ngành
+khi card vẫn còn nghĩa cốt lõi hữu ích. Nhãn domain/`specialized` chỉ dùng để
+đưa vào hàng đợi review, không tự động xóa. Mỗi source bị ảnh hưởng phải được
+remap hoặc exclude có lý do; không được làm card rỗng.
 
 ### Rule 1 — Sense Sorting (no limit)
 
-1 card giữ **tất cả** senses khớp CEFR — không giới hạn số lượng def. Senses được sắp xếp theo thứ tự logic, không filter.
+1 card giữ **tất cả** senses khớp CEFR còn lại sau Learner Relevance Filter — không giới hạn số lượng def. Sense Sorting chỉ sắp xếp, không tự filter hay truncate.
 
 Tiêu chí sắp xếp (xếp theo thứ tự ưu tiên):
 1. **Sensenum_local từ Oxford** (thấp hơn = phổ biến hơn) — Oxford đã sẵn xếp theo tần suất.
@@ -124,10 +131,9 @@ Lý do bỏ cap: audit 2026-06-19 cho thấy nhiều từ tần suất cao (vd `
 
 Reference implementation: [`src/deck_builder/__init__.py::_apply_sense_sorting`](../../src/deck_builder/__init__.py) — pure sort, no truncation. Helper `_filter_top3_defs.py` được giữ lại cho future study-profile variants (vd "focused" deck cap=3) nhưng KHÔNG dùng trong pipeline chính nữa.
 
-Ví dụ:
-- `sick` (A1) có 16 senses raw → giữ tất cả 16 senses, sorted by sensenum_local
-- `abandon` (B2) có 5 senses → giữ tất cả 5 senses
-- `aggregate` (C2) có 4 senses → giữ tất cả 4 senses
+Ví dụ: nếu không có quyết định learner-relevance, `sick`, `abandon`, hoặc
+`aggregate` vẫn giữ toàn bộ senses khớp CEFR và chỉ sort theo
+`sensenum_local`.
 # IELTS Anki Deck — Design
 
 Thư mục này chứa toàn bộ **design system** cho bộ thẻ IELTS Anki:
@@ -240,6 +246,27 @@ Giá trị dưới đây là **sau khi sync** (mirror vùng 2 của `index.html`
 
 ## Card design rules
 
+### Principle — implicit deck context
+
+Assume the learner already knows the deck's direction and interaction model.
+Card faces must not repeat that context with visible direction banners,
+instructions, input labels, or empty-state explanations. Keep visible labels
+only when they distinguish learning content or state, such as CEFR, POS, and
+the compact `+N` disclosure count. Non-visible accessibility names remain
+required for controls and semantic regions.
+
+### Idiom Vietnamese meaning
+
+The appended `IdiomMeaningVI` field is `$$`-aligned with `Idioms`; each cell is
+either `vi_equivalent :: <VI>` or `bilingual_gloss :: <VI>`. Both modes keep
+the English idiom phrase. A valid `vi_equivalent` cell hides the English
+explanation and shows only the equivalent Vietnamese saying; a valid
+`bilingual_gloss` cell shows the simplified English explanation followed by
+the same purple Vietnamese Gloss Line used in Sense Rows. Missing, empty,
+unknown, or globally misaligned metadata falls back to the legacy English
+explanation. Idiom examples and their UK/US Example Audio alignment are
+unchanged.
+
 ### Production sibling card (VI -> EN)
 
 The EAVM note type emits two sibling cards from the same note. Ordinal 0 is
@@ -247,7 +274,9 @@ The EAVM note type emits two sibling cards from the same note. Ordinal 0 is
 loaded from `EAVM/production_front_template.txt` and uses Anki's native
 `{{type:ProductionAnswer}}` control. Its prompt pairs each pipe-aligned
 `DefinitionVI` gloss with the corresponding `Example`, masking the reviewed
-English answer while retaining the sense alignment. The answer template is
+English answer while retaining every sense. Each row shows one
+safe masked example; further safe examples stay in a native collapsed
+`<details>` region whose only visible summary is `+N`. The answer template is
 `{{FrontSide}}` followed by the unchanged Recognition back.
 
 `ProductionAnswer` is an appended model field. It is derived at build time
@@ -262,11 +291,18 @@ the single native type-answer replacement, and the exact CSS sync contract.
 Live collections are migrated through `python -m src.pipeline import`, which
 backs up the deck and appends fields/templates in place.
 
-Hai quy tắc cứng khi **tạo card** (build stage — biến raw notes thành Anki-ready rows). Quy tắc này **không áp dụng khi scrape**: scraper giữ raw đầy đủ để debug/research, filter ở build.
+Ba quy tắc cứng áp dụng trong semantic review/build. Scraper vẫn giữ raw đầy đủ để debug/research.
+
+### Rule 0 — Learner Relevance Filter (reviewed only)
+
+Bilingual Semantic Audit có thể loại một sense quá hẹp hoặc quá chuyên ngành
+khi card vẫn còn nghĩa cốt lõi hữu ích. Nhãn domain/`specialized` chỉ dùng để
+đưa vào hàng đợi review, không tự động xóa. Mỗi source bị ảnh hưởng phải được
+remap hoặc exclude có lý do; không được làm card rỗng.
 
 ### Rule 1 — Sense Sorting (no limit)
 
-1 card giữ **tất cả** senses khớp CEFR — không giới hạn số lượng def. Senses được sắp xếp theo thứ tự logic, không filter.
+1 card giữ **tất cả** senses khớp CEFR còn lại sau Learner Relevance Filter — không giới hạn số lượng def. Sense Sorting chỉ sắp xếp, không tự filter hay truncate.
 
 Tiêu chí sắp xếp (xếp theo thứ tự ưu tiên):
 1. **Sensenum_local từ Oxford** (thấp hơn = phổ biến hơn) — Oxford đã sẵn xếp theo tần suất.
@@ -276,10 +312,9 @@ Lý do bỏ cap: audit 2026-06-19 cho thấy nhiều từ tần suất cao (vd `
 
 Reference implementation: [`src/deck_builder/__init__.py::_apply_sense_sorting`](../../src/deck_builder/__init__.py) — pure sort, no truncation. Helper `_filter_top3_defs.py` được giữ lại cho future study-profile variants (vd "focused" deck cap=3) nhưng KHÔNG dùng trong pipeline chính nữa.
 
-Ví dụ:
-- `sick` (A1) có 16 senses raw → giữ tất cả 16 senses, sorted by sensenum_local
-- `abandon` (B2) có 5 senses → giữ tất cả 5 senses
-- `aggregate` (C2) có 4 senses → giữ tất cả 4 senses
+Ví dụ: nếu không có quyết định learner-relevance, `sick`, `abandon`, hoặc
+`aggregate` vẫn giữ toàn bộ senses khớp CEFR và chỉ sort theo
+`sensenum_local`.
 - `tackle` (C1) có 4 senses → giữ tất cả 4 senses (legacy cap sẽ drop 1)
 
 ### Rule 2 — Card Identity (Word, CEFR, LIST = 1 card by default)

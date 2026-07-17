@@ -13,8 +13,10 @@ pytest
 ```
 
 Run the default production stages with `python -m src.pipeline` or the
-installed `anki-english` command. Generate missing speech with
-`python -m src.pipeline example-audio`; after packaging, import explicitly into
-the running Anki collection with `python -m src.pipeline import`. See
-`AGENTS.md` for the complete workflow and `CONTEXT.md` for canonical project
-terminology.
+installed `anki-english` command. Every real pipeline run containing the
+`deck` stage automatically imports and verifies the package in the running
+Anki collection through AnkiConnect; Anki must therefore be running. Generate
+missing speech with `python -m src.pipeline example-audio`, use `--dry-run` for
+non-writing checks, or run `python -m src.pipeline import` for a standalone
+re-import. See `AGENTS.md` for the complete workflow and `CONTEXT.md` for
+canonical project terminology.

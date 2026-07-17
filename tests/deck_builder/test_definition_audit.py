@@ -3,6 +3,7 @@ import copy
 import pytest
 
 from src.deck_builder.definition_audit import (
+    DEFINITION_AUDIT_SCHEMA_VERSION,
     apply_definition_review_overrides,
     build_definition_audit,
     serialize_definition_audit,
@@ -35,7 +36,7 @@ def _semantic_registry(
     examples=None,
 ):
     return [{
-        "schema_version": 1,
+        "schema_version": 2,
         "guid": guid,
         "word": word,
         "cefr": "C1",
@@ -44,6 +45,8 @@ def _semantic_registry(
         "pos": "verb",
         "audit_sha256": AUDIT_SHA,
         "source_fingerprint": SOURCE_SHA,
+        "idiom_audit_sha256": "c" * 64,
+        "idioms": [],
         "senses": [{
             "semantic_sense_id": "sem-1",
             "order": 1,
@@ -174,6 +177,32 @@ def test_semicolon_with_one_oxford_sense_is_not_automatically_split():
     assert len(candidates[0]["proposal"]["segments"]) == 1
 
 
+def test_token_threshold_finds_verbose_definition_below_character_threshold():
+    definition_en = "person responsible for arranging every practical detail of a large public event"
+    assert len(definition_en) < 80
+    assert ";" not in definition_en and "/" not in definition_en
+    assert " and " not in definition_en
+    registry = _semantic_registry(
+        definition_en,
+        "ngÆ°á»i phá»¥ trÃ¡ch sáº¯p xáº¿p má»i chi tiáº¿t thá»±c táº¿ cá»§a má»™t sá»± kiá»‡n lá»›n",
+        word="organizer",
+        guid="g-organizer",
+        examples=["The organizer checked the venue."],
+    )
+    registry[0]["senses"][0]["source_sense_ids"] = ["ox-1"]
+
+    summary, candidates = _build(
+        registry,
+        _audit("organizer", "g-organizer", source_count=1),
+        _card_registry("organizer", "g-organizer"),
+    )
+
+    assert summary["thresholds"]["minimum_definition_tokens"] == 12
+    assert len(candidates) == 1
+    assert candidates[0]["current"]["definition_token_count"] == 12
+    assert "token_threshold" in candidates[0]["triggers"]
+
+
 def test_split_keeps_same_numbered_senses_from_different_pos_and_maps_examples():
     registry = _semantic_registry(
         "warning of danger or a problem; warn sb about danger",
@@ -272,7 +301,11 @@ def test_report_validator_rejects_stale_recommendation_counts():
 def test_review_override_can_keep_a_heuristic_split_without_touching_inputs():
     summary, candidates = _build()
     row = candidates[0]
-    review_summary = {"record_type": "review_summary", "schema_version": 1, "inputs": summary["inputs"]}
+    review_summary = {
+        "record_type": "review_summary",
+        "schema_version": DEFINITION_AUDIT_SCHEMA_VERSION,
+        "inputs": summary["inputs"],
+    }
     reviewed_summary, reviewed = apply_definition_review_overrides(
         summary,
         candidates,
@@ -302,7 +335,11 @@ def test_review_override_rejects_stale_inputs():
         apply_definition_review_overrides(
             summary,
             candidates,
-            {"record_type": "review_summary", "schema_version": 1, "inputs": {}},
+            {
+                "record_type": "review_summary",
+                "schema_version": DEFINITION_AUDIT_SCHEMA_VERSION,
+                "inputs": {},
+            },
             [],
             review_sha256="f" * 64,
         )

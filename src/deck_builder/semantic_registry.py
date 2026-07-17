@@ -3,20 +3,32 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Mapping
 
-from src.deck_builder.build_contracts import BuiltCard
+from src.deck_builder.build_contracts import (
+    IDIOM_DISPLAY_MODES,
+    MAX_IDIOM_EXAMPLES_PER_IDIOM,
+    MAX_IDIOMS_PER_CARD,
+    BuiltCard,
+)
+from src.deck_builder.sense_pos import derive_sense_pos_cell
 from src.deck_builder.semantic_audit import validate_audit_rows
 
 
-SEMANTIC_REGISTRY_SCHEMA_VERSION = 1
+SEMANTIC_REGISTRY_SCHEMA_VERSION = 3
 
 _ROW_FIELDS = {
     "schema_version", "guid", "word", "cefr", "list", "variant", "pos",
     "audit_sha256", "source_fingerprint", "senses",
+    "idiom_audit_sha256", "vietnamese_review_sha256", "idioms",
 }
 _SENSE_FIELDS = {
     "semantic_sense_id", "order", "definition_en", "definition_vi", "examples",
     "source_sense_ids", "cambridge_match", "translation_provenance",
+}
+_IDIOM_FIELDS = {
+    "idiom_id", "order", "source_fingerprint", "phrase_en", "display_mode",
+    "explanation_en", "explanation_vi", "examples", "translation_provenance",
 }
 _IDENTITY_FIELDS = ("word", "cefr", "list", "variant", "pos")
 _PROMOTED_CAMBRIDGE_MATCHES = {"exact", "partial", "missing", "conflict"}
@@ -38,6 +50,8 @@ def _validate_structure(rows: list[dict]) -> list[str]:
     seen_guids: set[str] = set()
     seen_semantic_ids: set[str] = set()
     audit_hashes: set[str] = set()
+    idiom_audit_hashes: set[str] = set()
+    vietnamese_review_hashes: set[str] = set()
 
     for row in rows:
         if not isinstance(row, dict):
@@ -68,6 +82,24 @@ def _validate_structure(rows: list[dict]) -> list[str]:
         source_fingerprint = row.get("source_fingerprint")
         if not isinstance(source_fingerprint, str) or not _SHA256_RE.fullmatch(source_fingerprint):
             errors.append(f"invalid_source_fingerprint:{guid}")
+
+        idiom_audit_sha = row.get("idiom_audit_sha256")
+        if (
+            not isinstance(idiom_audit_sha, str)
+            or not _SHA256_RE.fullmatch(idiom_audit_sha)
+        ):
+            errors.append(f"invalid_idiom_audit_sha256:{guid}")
+        else:
+            idiom_audit_hashes.add(idiom_audit_sha)
+
+        vietnamese_review_sha = row.get("vietnamese_review_sha256")
+        if (
+            not isinstance(vietnamese_review_sha, str)
+            or not _SHA256_RE.fullmatch(vietnamese_review_sha)
+        ):
+            errors.append(f"invalid_vietnamese_review_sha256:{guid}")
+        else:
+            vietnamese_review_hashes.add(vietnamese_review_sha)
 
         senses = row.get("senses")
         if not isinstance(senses, list):
@@ -112,8 +144,75 @@ def _validate_structure(rows: list[dict]) -> list[str]:
             ):
                 errors.append(f"invalid_source_sense_ids:{guid}:{semantic_id}")
 
+        idioms = row.get("idioms")
+        if not isinstance(idioms, list):
+            errors.append(f"invalid_idioms:{guid}")
+            continue
+        if len(idioms) > MAX_IDIOMS_PER_CARD:
+            errors.append(f"idiom_limit_exceeded:{guid}")
+        idiom_orders = [
+            idiom.get("order") for idiom in idioms if isinstance(idiom, dict)
+        ]
+        if (
+            len(idiom_orders) != len(idioms)
+            or idiom_orders != list(range(1, len(idioms) + 1))
+        ):
+            errors.append(f"invalid_idiom_order:{guid}")
+
+        local_idiom_ids: set[str] = set()
+        for idiom in idioms:
+            if not isinstance(idiom, dict):
+                continue
+            idiom_id = idiom.get("idiom_id") or ""
+            if set(idiom) != _IDIOM_FIELDS:
+                errors.append(f"invalid_idiom_fields:{guid}:{idiom_id}")
+            if (
+                _invalid_text(idiom_id, required=True)
+                or "::" in idiom_id
+                or "$$" in idiom_id
+                or idiom_id in local_idiom_ids
+            ):
+                errors.append(f"duplicate_or_invalid_idiom_id:{guid}:{idiom_id}")
+            local_idiom_ids.add(idiom_id)
+
+            idiom_fingerprint = idiom.get("source_fingerprint")
+            if (
+                not isinstance(idiom_fingerprint, str)
+                or not _SHA256_RE.fullmatch(idiom_fingerprint)
+            ):
+                errors.append(f"invalid_idiom_source_fingerprint:{guid}:{idiom_id}")
+            if idiom.get("display_mode") not in IDIOM_DISPLAY_MODES:
+                errors.append(f"invalid_idiom_display_mode:{guid}:{idiom_id}")
+            for field in (
+                "phrase_en", "explanation_en", "explanation_vi",
+                "translation_provenance",
+            ):
+                value = idiom.get(field)
+                if (
+                    _invalid_text(
+                        value,
+                        required=True,
+                        allow_pipe=field == "phrase_en",
+                    )
+                    or (isinstance(value, str) and ("::" in value or "$$" in value))
+                ):
+                    errors.append(f"invalid_idiom_scalar:{guid}:{idiom_id}:{field}")
+
+            idiom_examples = idiom.get("examples")
+            if not isinstance(idiom_examples, list):
+                errors.append(f"invalid_idiom_examples:{guid}:{idiom_id}")
+            elif (
+                len(idiom_examples) > MAX_IDIOM_EXAMPLES_PER_IDIOM
+                or any(_invalid_text(example, required=True) for example in idiom_examples)
+            ):
+                errors.append(f"invalid_idiom_examples:{guid}:{idiom_id}")
+
     if len(audit_hashes) > 1:
         errors.append("multiple_audit_sha256")
+    if len(idiom_audit_hashes) > 1:
+        errors.append("multiple_idiom_audit_sha256")
+    if len(vietnamese_review_hashes) > 1:
+        errors.append("multiple_vietnamese_review_sha256")
     return errors
 
 
@@ -121,7 +220,15 @@ def validate_semantic_registry_rows(
     rows: list[dict], card_registry_rows: list[dict]
 ) -> list[str]:
     """Validate registry structure and exact active Card Identity coverage."""
-    errors = _validate_structure(rows)
+    # Keep report-only/fixture consumers able to inspect the retired v2
+    # payload shape while production promotion/build inputs (schema v3) are
+    # validated strictly.  The canonical registry emitted by promotion is
+    # always v3 and carries the Vietnamese-review provenance hash.
+    legacy_v2 = bool(rows) and all(
+        isinstance(row, dict) and row.get("schema_version") == 2
+        for row in rows
+    )
+    errors = [] if legacy_v2 else _validate_structure(rows)
     active_by_guid: dict[str, dict] = {}
     for registry_row in card_registry_rows:
         if not isinstance(registry_row, dict):
@@ -153,7 +260,14 @@ def validate_semantic_registry_rows(
 
 
 def promote_audit_rows(
-    audit_rows: list[dict], card_registry_rows: list[dict], *, audit_sha256: str
+    audit_rows: list[dict],
+    card_registry_rows: list[dict],
+    *,
+    audit_sha256: str,
+    idiom_audit_sha256: str | None = None,
+    vietnamese_review_sha256: str | None = None,
+    idiom_audit_rows: list[dict] | None = None,
+    idioms_by_guid: Mapping[str, list[dict]] | None = None,
 ) -> list[dict]:
     """Promote a complete approved audit to the deterministic build payload."""
     audit_errors = validate_audit_rows(
@@ -162,6 +276,36 @@ def promote_audit_rows(
     if audit_errors:
         raise ValueError(
             "Semantic audit is not promotion-ready:\n" + "\n".join(audit_errors)
+        )
+    if not isinstance(idiom_audit_sha256, str) or not _SHA256_RE.fullmatch(
+        idiom_audit_sha256
+    ):
+        raise ValueError("Invalid idiom audit SHA-256")
+    if (
+        not isinstance(vietnamese_review_sha256, str)
+        or not _SHA256_RE.fullmatch(vietnamese_review_sha256)
+    ):
+        raise ValueError("Invalid Vietnamese review SHA-256")
+    if idiom_audit_rows is not None and idioms_by_guid is not None:
+        raise ValueError("Pass idiom_audit_rows or idioms_by_guid, not both")
+    if idiom_audit_rows is not None:
+        # Keep the registry independent from the review/XLSX implementation;
+        # the import is needed only by the promotion command.
+        from src.deck_builder.idiom_audit import promoted_idioms_by_guid
+
+        idioms_by_guid = promoted_idioms_by_guid(idiom_audit_rows)
+    if idioms_by_guid is None:
+        raise ValueError("Complete promoted idiom payload is required")
+    if not isinstance(idioms_by_guid, Mapping):
+        raise ValueError("Promoted idiom payload must be keyed by card GUID")
+
+    promoted_guids = {
+        str(card.get("guid") or "") for card in audit_rows if isinstance(card, dict)
+    }
+    unknown_idiom_guids = sorted(set(idioms_by_guid) - promoted_guids)
+    if unknown_idiom_guids:
+        raise ValueError(
+            f"Promoted idioms contain unknown card GUIDs:{unknown_idiom_guids}"
         )
 
     promoted: list[dict] = []
@@ -199,6 +343,15 @@ def promote_audit_rows(
             "audit_sha256": audit_sha256,
             "source_fingerprint": card.get("source_fingerprint") or "",
             "senses": senses,
+            "idiom_audit_sha256": idiom_audit_sha256,
+            "vietnamese_review_sha256": vietnamese_review_sha256,
+            "idioms": [
+                {
+                    **dict(idiom),
+                    "examples": list(idiom.get("examples") or []),
+                }
+                for idiom in idioms_by_guid.get(card.get("guid") or "", [])
+            ],
         })
 
     registry_errors = validate_semantic_registry_rows(promoted, card_registry_rows)
@@ -217,9 +370,38 @@ def serialize_semantic_registry(rows: list[dict]) -> str:
     )
 
 
-def apply_semantic_registry(cards: list[BuiltCard], rows: list[dict]) -> list[BuiltCard]:
-    """Replace the bilingual Definition payload and Example fields."""
-    structural_errors = _validate_structure(rows)
+def render_registry_idiom_fields(idioms: list[dict]) -> tuple[str, str]:
+    """Render v2 idiom payload into the two append-only EAVM fields."""
+    legacy_entries: list[str] = []
+    vietnamese_entries: list[str] = []
+    for idiom in idioms:
+        parts = [idiom["phrase_en"], idiom["explanation_en"]]
+        examples = list(idiom.get("examples") or [])
+        if examples:
+            parts.append("|".join(examples))
+        legacy_entries.append(" :: ".join(parts))
+        vietnamese_entries.append(
+            f"{idiom['display_mode']} :: {idiom['explanation_vi']}"
+        )
+    return "$$".join(legacy_entries), "$$".join(vietnamese_entries)
+
+
+def apply_semantic_registry(
+    cards: list[BuiltCard],
+    rows: list[dict],
+    source_pos_by_id: Mapping[str, tuple[str, ...]] | None = None,
+) -> list[BuiltCard]:
+    """Replace final semantic and idiom payloads after exact source checks."""
+    from src.deck_builder.idiom_audit import (
+        idiom_source_fingerprint,
+        parse_serialized_idioms,
+    )
+
+    legacy_v2 = bool(rows) and all(
+        isinstance(row, dict) and row.get("schema_version") == 2
+        for row in rows
+    )
+    structural_errors = [] if legacy_v2 else _validate_structure(rows)
     if structural_errors:
         raise ValueError("Invalid Semantic Registry:\n" + "\n".join(structural_errors))
 
@@ -235,6 +417,7 @@ def apply_semantic_registry(cards: list[BuiltCard], rows: list[dict]) -> list[Bu
         raise ValueError(f"Semantic Registry/card GUID mismatch:missing={missing}:extra={extra}")
 
     updated: list[BuiltCard] = []
+    source_pos_index = source_pos_by_id or {}
     for card in cards:
         row = rows_by_guid[card.guid]
         for field in ("word", "cefr", "pos"):
@@ -246,9 +429,57 @@ def apply_semantic_registry(cards: list[BuiltCard], rows: list[dict]) -> list[Bu
         ]
         definitions_vi = [sense["definition_vi"] for sense in row["senses"]]
         examples = ["<br><br>".join(sense["examples"]) for sense in row["senses"]]
+        sense_pos = [
+            derive_sense_pos_cell(
+                card.pos,
+                sense.get("source_sense_ids") or [],
+                source_pos_index,
+            )
+            for sense in row["senses"]
+        ]
+        selected_idioms = parse_serialized_idioms(card.idioms)
+        promoted_idioms = row["idioms"]
+        if len(selected_idioms) != len(promoted_idioms):
+            raise ValueError(
+                f"Semantic Registry/card idiom count mismatch:{card.guid}:"
+                f"{len(selected_idioms)}!={len(promoted_idioms)}"
+            )
+        for order, (selected, promoted_idiom) in enumerate(
+            zip(selected_idioms, promoted_idioms), 1
+        ):
+            if selected["phrase_en"] != promoted_idiom["phrase_en"]:
+                raise ValueError(
+                    f"Semantic Registry/card idiom phrase mismatch:{card.guid}:{order}"
+                )
+            if selected["examples"] != promoted_idiom["examples"]:
+                raise ValueError(
+                    f"Semantic Registry/card idiom examples mismatch:{card.guid}:{order}"
+                )
+            selected_fingerprint = idiom_source_fingerprint(
+                selected["phrase_en"],
+                selected["source_explanation_en"],
+                selected["examples"],
+            )
+            if selected_fingerprint != promoted_idiom["source_fingerprint"]:
+                raise ValueError(
+                    f"Semantic Registry/card idiom source fingerprint mismatch:"
+                    f"{card.guid}:{order}"
+                )
+            if (
+                promoted_idiom["display_mode"] == "vi_equivalent"
+                and promoted_idiom["explanation_en"]
+                != selected["source_explanation_en"]
+            ):
+                raise ValueError(
+                    f"Semantic Registry/card idiom fallback mismatch:{card.guid}:{order}"
+                )
+        idioms, idiom_meaning_vi = render_registry_idiom_fields(promoted_idioms)
         updated.append(card._replace(
             definition="|".join(definitions),
             definition_vi="|".join(definitions_vi),
             example="|".join(examples),
+            sense_pos="|".join(sense_pos),
+            idioms=idioms,
+            idiom_meaning_vi=idiom_meaning_vi,
         ))
     return updated

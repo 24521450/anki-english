@@ -40,6 +40,9 @@ EAVM_FIELDS = EAVM_FIELD_NAMES
 ESTABLISHED_EAVM_FIELDS = EAVM_FIELDS[:15]
 # Compatibility export for the historical 19-field model without DefinitionVI.
 LEGACY_EAVM_FIELDS = EAVM_FIELDS[:19]
+# The two preceding canonical models ended at ProductionAnswer and SensePOS.
+PRE_SENSE_POS_EAVM_FIELDS = EAVM_FIELDS[:-2]
+PRE_IDIOM_MEANING_VI_EAVM_FIELDS = EAVM_FIELDS[:-1]
 ROOT_DECK = "English Academic Vocabulary"
 SOUND_RE = re.compile(r"\[sound:([^\]]+)\]")
 AUDIO_SRC_RE = re.compile(r"<audio\b[^>]*\bsrc=[\"']([^\"']+)[\"'][^>]*>", re.IGNORECASE)
@@ -205,9 +208,17 @@ def _model_contract(client: AnkiConnectClient) -> tuple[bool, tuple[str, ...], s
         )
     templates = client.call("modelTemplates", modelName=EAVM_MODEL_NAME)
     template_state = _template_state(templates)
-    if template_state == "canonical" and current_fields != EAVM_FIELDS:
+    if (
+        template_state == "canonical"
+        and current_fields not in {
+            PRE_SENSE_POS_EAVM_FIELDS,
+            PRE_IDIOM_MEANING_VI_EAVM_FIELDS,
+            EAVM_FIELDS,
+        }
+    ):
         raise AnkiConnectError(
-            "Canonical EAVM templates require the complete canonical field contract"
+            "Canonical EAVM templates require the current or immediately "
+            "preceding complete field contract"
         )
     return True, current_fields, template_state
 
@@ -342,9 +353,9 @@ def snapshot_existing_collection(
     # The snapshot is taken *before* field migration so a legacy 15/19/22-field
     # collection can still be upgraded in place.  ``_model_contract`` has
     # already proved that the live fields are an exact canonical prefix; use
-    # that prefix as the note payload contract here.  Once the Production
-    # template exists the contract is necessarily complete (the model checker
-    # rejects a canonical template with missing fields).
+    # that prefix as the note payload contract here. Canonical templates may
+    # temporarily precede the newest append-only fields; the model checker
+    # accepts only the two immediately preceding complete prefixes.
     live_fields = tuple(EAVM_FIELDS if current_fields is None else current_fields)
     if not (
         len(live_fields) >= len(ESTABLISHED_EAVM_FIELDS)

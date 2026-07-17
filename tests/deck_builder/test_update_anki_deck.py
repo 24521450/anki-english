@@ -52,10 +52,13 @@ def test_eavm_model_identity_matches_existing_anki_note_type():
     assert update_anki_deck.EAVM_MODEL_ID != update_anki_deck.generate_deterministic_id(
         update_anki_deck.EAVM_MODEL_NAME
     )
-    assert update_anki_deck.EAVM_FIELD_NAMES[-4:] == (
+    assert update_anki_deck.EAVM_FIELD_NAMES[-6:] == (
         "DefinitionVI", "CambridgeURL", "OxfordPOSURLs", "ProductionAnswer",
+        "SensePOS", "IdiomMeaningVI",
     )
     assert update_anki_deck.EAVM_FIELD_NAMES[22] == "ProductionAnswer"
+    assert update_anki_deck.EAVM_FIELD_NAMES[23] == "SensePOS"
+    assert update_anki_deck.EAVM_FIELD_NAMES[24] == "IdiomMeaningVI"
     assert update_anki_deck.EAVM_TEMPLATE_NAMES == (
         "Recognition", "Production (VI -> EN)",
     )
@@ -156,6 +159,8 @@ def test_update_anki_deck_success(tmp_path, monkeypatch):
         "definition": "take control by force|overcome",
         "definition_vi": "chiếm quyền kiểm soát|vượt qua",
         "production_answer": "conquer",
+        "sense_pos": "verb|verb",
+        "idiom_meaning_vi": "",
         "example": "to conquer the world",
         "ipa": "/ˈkɒŋkə(r)/",
         "uk_audio": "[sound:uk_conquer.mp3]",
@@ -391,6 +396,8 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "definition": "take control by force|overcome",
         "definition_vi": "chiếm quyền kiểm soát|vượt qua",
         "production_answer": "conquer",
+        "sense_pos": "verb|verb",
+        "idiom_meaning_vi": "bilingual_gloss :: nghĩa",
         "example": "to conquer the world",
         "ipa": "/ˈkɒŋkə(r)/",
         "uk_audio": "[sound:uk_conquer.mp3]",
@@ -467,6 +474,8 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "https://dictionary.cambridge.org/dictionary/english/conquer",
         "https://www.oxfordlearnersdictionaries.com/definition/english/conquer",
         "conquer",
+        "verb|verb",
+        "bilingual_gloss :: nghĩa",
     ]
     assert created["guid"] == "test_guid_12345"
     assert created["tags"] == ["C1", "verb", "academic"]

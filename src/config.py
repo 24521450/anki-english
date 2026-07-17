@@ -38,6 +38,14 @@ class ProjectPaths:
         return self.root / "data" / "review" / "bilingual_semantic_audit.jsonl"
 
     @property
+    def vietnamese_naturalness_review(self) -> Path:
+        return self.root / "data" / "review" / "vietnamese_naturalness_review.jsonl"
+
+    @property
+    def bilingual_idiom_audit(self) -> Path:
+        return self.root / "data" / "review" / "bilingual_idiom_audit.jsonl"
+
+    @property
     def semantic_registry(self) -> Path:
         return self.root / "data" / "curated" / "semantic_registry.jsonl"
 

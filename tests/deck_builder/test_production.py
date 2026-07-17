@@ -5,7 +5,11 @@ import json
 import pytest
 
 from src.deck_builder.build_contracts import CARD_FIELDS, BuiltCard, serialize_jsonl, serialize_txt
-from src.deck_builder.build_validation import _parse_txt_cards, _validate_cards
+from src.deck_builder.build_validation import (
+    _parse_jsonl_cards,
+    _parse_txt_cards,
+    _validate_cards,
+)
 from src.deck_builder.card_identity import CardIdentity
 from src.deck_builder.example_audio import plan_card_example_audio
 from src.deck_builder.production import (
@@ -90,17 +94,20 @@ def _card(**overrides) -> BuiltCard:
         "antonyms": "",
         "definition_vi": "nghiêm trọng",
         "cambridge_url": "https://dictionary.cambridge.org/dictionary/english/grave",
+        "sense_pos": "adjective",
     }
     values.update(overrides)
     return BuiltCard(**values)
 
 
 def test_production_answer_is_appended_without_reordering_existing_contract():
-    assert CARD_FIELDS[-4:] == (
+    assert CARD_FIELDS[-6:] == (
         "definition_vi",
         "cambridge_url",
         "oxford_pos_urls",
         "production_answer",
+        "sense_pos",
+        "idiom_meaning_vi",
     )
 
     card = apply_production_answers([_card()])[0]
@@ -108,16 +115,18 @@ def test_production_answer_is_appended_without_reordering_existing_contract():
     txt_row = serialize_txt([card]).splitlines()[-1].split("\t")
 
     assert json_row["production_answer"] == "grave"
-    assert txt_row[-1] == "grave"
+    assert json_row["sense_pos"] == "adjective"
+    assert txt_row[-3:] == ["grave", "adjective", ""]
     assert len(txt_row) == len(CARD_FIELDS)
     assert production_eligible(card)
 
 
-def test_legacy_txt_is_readable_but_not_canonical_serialization():
+@pytest.mark.parametrize("removed_columns", [1, 2, 3])
+def test_legacy_txt_is_readable_but_not_canonical_serialization(removed_columns):
     card = apply_production_answers([_card()])[0]
     canonical = serialize_txt([card])
     lines = canonical.splitlines()
-    lines[-1] = lines[-1].rsplit("\t", 1)[0]
+    lines[-1] = "\t".join(lines[-1].split("\t")[:-removed_columns])
     legacy = "\n".join(lines) + "\n"
 
     parsed, issues = _parse_txt_cards(legacy, "legacy-fixture")
@@ -126,6 +135,29 @@ def test_legacy_txt_is_readable_but_not_canonical_serialization():
     assert parsed == [card]
     assert serialize_txt(parsed) == canonical
     assert legacy != canonical
+
+
+@pytest.mark.parametrize(
+    "removed_fields",
+    [
+        ("idiom_meaning_vi",),
+        ("sense_pos", "idiom_meaning_vi"),
+        ("production_answer", "sense_pos", "idiom_meaning_vi"),
+    ],
+)
+def test_legacy_jsonl_is_readable_but_not_canonical_serialization(removed_fields):
+    card = apply_production_answers([_card()])[0]
+    row = card.to_dict()
+    for field in removed_fields:
+        row.pop(field)
+    legacy = json.dumps(row, ensure_ascii=False) + "\n"
+
+    parsed, issues = _parse_jsonl_cards(legacy, "legacy-fixture")
+
+    assert not issues
+    assert parsed == [card]
+    assert serialize_jsonl(parsed) == serialize_jsonl([card])
+    assert legacy != serialize_jsonl([card])
 
 
 def test_apply_production_answers_is_order_preserving_and_deterministic():
@@ -143,8 +175,12 @@ def test_apply_production_answers_is_order_preserving_and_deterministic():
     assert serialize_txt(first) == serialize_txt(second)
 
 
-def test_review_override_preserves_previously_derived_answer():
-    card = _card(production_answer="grave")
+def test_review_override_preserves_appended_metadata_fields():
+    card = _card(
+        production_answer="grave",
+        sense_pos="adjective",
+        idiom_meaning_vi="bilingual_gloss :: nghĩa",
+    )
     updated = apply_review_overrides(
         [card],
         {
@@ -160,6 +196,8 @@ def test_review_override_preserves_previously_derived_answer():
     )[0]
 
     assert updated.production_answer == "grave"
+    assert updated.sense_pos == "adjective"
+    assert updated.idiom_meaning_vi == "bilingual_gloss :: nghĩa"
 
 
 def _production_validation_codes(card: BuiltCard) -> set[str]:

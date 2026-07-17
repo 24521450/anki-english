@@ -153,7 +153,8 @@ Trạng thái: `implemented` (2026-07-10)
 
 - Hầu như các idioms trong deck hiện chưa có learner gloss rõ ràng/nhất quán.
 - Khi triển khai cải thiện Idiom Box, cần bổ sung một English learner gloss ngắn cho idioms.
-- Không cần Vietnamese gloss cho idioms.
+- Ghi chú ban đầu "không cần Vietnamese gloss" đã được quyết định mới ngày
+  2026-07-16 thay thế.
 
 Mục tiêu:
 
@@ -170,7 +171,32 @@ Gợi ý triển khai:
 - Bổ sung một trường hoặc curated mapping dành riêng cho English idiom gloss ở build layer; không hard-code nội dung trong template.
 - Ưu tiên idioms đang được render trên learner-facing cards trước, rồi mới mở rộng sang raw idioms chưa hiển thị.
 
-Trạng thái: `raw`
+Trạng thái: `superseded` (2026-07-16)
+
+### 2026-07-16 - Thành ngữ/tục ngữ Việt cho Idiom Box
+
+Quyết định:
+
+- Luôn giữ cụm idiom tiếng Anh và example hiện có.
+- Nếu có một thành ngữ, tục ngữ, câu nói hoặc cách nói hình tượng cố định trong
+  tiếng Việt tương đương hoặc liên hệ rõ về ý, chỉ hiển thị câu Việt đó bên dưới
+  cụm tiếng Anh. Không bắt buộc trùng hình ảnh, cấu trúc hay toàn bộ sắc thái.
+- Ví dụ chuẩn: `get back on the rails` → `đâu lại vào đấy`; `be at odds ...`
+  → `trống đánh xuôi, kèn thổi ngược`.
+- Chỉ dùng English learner gloss đơn giản + dòng nghĩa Việt khi không tìm thấy
+  cách nói Việt tự nhiên có liên hệ nghĩa rõ ràng, hoặc ứng viên sẽ gây hiểu sai.
+- Với `bilingual_gloss`, cả EN và VI đều là learner gloss ngắn, tự nhiên và chỉ
+  giữ nghĩa cốt lõi; VI không dịch theo cấu trúc câu EN. Không dùng giới hạn số
+  từ cứng, nhưng chỉ giữ câu dài khi rút gọn sẽ làm mất điều kiện quan trọng.
+- Ví dụ fallback chuẩn: `an old wives’ tale` → `an old belief that is not true`
+  / `quan niệm dân gian sai lầm`; `shake/rock the foundations ...` →
+  `seriously weaken something at its core` / `làm lung lay tận gốc`.
+- Review một lần cho mỗi phrase + source meaning và tái sử dụng trên mọi card;
+  không dịch toàn bộ idiom raw chưa được chọn cho learner-facing deck.
+- Cutover chỉ diễn ra sau khi Bilingual Idiom Audit hoàn tất; example và UK/US
+  Idiom Example Audio không đổi.
+
+Trạng thái: `in-progress`
 
 ### 2026-07-10 - `concede`: nhóm hai sense “thừa nhận” trên card
 
