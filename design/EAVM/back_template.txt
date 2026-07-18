@@ -87,6 +87,7 @@
   <div id="raw-definition-vi-back">{{DefinitionVI}}</div>
   <div id="raw-example-back">{{Example}}</div>
   <div id="raw-collocations-back">{{Collocations}}</div>
+  <div id="raw-collocation-sources-back">{{CollocationSources}}</div>
   <div id="raw-word-family-back">{{WordFamily}}</div>
   <div id="raw-tags-back">{{Tags}}</div>
   <div id="raw-word-back">{{Word}}</div>
@@ -241,6 +242,65 @@
     });
   }
   function getRaw(id) { var e = document.getElementById(id); return e ? trim(e.textContent || e.innerText) : ''; }
+  function collocationSourceMeta(source) {
+    if (source === 'oxford') return {marker: 'OXF', label: 'Oxford Dictionary'};
+    if (source === 'cambridge') return {marker: 'CAM', label: 'Cambridge Dictionary'};
+    if (source === 'oxford+cambridge') return {marker: 'OXF+CAM', label: 'Oxford and Cambridge dictionaries'};
+    return null;
+  }
+  function parseCollocationItems(rawCollocations, rawSources) {
+    var rawParts = String(rawCollocations || '').split('|');
+    var sourceParts = rawSources ? String(rawSources).split('|') : [];
+    var metadataValid = sourceParts.length === rawParts.length;
+    var allowedSources = {
+      'oxford': true,
+      'cambridge': true,
+      'oxford+cambridge': true,
+      'curated': true
+    };
+
+    for (var i = 0; metadataValid && i < rawParts.length; i++) {
+      if (!trim(rawParts[i]) || !allowedSources[trim(sourceParts[i])]) metadataValid = false;
+    }
+
+    var items = [];
+    for (var j = 0; j < rawParts.length; j++) {
+      var text = trim(rawParts[j]);
+      if (!text) continue;
+      items.push({
+        text: text,
+        source: metadataValid ? trim(sourceParts[j]) : 'curated'
+      });
+    }
+    return items;
+  }
+  function renderCollocations(rawCollocations, rawSources, container) {
+    if (!container) return;
+    var items = parseCollocationItems(rawCollocations, rawSources);
+    container.textContent = '';
+    container.setAttribute('role', 'list');
+    container.setAttribute('aria-label', 'Collocations');
+
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var sourceMeta = collocationSourceMeta(item.source);
+      var chip = document.createElement('span');
+      chip.className = 'collocation-chip';
+      chip.setAttribute('role', 'listitem');
+      chip.appendChild(document.createTextNode(item.text));
+
+      if (sourceMeta) {
+        chip.className += ' collocation-chip-source-backed';
+        chip.setAttribute('aria-label', item.text + '; source: ' + sourceMeta.label);
+        var marker = document.createElement('span');
+        marker.className = 'collocation-source-marker';
+        marker.setAttribute('aria-hidden', 'true');
+        marker.textContent = sourceMeta.marker;
+        chip.appendChild(marker);
+      }
+      container.appendChild(chip);
+    }
+  }
   function renderPosChips(posDiv, rawPos, rawUrls) {
     if (!posDiv || !rawPos) return;
     var parts = rawPos.split(/[,\/]/), clean = [];
@@ -739,14 +799,10 @@
 
   // 6. Collocations chips
   var rawCol = getRaw('raw-collocations-back');
+  var rawColSources = getRaw('raw-collocation-sources-back');
   var colEl  = document.getElementById('collocations-container');
   if (rawCol && colEl) {
-    var colParts = rawCol.split('|'), cHtml = '';
-    for (var q = 0; q < colParts.length; q++) {
-      var cv = trim(colParts[q]);
-      if (cv) cHtml += '<span class="collocation-chip">' + cv + '</span>';
-    }
-    colEl.innerHTML = cHtml;
+    renderCollocations(rawCol, rawColSources, colEl);
   }
 
   // 7. Feature tags → feature-row

@@ -52,6 +52,13 @@ clip phát. Main Example căn theo `|` rồi `<br><br>`; Idiom Example căn theo
 English definition. `Definition` vẫn giữ payload `EN (VI)` để tương thích với
 các audit/tool cũ; template ưu tiên `DefinitionVI` và có fallback cho note cũ.
 
+`CollocationSources` được append vào note type và pipe-align với `Collocations`.
+Token `oxford`, `cambridge`, hoặc `oxford+cambridge` làm chip nổi bật bằng nền
+xanh kèm marker chữ `OXF`, `CAM`, hoặc `OXF+CAM`; token `curated` giữ chip xám
+mặc định. Template tạo chip bằng DOM/text node, gắn `role=list/listitem` và
+`aria-label` nêu nguồn. Nếu metadata rỗng, sai alignment hoặc có token lạ, toàn
+bộ chip trên card quay về kiểu curated/default để không gán provenance giả.
+
 `IdiomMeaningVI` được append sau `SensePOS` và căn theo `$$` với `Idioms`.
 Mỗi cell có dạng `vi_equivalent :: <VI>` hoặc `bilingual_gloss :: <VI>`.
 `vi_equivalent` giữ cụm idiom EN nhưng chỉ hiện câu Việt tương đương;

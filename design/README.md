@@ -51,6 +51,9 @@ Giá trị dưới đây là **sau khi sync** (mirror vùng 2 của `index.html`
 | `bg-card` | `#141313` | Nền card |
 | `bg-section` | `#181717` | Nền section box |
 | `bg-elevated` | `#1e1d1d` | Nền collocation chip |
+| `collocation-source-bg` | `#022c22` | Nền collocation có dictionary evidence |
+| `collocation-source-text` | `#d1fae5` | Chữ và marker collocation có dictionary evidence |
+| `collocation-source-border` | `#065f46` | Viền collocation có dictionary evidence |
 | `bg-word-family` | `#131226` | Nền word-family box |
 | `border-default` | `#2a2929` | Viền card |
 | `border-subtle` | `#252424` | Viền section |
@@ -131,6 +134,18 @@ the same purple Vietnamese Gloss Line used in Sense Rows. Missing, empty,
 unknown, or globally misaligned metadata falls back to the legacy English
 explanation. Idiom examples and their UK/US Example Audio alignment are
 unchanged.
+
+### Collocation source provenance
+
+`CollocationSources` được pipe-align với `Collocations`. Bốn token hợp lệ là
+`oxford`, `cambridge`, `oxford+cambridge`, và `curated`. Ba token dictionary
+render chip xanh có marker chữ `OXF`, `CAM`, hoặc `OXF+CAM`; `curated` giữ chip
+xám mặc định. Marker chữ và `aria-label` truyền đạt provenance độc lập với màu.
+
+Source-backed collocations giữ từng phrase chính xác thành chip riêng. Nếu
+metadata thiếu, lệch số ô, có ô rỗng, hoặc chứa token lạ, template không suy
+đoán provenance: toàn bộ collocations trên card render theo kiểu curated/default.
+Production Card dùng chung Recognition back nên nhận cùng cách render này.
 
 ### Production sibling card (VI -> EN)
 

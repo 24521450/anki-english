@@ -464,12 +464,34 @@
   border: 1px solid #333232;
   padding: 4px 11px;
   border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   transition: border-color 0.15s, color 0.15s;
   cursor: default;
 }
 .collocation-chip:hover {
   border-color: #4b5563;
   color: #cbd5e1;
+}
+.collocation-chip-source-backed {
+  color: #d1fae5;
+  background: #022c22;
+  border-color: #065f46;
+  font-weight: 600;
+}
+.collocation-chip-source-backed:hover {
+  color: #d1fae5;
+  border-color: #065f46;
+}
+.collocation-source-marker {
+  color: #d1fae5;
+  border-left: 1px solid #065f46;
+  padding-left: 6px;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
 }
 
 .word-family-content {
@@ -1214,13 +1236,12 @@
     </div>
 
     <div class="demo-block">
-      <div class="demo-label">Collocation chips</div>
-      <div class="collocations-list">
-        <span class="collocation-chip">make a decision</span>
-        <span class="collocation-chip">take action</span>
-        <span class="collocation-chip">reach a consensus</span>
-        <span class="collocation-chip">carry out research</span>
-        <span class="collocation-chip">draw a conclusion</span>
+      <div class="demo-label">Collocation source provenance — curriculum</div>
+      <div class="collocations-list" role="list" aria-label="Collocations">
+        <span class="collocation-chip collocation-chip-source-backed" role="listitem" aria-label="on the curriculum; source: Oxford Dictionary">on the curriculum<span class="collocation-source-marker" aria-hidden="true">OXF</span></span>
+        <span class="collocation-chip collocation-chip-source-backed" role="listitem" aria-label="in the curriculum; source: Oxford Dictionary">in the curriculum<span class="collocation-source-marker" aria-hidden="true">OXF</span></span>
+        <span class="collocation-chip" role="listitem">school curriculum</span>
+        <span class="collocation-chip" role="listitem">curriculum development</span>
       </div>
     </div>
 
