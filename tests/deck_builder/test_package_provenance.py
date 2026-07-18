@@ -20,9 +20,11 @@ from src.deck_builder.package_provenance import (
 )
 
 
-SEMANTIC_LEDGER_LABELS = (
+REVIEW_AUTHORITY_LABELS = (
     "bilingual_semantic_audit",
     "bilingual_idiom_audit",
+    "collocation_audit",
+    "collocation_registry",
     "vietnamese_naturalness_review",
     "semantic_policy_locks",
     "definition_concision_review",
@@ -70,7 +72,7 @@ def test_package_provenance_is_canonical_and_validates_current_bytes(tmp_path: P
     assert validated == written
     assert sidecar.read_bytes().endswith(b"\n")
     payload = json.loads(sidecar.read_text(encoding="utf-8"))
-    assert payload["schema_version"] == 2
+    assert payload["schema_version"] == 3
     assert payload["package"]["name"] == "deck.apkg"
     assert payload["media"]["count"] == 1
 
@@ -94,8 +96,10 @@ def test_shared_input_mapping_binds_every_release_authority(tmp_path: Path):
         "notes_txt": paths.anki_notes_txt,
         "card_registry": paths.card_registry,
         "semantic_registry": paths.semantic_registry,
+        "collocation_registry": paths.collocation_registry,
         "bilingual_semantic_audit": paths.bilingual_semantic_audit,
         "bilingual_idiom_audit": paths.bilingual_idiom_audit,
+        "collocation_audit": paths.collocation_audit,
         "vietnamese_naturalness_review": paths.vietnamese_naturalness_review,
         "semantic_policy_locks": paths.semantic_policy_locks,
         "definition_concision_review": paths.definition_concision_review,
@@ -132,8 +136,8 @@ def test_packager_contract_change_invalidates_an_existing_sidecar(
         validate_package_provenance(sidecar, package, inputs, media)
 
 
-@pytest.mark.parametrize("ledger_label", SEMANTIC_LEDGER_LABELS)
-def test_changing_any_canonical_semantic_ledger_invalidates_provenance(
+@pytest.mark.parametrize("ledger_label", REVIEW_AUTHORITY_LABELS)
+def test_changing_any_canonical_review_authority_invalidates_provenance(
     tmp_path: Path,
     ledger_label: str,
 ):

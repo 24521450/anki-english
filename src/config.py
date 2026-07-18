@@ -46,8 +46,24 @@ class ProjectPaths:
         return self.root / "data" / "review" / "bilingual_idiom_audit.jsonl"
 
     @property
+    def collocation_audit(self) -> Path:
+        return self.root / "data" / "review" / "collocation_audit.jsonl"
+
+    @property
+    def collocation_audit_jsonl(self) -> Path:
+        return self.collocation_audit
+
+    @property
     def semantic_registry(self) -> Path:
         return self.root / "data" / "curated" / "semantic_registry.jsonl"
+
+    @property
+    def collocation_registry(self) -> Path:
+        return self.root / "data" / "curated" / "collocation_registry.jsonl"
+
+    @property
+    def collocation_registry_jsonl(self) -> Path:
+        return self.collocation_registry
 
     @property
     def semantic_policy_locks(self) -> Path:

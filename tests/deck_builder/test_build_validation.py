@@ -131,6 +131,81 @@ def test_validate_build_result_accepts_double_example_break(tmp_path: Path):
     assert report.ok
 
 
+def test_validate_build_result_accepts_aligned_collocation_provenance(
+    tmp_path: Path,
+):
+    card = _card()._replace(
+        collocations="on the curriculum|in the curriculum|curriculum development",
+        collocation_sources="oxford|oxford+cambridge|curated",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(
+        _result_with_audio([card], tmp_path), inputs, tmp_path
+    )
+
+    assert report.ok
+
+
+def test_validate_build_result_rejects_invalid_collocation_contract(
+    tmp_path: Path,
+):
+    card = _card()._replace(
+        collocations=(
+            "on/in the curriculum|on the curriculum|bad<br><br>markup|"
+            "four|five|six"
+        ),
+        collocation_sources=(
+            "oxford|oxford|curated|curated|unknown|cambridge"
+        ),
+        idioms="on the curriculum :: listed phrase",
+        idiom_meaning_vi="bilingual_gloss :: nghĩa",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(
+        _result_with_audio([card], tmp_path), inputs, tmp_path
+    )
+
+    codes = {issue.code for issue in report.issues}
+    assert "collocation_limit_exceeded" in codes
+    assert "source_collocation_slash_compression" in codes
+    assert "collocation_invalid_text" in codes
+    assert "collocation_source_invalid" in codes
+    assert "collocation_duplicates_idiom" in codes
+
+
+def test_validate_build_result_rejects_collocation_source_misalignment(
+    tmp_path: Path,
+):
+    card = _card()._replace(
+        collocations="first phrase|second phrase",
+        collocation_sources="oxford",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(
+        _result_with_audio([card], tmp_path), inputs, tmp_path
+    )
+
+    assert any(
+        issue.code == "collocation_source_alignment_mismatch"
+        for issue in report.issues
+    )
+
+
 def test_validate_build_result_rejects_misaligned_definition_vi(tmp_path: Path):
     card = _card()._replace(
         definition="first (một)|second (hai)",
@@ -416,6 +491,19 @@ def test_txt_parser_decodes_legacy_quoted_hash_guid():
 
     assert not issues
     assert cards == [card]
+
+
+def test_txt_parser_backfills_pre_provenance_collocations_as_curated():
+    card = _card()._replace(collocations="first phrase|second phrase")
+    legacy_fields = card.to_tsv().split("\t")[:-1]
+
+    cards, issues = _parse_txt_cards(
+        "\n".join([*CANONICAL_TXT_HEADER, "\t".join(legacy_fields)]) + "\n",
+        "legacy-export",
+    )
+
+    assert not issues
+    assert cards == [card._replace(collocation_sources="curated|curated")]
 
 
 def test_validate_artifact_paths_rejects_duplicate_guid(tmp_path: Path):

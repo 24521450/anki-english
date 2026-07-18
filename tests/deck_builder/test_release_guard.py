@@ -64,6 +64,13 @@ def _canonical_fixture(paths: ProjectPaths) -> tuple[bytes, bytes]:
     _write_jsonl(paths.non_oxford_non_c2_overrides, [])
     _write_jsonl(paths.card_registry, [{"guid": "guid-1"}])
     _write_jsonl(paths.semantic_registry, [{"guid": "guid-1"}])
+    _write_jsonl(paths.collocation_audit, [{"audit": "row"}])
+    paths.collocation_registry.parent.mkdir(parents=True, exist_ok=True)
+    paths.collocation_registry.write_text(
+        '{"guid":"guid-1"}\n', encoding="utf-8", newline="\n"
+    )
+    _write_jsonl(paths.oxford_jsonl, [])
+    _write_jsonl(paths.cambridge_jsonl, [])
 
     jsonl_bytes = b'{"guid": "guid-1"}\n'
     txt_bytes = b"header\nrow\n"
@@ -93,6 +100,18 @@ def test_canonical_scope_reproduces_registry_and_build_without_writes(
         built_cards_count=1,
     )
     monkeypatch.setattr(release_guard, "promote_reviewed_semantics", fake_promote)
+    monkeypatch.setattr(release_guard, "validate_current_audit", lambda *args, **kwargs: [])
+    monkeypatch.setattr(
+        release_guard,
+        "promote_audit_rows",
+        lambda *args, **kwargs: [{"guid": "guid-1"}],
+    )
+    monkeypatch.setattr(release_guard, "validate_collocation_registry", lambda *args, **kwargs: [])
+    monkeypatch.setattr(
+        release_guard,
+        "serialize_collocation_registry",
+        lambda rows: '{"guid":"guid-1"}\n',
+    )
     monkeypatch.setattr(
         release_guard,
         "build_notes_from_registry",
@@ -128,6 +147,18 @@ def test_canonical_scope_rejects_stale_registry_before_build(
         "promote_reviewed_semantics",
         lambda *args, **kwargs: [{"guid": "guid-1"}],
     )
+    monkeypatch.setattr(release_guard, "validate_current_audit", lambda *args, **kwargs: [])
+    monkeypatch.setattr(
+        release_guard,
+        "promote_audit_rows",
+        lambda *args, **kwargs: [{"guid": "guid-1"}],
+    )
+    monkeypatch.setattr(release_guard, "validate_collocation_registry", lambda *args, **kwargs: [])
+    monkeypatch.setattr(
+        release_guard,
+        "serialize_collocation_registry",
+        lambda rows: '{"guid":"guid-1"}\n',
+    )
     monkeypatch.setattr(
         release_guard,
         "build_notes_from_registry",
@@ -147,6 +178,18 @@ def test_canonical_scope_rejects_a_built_user_lock_violation(
         release_guard,
         "promote_reviewed_semantics",
         lambda *args, **kwargs: [{"guid": "guid-1"}],
+    )
+    monkeypatch.setattr(release_guard, "validate_current_audit", lambda *args, **kwargs: [])
+    monkeypatch.setattr(
+        release_guard,
+        "promote_audit_rows",
+        lambda *args, **kwargs: [{"guid": "guid-1"}],
+    )
+    monkeypatch.setattr(release_guard, "validate_collocation_registry", lambda *args, **kwargs: [])
+    monkeypatch.setattr(
+        release_guard,
+        "serialize_collocation_registry",
+        lambda rows: '{"guid":"guid-1"}\n',
     )
     monkeypatch.setattr(
         release_guard,

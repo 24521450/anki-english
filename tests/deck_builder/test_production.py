@@ -101,13 +101,14 @@ def _card(**overrides) -> BuiltCard:
 
 
 def test_production_answer_is_appended_without_reordering_existing_contract():
-    assert CARD_FIELDS[-6:] == (
+    assert CARD_FIELDS[-7:] == (
         "definition_vi",
         "cambridge_url",
         "oxford_pos_urls",
         "production_answer",
         "sense_pos",
         "idiom_meaning_vi",
+        "collocation_sources",
     )
 
     card = apply_production_answers([_card()])[0]
@@ -116,7 +117,7 @@ def test_production_answer_is_appended_without_reordering_existing_contract():
 
     assert json_row["production_answer"] == "grave"
     assert json_row["sense_pos"] == "adjective"
-    assert txt_row[-3:] == ["grave", "adjective", ""]
+    assert txt_row[-4:] == ["grave", "adjective", "", ""]
     assert len(txt_row) == len(CARD_FIELDS)
     assert production_eligible(card)
 
@@ -140,9 +141,15 @@ def test_legacy_txt_is_readable_but_not_canonical_serialization(removed_columns)
 @pytest.mark.parametrize(
     "removed_fields",
     [
-        ("idiom_meaning_vi",),
-        ("sense_pos", "idiom_meaning_vi"),
-        ("production_answer", "sense_pos", "idiom_meaning_vi"),
+        ("collocation_sources",),
+        ("idiom_meaning_vi", "collocation_sources"),
+        ("sense_pos", "idiom_meaning_vi", "collocation_sources"),
+        (
+            "production_answer",
+            "sense_pos",
+            "idiom_meaning_vi",
+            "collocation_sources",
+        ),
     ],
 )
 def test_legacy_jsonl_is_readable_but_not_canonical_serialization(removed_fields):
@@ -158,6 +165,19 @@ def test_legacy_jsonl_is_readable_but_not_canonical_serialization(removed_fields
     assert parsed == [card]
     assert serialize_jsonl(parsed) == serialize_jsonl([card])
     assert legacy != serialize_jsonl([card])
+
+
+def test_jsonl_legacy_hole_is_rejected_even_when_a_newer_tail_field_remains():
+    card = apply_production_answers([_card()])[0]
+    row = card.to_dict()
+    row.pop("idiom_meaning_vi")
+
+    parsed, issues = _parse_jsonl_cards(
+        json.dumps(row, ensure_ascii=False) + "\n", "invalid-legacy-fixture"
+    )
+
+    assert parsed == []
+    assert any(issue.code == "jsonl_missing_field" for issue in issues)
 
 
 def test_apply_production_answers_is_order_preserving_and_deterministic():

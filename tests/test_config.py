@@ -21,7 +21,11 @@ def test_project_paths_resolve_canonical_artifacts(tmp_path):
     assert paths.bilingual_semantic_audit == tmp_path / "data" / "review" / "bilingual_semantic_audit.jsonl"
     assert paths.vietnamese_naturalness_review == tmp_path / "data" / "review" / "vietnamese_naturalness_review.jsonl"
     assert paths.bilingual_idiom_audit == tmp_path / "data" / "review" / "bilingual_idiom_audit.jsonl"
+    assert paths.collocation_audit == tmp_path / "data" / "review" / "collocation_audit.jsonl"
+    assert paths.collocation_audit_jsonl == paths.collocation_audit
     assert paths.semantic_registry == tmp_path / "data" / "curated" / "semantic_registry.jsonl"
+    assert paths.collocation_registry == tmp_path / "data" / "curated" / "collocation_registry.jsonl"
+    assert paths.collocation_registry_jsonl == paths.collocation_registry
     assert paths.gamma_verdicts == tmp_path / "data" / "review" / "gamma_verdicts.json"
     assert paths.manual_card_fills == tmp_path / "data" / "review" / "manual_card_fills.json"
     assert paths.manual_cards == tmp_path / "data" / "review" / "manual_cards.jsonl"

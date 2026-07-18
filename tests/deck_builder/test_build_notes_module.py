@@ -90,6 +90,24 @@ def _semantic_row(word: str = "conquer", guid: str = "guid_conq") -> dict:
     }
 
 
+def _collocation_registry_row(word: str = "conquer", guid: str = "guid_conq") -> dict:
+    return {
+        "schema_version": 2,
+        "guid": guid,
+        "word": word,
+        "cefr": "C1",
+        "list": "Oxford_3000",
+        "variant": "",
+        "audit_sha256": "a" * 64,
+        "audit_row_sha256": "b" * 64,
+        "idiom_fingerprint": "c" * 64,
+        "current_fingerprint": "d" * 64,
+        "source_fingerprint": "e" * 64,
+        "items": [],
+        "empty_reason": "Reviewed: this fixture has no collocations.",
+    }
+
+
 def _setup_canonical_fixture(tmp_path: Path) -> BuildNotesPaths:
     source = tmp_path / "oxford.jsonl"
     source.write_text("", encoding="utf-8")
@@ -191,6 +209,8 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
     ant_overrides.write_text("", encoding="utf-8")
     semantic_registry = tmp_path / "semantic_registry.jsonl"
     _write_jsonl(semantic_registry, [_semantic_row()])
+    collocation_registry = tmp_path / "collocation_registry.jsonl"
+    _write_jsonl(collocation_registry, [_collocation_registry_row()])
     out_jsonl = tmp_path / "anki_notes.jsonl"
     out_txt = tmp_path / "anki_notes.txt"
 
@@ -214,11 +234,15 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
         "--synonym-overrides", str(syn_overrides),
         "--antonym-overrides", str(ant_overrides),
         "--semantic-registry", str(semantic_registry),
+        "--collocation-registry", str(collocation_registry),
     ])
     assert tools.build_notes.main() == 0
     assert not out_jsonl.exists()
 
-    result = build_notes(paths._replace(semantic_registry_path=semantic_registry))
+    result = build_notes(paths._replace(
+        semantic_registry_path=semantic_registry,
+        collocation_registry_path=collocation_registry,
+    ))
     for name in referenced_example_audio_names(result.built_cards):
         (paths.audio_dir / name).write_bytes(b"ID3" + b"x" * 509)
 
@@ -234,6 +258,7 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
         "--synonym-overrides", str(syn_overrides),
         "--antonym-overrides", str(ant_overrides),
         "--semantic-registry", str(semantic_registry),
+        "--collocation-registry", str(collocation_registry),
     ])
     assert tools.build_notes.main() == 0
     assert out_jsonl.exists()
@@ -261,6 +286,32 @@ def test_production_build_cli_fails_closed_without_semantic_registry(
         "--semantic-registry", str(missing),
     ]) == 1
     assert "Semantic Registry file missing" in capsys.readouterr().err
+
+
+def test_production_build_cli_fails_closed_without_collocation_registry(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+):
+    paths = _setup_canonical_fixture(tmp_path)
+    review_overrides = tmp_path / "review.jsonl"
+    review_overrides.write_text("", encoding="utf-8")
+    semantic_registry = tmp_path / "semantic_registry.jsonl"
+    _write_jsonl(semantic_registry, [_semantic_row()])
+    missing = tmp_path / "missing_collocation_registry.jsonl"
+
+    monkeypatch.setattr(build_command, "paths_registry", ProjectPaths(tmp_path))
+    assert build_command.main([
+        "--dry-run",
+        "--jsonl", str(paths.oxford_jsonl_path),
+        "--gamma", str(paths.gamma_verdicts_path),
+        "--card-registry", str(paths.card_registry_path),
+        "--manual-cards", str(paths.manual_cards_path),
+        "--review-overrides", str(review_overrides),
+        "--semantic-registry", str(semantic_registry),
+        "--collocation-registry", str(missing),
+    ]) == 1
+    assert "Collocation Registry file missing" in capsys.readouterr().err
 
 
 def test_resolve_primary_record_prefers_sole_contributor():

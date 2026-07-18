@@ -55,9 +55,12 @@ EAVM_FIELDS = EAVM_FIELD_NAMES
 ESTABLISHED_EAVM_FIELDS = EAVM_FIELDS[:15]
 # Compatibility export for the historical 19-field model without DefinitionVI.
 LEGACY_EAVM_FIELDS = EAVM_FIELDS[:19]
-# The two preceding canonical models ended at ProductionAnswer and SensePOS.
-PRE_SENSE_POS_EAVM_FIELDS = EAVM_FIELDS[:-2]
-PRE_IDIOM_MEANING_VI_EAVM_FIELDS = EAVM_FIELDS[:-1]
+# Exact append-only prefixes accepted during in-place migration.  Name each
+# boundary explicitly so adding a tail field cannot silently retarget an older
+# compatibility contract.
+PRE_SENSE_POS_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("SensePOS")]
+PRE_IDIOM_MEANING_VI_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("IdiomMeaningVI")]
+PRE_COLLOCATION_SOURCES_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("CollocationSources")]
 ROOT_DECK = "English Academic Vocabulary"
 SOUND_RE = re.compile(r"\[sound:([^\]]+)\]")
 AUDIO_SRC_RE = re.compile(r"<audio\b[^>]*\bsrc=[\"']([^\"']+)[\"'][^>]*>", re.IGNORECASE)
@@ -245,6 +248,7 @@ def _model_contract(client: AnkiConnectClient) -> tuple[bool, tuple[str, ...], s
         and current_fields not in {
             PRE_SENSE_POS_EAVM_FIELDS,
             PRE_IDIOM_MEANING_VI_EAVM_FIELDS,
+            PRE_COLLOCATION_SOURCES_EAVM_FIELDS,
             EAVM_FIELDS,
         }
     ):

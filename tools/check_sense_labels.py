@@ -332,6 +332,9 @@ def validate_source_to_build_roundtrip(
         synonym_example_overrides_path=paths.synonym_example_overrides,
         antonym_example_overrides_path=paths.antonym_example_overrides,
         sense_label_overrides_path=paths.sense_label_overrides,
+        semantic_registry_path=paths.semantic_registry,
+        collocation_registry_path=paths.collocation_registry,
+        cambridge_jsonl_path=paths.cambridge_jsonl,
     )
 
     try:

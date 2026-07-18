@@ -47,8 +47,10 @@ def _production_design_paths(tmp_path: Path, monkeypatch):
         fixture_paths.anki_notes_txt,
         fixture_paths.card_registry,
         fixture_paths.semantic_registry,
+        fixture_paths.collocation_registry,
         fixture_paths.bilingual_semantic_audit,
         fixture_paths.bilingual_idiom_audit,
+        fixture_paths.collocation_audit,
         fixture_paths.vietnamese_naturalness_review,
         fixture_paths.semantic_policy_locks,
         fixture_paths.definition_concision_review,
@@ -85,13 +87,14 @@ def test_eavm_model_identity_matches_existing_anki_note_type():
     assert update_anki_deck.EAVM_MODEL_ID != update_anki_deck.generate_deterministic_id(
         update_anki_deck.EAVM_MODEL_NAME
     )
-    assert update_anki_deck.EAVM_FIELD_NAMES[-6:] == (
+    assert update_anki_deck.EAVM_FIELD_NAMES[-7:] == (
         "DefinitionVI", "CambridgeURL", "OxfordPOSURLs", "ProductionAnswer",
-        "SensePOS", "IdiomMeaningVI",
+        "SensePOS", "IdiomMeaningVI", "CollocationSources",
     )
     assert update_anki_deck.EAVM_FIELD_NAMES[22] == "ProductionAnswer"
     assert update_anki_deck.EAVM_FIELD_NAMES[23] == "SensePOS"
     assert update_anki_deck.EAVM_FIELD_NAMES[24] == "IdiomMeaningVI"
+    assert update_anki_deck.EAVM_FIELD_NAMES[25] == "CollocationSources"
     assert update_anki_deck.EAVM_TEMPLATE_NAMES == (
         "Recognition", "Production (VI -> EN)",
     )
@@ -471,6 +474,7 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "production_answer": "conquer",
         "sense_pos": "verb|verb",
         "idiom_meaning_vi": "bilingual_gloss :: nghĩa",
+        "collocation_sources": "curated",
         "example": "to conquer the world",
         "ipa": "/ˈkɒŋkə(r)/",
         "uk_audio": "[sound:uk_conquer.mp3]",
@@ -549,6 +553,7 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "conquer",
         "verb|verb",
         "bilingual_gloss :: nghĩa",
+        "curated",
     ]
     assert created["guid"] == "test_guid_12345"
     assert created["tags"] == ["C1", "verb", "academic"]

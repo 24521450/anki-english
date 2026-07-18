@@ -4,7 +4,7 @@ from __future__ import annotations
 from importlib.metadata import version
 
 
-PACKAGER_CONTRACT_SCHEMA_VERSION = 1
+PACKAGER_CONTRACT_SCHEMA_VERSION = 2
 EAVM_MODEL_NAME = "English Academic Vocabulary Model"
 EAVM_MODEL_ID = 1607392819
 EAVM_JSON_TO_FIELD: tuple[tuple[str, str], ...] = (
@@ -33,6 +33,7 @@ EAVM_JSON_TO_FIELD: tuple[tuple[str, str], ...] = (
     ("production_answer", "ProductionAnswer"),
     ("sense_pos", "SensePOS"),
     ("idiom_meaning_vi", "IdiomMeaningVI"),
+    ("collocation_sources", "CollocationSources"),
 )
 EAVM_FIELD_NAMES: tuple[str, ...] = tuple(
     field_name for _, field_name in EAVM_JSON_TO_FIELD

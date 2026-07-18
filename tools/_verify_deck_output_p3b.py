@@ -72,16 +72,18 @@ def verify_txt_structure(lines: list[str]) -> list[list[str]]:
             continue
         
         parts = line.split('\t')
-        # Read-only compatibility for the three preceding append-only
-        # contracts. Canonical build/publish validation still requires all
-        # current columns.
-        if len(parts) == len(CARD_FIELDS) - 3:
+        # Read-only compatibility for the historical append-only prefixes.
+        # The pre-CollocationSources contract ended at IdiomMeaningVI, so a
+        # 27-column row already contains ProductionAnswer.
+        if len(parts) == len(CARD_FIELDS) - 4:
             parts.append(derive_production_answer(parts[3] if len(parts) > 3 else ""))
-        if len(parts) == len(CARD_FIELDS) - 2:
+        if len(parts) == len(CARD_FIELDS) - 3:
             parts.append(fallback_sense_pos(
                 parts[CARD_FIELDS.index("pos")],
                 parts[CARD_FIELDS.index("definition_vi")],
             ))
+        if len(parts) == len(CARD_FIELDS) - 2:
+            parts.append("")
         if len(parts) == len(CARD_FIELDS) - 1:
             parts.append("")
         data_rows.append(parts)

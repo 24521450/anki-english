@@ -13,7 +13,7 @@ from src.deck_builder.canonical_io import canonical_text_sha256
 from src.deck_builder.package_contract import packager_contract_payload
 
 
-PROVENANCE_SCHEMA_VERSION = 2
+PROVENANCE_SCHEMA_VERSION = 3
 VERIFIED_IMPORT_RECEIPT_SCHEMA_VERSION = 2
 
 
@@ -48,8 +48,10 @@ def package_provenance_inputs(
         "notes_txt": project_paths.anki_notes_txt,
         "card_registry": project_paths.card_registry,
         "semantic_registry": project_paths.semantic_registry,
+        "collocation_registry": project_paths.collocation_registry,
         "bilingual_semantic_audit": project_paths.bilingual_semantic_audit,
         "bilingual_idiom_audit": project_paths.bilingual_idiom_audit,
+        "collocation_audit": project_paths.collocation_audit,
         "vietnamese_naturalness_review": (
             project_paths.vietnamese_naturalness_review
         ),

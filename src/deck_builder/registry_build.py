@@ -303,6 +303,10 @@ def _serialize_result(cards, *, counters: dict[str, int]):
 def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
     """Build cards from registry/manual inputs without reading generated outputs."""
     from src.deck_builder.corpus_tag_sync import apply_corpus_routing_and_tags
+    from src.deck_builder.collocation_audit import (
+        apply_collocation_registry,
+        load_collocation_registry,
+    )
     from src.deck_builder.review_overrides import apply_review_overrides, load_review_overrides
     from src.deck_builder.relation_validation import validate_lexical_relation_metadata
     from src.deck_builder.sense_labels import apply_sense_labels, load_sense_label_overrides
@@ -327,6 +331,23 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         ])
 
     inputs = load_registry_build_inputs(paths.card_registry_path, paths.manual_cards_path)
+    collocation_registry_rows: list[dict] | None = None
+    collocation_registry_path = getattr(paths, "collocation_registry_path", None)
+    if collocation_registry_path is not None:
+        try:
+            collocation_registry_rows = load_collocation_registry(
+                collocation_registry_path,
+                [target.row for target in inputs.targets],
+            )
+        except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+            raise BuildValidationError([
+                BuildIssue(
+                    severity="error",
+                    code="collocation_registry_invalid",
+                    message=str(exc),
+                    source=collocation_registry_path,
+                )
+            ]) from exc
     semantic_registry_rows: list[dict] | None = None
     semantic_registry_path = getattr(paths, "semantic_registry_path", None)
     if semantic_registry_path is not None:
@@ -827,6 +848,18 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         ])
 
     cards = apply_corpus_routing_and_tags(annotated_cards, vocab_3000, vocab_5000, vocab_awl)
+    if collocation_registry_rows is not None:
+        try:
+            cards = apply_collocation_registry(cards, collocation_registry_rows)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise BuildValidationError([
+                BuildIssue(
+                    severity="error",
+                    code="collocation_registry_apply_failed",
+                    message=str(exc),
+                    source=collocation_registry_path,
+                )
+            ]) from exc
     cards = [
         card._replace(tags=sync_idioms_feature_tag(card.tags, card.idioms))
         for card in cards

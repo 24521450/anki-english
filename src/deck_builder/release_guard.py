@@ -7,6 +7,12 @@ from pathlib import Path
 
 from src.config import ProjectPaths
 from src.deck_builder.anki_import_command import validate_local_inputs
+from src.deck_builder.collocation_audit import (
+    promote_audit_rows,
+    serialize_registry_rows as serialize_collocation_registry,
+    validate_current_audit,
+    validate_registry_rows as validate_collocation_registry,
+)
 from src.deck_builder.build_contracts import BuildNotesPaths
 from src.deck_builder.build_issues import BuildValidationError
 from src.deck_builder.build_validation import validate_build_result
@@ -95,6 +101,7 @@ def _build_paths(paths: ProjectPaths) -> BuildNotesPaths:
         antonym_example_overrides_path=paths.antonym_example_overrides,
         sense_label_overrides_path=paths.sense_label_overrides,
         semantic_registry_path=paths.semantic_registry,
+        collocation_registry_path=paths.collocation_registry,
         cambridge_jsonl_path=paths.cambridge_jsonl,
     )
 
@@ -132,6 +139,14 @@ def _validate_canonical(paths: ProjectPaths) -> ReleaseGuardReport:
         paths.non_oxford_non_c2_overrides, "non-Oxford/non-C2 overrides"
     )
     _, card_registry_rows = _load_document(paths.card_registry, "Card Registry")
+    collocation_audit_bytes, collocation_audit_rows = _load_document(
+        paths.collocation_audit, "Collocation Audit"
+    )
+    _, collocation_registry_rows = _load_document(
+        paths.collocation_registry, "Collocation Registry"
+    )
+    _, oxford_rows = _load_document(paths.oxford_jsonl, "Oxford source")
+    _, cambridge_rows = _load_document(paths.cambridge_jsonl, "Cambridge source")
 
     try:
         promoted = promote_reviewed_semantics(
@@ -162,6 +177,54 @@ def _validate_canonical(paths: ProjectPaths) -> ReleaseGuardReport:
     expected_registry = serialize_semantic_registry(promoted).encode("utf-8")
     _require_exact_bytes(
         paths.semantic_registry, expected_registry, "Semantic Registry"
+    )
+
+    # The collocation ledger is a separate, fingerprint-bound authority.  It
+    # must be checked against the live notes, semantic mappings, and both raw
+    # dictionary projections before its deterministic production projection is
+    # accepted.  This keeps a stale review from silently surviving a source
+    # rebuild.
+    try:
+        current_note_rows = [
+            json.loads(line)
+            for line in paths.anki_notes_jsonl.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        collocation_errors = validate_current_audit(
+            collocation_audit_rows,
+            current_note_rows,
+            card_registry_rows,
+            promoted,
+            oxford_rows,
+            cambridge_rows,
+            require_complete=True,
+        )
+        if collocation_errors:
+            raise ReleaseGuardError(
+                "Collocation Audit is stale or incomplete:\n"
+                + "\n".join(collocation_errors)
+            )
+        promoted_collocations = promote_audit_rows(
+            collocation_audit_rows, card_registry_rows
+        )
+        collocation_registry_errors = validate_collocation_registry(
+            promoted_collocations,
+            card_registry_rows,
+            audit_rows=collocation_audit_rows,
+        )
+        if collocation_registry_errors:
+            raise ReleaseGuardError(
+                "Collocation Registry promotion is invalid:\n"
+                + "\n".join(collocation_registry_errors)
+            )
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+        if isinstance(exc, ReleaseGuardError):
+            raise
+        raise ReleaseGuardError(str(exc)) from exc
+    _require_exact_bytes(
+        paths.collocation_registry,
+        serialize_collocation_registry(promoted_collocations).encode("utf-8"),
+        "Collocation Registry",
     )
 
     build_paths = _build_paths(paths)
@@ -206,6 +269,8 @@ def _validate_canonical(paths: ProjectPaths) -> ReleaseGuardReport:
         checks=(
             "promotion-inputs",
             "semantic-registry-reproduction",
+            "collocation-audit-freshness",
+            "collocation-registry-reproduction",
             "fresh-build-validation",
             "built-semantic-policy",
             "build-artifact-reproduction",

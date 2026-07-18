@@ -82,6 +82,37 @@ def _semantic_row(word: str, *, idioms: list[dict] | None = None) -> dict:
     }
 
 
+def _collocation_registry_row(word: str) -> dict:
+    return {
+        "schema_version": 2,
+        "guid": f"guid-{word}",
+        "word": word,
+        "cefr": "A1",
+        "list": "NO_LIST",
+        "variant": "",
+        "audit_sha256": "a" * 64,
+        "audit_row_sha256": "b" * 64,
+        "idiom_fingerprint": "c" * 64,
+        "current_fingerprint": "d" * 64,
+        "source_fingerprint": "e" * 64,
+        "items": [
+            {
+                "text": "on the word",
+                "order": 1,
+                "source": "oxford",
+                "evidence_ids": ["evidence-1"],
+            },
+            {
+                "text": "word choice",
+                "order": 2,
+                "source": "curated",
+                "evidence_ids": [],
+            },
+        ],
+        "empty_reason": "",
+    }
+
+
 def _build_fixture_paths(tmp_path: Path) -> BuildNotesPaths:
     source = tmp_path / "oxford.jsonl"
     source.write_text("", encoding="utf-8")
@@ -217,6 +248,34 @@ def test_semantic_registry_overlays_content_before_audio_and_preserves_metadata(
     # The reviewed example no longer renders the manual relation annotation.
     assert card.synonyms == ""
     assert card.antonyms == ""
+
+
+def test_collocation_registry_is_the_final_collocation_owner(tmp_path: Path):
+    paths = _build_fixture_paths(tmp_path)
+    collocation_registry = tmp_path / "collocation_registry.jsonl"
+    _write_jsonl(collocation_registry, [_collocation_registry_row("word")])
+
+    card = build_notes(paths._replace(
+        collocation_registry_path=collocation_registry,
+    )).built_cards[0]
+
+    assert card.collocations == "on the word|word choice"
+    assert card.collocation_sources == "oxford|curated"
+
+
+def test_collocation_registry_requires_exact_active_guid_coverage(tmp_path: Path):
+    paths = _build_fixture_paths(tmp_path)
+    collocation_registry = tmp_path / "collocation_registry.jsonl"
+    _write_jsonl(collocation_registry, [])
+
+    with pytest.raises(BuildValidationError) as excinfo:
+        build_notes(paths._replace(collocation_registry_path=collocation_registry))
+
+    assert any(
+        issue.code == "collocation_registry_invalid"
+        and "missing_collocation_registry_guid:guid-word" in issue.message
+        for issue in excinfo.value.issues
+    )
 
 
 def test_semantic_registry_overlays_manual_idiom_before_audio_planning(tmp_path: Path):

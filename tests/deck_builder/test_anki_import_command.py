@@ -74,6 +74,7 @@ def _row(**updates) -> dict:
         "production_answer": "conquer",
         "sense_pos": "verb",
         "idiom_meaning_vi": "",
+        "collocation_sources": "",
         "cambridge_url": "https://dictionary.cambridge.org/dictionary/english/conquer",
         "oxford_pos_urls": "https://www.oxfordlearnersdictionaries.com/definition/english/conquer",
     }
@@ -150,6 +151,7 @@ def _live_note(row: dict) -> dict:
         "antonyms", "example_audio_uk", "example_audio_us", "idiom_example_audio_uk",
         "idiom_example_audio_us", "definition_vi", "cambridge_url",
         "oxford_pos_urls", "production_answer", "sense_pos", "idiom_meaning_vi",
+        "collocation_sources",
     )
     return {
         "modelName": EAVM_MODEL_NAME,
@@ -452,6 +454,7 @@ def test_snapshot_accepts_legacy_prefix_before_field_migration(tmp_path: Path):
     live["fields"].pop("ProductionAnswer")
     live["fields"].pop("SensePOS")
     live["fields"].pop("IdiomMeaningVI")
+    live["fields"].pop("CollocationSources")
 
     class Client:
         def call(self, action, **params):
@@ -1007,6 +1010,7 @@ def test_sync_example_audio_fields_matches_established_signature_and_batches_upd
             "ProductionAnswer": row["production_answer"],
             "SensePOS": row["sense_pos"],
             "IdiomMeaningVI": row["idiom_meaning_vi"],
+            "CollocationSources": row["collocation_sources"],
         }}},
     }]
 

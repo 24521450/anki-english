@@ -27,6 +27,12 @@ def main(argv: list[str] | None = None) -> int:
     if not paths.semantic_registry.is_file():
         print(f"Error: Semantic Registry file missing: {paths.semantic_registry}", file=sys.stderr)
         return 1
+    if not paths.collocation_registry.is_file():
+        print(
+            f"Error: Collocation Registry file missing: {paths.collocation_registry}",
+            file=sys.stderr,
+        )
+        return 1
 
     try:
         build_paths = BuildNotesPaths(
@@ -44,6 +50,7 @@ def main(argv: list[str] | None = None) -> int:
             antonym_example_overrides_path=paths.antonym_example_overrides,
             sense_label_overrides_path=paths.sense_label_overrides,
             semantic_registry_path=paths.semantic_registry,
+            collocation_registry_path=paths.collocation_registry,
             cambridge_jsonl_path=args.cambridge_jsonl,
         )
         cards = build_notes_from_registry(build_paths).built_cards

@@ -31,6 +31,7 @@ def _canonical_rows():
         "manuals": _load(PATHS.manual_cards),
         "registry": _load(PATHS.card_registry),
         "semantic_registry": _load(PATHS.semantic_registry),
+        "collocation_registry": _load(PATHS.collocation_registry),
         "cards": _load(PATHS.anki_notes_jsonl),
     }
 
@@ -113,12 +114,25 @@ def _assert_registry_payload(registry_row: dict, card: dict) -> None:
             )
 
 
-def _assert_owner_payload(owner: dict, card: dict, registry_rows: list[dict]) -> None:
-    if owner.get("guid"):
-        assert card["collocations"] == owner["Collocations"]
-    else:
-        assert card["collocations"] == owner["collocations_after"]
-    registry_row = next(row for row in registry_rows if row["guid"] == card["guid"])
+def _assert_owner_payload(
+    owner: dict,
+    card: dict,
+    semantic_registry_rows: list[dict],
+    collocation_registry_rows: list[dict],
+) -> None:
+    # ADR 0024 makes the Collocation Registry the final owner, so the older
+    # rescue/grouping ledgers no longer own their embedded collocation literal.
+    collocation_row = next(
+        row for row in collocation_registry_rows if row["guid"] == card["guid"]
+    )
+    items = sorted(collocation_row["items"], key=lambda item: item["order"])
+    assert card["collocations"] == "|".join(item["text"] for item in items)
+    assert card["collocation_sources"] == "|".join(
+        item["source"] for item in items
+    )
+    registry_row = next(
+        row for row in semantic_registry_rows if row["guid"] == card["guid"]
+    )
     _assert_registry_payload(registry_row, card)
 
 
@@ -179,7 +193,12 @@ def test_semantic_overload_grouping_matches_canonical_owner_payloads():
     }
     for owner in owners:
         card = _card_for_owner(owner, rows["cards"])
-        _assert_owner_payload(owner, card, rows["semantic_registry"])
+        _assert_owner_payload(
+            owner,
+            card,
+            rows["semantic_registry"],
+            rows["collocation_registry"],
+        )
         semantic_row = next(
             row for row in rows["semantic_registry"] if row["guid"] == card["guid"]
         )
@@ -217,7 +236,10 @@ def test_sense_grouping_review_matches_canonical_owner_payloads():
     }
     for owner in owners:
         _assert_owner_payload(
-            owner, _card_for_owner(owner, rows["cards"]), rows["semantic_registry"]
+            owner,
+            _card_for_owner(owner, rows["cards"]),
+            rows["semantic_registry"],
+            rows["collocation_registry"],
         )
 
     registry = {_manual_key(row): row for row in rows["registry"]}
@@ -255,7 +277,12 @@ def test_vietnamese_precision_review_matches_canonical_owner_payloads():
     }
     for owner in owners:
         card = _card_for_owner(owner, rows["cards"])
-        _assert_owner_payload(owner, card, rows["semantic_registry"])
+        _assert_owner_payload(
+            owner,
+            card,
+            rows["semantic_registry"],
+            rows["collocation_registry"],
+        )
         for chunk in card["definition"].split("|"):
             translation = chunk.rsplit("(", 1)[-1].rstrip(")")
             assert translation.count("/") < 2, card["word"]

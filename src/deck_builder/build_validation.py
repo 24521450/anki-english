@@ -13,7 +13,9 @@ from src.deck_builder.build_issues import BuildIssue
 from src.deck_builder.build_contracts import (
     CARD_FIELDS,
     CANONICAL_TXT_HEADER,
+    COLLOCATION_SOURCE_TOKENS,
     IDIOM_DISPLAY_MODES,
+    MAX_COLLOCATIONS_PER_CARD,
     MAX_IDIOM_EXAMPLES_PER_IDIOM,
     MAX_IDIOMS_PER_CARD,
     BuildNotesResult,
@@ -60,6 +62,42 @@ class ValidationReport:
 
     def error_text(self) -> str:
         return "\n".join(issue.format() for issue in self.issues if issue.severity == "error")
+
+
+_APPEND_ONLY_CARD_FIELDS: tuple[str, ...] = (
+    "production_answer",
+    "sense_pos",
+    "idiom_meaning_vi",
+    "collocation_sources",
+)
+
+
+def _legacy_collocation_sources(collocations: str) -> str:
+    """Treat pre-provenance chips as neutral curated/default presentation."""
+
+    if not collocations.strip():
+        return ""
+    return "|".join("curated" for _ in collocations.split("|"))
+
+
+def _legacy_field_value(field: str, values: dict[str, str]) -> str:
+    if field == "production_answer":
+        return derive_production_answer(values.get("word") or "")
+    if field == "sense_pos":
+        return fallback_sense_pos(
+            values.get("pos") or "",
+            values.get("definition_vi") or "",
+        )
+    if field == "idiom_meaning_vi":
+        return ""
+    if field == "collocation_sources":
+        return _legacy_collocation_sources(values.get("collocations") or "")
+    raise AssertionError(f"unsupported append-only field: {field}")
+
+
+def _normalized_collocation_key(value: str) -> str:
+    value = value.replace("\u200b", "")
+    return re.sub(r"\s+", " ", value).strip().casefold()
 
 
 def _sha256_text(text: str) -> str:
@@ -126,32 +164,33 @@ def _parse_jsonl_cards(text: str, source: Path | str | None = None) -> tuple[lis
             continue
         missing = [field for field in CARD_FIELDS if field not in row]
         extra = [field for field in row if field not in CARD_FIELDS]
-        legacy_tail = ("production_answer", "sense_pos", "idiom_meaning_vi")
-        legacy_missing = tuple(field for field in legacy_tail if field in missing)
-        allowed_missing = {
-            frozenset(legacy_tail[start:]) for start in range(len(legacy_tail))
+        legacy_missing = tuple(
+            field for field in CARD_FIELDS if field in missing
+        )
+        valid_legacy_missing = {
+            _APPEND_ONLY_CARD_FIELDS[-count:]
+            for count in range(1, len(_APPEND_ONLY_CARD_FIELDS) + 1)
         }
-        if missing and frozenset(missing) not in allowed_missing:
+        if legacy_missing and legacy_missing not in valid_legacy_missing:
             issues.append(BuildIssue("error", "jsonl_missing_field", f"line {line_no} missing fields {missing}", source=source))
             continue
         if extra:
             issues.append(BuildIssue("error", "jsonl_extra_field", f"line {line_no} has extra fields {extra}", source=source))
         values = []
+        parsed_values: dict[str, str] = {
+            field: value
+            for field, value in row.items()
+            if field in CARD_FIELDS and isinstance(value, str)
+        }
         for field in CARD_FIELDS:
             value = row.get(field)
-            if field == "production_answer" and field in legacy_missing:
-                value = derive_production_answer(row.get("word") or "")
-            elif field == "sense_pos" and field in legacy_missing:
-                value = fallback_sense_pos(
-                    row.get("pos") or "",
-                    row.get("definition_vi") or "",
-                )
-            elif field == "idiom_meaning_vi" and field in legacy_missing:
-                value = ""
+            if field in legacy_missing:
+                value = _legacy_field_value(field, parsed_values)
             if not isinstance(value, str):
                 issues.append(BuildIssue("error", "jsonl_non_string_field", f"line {line_no} field {field!r} must be string", source=source))
                 value = "" if value is None else str(value)
             values.append(value)
+            parsed_values[field] = value
         cards.append(BuiltCard(*values))
     return cards, issues
 
@@ -181,22 +220,17 @@ def _parse_txt_cards(text: str, source: Path | str | None = None) -> tuple[list[
                 source=source,
             ))
             continue
-        if len(parts) in {
-            len(CARD_FIELDS) - 3,
-            len(CARD_FIELDS) - 2,
-            len(CARD_FIELDS) - 1,
-        }:
-            # Read-only compatibility for the three preceding append-only
-            # contracts. Canonical serialization still writes every column.
-            if len(parts) == len(CARD_FIELDS) - 3:
-                parts.append(derive_production_answer(parts[CARD_FIELDS.index("word")]))
-            if len(parts) == len(CARD_FIELDS) - 2:
-                parts.append(fallback_sense_pos(
-                    parts[CARD_FIELDS.index("pos")],
-                    parts[CARD_FIELDS.index("definition_vi")],
-                ))
-            if len(parts) == len(CARD_FIELDS) - 1:
-                parts.append("")
+        legacy_prefix_lengths = {
+            len(CARD_FIELDS) - missing_count
+            for missing_count in range(1, len(_APPEND_ONLY_CARD_FIELDS) + 1)
+        }
+        if len(parts) in legacy_prefix_lengths:
+            # Read-only compatibility for exact historical append-only
+            # prefixes. Canonical serialization still writes every column.
+            while len(parts) < len(CARD_FIELDS):
+                field = CARD_FIELDS[len(parts)]
+                current = dict(zip(CARD_FIELDS, parts))
+                parts.append(_legacy_field_value(field, current))
             cards.append(BuiltCard(*parts))
             continue
         if len(parts) != len(CARD_FIELDS):
@@ -276,6 +310,119 @@ def _validate_cards(
                 f"row {idx} {relation_issue.message}",
                 identity=identity,
             ))
+
+        collocation_cells = (
+            card.collocations.split("|") if card.collocations else []
+        )
+        collocation_source_cells = (
+            card.collocation_sources.split("|")
+            if card.collocation_sources else []
+        )
+        if len(collocation_cells) > MAX_COLLOCATIONS_PER_CARD:
+            issues.append(BuildIssue(
+                "error",
+                "collocation_limit_exceeded",
+                (
+                    f"row {idx} has {len(collocation_cells)} collocations; "
+                    f"maximum is {MAX_COLLOCATIONS_PER_CARD}"
+                ),
+                identity=identity,
+            ))
+        if collocation_source_cells and not collocation_cells:
+            issues.append(BuildIssue(
+                "error",
+                "collocation_sources_without_collocations",
+                f"row {idx} has CollocationSources without Collocations content",
+                identity=identity,
+            ))
+        if (
+            collocation_source_cells
+            and len(collocation_source_cells) != len(collocation_cells)
+        ):
+            issues.append(BuildIssue(
+                "error",
+                "collocation_source_alignment_mismatch",
+                (
+                    f"row {idx} CollocationSources has "
+                    f"{len(collocation_source_cells)} cells for "
+                    f"{len(collocation_cells)} Collocations cells"
+                ),
+                identity=identity,
+            ))
+        seen_collocations: set[str] = set()
+        idiom_keys = {
+            _normalized_collocation_key(entry.split("::", 1)[0])
+            for entry in card.idioms.split("$$")
+            if entry.strip()
+        }
+        for collocation_index, collocation in enumerate(collocation_cells):
+            display_index = collocation_index + 1
+            normalized = _normalized_collocation_key(collocation)
+            if not normalized:
+                issues.append(BuildIssue(
+                    "error",
+                    "collocation_empty_cell",
+                    f"row {idx} Collocations cell {display_index} is empty",
+                    identity=identity,
+                ))
+            if normalized in seen_collocations:
+                issues.append(BuildIssue(
+                    "error",
+                    "collocation_duplicate",
+                    (
+                        f"row {idx} Collocations cell {display_index} "
+                        "duplicates an earlier chip"
+                    ),
+                    identity=identity,
+                ))
+            seen_collocations.add(normalized)
+            if normalized and normalized in idiom_keys:
+                issues.append(BuildIssue(
+                    "error",
+                    "collocation_duplicates_idiom",
+                    (
+                        f"row {idx} Collocations cell {display_index} "
+                        "duplicates an Idiom phrase"
+                    ),
+                    identity=identity,
+                ))
+            if (
+                any(char in collocation for char in ("\t", "\n", "\r", ";"))
+                or "::" in collocation
+                or "$$" in collocation
+                or re.search(r"<[^>]+>", collocation)
+            ):
+                issues.append(BuildIssue(
+                    "error",
+                    "collocation_invalid_text",
+                    (
+                        f"row {idx} Collocations cell {display_index} contains "
+                        "forbidden markup or delimiters"
+                    ),
+                    identity=identity,
+                ))
+            if collocation_index < len(collocation_source_cells):
+                source = collocation_source_cells[collocation_index]
+                if source not in COLLOCATION_SOURCE_TOKENS:
+                    issues.append(BuildIssue(
+                        "error",
+                        "collocation_source_invalid",
+                        (
+                            f"row {idx} CollocationSources cell {display_index} "
+                            f"has invalid token {source!r}"
+                        ),
+                        identity=identity,
+                    ))
+                elif source != "curated" and "/" in collocation:
+                    issues.append(BuildIssue(
+                        "error",
+                        "source_collocation_slash_compression",
+                        (
+                            f"row {idx} source-backed Collocations cell "
+                            f"{display_index} must be one exact phrase"
+                        ),
+                        identity=identity,
+                    ))
 
         if not card.definition.strip() and not card.idioms.strip():
             issues.append(BuildIssue(

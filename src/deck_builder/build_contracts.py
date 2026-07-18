@@ -24,7 +24,11 @@ EX_SEP = '|'
 COLL_SEPARATOR = '|'
 MAX_IDIOMS_PER_CARD = 2
 MAX_IDIOM_EXAMPLES_PER_IDIOM = 1
+MAX_COLLOCATIONS_PER_CARD = 5
 IDIOM_DISPLAY_MODES = frozenset({"vi_equivalent", "bilingual_gloss"})
+COLLOCATION_SOURCE_TOKENS = frozenset({
+    "oxford", "cambridge", "oxford+cambridge", "curated",
+})
 
 CANONICAL_TXT_HEADER: tuple[str, ...] = (
     "#separator:tab",
@@ -51,6 +55,7 @@ class BuildNotesPaths(NamedTuple):
     antonym_example_overrides_path: Path | None = None
     sense_label_overrides_path: Path | None = None
     semantic_registry_path: Path | None = None
+    collocation_registry_path: Path | None = None
     cambridge_jsonl_path: Path | None = None
 
 
@@ -94,6 +99,8 @@ class BuiltCard(NamedTuple):
     sense_pos: str = ""
     # ``$$``-aligned mode/Vietnamese payload for the legacy ``Idioms`` field.
     idiom_meaning_vi: str = ""
+    # Pipe-aligned provenance token for each learner-facing collocation chip.
+    collocation_sources: str = ""
 
     def to_tsv(self) -> str:
         fields = [
@@ -108,6 +115,7 @@ class BuiltCard(NamedTuple):
             self.production_answer,
             self.sense_pos,
             self.idiom_meaning_vi,
+            self.collocation_sources,
         ]
         output = io.StringIO(newline="")
         writer = csv.writer(output, delimiter="\t", lineterminator="")
@@ -145,6 +153,7 @@ class BuiltCard(NamedTuple):
             'production_answer': self.production_answer,
             'sense_pos': self.sense_pos,
             'idiom_meaning_vi': self.idiom_meaning_vi,
+            'collocation_sources': self.collocation_sources,
         }
 
 

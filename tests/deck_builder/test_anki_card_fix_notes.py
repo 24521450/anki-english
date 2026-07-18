@@ -30,6 +30,19 @@ def _semantic_registry_by_guid() -> dict[str, dict]:
     return {row["guid"]: row for row in _load_jsonl(PATHS.semantic_registry)}
 
 
+def _collocation_registry_by_guid() -> dict[str, dict]:
+    return {row["guid"]: row for row in _load_jsonl(PATHS.collocation_registry)}
+
+
+def _assert_registry_collocations(card: dict) -> None:
+    registry_row = _collocation_registry_by_guid()[card["guid"]]
+    items = sorted(registry_row["items"], key=lambda item: item["order"])
+    assert card["collocations"] == "|".join(item["text"] for item in items)
+    assert card["collocation_sources"] == "|".join(
+        item["source"] for item in items
+    )
+
+
 def _render_registry_definition(registry_row: dict) -> str:
     return "|".join(
         f"{sense['definition_en']} ({sense['definition_vi']})"
@@ -405,6 +418,11 @@ def test_anki_card_fix_notes_are_applied_to_generated_cards():
                 # ADR 0011/0015 supersede the legacy fix-note semantic
                 # literals; production semantics must match the promoted row.
                 _assert_registry_semantics(cards[identity])
+                continue
+            if field == "collocations":
+                # ADR 0024 supersedes legacy fix-note collocation literals;
+                # production must match the promoted Collocation Registry.
+                _assert_registry_collocations(cards[identity])
                 continue
             assert cards[identity][field] == value, f"{identity} field {field}"
 
