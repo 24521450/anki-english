@@ -163,7 +163,7 @@ def referenced_example_audio_names(cards: Iterable[BuiltCard]) -> set[str]:
     return names
 
 
-def is_valid_example_mp3(path: Path) -> bool:
+def is_valid_mp3(path: Path) -> bool:
     try:
         if path.stat().st_size < 512:
             return False
@@ -172,6 +172,11 @@ def is_valid_example_mp3(path: Path) -> bool:
     except OSError:
         return False
     return header == b"ID3" or (len(header) >= 2 and header[0] == 0xFF and header[1] & 0xE0 == 0xE0)
+
+
+def is_valid_example_mp3(path: Path) -> bool:
+    """Compatibility wrapper for callers using the former example-only name."""
+    return is_valid_mp3(path)
 
 
 async def generate_example_audio(
@@ -187,7 +192,7 @@ async def generate_example_audio(
     planned, tasks = plan_cards_example_audio(cards)
     del planned
     audio_dir.mkdir(parents=True, exist_ok=True) if not dry_run else None
-    missing = [task for task in tasks if not is_valid_example_mp3(audio_dir / task.filename)]
+    missing = [task for task in tasks if not is_valid_mp3(audio_dir / task.filename)]
     reused = len(tasks) - len(missing)
     if dry_run:
         stale = set(path.name for path in audio_dir.glob("example_*.mp3")) - {task.filename for task in tasks} if audio_dir.exists() else set()
@@ -213,7 +218,7 @@ async def generate_example_audio(
                         connect_timeout=10, receive_timeout=60,
                     )
                     await communicator.save(str(temporary))
-                    if not is_valid_example_mp3(temporary):
+                    if not is_valid_mp3(temporary):
                         raise RuntimeError(f"Edge TTS returned invalid MP3 for {task.filename}")
                     os.replace(temporary, target)
                     return

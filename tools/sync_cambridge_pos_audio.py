@@ -89,7 +89,14 @@ def download_audio(url: str, dest_path: Path, apply: bool) -> bool:
     
     for attempt in range(max_retries):
         try:
-            resp = requests.get(absolute_url, headers={"User-Agent": USER_AGENT}, timeout=30)
+            resp = requests.get(
+                absolute_url,
+                headers={
+                    "User-Agent": USER_AGENT,
+                    "Accept-Encoding": "identity",
+                },
+                timeout=30,
+            )
             if resp.status_code == 429:
                 print(f"  Received HTTP 429 (Rate Limit) for {absolute_url}. Retrying in {backoff}s... (attempt {attempt + 1}/{max_retries})")
                 time.sleep(backoff)

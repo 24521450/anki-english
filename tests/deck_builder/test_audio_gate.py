@@ -6,6 +6,10 @@ from src.deck_builder.audio_gate import validate_audio_gate
 from src.deck_builder.build_contracts import BuiltCard
 
 
+VALID_ID3_MP3 = b"ID3" + b"x" * 509
+VALID_MPEG_MP3 = b"\xff\xfb" + b"x" * 510
+
+
 def _card(audio: str = "") -> BuiltCard:
     return BuiltCard(
         "g1",
@@ -33,17 +37,54 @@ def _card(audio: str = "") -> BuiltCard:
 def test_validate_audio_gate_accepts_tracked_dictionary_audio(tmp_path: Path):
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    (audio_dir / "oxford_uk_word.mp3").write_bytes(b"mp3")
+    (audio_dir / "oxford_uk_word.mp3").write_bytes(VALID_ID3_MP3)
 
     report = validate_audio_gate([_card("[sound:oxford_uk_word.mp3]")], audio_dir, {"oxford_uk_word.mp3"})
 
     assert report.ok
 
 
+def test_validate_audio_gate_accepts_raw_mpeg_dictionary_audio(tmp_path: Path):
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    filename = "cambridge_us_word.mp3"
+    (audio_dir / filename).write_bytes(VALID_MPEG_MP3)
+
+    report = validate_audio_gate([_card(f"[sound:{filename}]")], audio_dir, {filename})
+
+    assert report.ok
+
+
+def test_validate_audio_gate_rejects_zstd_wrapped_dictionary_audio(tmp_path: Path):
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    filename = "cambridge_us_word.mp3"
+    (audio_dir / filename).write_bytes(b"\x28\xb5\x2f\xfd" + b"x" * 508)
+
+    report = validate_audio_gate([_card(f"[sound:{filename}]")], audio_dir, {filename})
+
+    assert not report.ok
+    issues = [issue for issue in report.issues if issue.code == "audio_invalid_dictionary_mp3"]
+    assert len(issues) == 1
+    assert issues[0].source == audio_dir / filename
+
+
+def test_validate_audio_gate_rejects_truncated_dictionary_audio(tmp_path: Path):
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    filename = "oxford_uk_word.mp3"
+    (audio_dir / filename).write_bytes(b"ID3truncated")
+
+    report = validate_audio_gate([_card(f"[sound:{filename}]")], audio_dir, {filename})
+
+    assert not report.ok
+    assert any(issue.code == "audio_invalid_dictionary_mp3" for issue in report.issues)
+
+
 def test_validate_audio_gate_rejects_untracked_audio(tmp_path: Path):
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    (audio_dir / "oxford_uk_word.mp3").write_bytes(b"mp3")
+    (audio_dir / "oxford_uk_word.mp3").write_bytes(VALID_ID3_MP3)
 
     report = validate_audio_gate([_card("[sound:oxford_uk_word.mp3]")], audio_dir, set())
 
@@ -54,8 +95,8 @@ def test_validate_audio_gate_rejects_untracked_audio(tmp_path: Path):
 def test_validate_audio_gate_rejects_tracked_unreferenced_audio(tmp_path: Path):
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    (audio_dir / "oxford_uk_used.mp3").write_bytes(b"used")
-    (audio_dir / "oxford_uk_orphan.mp3").write_bytes(b"orphan")
+    (audio_dir / "oxford_uk_used.mp3").write_bytes(VALID_ID3_MP3)
+    (audio_dir / "oxford_uk_orphan.mp3").write_bytes(VALID_ID3_MP3)
 
     report = validate_audio_gate(
         [_card("[sound:oxford_uk_used.mp3]")],
@@ -74,7 +115,7 @@ def test_validate_audio_gate_rejects_tracked_unreferenced_audio(tmp_path: Path):
 def test_validate_audio_gate_rejects_case_mismatch(tmp_path: Path):
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    (audio_dir / "cambridge_uk_Hypothesis.mp3").write_bytes(b"mp3")
+    (audio_dir / "cambridge_uk_Hypothesis.mp3").write_bytes(VALID_ID3_MP3)
 
     report = validate_audio_gate([_card("[sound:cambridge_uk_hypothesis.mp3]")], audio_dir, {"cambridge_uk_hypothesis.mp3"})
 
@@ -85,7 +126,7 @@ def test_validate_audio_gate_rejects_case_mismatch(tmp_path: Path):
 def test_validate_audio_gate_rejects_tts_reference_and_file(tmp_path: Path):
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
-    (audio_dir / "tts_uk_word.mp3").write_bytes(b"mp3")
+    (audio_dir / "tts_uk_word.mp3").write_bytes(VALID_ID3_MP3)
 
     report = validate_audio_gate([_card("[sound:tts_uk_word.mp3]")], audio_dir, {"tts_uk_word.mp3"})
 
@@ -98,7 +139,7 @@ def test_validate_audio_gate_accepts_tracked_html_example_audio(tmp_path: Path):
     audio_dir = tmp_path / "audio"
     audio_dir.mkdir()
     filename = "example_uk_0123456789abcdef01234567.mp3"
-    (audio_dir / filename).write_bytes(b"ID3" + b"x" * 509)
+    (audio_dir / filename).write_bytes(VALID_ID3_MP3)
     card = _card()._replace(
         example_audio_uk=f'<audio preload="none" src="{filename}"></audio>',
     )

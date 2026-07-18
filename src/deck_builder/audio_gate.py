@@ -9,7 +9,7 @@ from pathlib import Path
 
 from src.deck_builder.build_issues import BuildIssue
 from src.deck_builder.build_contracts import BuiltCard
-from src.deck_builder.example_audio import is_valid_example_mp3
+from src.deck_builder.example_audio import is_valid_mp3
 
 
 SOUND_RE = re.compile(r"\[sound:([^\]]+)\]")
@@ -123,11 +123,17 @@ def validate_audio_gate(
                 ))
             continue
 
-        if ref.startswith("example_") and not is_valid_example_mp3(audio_dir / ref):
+        if not is_valid_mp3(audio_dir / ref):
+            if ref.startswith("example_"):
+                code = "audio_invalid_example_mp3"
+                kind = "example audio"
+            else:
+                code = "audio_invalid_dictionary_mp3"
+                kind = "dictionary audio"
             issues.append(BuildIssue(
                 "error",
-                "audio_invalid_example_mp3",
-                f"example audio file {ref!r} is truncated or has an invalid MP3 header",
+                code,
+                f"{kind} file {ref!r} is truncated or has an invalid MP3 header",
                 source=audio_dir / ref,
             ))
 
