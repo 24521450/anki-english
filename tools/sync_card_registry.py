@@ -10,7 +10,9 @@ from pathlib import Path
 from src.config import ProjectPaths
 from src.deck_builder.card_registry import (
     bootstrap_registry_rows,
+    guid_validation_error,
     load_jsonl as load_registry_jsonl,
+    normalize_bootstrap_guid,
     serialize_registry_rows,
     validate_registry_or_raise,
 )
@@ -23,6 +25,70 @@ def _read_text(path: Path) -> str:
     if not path.exists():
         return ""
     return path.read_text(encoding="utf-8")
+
+
+def _normalize_guid(value: object) -> tuple[str | None, str | None]:
+    guid = normalize_bootstrap_guid(value)
+    error = guid_validation_error(guid)
+    if error is not None:
+        return None, error[1]
+    assert isinstance(guid, str)
+    return guid, None
+
+
+def _normalize_registry_guids(
+    rows: list[dict],
+    *,
+    require_canonical: bool,
+) -> list[dict]:
+    normalized_rows: list[dict] = []
+    seen: dict[str, int] = {}
+    issues: list[BuildIssue] = []
+
+    for idx, row in enumerate(rows, 1):
+        raw_guid = row.get("guid")
+        guid, error = _normalize_guid(raw_guid)
+        normalized_row = dict(row)
+
+        if error is not None:
+            code = (
+                "empty_guid_after_normalization"
+                if error.startswith("GUID is empty")
+                else "invalid_guid"
+            )
+            issues.append(BuildIssue(
+                severity="error",
+                code=code,
+                message=f"row {idx}: {error}",
+            ))
+            normalized_rows.append(normalized_row)
+            continue
+
+        assert guid is not None
+        normalized_row["guid"] = guid
+        normalized_rows.append(normalized_row)
+
+        if require_canonical and raw_guid != guid:
+            issues.append(BuildIssue(
+                severity="error",
+                code="noncanonical_guid",
+                message=f"row {idx} GUID must be stored as {guid!r}, not {raw_guid!r}",
+            ))
+
+        if guid in seen:
+            issues.append(BuildIssue(
+                severity="error",
+                code="duplicate_guid_after_normalization",
+                message=(
+                    f"rows {seen[guid]} and {idx} resolve to the same GUID {guid!r}"
+                ),
+            ))
+        else:
+            seen[guid] = idx
+
+    if issues:
+        raise BuildValidationError(issues)
+    return normalized_rows
 
 
 def _load_vocab_identities(paths: ProjectPaths) -> set[tuple[str, str, str]]:
@@ -38,7 +104,10 @@ def _load_vocab_identities(paths: ProjectPaths) -> set[tuple[str, str, str]]:
 
 
 def _load_registry_base_identities(registry_path: Path) -> set[tuple[str, str, str]]:
-    rows = load_registry_jsonl(registry_path)
+    rows = _normalize_registry_guids(
+        load_registry_jsonl(registry_path),
+        require_canonical=True,
+    )
     validate_registry_or_raise(rows)
     return {
         (
@@ -78,7 +147,12 @@ def main(argv: list[str] | None = None) -> int:
         if args.registry.exists() and not args.force:
             print(f"Refusing to overwrite existing registry: {args.registry}", file=sys.stderr)
             return 1
+        _normalize_registry_guids(
+            load_registry_jsonl(args.notes_jsonl),
+            require_canonical=False,
+        )
         rows = bootstrap_registry_rows(args.notes_jsonl)
+        rows = _normalize_registry_guids(rows, require_canonical=False)
         validate_registry_or_raise(rows)
         canonical_text = serialize_registry_rows(rows)
         args.registry.parent.mkdir(parents=True, exist_ok=True)
@@ -90,7 +164,10 @@ def main(argv: list[str] | None = None) -> int:
         if not args.registry.exists():
             print(f"Registry file not found: {args.registry}", file=sys.stderr)
             return 1
-        rows = load_registry_jsonl(args.registry)
+        rows = _normalize_registry_guids(
+            load_registry_jsonl(args.registry),
+            require_canonical=True,
+        )
         validate_registry_or_raise(rows)
         print(f"Registry OK: {args.registry}", file=sys.stderr)
         return 0

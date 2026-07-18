@@ -62,7 +62,7 @@ def _registry_row(word: str, guid: str = "guid_conq", deck: str | None = None) -
 
 def _semantic_row(word: str = "conquer", guid: str = "guid_conq") -> dict:
     return {
-        "schema_version": 2,
+        "schema_version": 4,
         "guid": guid,
         "word": word,
         "cefr": "C1",
@@ -72,6 +72,10 @@ def _semantic_row(word: str = "conquer", guid: str = "guid_conq") -> dict:
         "audit_sha256": "a" * 64,
         "source_fingerprint": "b" * 64,
         "idiom_audit_sha256": "c" * 64,
+        "vietnamese_review_sha256": "d" * 64,
+        "semantic_policy_sha256": "e" * 64,
+        "definition_review_sha256": "f" * 64,
+        "sense_merge_review_sha256": "0" * 64,
         "idioms": [],
         "senses": [{
             "semantic_sense_id": "sem_conquer",

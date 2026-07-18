@@ -1,12 +1,14 @@
 """Report-only audit for potentially redundant semantic senses."""
 from __future__ import annotations
 
-import hashlib
+import copy
 import json
 import re
 from collections import Counter
 from datetime import date
 from typing import Iterable
+
+from src.deck_builder.canonical_io import canonical_text_sha256
 
 
 SCHEMA_VERSION = 1
@@ -20,10 +22,43 @@ REVIEW_DECISIONS = {
     "uncertain",
 }
 CONFIDENCE_VALUES = {"high", "medium", "low"}
+_GENERIC_EVIDENCE_WORDS = {
+    "and",
+    "are",
+    "be",
+    "different",
+    "denote",
+    "denotes",
+    "distinct",
+    "duplicate",
+    "duplicates",
+    "keep",
+    "kept",
+    "meaning",
+    "meanings",
+    "mean",
+    "means",
+    "must",
+    "not",
+    "remain",
+    "semantic",
+    "sense",
+    "senses",
+    "separate",
+    "the",
+    "these",
+    "they",
+    "those",
+}
+_SUSPICIOUS_TOKEN_RE = re.compile(
+    r"(?<!\w)(?:[0-9a-f]{8,}|(?=[a-z0-9_-]{8,}(?!\w))"
+    r"(?=[a-z0-9_-]*[a-z])(?=[a-z0-9_-]*\d)[a-z0-9_-]+)(?!\w)",
+    re.IGNORECASE,
+)
 
 
 def sha256_bytes(payload: bytes) -> str:
-    return hashlib.sha256(payload).hexdigest()
+    return canonical_text_sha256(payload)
 
 
 def _canonical_bytes(value: object) -> bytes:
@@ -37,6 +72,126 @@ def _canonical_bytes(value: object) -> bytes:
 
 def _normalized_vi(value: object) -> str:
     return re.sub(r"\s+", " ", str(value or "")).strip().lower()
+
+
+def _candidate_set_sha256(candidates: list[dict]) -> str:
+    identities = sorted(
+        (
+            [row.get("candidate_id"), row.get("candidate_fingerprint")]
+            for row in candidates
+        ),
+        key=lambda row: (str(row[0] or ""), str(row[1] or "")),
+    )
+    return sha256_bytes(_canonical_bytes(identities))
+
+
+def _candidate_content_fingerprint(candidate: dict) -> str:
+    immutable = {
+        key: candidate.get(key)
+        for key in (
+            "guid",
+            "word",
+            "cefr",
+            "list",
+            "variant",
+            "pos",
+            "triggers",
+            "vi_overlap_groups",
+            "vi_overlap_pairs",
+            "historical_evidence",
+            "senses",
+            "source_coverage",
+        )
+    }
+    return sha256_bytes(_canonical_bytes(immutable))
+
+
+def _distinction_without_ids(
+    value: str,
+    semantic_ids: set[str],
+    dynamic_values: Iterable[object] = (),
+) -> str:
+    normalized = re.sub(r"\s+", " ", value).strip().casefold()
+    interpolations = [*semantic_ids, *(str(item or "") for item in dynamic_values)]
+    for interpolation in sorted(
+        {
+            re.sub(r"\s+", " ", item).strip().casefold()
+            for item in interpolations
+            if item.strip()
+        },
+        key=len,
+        reverse=True,
+    ):
+        if len(interpolation) >= 2:
+            normalized = normalized.replace(interpolation, " ")
+    normalized = re.sub(r"[^\w\s]", " ", normalized, flags=re.UNICODE)
+    return re.sub(r"\s+", " ", normalized).strip()
+
+
+def _is_generic_distinction(
+    value: str,
+    semantic_ids: set[str],
+    dynamic_values: Iterable[object] = (),
+) -> bool:
+    without_ids = _distinction_without_ids(value, semantic_ids, dynamic_values)
+    content_words = {
+        word
+        for word in without_ids.split()
+        if word not in _GENERIC_EVIDENCE_WORDS
+    }
+    return len(content_words) < 2
+
+
+def _contains_exact_review_text(container: object, required: object) -> bool:
+    haystack = re.sub(r"\s+", " ", str(container or "")).strip().casefold()
+    needle = re.sub(r"\s+", " ", str(required or "")).strip().casefold()
+    return bool(needle and needle in haystack)
+
+
+def _sense_grounding_values(sense: dict) -> list[str]:
+    values: list[str] = []
+    seen: set[str] = set()
+    raw_values: list[object] = [
+        sense.get("definition_en"),
+        sense.get("definition_vi"),
+        *(sense.get("examples") or []),
+    ]
+    for source in sense.get("source_evidence") or []:
+        raw_values.extend(
+            [source.get("definition"), *(source.get("examples") or [])]
+        )
+    for value in raw_values:
+        text = str(value or "").strip()
+        if text and text not in seen:
+            seen.add(text)
+            values.append(text)
+    return values
+
+
+def _candidate_distinction_values(candidate: dict) -> list[object]:
+    values: list[object] = [candidate.get("candidate_id"), candidate.get("guid"), candidate.get("word")]
+    for sense in candidate.get("senses") or []:
+        values.extend(_sense_grounding_values(sense))
+        values.extend(sense.get("source_sense_ids") or [])
+    return values
+
+
+def _sense_citation_segment(
+    distinction: str,
+    semantic_id: str,
+    semantic_ids: set[str],
+) -> str:
+    normalized = distinction.casefold()
+    start = normalized.find(semantic_id.casefold())
+    if start < 0:
+        return ""
+    end = len(distinction)
+    content_start = start + len(semantic_id)
+    for other_id in semantic_ids - {semantic_id}:
+        other_start = normalized.find(other_id.casefold(), content_start)
+        if 0 <= other_start < end:
+            end = other_start
+    return distinction[content_start:end]
 
 
 def _vi_overlap_groups(senses: list[dict]) -> tuple[list[list[str]], list[dict]]:
@@ -253,9 +408,7 @@ def build_sense_merge_audit(
     trigger_counts = Counter(
         trigger for candidate in candidates for trigger in candidate["triggers"]
     )
-    candidate_set_sha256 = sha256_bytes(_canonical_bytes([
-        [row["candidate_id"], row["candidate_fingerprint"]] for row in candidates
-    ]))
+    candidate_set_sha256 = _candidate_set_sha256(candidates)
     summary = {
         "schema_version": SCHEMA_VERSION,
         "kind": AUDIT_KIND,
@@ -269,7 +422,12 @@ def build_sense_merge_audit(
     return summary, candidates
 
 
-def scaffold_sense_merge_review(summary: dict, candidates: list[dict]) -> tuple[dict, list[dict]]:
+def scaffold_sense_merge_review(
+    summary: dict,
+    candidates: list[dict],
+    *,
+    existing_review_rows: list[dict] | None = None,
+) -> tuple[dict, list[dict]]:
     review_summary = {
         "schema_version": SCHEMA_VERSION,
         "kind": REVIEW_KIND,
@@ -277,16 +435,41 @@ def scaffold_sense_merge_review(summary: dict, candidates: list[dict]) -> tuple[
         "candidate_cards": len(candidates),
         "input_hashes": dict(sorted(summary.get("input_hashes", {}).items())),
     }
-    rows = [{
-        "candidate_id": candidate["candidate_id"],
-        "candidate_fingerprint": candidate["candidate_fingerprint"],
-        "word": candidate["word"],
-        "decision": "",
-        "confidence": "",
-        "reason": "",
-        "merge_groups": [],
-        "vi_rewrites": [],
-    } for candidate in candidates]
+    existing_by_id: dict[str, dict] = {}
+    duplicate_ids: set[str] = set()
+    for review in existing_review_rows or []:
+        candidate_id = str(review.get("candidate_id") or "")
+        if not candidate_id or candidate_id in existing_by_id:
+            duplicate_ids.add(candidate_id)
+            continue
+        existing_by_id[candidate_id] = review
+
+    rows: list[dict] = []
+    for candidate in candidates:
+        existing = existing_by_id.get(candidate["candidate_id"])
+        if (
+            candidate["candidate_id"] not in duplicate_ids
+            and existing is not None
+            and existing.get("candidate_fingerprint")
+            == candidate["candidate_fingerprint"]
+            and existing.get("word") == candidate["word"]
+        ):
+            rows.append(copy.deepcopy(existing))
+            continue
+        rows.append({
+            "candidate_id": candidate["candidate_id"],
+            "candidate_fingerprint": candidate["candidate_fingerprint"],
+            "word": candidate["word"],
+            "decision": "",
+            "confidence": "",
+            "reason": "",
+            "semantic_distinction": "",
+            "reviewer": "",
+            "reviewed_at": "",
+            "approval": "",
+            "merge_groups": [],
+            "vi_rewrites": [],
+        })
     return review_summary, rows
 
 
@@ -435,6 +618,147 @@ def apply_sense_merge_reviews(
     return reviewed_summary, reviewed
 
 
+def validate_sense_merge_review_for_promotion(
+    summary: dict,
+    candidates: list[dict],
+    review_summary: dict,
+    review_rows: list[dict],
+) -> list[str]:
+    """Validate a canonical review against the current content-derived queue."""
+    errors: list[str] = []
+    candidate_set_sha256 = _candidate_set_sha256(candidates)
+    if summary.get("schema_version") != SCHEMA_VERSION:
+        errors.append("promotion_audit_invalid_schema_version")
+    if summary.get("kind") != AUDIT_KIND:
+        errors.append("promotion_audit_invalid_kind")
+    if summary.get("candidate_cards") != len(candidates):
+        errors.append("promotion_audit_candidate_count_mismatch")
+    if summary.get("candidate_set_sha256") != candidate_set_sha256:
+        errors.append("promotion_audit_candidate_set_mismatch")
+
+    expected: dict[str, dict] = {}
+    for candidate in candidates:
+        candidate_id = str(candidate.get("candidate_id") or "")
+        if not candidate_id or candidate_id in expected:
+            errors.append(f"promotion_audit_duplicate_or_empty_candidate:{candidate_id}")
+            continue
+        expected[candidate_id] = candidate
+        if candidate.get("candidate_fingerprint") != _candidate_content_fingerprint(
+            candidate
+        ):
+            errors.append(f"promotion_audit_stale_candidate:{candidate_id}")
+
+    if review_summary.get("schema_version") != SCHEMA_VERSION:
+        errors.append("promotion_review_invalid_schema_version")
+    if review_summary.get("kind") != REVIEW_KIND:
+        errors.append("promotion_review_invalid_kind")
+    if review_summary.get("candidate_set_sha256") != candidate_set_sha256:
+        errors.append("promotion_review_stale_candidate_set")
+    if review_summary.get("candidate_cards") != len(candidates):
+        errors.append("promotion_review_candidate_count_mismatch")
+
+    supplied: set[str] = set()
+    distinction_keys: set[str] = set()
+    for review in review_rows:
+        candidate_id = str(review.get("candidate_id") or "")
+        if not candidate_id or candidate_id in supplied:
+            errors.append(
+                f"promotion_review_duplicate_or_empty_candidate:{candidate_id}"
+            )
+            continue
+        supplied.add(candidate_id)
+        candidate = expected.get(candidate_id)
+        if candidate is None:
+            errors.append(f"promotion_review_extra_candidate:{candidate_id}")
+            continue
+        if review.get("candidate_fingerprint") != candidate.get(
+            "candidate_fingerprint"
+        ):
+            errors.append(f"promotion_review_stale_candidate:{candidate_id}")
+        if review.get("word") != candidate.get("word"):
+            errors.append(f"promotion_review_word_mismatch:{candidate_id}")
+
+        decision = str(review.get("decision") or "")
+        if decision != "keep_separate":
+            errors.append(
+                f"promotion_review_open_decision:{candidate_id}:{decision}"
+            )
+        if review.get("confidence") not in CONFIDENCE_VALUES:
+            errors.append(f"promotion_review_invalid_confidence:{candidate_id}")
+        if review.get("approval") != "approved":
+            errors.append(f"promotion_review_not_approved:{candidate_id}")
+        for field in ("reason", "semantic_distinction", "reviewer", "reviewed_at"):
+            if not str(review.get(field) or "").strip():
+                errors.append(f"promotion_review_missing_{field}:{candidate_id}")
+        reviewed_at = str(review.get("reviewed_at") or "")
+        if reviewed_at:
+            try:
+                date.fromisoformat(reviewed_at)
+            except ValueError:
+                errors.append(f"promotion_review_invalid_reviewed_at:{candidate_id}")
+        if review.get("merge_groups"):
+            errors.append(f"promotion_review_unapplied_merge:{candidate_id}")
+        if review.get("vi_rewrites"):
+            errors.append(f"promotion_review_unapplied_reword:{candidate_id}")
+
+        distinction = str(review.get("semantic_distinction") or "").strip()
+        semantic_ids = {
+            str(sense.get("semantic_sense_id") or "")
+            for sense in candidate.get("senses") or []
+            if sense.get("semantic_sense_id")
+        }
+        cited_ids = {
+            semantic_id
+            for semantic_id in semantic_ids
+            if semantic_id.casefold() in distinction.casefold()
+        }
+        if distinction and len(cited_ids) < 2:
+            errors.append(
+                f"promotion_review_insufficient_sense_references:{candidate_id}"
+            )
+        senses_by_id = {
+            str(sense.get("semantic_sense_id") or ""): sense
+            for sense in candidate.get("senses") or []
+        }
+        for semantic_id in sorted(cited_ids):
+            grounding = _sense_grounding_values(senses_by_id[semantic_id])
+            citation_segment = _sense_citation_segment(
+                distinction,
+                semantic_id,
+                semantic_ids,
+            )
+            if not grounding or not any(
+                _contains_exact_review_text(citation_segment, value)
+                for value in grounding
+            ):
+                errors.append(
+                    "promotion_review_missing_sense_grounding:"
+                    f"{candidate_id}:{semantic_id}"
+                )
+        dynamic_values = _candidate_distinction_values(candidate)
+        distinction_key = _distinction_without_ids(
+            distinction,
+            semantic_ids,
+            dynamic_values,
+        )
+        if distinction and _SUSPICIOUS_TOKEN_RE.search(distinction_key):
+            errors.append(f"promotion_review_suspicious_token:{candidate_id}")
+        if distinction and _is_generic_distinction(
+            distinction,
+            semantic_ids,
+            dynamic_values,
+        ):
+            errors.append(f"promotion_review_generic_distinction:{candidate_id}")
+        if distinction:
+            if distinction_key in distinction_keys:
+                errors.append(f"promotion_review_duplicate_distinction:{candidate_id}")
+            distinction_keys.add(distinction_key)
+
+    for candidate_id in sorted(set(expected) - supplied):
+        errors.append(f"promotion_review_missing_candidate:{candidate_id}")
+    return sorted(errors)
+
+
 def build_sense_merge_review_bundle(
     reviewed_candidates: list[dict],
     *,
@@ -562,7 +886,10 @@ def serialize_sense_merge_audit(summary: dict, candidates: list[dict]) -> str:
 
 
 def serialize_sense_merge_review(summary: dict, rows: list[dict]) -> str:
-    return serialize_sense_merge_audit(summary, rows)
+    return serialize_sense_merge_audit(
+        summary,
+        sorted(rows, key=lambda row: str(row.get("candidate_id") or "")),
+    )
 
 
 def render_sense_merge_markdown(summary: dict, candidates: list[dict]) -> str:

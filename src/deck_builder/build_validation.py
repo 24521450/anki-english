@@ -1,6 +1,7 @@
 """Core validation for built Anki note artifacts."""
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 import re
@@ -170,7 +171,16 @@ def _parse_txt_cards(text: str, source: Path | str | None = None) -> tuple[list[
     for line_no, line in enumerate(lines[len(CANONICAL_TXT_HEADER):], len(CANONICAL_TXT_HEADER) + 1):
         if not line.strip():
             continue
-        parts = line.split("\t")
+        try:
+            parts = next(csv.reader([line], delimiter="\t", strict=True))
+        except csv.Error as exc:
+            issues.append(BuildIssue(
+                "error",
+                "txt_malformed_row",
+                f"line {line_no}: {exc}",
+                source=source,
+            ))
+            continue
         if len(parts) in {
             len(CARD_FIELDS) - 3,
             len(CARD_FIELDS) - 2,

@@ -5,7 +5,6 @@ writes; these helpers only read rows and render canonical bytes.
 """
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -13,6 +12,7 @@ from pathlib import Path
 from typing import Iterable
 
 from .semantic_audit import load_jsonl, validate_audit_rows
+from .canonical_io import canonical_text_sha256
 
 
 MANIFEST_SCHEMA_VERSION = 1
@@ -34,7 +34,7 @@ def canonical_json_bytes(value: object, *, newline: bool = False) -> bytes:
 
 
 def sha256_bytes(value: bytes) -> str:
-    return hashlib.sha256(value).hexdigest()
+    return canonical_text_sha256(value)
 
 
 def sha256_file(path: Path) -> str:

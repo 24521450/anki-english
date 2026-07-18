@@ -6,6 +6,7 @@ from pathlib import Path
 from src.deck_builder.build_contracts import BuildNotesResult, BuiltCard
 from src.deck_builder.build_validation import (
     CANONICAL_TXT_HEADER,
+    _parse_txt_cards,
     serialize_jsonl,
     serialize_txt,
     validate_artifact_paths,
@@ -400,6 +401,21 @@ def test_validate_artifact_paths_rejects_txt_field_drift(tmp_path: Path):
 
     assert not report.ok
     assert any(issue.code == "artifact_field_mismatch" for issue in report.issues)
+
+
+def test_txt_parser_decodes_legacy_quoted_hash_guid():
+    card = _card("P7#quoted")
+    line = card.to_tsv()
+    assert line.startswith("P7#quoted\t")
+    legacy_line = '"P7#quoted"' + line[len("P7#quoted"):]
+
+    cards, issues = _parse_txt_cards(
+        "\n".join([*CANONICAL_TXT_HEADER, legacy_line]) + "\n",
+        "legacy-export",
+    )
+
+    assert not issues
+    assert cards == [card]
 
 
 def test_validate_artifact_paths_rejects_duplicate_guid(tmp_path: Path):

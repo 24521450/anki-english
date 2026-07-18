@@ -2,8 +2,13 @@
 
 **Status:** accepted; implemented 2026-07-16
 
-**Amended by:** ADR 0018, which adds the explicit compression/counterfactual
-contract for candidates in the long-gloss queue.
+**Amended by:** [ADR 0018](./0018-reviewed-bilingual-lexical-gloss-concision.md),
+which adds the explicit compression/counterfactual contract for candidates in
+the long-gloss queue.
+
+**Superseded by:** [ADR 0019](./0019-all-sense-vietnamese-naturalness-gate.md)
+for promotion-gate coverage. The naturalness principles and long-gloss triage
+rationale here remain applicable.
 
 ## Context
 

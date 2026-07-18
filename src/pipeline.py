@@ -73,9 +73,22 @@ def run_validate(dry_run: bool) -> int:
         print(report.error_text(), file=sys.stderr)
         return 1
 
+    from src.deck_builder.release_guard import run_release_guard
+
+    try:
+        guard_report = run_release_guard(paths, "canonical")
+    except (OSError, ValueError) as exc:
+        print(f"Canonical release guard failed: {exc}", file=sys.stderr)
+        return 1
+
     print(
         f"  Validation OK: cards={report.card_count} "
         f"jsonl_sha256={report.jsonl_sha256} txt_sha256={report.txt_sha256}",
+        file=sys.stderr,
+    )
+    print(
+        "  Canonical release guard OK: "
+        f"checks={','.join(guard_report.checks)}",
         file=sys.stderr,
     )
     print("  Deck distribution summary:", file=sys.stderr)

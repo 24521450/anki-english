@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 
 import pytest
@@ -12,6 +13,8 @@ from src.deck_builder.sense_merge_audit import (
     render_sense_merge_markdown,
     scaffold_sense_merge_review,
     serialize_sense_merge_audit,
+    serialize_sense_merge_review,
+    validate_sense_merge_review_for_promotion,
 )
 
 
@@ -98,6 +101,41 @@ def _build():
     )
 
 
+def _approved_keep_review():
+    summary, candidates = _build()
+    review_summary, review_rows = scaffold_sense_merge_review(summary, candidates)
+    for review in review_rows:
+        candidate = next(
+            row
+            for row in candidates
+            if row["candidate_id"] == review["candidate_id"]
+        )
+        left, right = candidate["senses"][:2]
+        explanations = {
+            "barrier": (
+                "one is a tangible obstruction while the other is a figurative hindrance"
+            ),
+            "cooperate": (
+                "one is mutual joint work while the other is compliance with a request"
+            ),
+        }
+        review.update({
+            "decision": "keep_separate",
+            "confidence": "high",
+            "reason": f"Reviewed the distinct uses of {candidate['word']}.",
+            "semantic_distinction": (
+                f"{left['semantic_sense_id']} denotes {left['definition_en']} in "
+                f'"{left["examples"][0]}"; {right["semantic_sense_id"]} denotes '
+                f'{right["definition_en"]} in "{right["examples"][0]}"; '
+                f"{explanations[candidate['word']]}"
+            ),
+            "reviewer": "sense-reviewer",
+            "reviewed_at": "2026-07-18",
+            "approval": "approved",
+        })
+    return summary, candidates, review_summary, review_rows
+
+
 def test_builds_union_of_vi_overlap_and_historical_reexpansion_deterministically():
     summary, candidates = _build()
 
@@ -170,6 +208,171 @@ def test_review_rejects_stale_or_incomplete_rows():
             review_summary,
             review_rows,
         )
+
+
+def test_review_scaffold_reuses_only_unchanged_fingerprints():
+    summary, candidates, _, reviews = _approved_keep_review()
+
+    _, reused = scaffold_sense_merge_review(
+        summary, candidates, existing_review_rows=reviews
+    )
+    assert reused == reviews
+
+    stale = json.loads(json.dumps(reviews))
+    stale[0]["candidate_fingerprint"] = "0" * 64
+    _, reset = scaffold_sense_merge_review(
+        summary, candidates, existing_review_rows=stale
+    )
+    assert reset[0]["decision"] == ""
+    assert reset[0]["candidate_fingerprint"] == candidates[0][
+        "candidate_fingerprint"
+    ]
+
+
+def test_promotion_review_accepts_only_exact_approved_evidence_bound_keeps():
+    summary, candidates, review_summary, review_rows = _approved_keep_review()
+
+    assert validate_sense_merge_review_for_promotion(
+        summary,
+        candidates,
+        review_summary,
+        review_rows,
+    ) == []
+    assert serialize_sense_merge_review(
+        review_summary, list(reversed(review_rows))
+    ) == serialize_sense_merge_review(review_summary, review_rows)
+    assert all(
+        field in review_rows[0]
+        for field in ("semantic_distinction", "reviewer", "reviewed_at", "approval")
+    )
+
+
+def test_promotion_review_uses_content_binding_without_registry_hash_cycle():
+    summary, candidates, review_summary, review_rows = _approved_keep_review()
+    post_promotion_summary = {
+        **summary,
+        "input_hashes": {
+            **summary["input_hashes"],
+            "semantic_registry": "post-promotion-metadata-hash",
+        },
+    }
+
+    assert validate_sense_merge_review_for_promotion(
+        post_promotion_summary,
+        candidates,
+        review_summary,
+        review_rows,
+    ) == []
+
+
+def test_promotion_review_rejects_missing_stale_and_tampered_candidates():
+    summary, candidates, review_summary, review_rows = _approved_keep_review()
+    missing_errors = validate_sense_merge_review_for_promotion(
+        summary,
+        candidates,
+        review_summary,
+        review_rows[:-1],
+    )
+    assert any("promotion_review_missing_candidate" in error for error in missing_errors)
+
+    stale_rows = [dict(row) for row in review_rows]
+    stale_rows[0]["candidate_fingerprint"] = "stale"
+    stale_errors = validate_sense_merge_review_for_promotion(
+        summary,
+        candidates,
+        review_summary,
+        stale_rows,
+    )
+    assert any("promotion_review_stale_candidate" in error for error in stale_errors)
+
+    tampered_candidates = [dict(row) for row in candidates]
+    tampered_candidates[0] = {
+        **tampered_candidates[0],
+        "word": "tampered",
+    }
+    tampered_errors = validate_sense_merge_review_for_promotion(
+        summary,
+        tampered_candidates,
+        review_summary,
+        review_rows,
+    )
+    assert any("promotion_audit_stale_candidate" in error for error in tampered_errors)
+
+
+def test_promotion_review_rejects_generic_or_bulk_reused_distinctions():
+    summary, candidates, review_summary, review_rows = _approved_keep_review()
+    first_ids = [
+        sense["semantic_sense_id"] for sense in candidates[0]["senses"][:2]
+    ]
+    review_rows[0]["semantic_distinction"] = (
+        f"{first_ids[0]} and {first_ids[1]} are distinct meanings."
+    )
+    generic_errors = validate_sense_merge_review_for_promotion(
+        summary,
+        candidates,
+        review_summary,
+        review_rows,
+    )
+    assert any("promotion_review_generic_distinction" in error for error in generic_errors)
+
+    _, candidates, review_summary, review_rows = _approved_keep_review()
+    for candidate, review in zip(candidates, review_rows):
+        ids = [sense["semantic_sense_id"] for sense in candidate["senses"][:2]]
+        review["semantic_distinction"] = (
+            f"{ids[0]} concerns a physical context; "
+            f"{ids[1]} concerns an abstract context."
+        )
+    duplicate_errors = validate_sense_merge_review_for_promotion(
+        summary,
+        candidates,
+        review_summary,
+        review_rows,
+    )
+    assert any(
+        "promotion_review_duplicate_distinction" in error
+        for error in duplicate_errors
+    )
+
+
+def test_promotion_review_rejects_identifier_filler_without_sense_grounding():
+    summary, candidates, review_summary, review_rows = _approved_keep_review()
+    for candidate, review in zip(candidates, review_rows):
+        token = hashlib.sha256(review["candidate_id"].encode()).hexdigest()[:12]
+        ids = [sense["semantic_sense_id"] for sense in candidate["senses"][:2]]
+        review["semantic_distinction"] = (
+            f"{ids[0]} alpha {token}; {ids[1]} beta {token}"
+        )
+
+    errors = validate_sense_merge_review_for_promotion(
+        summary,
+        candidates,
+        review_summary,
+        review_rows,
+    )
+
+    assert any("promotion_review_missing_sense_grounding" in error for error in errors)
+    assert any("promotion_review_suspicious_token" in error for error in errors)
+
+
+@pytest.mark.parametrize(
+    "decision",
+    ["uncertain", "merge_candidate", "keep_separate_reword"],
+)
+def test_promotion_review_blocks_open_or_unapplied_decisions(decision):
+    summary, candidates, review_summary, review_rows = _approved_keep_review()
+    review_rows[0]["decision"] = decision
+
+    errors = validate_sense_merge_review_for_promotion(
+        summary,
+        candidates,
+        review_summary,
+        review_rows,
+    )
+
+    assert (
+        f"promotion_review_open_decision:{review_rows[0]['candidate_id']}:{decision}"
+        in errors
+    )
 
 
 def test_keep_separate_reword_requires_valid_rewrite():

@@ -193,3 +193,154 @@ def test_sync_card_registry_sync_reports_missing_vocab_identity(tmp_path: Path):
     )
 
     assert sync_card_registry.main(["--sync", "--registry", str(registry)]) == 0
+
+
+def test_bootstrap_normalizes_one_outer_quote_pair_and_is_idempotent(tmp_path: Path):
+    notes = tmp_path / "anki_notes.jsonl"
+    registry = tmp_path / "card_registry.jsonl"
+    _write_jsonl(
+        notes,
+        [
+            {
+                "guid": '"P7#quoted"',
+                "word": "quoted",
+                "pos": "noun",
+                "cefr": "A1",
+                "deck": "Deck A",
+                "tags": "",
+            },
+            {
+                "guid": "P7canonical",
+                "word": "canonical",
+                "pos": "noun",
+                "cefr": "A1",
+                "deck": "Deck B",
+                "tags": "",
+            },
+        ],
+    )
+
+    command = [
+        "--bootstrap-from-build",
+        "--notes-jsonl",
+        str(notes),
+        "--registry",
+        str(registry),
+    ]
+    assert sync_card_registry.main(command) == 0
+    first = registry.read_bytes()
+    rows = [json.loads(line) for line in first.decode("utf-8").splitlines()]
+    assert [row["guid"] for row in rows] == ["P7#quoted", "P7canonical"]
+
+    assert sync_card_registry.main([*command, "--force"]) == 0
+    assert registry.read_bytes() == first
+
+
+def test_bootstrap_rejects_guid_collision_after_normalization(tmp_path: Path):
+    notes = tmp_path / "anki_notes.jsonl"
+    registry = tmp_path / "card_registry.jsonl"
+    _write_jsonl(
+        notes,
+        [
+            {
+                "guid": '"same#guid"',
+                "word": "first",
+                "pos": "noun",
+                "cefr": "A1",
+                "deck": "Deck A",
+                "tags": "",
+            },
+            {
+                "guid": "same#guid",
+                "word": "second",
+                "pos": "noun",
+                "cefr": "A1",
+                "deck": "Deck B",
+                "tags": "",
+            },
+        ],
+    )
+
+    with pytest.raises(BuildValidationError) as exc_info:
+        sync_card_registry.main([
+            "--bootstrap-from-build",
+            "--notes-jsonl",
+            str(notes),
+            "--registry",
+            str(registry),
+        ])
+
+    assert any(
+        issue.code == "duplicate_guid_after_normalization"
+        for issue in exc_info.value.issues
+    )
+    assert not registry.exists()
+
+
+@pytest.mark.parametrize(
+    "guid",
+    [
+        '""',
+        '"P7#guid"tail',
+        '""P7#guid""',
+        "'P7#single'",
+        42,
+    ],
+)
+def test_bootstrap_rejects_empty_or_invalid_normalized_guid(
+    tmp_path: Path,
+    guid: object,
+):
+    notes = tmp_path / "anki_notes.jsonl"
+    registry = tmp_path / "card_registry.jsonl"
+    _write_jsonl(
+        notes,
+        [{
+            "guid": guid,
+            "word": "invalid",
+            "pos": "noun",
+            "cefr": "A1",
+            "deck": "Deck A",
+            "tags": "",
+        }],
+    )
+
+    with pytest.raises(BuildValidationError) as exc_info:
+        sync_card_registry.main([
+            "--bootstrap-from-build",
+            "--notes-jsonl",
+            str(notes),
+            "--registry",
+            str(registry),
+        ])
+
+    assert any(
+        issue.code in {"empty_guid_after_normalization", "invalid_guid"}
+        for issue in exc_info.value.issues
+    )
+    assert not registry.exists()
+
+
+def test_check_rejects_noncanonical_quoted_registry_guid(tmp_path: Path):
+    registry = tmp_path / "card_registry.jsonl"
+    _write_jsonl(
+        registry,
+        [{
+            "word": "quoted",
+            "cefr": "A1",
+            "list": "NO_LIST",
+            "variant": "",
+            "pos": "noun",
+            "guid": '"P7#quoted"',
+            "status": "active",
+            "deck_override": "Deck A",
+        }],
+    )
+
+    with pytest.raises(BuildValidationError) as exc_info:
+        sync_card_registry.main(["--check", "--registry", str(registry)])
+
+    assert any(
+        issue.code == "noncanonical_guid"
+        for issue in exc_info.value.issues
+    )

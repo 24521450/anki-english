@@ -54,7 +54,7 @@ def _manual_row(word: str) -> dict:
 
 def _semantic_row(word: str, *, idioms: list[dict] | None = None) -> dict:
     return {
-        "schema_version": 2,
+        "schema_version": 4,
         "guid": f"guid-{word}",
         "word": word,
         "cefr": "A1",
@@ -64,6 +64,10 @@ def _semantic_row(word: str, *, idioms: list[dict] | None = None) -> dict:
         "audit_sha256": "a" * 64,
         "source_fingerprint": "b" * 64,
         "idiom_audit_sha256": "c" * 64,
+        "vietnamese_review_sha256": "d" * 64,
+        "semantic_policy_sha256": "e" * 64,
+        "definition_review_sha256": "f" * 64,
+        "sense_merge_review_sha256": "0" * 64,
         "idioms": list(idioms or []),
         "senses": [{
             "semantic_sense_id": f"sem_{word}",

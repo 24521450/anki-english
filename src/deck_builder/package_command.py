@@ -17,6 +17,22 @@ from pathlib import Path
 import genanki
 
 from src.config import ProjectPaths
+from src.deck_builder.package_contract import (
+    EAVM_FIELD_NAMES,
+    EAVM_JSON_TO_FIELD,
+    EAVM_MODEL_ID,
+    EAVM_MODEL_NAME,
+    EAVM_REQUIREMENTS_BY_FIELD,
+    EAVM_TEMPLATE_NAMES,
+)
+from src.deck_builder.package_provenance import (
+    invalidate_verified_import_receipt,
+    media_file_map,
+    package_provenance_inputs,
+    provenance_path_for,
+    verified_receipt_path_for,
+    write_package_provenance,
+)
 from src.design_css import design_css_in_sync, load_production_css
 
 paths = ProjectPaths()
@@ -34,43 +50,8 @@ PRODUCTION_ANSWER_PREFIX = (
 STYLING_TXT = PROJECT_ROOT / "design" / "EAVM" / "styling.txt"
 DESIGN_INDEX = PROJECT_ROOT / "design" / "index.html"
 OUTPUT_APKG = PROJECT_ROOT / "ielts_deck.apkg"
-
-# Identity of the established local EAVM note type. Changing this ID or its
-# field order makes Anki create a suffixed duplicate during package import.
-EAVM_MODEL_NAME = "English Academic Vocabulary Model"
-EAVM_MODEL_ID = 1607392819
-EAVM_JSON_TO_FIELD: tuple[tuple[str, str], ...] = (
-    ("word", "Word"),
-    ("pos", "PartOfSpeech"),
-    ("ipa", "IPA"),
-    ("definition", "Definition"),
-    ("example", "Example"),
-    ("collocations", "Collocations"),
-    ("wordfamily", "WordFamily"),
-    ("uk_audio", "AudioUK"),
-    ("us_audio", "AudioUS"),
-    ("source1", "AudioSource"),
-    ("source2", "Source"),
-    ("cefr", "CEFRLevel"),
-    ("idioms", "Idioms"),
-    ("synonyms", "Synonyms"),
-    ("antonyms", "Antonyms"),
-    ("example_audio_uk", "ExampleAudioUK"),
-    ("example_audio_us", "ExampleAudioUS"),
-    ("idiom_example_audio_uk", "IdiomExampleAudioUK"),
-    ("idiom_example_audio_us", "IdiomExampleAudioUS"),
-    ("definition_vi", "DefinitionVI"),
-    ("cambridge_url", "CambridgeURL"),
-    ("oxford_pos_urls", "OxfordPOSURLs"),
-    ("production_answer", "ProductionAnswer"),
-    ("sense_pos", "SensePOS"),
-    ("idiom_meaning_vi", "IdiomMeaningVI"),
-)
-EAVM_FIELD_NAMES: tuple[str, ...] = tuple(
-    field_name for _, field_name in EAVM_JSON_TO_FIELD
-)
-EAVM_TEMPLATE_NAMES = ("Recognition", "Production (VI -> EN)")
-
+PACKAGER_CONTRACT_SOURCE = Path(__file__).with_name("package_contract.py")
+PACKAGER_IMPLEMENTATION = Path(__file__)
 
 @dataclass(frozen=True)
 class EavmTemplate:
@@ -146,15 +127,8 @@ def configure_genanki_requirements(model: genanki.Model) -> None:
 
     field_index = {name: index for index, name in enumerate(EAVM_FIELD_NAMES)}
     model._req = [
-        [0, "any", [field_index["Word"]]],
-        [
-            1,
-            "all",
-            sorted(
-                field_index[name]
-                for name in ("DefinitionVI", "Example", "ProductionAnswer")
-            ),
-        ],
+        [ordinal, mode, sorted(field_index[name] for name in required_fields)]
+        for ordinal, mode, required_fields in EAVM_REQUIREMENTS_BY_FIELD
     ]
 
 
@@ -163,6 +137,14 @@ def check_design_sync() -> bool:
         return design_css_in_sync(DESIGN_INDEX, STYLING_TXT)
     except (OSError, ValueError):
         return False
+
+
+def validate_canonical_release_state(project_paths: ProjectPaths) -> None:
+    """Fail before packaging unless every semantic/build authority reproduces."""
+
+    from src.deck_builder.release_guard import run_release_guard
+
+    run_release_guard(project_paths, "canonical")
 
 def generate_deterministic_id(name: str) -> int:
     """Generate a stable positive 31-bit integer ID from SHA-1 of the string name.
@@ -214,6 +196,12 @@ def main(argv: list[str] | None = None) -> int:
         print("Error: Design sync check failed! Aborting packaging.", file=sys.stderr)
         return 1
 
+    try:
+        validate_canonical_release_state(paths)
+    except (OSError, ValueError) as exc:
+        print(f"Error: Canonical release guard failed: {exc}", file=sys.stderr)
+        return 1
+
     # 2. Check inputs
     if not NOTES_JSONL.exists():
         print(f"Error: {NOTES_JSONL.name} not found. Run build step first.", file=sys.stderr)
@@ -227,6 +215,28 @@ def main(argv: list[str] | None = None) -> int:
     )
     if any(not path.exists() for path in required_design_files):
         print("Error: EAVM template/styling files not found in design/EAVM/.", file=sys.stderr)
+        return 1
+    provenance_inputs = package_provenance_inputs(
+        paths,
+        notes_jsonl=NOTES_JSONL,
+        recognition_front=FRONT_TEMPLATE,
+        recognition_back=BACK_TEMPLATE,
+        production_front=PRODUCTION_FRONT_TEMPLATE,
+        production_answer_prefix=PRODUCTION_ANSWER_PREFIX,
+        styling=STYLING_TXT,
+        design_index=DESIGN_INDEX,
+        packager_contract_source=PACKAGER_CONTRACT_SOURCE,
+        packager_implementation=PACKAGER_IMPLEMENTATION,
+    )
+    missing_provenance_inputs = [
+        label for label, path in provenance_inputs.items() if not path.is_file()
+    ]
+    if missing_provenance_inputs:
+        print(
+            "Error: Missing APKG provenance input(s): "
+            + ", ".join(missing_provenance_inputs),
+            file=sys.stderr,
+        )
         return 1
 
     # 3. Read templates & CSS styling
@@ -353,9 +363,24 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[dry-run] Successfully validated notes, templates, and media. Output would be written to {OUTPUT_APKG}", file=sys.stderr)
         return 0
 
-    # Write package file
-    package.write_to_file(OUTPUT_APKG)
+    # Write the package and bind it to every canonical release input.  A new
+    # package invalidates any receipt from an earlier verified live import.
+    try:
+        package.write_to_file(OUTPUT_APKG)
+        receipt_path = verified_receipt_path_for(OUTPUT_APKG)
+        invalidate_verified_import_receipt(receipt_path)
+        provenance_path = provenance_path_for(OUTPUT_APKG)
+        write_package_provenance(
+            provenance_path,
+            OUTPUT_APKG,
+            provenance_inputs,
+            media_file_map(Path(path) for path in media_files),
+        )
+    except (OSError, ValueError) as exc:
+        print(f"Error: Could not finalize APKG provenance: {exc}", file=sys.stderr)
+        return 1
     print(f"[OK] Successfully wrote {OUTPUT_APKG}", file=sys.stderr)
+    print(f"[OK] Wrote package provenance {provenance_path}", file=sys.stderr)
     return 0
 
 if __name__ == "__main__":

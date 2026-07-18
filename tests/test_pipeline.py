@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 import pytest
 import src.pipeline as pipeline
 
@@ -177,3 +178,37 @@ def test_pipeline_main_rejects_split_range(capsys):
     assert code == 1
     captured = capsys.readouterr()
     assert "Unknown stage 'split'" in captured.err
+
+
+def test_validate_stage_fails_when_canonical_release_guard_rejects_state(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+):
+    notes_jsonl = tmp_path / "anki_notes.jsonl"
+    notes_txt = tmp_path / "anki_notes.txt"
+    notes_jsonl.write_text("{}\n", encoding="utf-8")
+    notes_txt.write_text("fixture\n", encoding="utf-8")
+    monkeypatch.setattr(pipeline, "NOTES_JSONL", notes_jsonl)
+    monkeypatch.setattr(pipeline, "NOTES_TXT", notes_txt)
+    monkeypatch.setattr(
+        "src.deck_builder.build_validation.validate_artifact_paths",
+        lambda *_args: SimpleNamespace(
+            ok=True,
+            card_count=1,
+            jsonl_sha256="a" * 64,
+            txt_sha256="b" * 64,
+            deck_counts={"Deck": 1},
+        ),
+    )
+
+    def reject(*_args, **_kwargs):
+        raise ValueError("stale Semantic Registry")
+
+    monkeypatch.setattr(
+        "src.deck_builder.release_guard.run_release_guard",
+        reject,
+    )
+
+    assert pipeline.run_validate(False) == 1
+    assert "Canonical release guard failed" in capsys.readouterr().err

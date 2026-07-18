@@ -13,14 +13,17 @@ from src.deck_builder.build_contracts import (
 )
 from src.deck_builder.sense_pos import derive_sense_pos_cell
 from src.deck_builder.semantic_audit import validate_audit_rows
+from src.deck_builder.canonical_io import canonical_text_bytes, canonical_text_sha256
 
 
-SEMANTIC_REGISTRY_SCHEMA_VERSION = 3
+SEMANTIC_REGISTRY_SCHEMA_VERSION = 4
 
 _ROW_FIELDS = {
     "schema_version", "guid", "word", "cefr", "list", "variant", "pos",
     "audit_sha256", "source_fingerprint", "senses",
-    "idiom_audit_sha256", "vietnamese_review_sha256", "idioms",
+    "idiom_audit_sha256", "vietnamese_review_sha256",
+    "semantic_policy_sha256", "definition_review_sha256",
+    "sense_merge_review_sha256", "idioms",
 }
 _SENSE_FIELDS = {
     "semantic_sense_id", "order", "definition_en", "definition_vi", "examples",
@@ -52,6 +55,9 @@ def _validate_structure(rows: list[dict]) -> list[str]:
     audit_hashes: set[str] = set()
     idiom_audit_hashes: set[str] = set()
     vietnamese_review_hashes: set[str] = set()
+    semantic_policy_hashes: set[str] = set()
+    definition_review_hashes: set[str] = set()
+    sense_merge_review_hashes: set[str] = set()
 
     for row in rows:
         if not isinstance(row, dict):
@@ -100,6 +106,17 @@ def _validate_structure(rows: list[dict]) -> list[str]:
             errors.append(f"invalid_vietnamese_review_sha256:{guid}")
         else:
             vietnamese_review_hashes.add(vietnamese_review_sha)
+
+        for field, hashes in (
+            ("semantic_policy_sha256", semantic_policy_hashes),
+            ("definition_review_sha256", definition_review_hashes),
+            ("sense_merge_review_sha256", sense_merge_review_hashes),
+        ):
+            value = row.get(field)
+            if not isinstance(value, str) or not _SHA256_RE.fullmatch(value):
+                errors.append(f"invalid_{field}:{guid}")
+            else:
+                hashes.add(value)
 
         senses = row.get("senses")
         if not isinstance(senses, list):
@@ -213,6 +230,12 @@ def _validate_structure(rows: list[dict]) -> list[str]:
         errors.append("multiple_idiom_audit_sha256")
     if len(vietnamese_review_hashes) > 1:
         errors.append("multiple_vietnamese_review_sha256")
+    if len(semantic_policy_hashes) > 1:
+        errors.append("multiple_semantic_policy_sha256")
+    if len(definition_review_hashes) > 1:
+        errors.append("multiple_definition_review_sha256")
+    if len(sense_merge_review_hashes) > 1:
+        errors.append("multiple_sense_merge_review_sha256")
     return errors
 
 
@@ -220,15 +243,7 @@ def validate_semantic_registry_rows(
     rows: list[dict], card_registry_rows: list[dict]
 ) -> list[str]:
     """Validate registry structure and exact active Card Identity coverage."""
-    # Keep report-only/fixture consumers able to inspect the retired v2
-    # payload shape while production promotion/build inputs (schema v3) are
-    # validated strictly.  The canonical registry emitted by promotion is
-    # always v3 and carries the Vietnamese-review provenance hash.
-    legacy_v2 = bool(rows) and all(
-        isinstance(row, dict) and row.get("schema_version") == 2
-        for row in rows
-    )
-    errors = [] if legacy_v2 else _validate_structure(rows)
+    errors = _validate_structure(rows)
     active_by_guid: dict[str, dict] = {}
     for registry_row in card_registry_rows:
         if not isinstance(registry_row, dict):
@@ -259,13 +274,16 @@ def validate_semantic_registry_rows(
     return errors
 
 
-def promote_audit_rows(
+def _render_promoted_audit_rows(
     audit_rows: list[dict],
     card_registry_rows: list[dict],
     *,
     audit_sha256: str,
     idiom_audit_sha256: str | None = None,
     vietnamese_review_sha256: str | None = None,
+    semantic_policy_sha256: str | None = None,
+    definition_review_sha256: str | None = None,
+    sense_merge_review_sha256: str | None = None,
     idiom_audit_rows: list[dict] | None = None,
     idioms_by_guid: Mapping[str, list[dict]] | None = None,
 ) -> list[dict]:
@@ -286,6 +304,13 @@ def promote_audit_rows(
         or not _SHA256_RE.fullmatch(vietnamese_review_sha256)
     ):
         raise ValueError("Invalid Vietnamese review SHA-256")
+    for label, value in (
+        ("semantic policy", semantic_policy_sha256),
+        ("Definition review", definition_review_sha256),
+        ("Sense Merge review", sense_merge_review_sha256),
+    ):
+        if not isinstance(value, str) or not _SHA256_RE.fullmatch(value):
+            raise ValueError(f"Invalid {label} SHA-256")
     if idiom_audit_rows is not None and idioms_by_guid is not None:
         raise ValueError("Pass idiom_audit_rows or idioms_by_guid, not both")
     if idiom_audit_rows is not None:
@@ -345,6 +370,9 @@ def promote_audit_rows(
             "senses": senses,
             "idiom_audit_sha256": idiom_audit_sha256,
             "vietnamese_review_sha256": vietnamese_review_sha256,
+            "semantic_policy_sha256": semantic_policy_sha256,
+            "definition_review_sha256": definition_review_sha256,
+            "sense_merge_review_sha256": sense_merge_review_sha256,
             "idioms": [
                 {
                     **dict(idiom),
@@ -358,6 +386,289 @@ def promote_audit_rows(
     if registry_errors:
         raise ValueError(
             "Promoted Semantic Registry is invalid:\n" + "\n".join(registry_errors)
+        )
+    return promoted
+
+
+def _document_rows(payload: bytes, expected_rows: list[dict], *, label: str) -> None:
+    try:
+        parsed = [
+            json.loads(line)
+            for line in canonical_text_bytes(payload).decode("utf-8").splitlines()
+            if line.strip()
+        ]
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Invalid {label} JSONL payload") from exc
+    if parsed != expected_rows:
+        raise ValueError(f"{label} bytes do not match supplied rows")
+
+
+def _definition_gate_notes(registry_rows: list[dict]) -> list[dict]:
+    """Project promoted senses into the fields inspected by Definition Audit."""
+
+    return [
+        {
+            "guid": row["guid"],
+            "word": row["word"],
+            "cefr": row["cefr"],
+            "pos": row["pos"],
+            "definition": "|".join(
+                f"{sense['definition_en']} ({sense['definition_vi']})"
+                for sense in row.get("senses") or []
+            ),
+            "example": "|".join(
+                "<br><br>".join(sense.get("examples") or [])
+                for sense in row.get("senses") or []
+            ),
+        }
+        for row in registry_rows
+    ]
+
+
+def build_promotion_gate_candidates(
+    audit_rows: list[dict],
+    card_registry_rows: list[dict],
+    idiom_audit_rows: list[dict],
+    deck_audit_rows: list[dict],
+    non_oxford_non_c2_override_rows: list[dict],
+    *,
+    audit_sha256: str,
+    idiom_audit_sha256: str,
+    vietnamese_review_sha256: str,
+    semantic_policy_sha256: str,
+    deck_audit_sha256: str,
+    non_oxford_non_c2_override_sha256: str,
+) -> tuple[dict, list[dict], dict, list[dict]]:
+    """Derive both promotion queues from the would-be promoted payload."""
+
+    from src.deck_builder.canonical_io import canonical_jsonl_bytes
+    from src.deck_builder.definition_audit import build_definition_audit
+    from src.deck_builder.sense_merge_audit import build_sense_merge_audit
+
+    placeholder_sha256 = "0" * 64
+    provisional = _render_promoted_audit_rows(
+        audit_rows,
+        card_registry_rows,
+        audit_sha256=audit_sha256,
+        idiom_audit_sha256=idiom_audit_sha256,
+        vietnamese_review_sha256=vietnamese_review_sha256,
+        semantic_policy_sha256=semantic_policy_sha256,
+        definition_review_sha256=placeholder_sha256,
+        sense_merge_review_sha256=placeholder_sha256,
+        idiom_audit_rows=idiom_audit_rows,
+    )
+    provisional_bytes = canonical_jsonl_bytes(provisional)
+    note_rows = _definition_gate_notes(provisional)
+    note_bytes = canonical_jsonl_bytes(note_rows)
+    card_registry_bytes = canonical_jsonl_bytes(card_registry_rows)
+    definition_summary, definition_candidates = build_definition_audit(
+        provisional,
+        note_rows,
+        audit_rows,
+        card_registry_rows,
+        input_hashes={
+            "bilingual_semantic_audit": audit_sha256,
+            "build_notes": canonical_text_sha256(note_bytes),
+            "card_registry": canonical_text_sha256(card_registry_bytes),
+            "semantic_registry": canonical_text_sha256(provisional_bytes),
+        },
+    )
+    sense_merge_summary, sense_merge_candidates = build_sense_merge_audit(
+        provisional,
+        audit_rows,
+        deck_audit_rows,
+        non_oxford_non_c2_override_rows,
+        input_hashes={
+            "semantic_registry": canonical_text_sha256(provisional_bytes),
+            "bilingual_semantic_audit": audit_sha256,
+            "card_registry": canonical_text_sha256(card_registry_bytes),
+            "deck_audit": deck_audit_sha256,
+            "non_oxford_non_c2_overrides": (
+                non_oxford_non_c2_override_sha256
+            ),
+        },
+    )
+    return (
+        definition_summary,
+        definition_candidates,
+        sense_merge_summary,
+        sense_merge_candidates,
+    )
+
+
+def promote_reviewed_semantics(
+    audit_rows: list[dict],
+    card_registry_rows: list[dict],
+    idiom_audit_rows: list[dict],
+    vietnamese_review_summary: dict,
+    vietnamese_review_rows: list[dict],
+    *,
+    policy_rows: list[dict],
+    definition_review_summary: dict,
+    definition_review_rows: list[dict],
+    sense_merge_review_summary: dict,
+    sense_merge_review_rows: list[dict],
+    deck_audit_rows: list[dict],
+    non_oxford_non_c2_override_rows: list[dict],
+    audit_bytes: bytes,
+    idiom_audit_bytes: bytes,
+    vietnamese_review_bytes: bytes,
+    policy_bytes: bytes,
+    definition_review_bytes: bytes,
+    sense_merge_review_bytes: bytes,
+    deck_audit_bytes: bytes,
+    non_oxford_non_c2_override_bytes: bytes,
+    require_user_exact_vi_locks: bool = True,
+) -> list[dict]:
+    """Validate every semantic authority, derive provenance, and promote."""
+    from src.deck_builder.definition_audit import (
+        validate_definition_review_for_promotion,
+    )
+    from src.deck_builder.idiom_audit import validate_audit_rows as validate_idioms
+    from src.deck_builder.semantic_policy import (
+        validate_audit_policy,
+        validate_required_user_exact_vi_locks,
+        validate_registry_policy,
+        validate_vietnamese_user_lock_evidence,
+    )
+    from src.deck_builder.sense_merge_audit import (
+        validate_sense_merge_review_for_promotion,
+    )
+    from src.deck_builder.vietnamese_audit import (
+        validate_vietnamese_review_for_promotion,
+    )
+
+    _document_rows(audit_bytes, audit_rows, label="bilingual semantic audit")
+    _document_rows(idiom_audit_bytes, idiom_audit_rows, label="idiom audit")
+    _document_rows(
+        vietnamese_review_bytes,
+        [vietnamese_review_summary, *vietnamese_review_rows],
+        label="Vietnamese review",
+    )
+    _document_rows(policy_bytes, policy_rows, label="semantic policy")
+    _document_rows(
+        definition_review_bytes,
+        [definition_review_summary, *definition_review_rows],
+        label="Definition review",
+    )
+    _document_rows(
+        sense_merge_review_bytes,
+        [sense_merge_review_summary, *sense_merge_review_rows],
+        label="Sense Merge review",
+    )
+    _document_rows(deck_audit_bytes, deck_audit_rows, label="deck audit")
+    _document_rows(
+        non_oxford_non_c2_override_bytes,
+        non_oxford_non_c2_override_rows,
+        label="non-Oxford/non-C2 overrides",
+    )
+
+    audit_errors = validate_audit_rows(
+        audit_rows, card_registry_rows, require_complete=True
+    )
+    if audit_errors:
+        raise ValueError(
+            "Semantic audit is not promotion-ready:\n" + "\n".join(audit_errors)
+        )
+    idiom_errors = validate_idioms(
+        idiom_audit_rows, card_registry_rows, require_complete=True
+    )
+    if idiom_errors:
+        raise ValueError(
+            "Idiom audit is not promotion-ready:\n" + "\n".join(idiom_errors)
+        )
+    vietnamese_errors = validate_vietnamese_review_for_promotion(
+        audit_rows,
+        vietnamese_review_summary,
+        vietnamese_review_rows,
+    )
+    vietnamese_errors.extend(
+        validate_vietnamese_user_lock_evidence(
+            vietnamese_review_rows,
+            policy_rows,
+        )
+    )
+    if vietnamese_errors:
+        raise ValueError(
+            "Vietnamese review is not promotion-ready:\n"
+            + "\n".join(vietnamese_errors)
+        )
+
+    policy_errors = validate_audit_policy(audit_rows, policy_rows)
+    if require_user_exact_vi_locks:
+        policy_errors.extend(validate_required_user_exact_vi_locks(policy_rows))
+    if policy_errors:
+        raise ValueError(
+            "Semantic policy is not promotion-ready:\n"
+            + "\n".join(policy_errors)
+        )
+
+    audit_sha256 = canonical_text_sha256(audit_bytes)
+    idiom_audit_sha256 = canonical_text_sha256(idiom_audit_bytes)
+    vietnamese_review_sha256 = canonical_text_sha256(vietnamese_review_bytes)
+    semantic_policy_sha256 = canonical_text_sha256(policy_bytes)
+    # Build queues from the payload that would be promoted, not from the
+    # previous downstream registry. This prevents a provenance cycle.
+    (
+        definition_summary,
+        definition_candidates,
+        sense_merge_summary,
+        sense_merge_candidates,
+    ) = build_promotion_gate_candidates(
+        audit_rows,
+        card_registry_rows,
+        idiom_audit_rows,
+        deck_audit_rows,
+        non_oxford_non_c2_override_rows,
+        audit_sha256=audit_sha256,
+        idiom_audit_sha256=idiom_audit_sha256,
+        vietnamese_review_sha256=vietnamese_review_sha256,
+        semantic_policy_sha256=semantic_policy_sha256,
+        deck_audit_sha256=canonical_text_sha256(deck_audit_bytes),
+        non_oxford_non_c2_override_sha256=canonical_text_sha256(
+            non_oxford_non_c2_override_bytes
+        ),
+    )
+    definition_errors = validate_definition_review_for_promotion(
+        definition_summary,
+        definition_candidates,
+        definition_review_summary,
+        definition_review_rows,
+    )
+    if definition_errors:
+        raise ValueError(
+            "Definition review is not promotion-ready:\n"
+            + "\n".join(definition_errors)
+        )
+
+    sense_merge_errors = validate_sense_merge_review_for_promotion(
+        sense_merge_summary,
+        sense_merge_candidates,
+        sense_merge_review_summary,
+        sense_merge_review_rows,
+    )
+    if sense_merge_errors:
+        raise ValueError(
+            "Sense Merge review is not promotion-ready:\n"
+            + "\n".join(sense_merge_errors)
+        )
+
+    promoted = _render_promoted_audit_rows(
+        audit_rows,
+        card_registry_rows,
+        audit_sha256=audit_sha256,
+        idiom_audit_sha256=idiom_audit_sha256,
+        vietnamese_review_sha256=vietnamese_review_sha256,
+        semantic_policy_sha256=semantic_policy_sha256,
+        definition_review_sha256=canonical_text_sha256(definition_review_bytes),
+        sense_merge_review_sha256=canonical_text_sha256(sense_merge_review_bytes),
+        idiom_audit_rows=idiom_audit_rows,
+    )
+    promoted_policy_errors = validate_registry_policy(promoted, policy_rows)
+    if promoted_policy_errors:
+        raise ValueError(
+            "Promoted registry violates semantic policy:\n"
+            + "\n".join(promoted_policy_errors)
         )
     return promoted
 
@@ -397,11 +708,7 @@ def apply_semantic_registry(
         parse_serialized_idioms,
     )
 
-    legacy_v2 = bool(rows) and all(
-        isinstance(row, dict) and row.get("schema_version") == 2
-        for row in rows
-    )
-    structural_errors = [] if legacy_v2 else _validate_structure(rows)
+    structural_errors = _validate_structure(rows)
     if structural_errors:
         raise ValueError("Invalid Semantic Registry:\n" + "\n".join(structural_errors))
 

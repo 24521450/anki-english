@@ -33,6 +33,47 @@ REGISTRY_FIELDS: tuple[str, ...] = (
 
 ALLOWED_STATUSES = {"active", "retired"}
 
+# genanki.util.BASE91_TABLE.  Card Registry GUIDs are stored as the decoded
+# Anki value, never as their CSV/TSV representation.
+ANKI_GUID_CHARS = frozenset(
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "0123456789"
+    "!#$%&()*+,-./:;<=>?@[]^_`{|}~"
+)
+
+
+def normalize_bootstrap_guid(value: object) -> object:
+    """Normalize the one historical TXT-quoting defect at import time.
+
+    Anki's tab export may wrap a GUID containing ``#`` in ASCII double quotes.
+    The old bootstrap parser copied those CSV quotes into the GUID.  Only that
+    exact outer double-quote pair is unwrapped; apostrophes are not wrappers
+    and are not valid Anki base91 characters.
+    """
+    if not isinstance(value, str):
+        return value
+    guid = value.strip()
+    if len(guid) >= 2 and guid.startswith('"') and guid.endswith('"'):
+        guid = guid[1:-1]
+    return guid
+
+
+def guid_validation_error(value: object) -> tuple[str, str] | None:
+    """Return a stable validation code/message for a stored GUID."""
+    if not isinstance(value, str):
+        return "invalid_guid", "GUID must be a string"
+    if not value:
+        return "invalid_guid", "GUID must not be empty"
+    if value != value.strip():
+        return "noncanonical_guid", "GUID must not contain outer whitespace"
+    if len(value) >= 2 and value.startswith('"') and value.endswith('"'):
+        return "noncanonical_guid", "GUID must store the decoded value without TXT quotes"
+    invalid_chars = sorted(set(value) - ANKI_GUID_CHARS)
+    if invalid_chars:
+        return "invalid_guid", f"GUID contains invalid Anki base91 characters {invalid_chars!r}"
+    return None
+
 
 def load_jsonl(path: Path) -> list[dict]:
     if not path.exists():
@@ -50,7 +91,7 @@ def _canonical_registry_row(note: dict) -> dict:
     word = normalize_word(note.get("word"))
     cefr = normalize_cefr(note.get("cefr"))
     pos = (note.get("pos") or "").strip()
-    guid = (note.get("guid") or "").strip()
+    guid = normalize_bootstrap_guid(note.get("guid"))
     list_name = primary_list_from_tags(note.get("tags"), canonical=True)
     variant = reviewed_identity_variant(word, cefr, list_name, pos)
     deck_override = None if list_name != "NO_LIST" else (note.get("deck") or "").strip() or None
@@ -195,7 +236,20 @@ def validate_registry_rows(rows: list[dict]) -> list[BuildIssue]:
         else:
             seen_keys[key] = idx
 
-        guid = (row.get("guid") or "").strip()
+        raw_guid = row.get("guid")
+        guid_error = guid_validation_error(raw_guid)
+        if guid_error is not None:
+            code, message = guid_error
+            issues.append(BuildIssue(
+                severity="error",
+                code=code,
+                message=f"row {idx}: {message}",
+                identity=identity,
+            ))
+            continue
+
+        assert isinstance(raw_guid, str)
+        guid = raw_guid
         if guid in seen_guids:
             issues.append(BuildIssue(
                 severity="error",

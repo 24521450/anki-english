@@ -22,7 +22,7 @@ Các tệp ở đây đã được sửa lỗi và phản ánh chính xác 100% 
 
 ## Cơ chế hoạt động của Kịch bản Tự động hóa
 
-Kịch bản đóng gói bộ thẻ [update_anki_deck.py](file:///c:/Users/admin/Downloads/ielts-deck/update_anki_deck.py) đã được cập nhật để đọc trực tiếp các tệp tin trong thư mục này mỗi khi chạy:
+Kịch bản đóng gói bộ thẻ [`update_anki_deck.py`](../../update_anki_deck.py) đọc trực tiếp các tệp tin trong thư mục này mỗi khi chạy:
 * `front_template.txt` -> Đưa vào làm `qfmt` (Question Format) cho Note Types.
 * `back_template.txt` -> Đưa vào làm `afmt` (Answer Format) cho Note Types.
 * `production_front_template.txt` + `production_answer_prefix.txt` -> tạo
@@ -30,7 +30,10 @@ Kịch bản đóng gói bộ thẻ [update_anki_deck.py](file:///c:/Users/admin
 * `styling.txt` -> Đưa vào làm CSS Styling cho Note Types.
 
 > [!TIP]
-> **Mọi thay đổi design bắt đầu từ `../index.html` (vùng 2).** Các tệp `.txt` trong thư mục này derive từ đó. Sau khi sửa `index.html`, sync tương ứng vào `styling.txt` rồi chạy `python -m tools.check_design_sync` để verify.
+> **Mọi thay đổi card CSS bắt đầu từ `../index.html` (vùng 2).** Chỉ
+> `styling.txt` derive từ vùng này. Các template `.txt` khác là source trực tiếp
+> của packager và được chỉnh trong chính file tương ứng. Sau khi sửa CSS, sync
+> `styling.txt` rồi chạy `python -m tools.check_design_sync` để verify.
 
 Audio câu ví dụ dùng bốn field nối cuối note type: `ExampleAudioUK`,
 `ExampleAudioUS`, `IdiomExampleAudioUK`, và `IdiomExampleAudioUS`. Mặt sau hiển
@@ -58,23 +61,12 @@ cũ để không làm mất nghĩa. Example và Example Audio của idiom không
 
 ---
 
-## Hướng dẫn Tái sử dụng & Đồng bộ hóa thủ công trong Anki
+## Đồng bộ vào Anki
 
-Khi bạn nhập tệp `.apkg` mới, nếu Anki không tự động ghi đè giao diện cũ của loại thẻ `English Academic Vocabulary Model` (đây là cơ chế bảo vệ của Anki), bạn có thể áp dụng thủ công như sau:
-
-1. **Mở cài đặt thẻ trong Anki**:
-   * Nhấn tổ hợp phím **`Ctrl + Shift + N`** (hoặc vào menu **Tools** -> **Manage Note Types**).
-   * Chọn loại thẻ **`English Academic Vocabulary Model`**.
-   * Nhấn nút **Cards** ở menu bên phải để mở cửa sổ chỉnh sửa giao diện thẻ.
-2. **Cập nhật Mặt trước (Front)**:
-   * Mở tệp [front_template.txt](file:///c:/Users/admin/Downloads/ielts-deck/design/EAVM/front_template.txt).
-   * Sao chép toàn bộ nội dung và dán đè vào ô **Front Template** trong Anki.
-3. **Cập nhật Mặt sau (Back)**:
-   * Mở tệp [back_template.txt](file:///c:/Users/admin/Downloads/ielts-deck/design/EAVM/back_template.txt).
-   * Sao chép toàn bộ nội dung và dán đè vào ô **Back Template** trong Anki.
-4. **Cập nhật Kiểu dáng (Styling CSS)**:
-   * Mở tệp [styling.txt](file:///c:/Users/admin/Downloads/ielts-deck/design/EAVM/styling.txt).
-   * Sao chép toàn bộ nội dung và dán đè vào ô **Styling** ở giữa cửa sổ Anki.
+Không sao chép hoặc chỉnh template thủ công trong Anki. Chỉnh các source trong
+thư mục này, chạy packager, rồi dùng stage `import` của pipeline. Importer cập
+nhật EAVM Note Type qua AnkiConnect và xác minh fields, template ordinals, GUID
+coverage và media sau import. Quy trình chuẩn nằm trong [`AGENTS.md`](../../AGENTS.md#anki-package-import-workflow).
 
 ---
 

@@ -2,6 +2,10 @@
 
 **Status:** accepted; implemented 2026-07-17
 
+**Superseded by:** [ADR 0019](./0019-all-sense-vietnamese-naturalness-gate.md)
+for Vietnamese promotion-gate coverage. The bilingual Lexical Gloss principles
+and concision evidence contract here remain applicable.
+
 ## Context
 
 The semantic review path can preserve the correct meaning while still copying

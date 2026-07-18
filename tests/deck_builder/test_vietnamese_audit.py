@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 
 import pytest
 
 from src.deck_builder.vietnamese_audit import (
+    _context_fingerprint_v4,
     apply_vietnamese_review,
     build_vietnamese_audit,
     render_vietnamese_audit_markdown,
@@ -14,6 +16,35 @@ from src.deck_builder.vietnamese_audit import (
     validate_vietnamese_review,
     validate_vietnamese_review_for_promotion,
 )
+
+
+def _add_review_evidence(review: dict, candidate: dict) -> None:
+    decision = review["decision"]
+    final_vi = (
+        review["proposed_vi"]
+        if decision == "rewrite"
+        else review["expected_definition_vi"]
+    )
+    review["reason_code"] = {
+        "keep_natural": "natural_lexical_gloss",
+        "keep_explanatory": "necessary_explanation",
+        "rewrite": "natural_rewrite",
+    }[decision]
+    semantic_notes = {
+        "compact": "The wording preserves both small size and practical portability.",
+        "compel": "The wording names coercion without importing the separate necessity clause.",
+        "contender": "The wording identifies a serious rival instead of narrating competition odds.",
+        "venture": "The wording keeps the deliberate risk-taking action lexical and direct.",
+        "witness": "The wording identifies a direct observer of the event rather than any participant.",
+    }
+    review["reason"] = f'{review["reason"]} {semantic_notes[candidate["word"]]}'
+    support = (candidate.get("examples") or candidate.get("source_definitions") or [""])[0]
+    review["semantic_evidence"] = (
+        f'Final VI "{final_vi}" matches exact Definition EN '
+        f'"{candidate["definition_en"]}" in the sense-specific evidence "{support}"; '
+        f'{review["reason"]}'
+    )
+    review["lock_id"] = ""
 
 
 def _sense(
@@ -204,7 +235,15 @@ def _complete_review(
     }
     for row in review_rows:
         row["decision"], row["proposed_vi"] = decisions[row["word"]]
-        row["reason"] = "Natural, concise Vietnamese reviewed against the sense."
+        candidate = next(
+            candidate
+            for candidate in candidates
+            if candidate["candidate_id"] == row["candidate_id"]
+        )
+        row["reason"] = (
+            f'Exact EN "{candidate["definition_en"]}" is expressed naturally '
+            "and concisely by the reviewed Vietnamese gloss."
+        )
         if row["decision"] == "keep_explanatory":
             row["shorter_vi_considered"] = "nhân chứng"
             row["preserved_distinction"] = (
@@ -214,7 +253,40 @@ def _complete_review(
         row["reviewer"] = "chatgpt-reviewer"
         row["reviewed_at"] = "2026-07-16"
         row["approval"] = "approved"
+        _add_review_evidence(row, candidate)
     return review_summary, review_rows
+
+
+def _complete_matching_review(
+    summary: dict,
+    candidates: list[dict],
+) -> tuple[dict, list[dict]]:
+    review_summary, reviews = scaffold_vietnamese_review(summary, candidates)
+    candidates_by_id = {row["candidate_id"]: row for row in candidates}
+    distinctions = {
+        "compact": "The wording retains both small size and easy portability.",
+        "contender": "The wording keeps the competition participant and realistic winning chance.",
+        "venture": "The wording retains going, doing, and speaking as forms of deliberate risk.",
+        "witness": "The wording restricts the person to directly seeing the event happen.",
+    }
+    for review in reviews:
+        candidate = candidates_by_id[review["candidate_id"]]
+        review.update({
+            "decision": (
+                "keep_explanatory"
+                if candidate["vi_token_count"] >= summary["min_tokens"]
+                else "keep_natural"
+            ),
+            "reason": "The promoted wording was checked against its exact learner sense.",
+            "reviewer": "reviewer",
+            "reviewed_at": "2026-07-18",
+            "approval": "approved",
+        })
+        if review["decision"] == "keep_explanatory":
+            review["shorter_vi_considered"] = "nghĩa ngắn"
+            review["preserved_distinction"] = distinctions[review["word"]]
+        _add_review_evidence(review, candidate)
+    return review_summary, reviews
 
 
 def test_report_selects_all_promoted_senses_at_threshold() -> None:
@@ -295,7 +367,10 @@ def test_all_scope_accepts_approved_naturalness_verdicts() -> None:
                     if candidate["vi_token_count"] >= summary["min_tokens"]
                     else "keep_natural"
                 ),
-                "reason": "The lexical equivalent is natural and concise.",
+                    "reason": (
+                        f'Exact EN "{candidate["definition_en"]}" is expressed '
+                        "naturally and concisely by this Vietnamese wording."
+                    ),
                 "reviewer": "reviewer",
                 "reviewed_at": "2026-07-17",
                 "approval": "approved",
@@ -307,6 +382,8 @@ def test_all_scope_accepts_approved_naturalness_verdicts() -> None:
                 "The explanatory wording limits this sense to directly seeing "
                 "the event happen."
             )
+
+        _add_review_evidence(review, candidate)
 
     assert review_summary["scope"] == "all"
     assert all(len(row["context_fingerprint"]) == 64 for row in reviews)
@@ -338,6 +415,9 @@ def test_all_scope_rejects_keep_natural_for_long_gloss() -> None:
             "approval": "approved",
         }
     )
+
+    witness_candidate = next(row for row in candidates if row["word"] == "witness")
+    _add_review_evidence(witness, witness_candidate)
 
     errors = validate_vietnamese_review(
         summary,
@@ -372,7 +452,10 @@ def test_all_scope_allows_substantive_same_token_rewrite_for_short_gloss() -> No
                     if candidate["vi_token_count"] >= summary["min_tokens"]
                     else "keep_natural"
                 ),
-                "reason": "Reviewed against the promoted English sense.",
+                    "reason": (
+                        f'Reviewed against exact EN "{candidate["definition_en"]}" '
+                        "and its sense-specific learner condition."
+                    ),
                 "reviewer": "reviewer",
                 "reviewed_at": "2026-07-17",
                 "approval": "approved",
@@ -383,9 +466,13 @@ def test_all_scope_allows_substantive_same_token_rewrite_for_short_gloss() -> No
             review["preserved_distinction"] = (
                 "The current explanatory wording preserves a material restriction."
             )
+        _add_review_evidence(review, candidate)
     compact = next(row for row in reviews if row["word"] == "compact")
+    compact_candidate = candidates_by_id[compact["candidate_id"]]
     compact["decision"] = "rewrite"
     compact["proposed_vi"] = "gọn nhẹ, dễ đem theo"
+
+    _add_review_evidence(compact, compact_candidate)
 
     assert len(compact["proposed_vi"].split()) == next(
         row["vi_token_count"] for row in candidates if row["word"] == "compact"
@@ -432,6 +519,7 @@ def test_all_scope_rejects_punctuation_only_rewrite_for_short_gloss() -> None:
             "approval": "approved",
         }
     )
+    _add_review_evidence(compact, compact_candidate)
 
     errors = validate_vietnamese_review(
         summary,
@@ -470,6 +558,7 @@ def test_scaffold_reuses_approved_verdict_only_when_context_and_final_vi_match()
             "approval": "approved",
         }
     )
+    _add_review_evidence(old_review, old_candidates[0])
 
     new_registry, new_audit, new_card = _card(
         "compel",
@@ -541,7 +630,10 @@ def test_promotion_gate_accepts_complete_all_sense_review() -> None:
                     if candidate["vi_token_count"] >= summary["min_tokens"]
                     else "keep_natural"
                 ),
-                "reason": "Natural lexical equivalent confirmed in context.",
+                    "reason": (
+                        f'Exact EN "{candidate["definition_en"]}" confirms this '
+                        "natural lexical equivalent in its learner context."
+                    ),
                 "reviewer": "reviewer",
                 "reviewed_at": "2026-07-17",
                 "approval": "approved",
@@ -553,6 +645,8 @@ def test_promotion_gate_accepts_complete_all_sense_review() -> None:
                 "The explanatory wording limits this sense to directly seeing "
                 "the event happen."
             )
+
+        _add_review_evidence(review, candidate)
 
     assert validate_vietnamese_review_for_promotion(
         audit_rows,
@@ -609,6 +703,7 @@ def test_promotion_gate_rejects_incomplete_or_stale_all_sense_review(
                 "The explanatory wording limits this sense to directly seeing "
                 "the event happen."
             )
+        _add_review_evidence(review, candidate)
     if problem == "long_scope":
         review_summary["scope"] = "long"
     elif problem == "missing":
@@ -625,6 +720,10 @@ def test_promotion_gate_rejects_incomplete_or_stale_all_sense_review(
         witness["decision"] = "keep_natural"
         witness["shorter_vi_considered"] = ""
         witness["preserved_distinction"] = ""
+        witness_candidate = next(
+            candidate for candidate in candidates if candidate["word"] == "witness"
+        )
+        _add_review_evidence(witness, witness_candidate)
     else:
         audit_rows[1]["semantic_senses"][0]["current"]["definition_vi"] = (
             "một nghĩa Việt khác"
@@ -893,3 +992,265 @@ def test_complete_review_rejects_candidate_coverage_and_open_decisions(
         "uncertain": "review_open_decision",
     }[problem]
     assert any(expected in error for error in errors)
+
+
+def test_vietnamese_generic_evidence_is_not_row_specific() -> None:
+    registry_rows, audit_rows, card_rows = _inputs()
+    summary, candidates = build_vietnamese_audit(
+        registry_rows,
+        audit_rows,
+        card_rows,
+    )
+    review_summary, reviews = _complete_review(summary, candidates)
+    contender = next(row for row in reviews if row["word"] == "contender")
+    final_vi = (
+        contender["proposed_vi"]
+        if contender["decision"] == "rewrite"
+        else contender["expected_definition_vi"]
+    )
+    contender["semantic_evidence"] = (
+        f'Final VI "{final_vi}": tự nhiên và rõ nghĩa'
+    )
+
+    errors = validate_vietnamese_review(
+        summary,
+        candidates,
+        review_summary,
+        reviews,
+        require_complete=True,
+    )
+
+    assert any("generic_semantic_evidence" in error for error in errors)
+
+
+def test_interpolated_boilerplate_is_duplicate_across_different_words_and_vi() -> None:
+    registry_rows, audit_rows, card_rows = _inputs()
+    summary, candidates = build_vietnamese_audit(
+        registry_rows,
+        audit_rows,
+        card_rows,
+    )
+    review_summary, reviews = _complete_review(summary, candidates)
+    first, second = reviews[:2]
+    assert first["word"] != second["word"]
+
+    for review in (first, second):
+        final_vi = (
+            review["proposed_vi"]
+            if review["decision"] == "rewrite"
+            else review["expected_definition_vi"]
+        )
+        review["reason"] = (
+            f'“{final_vi}” is already a concise, idiomatic lexical gloss '
+            f'for this sense of “{review["word"]}”.'
+        )
+        review["semantic_evidence"] = f'Final VI "{final_vi}": {review["reason"]}'
+
+    errors = validate_vietnamese_review(
+        summary,
+        candidates,
+        review_summary,
+        reviews,
+        require_complete=True,
+    )
+
+    assert any("reason_generic_template" in error for error in errors)
+    assert any("evidence_generic_template" in error for error in errors)
+    assert any("reason_duplicate_template" in error for error in errors)
+    assert any("evidence_duplicate_template" in error for error in errors)
+
+
+def test_exact_source_interpolation_and_unique_hash_tokens_do_not_close_review() -> None:
+    registry_rows, audit_rows, card_rows = _inputs()
+    summary, candidates = build_vietnamese_audit(
+        registry_rows,
+        audit_rows,
+        card_rows,
+    )
+    review_summary, reviews = _complete_review(summary, candidates)
+    candidates_by_id = {row["candidate_id"]: row for row in candidates}
+
+    for review in reviews:
+        candidate = candidates_by_id[review["candidate_id"]]
+        final_vi = (
+            review["proposed_vi"]
+            if review["decision"] == "rewrite"
+            else review["expected_definition_vi"]
+        )
+        support = candidate["examples"][0]
+        review["reason"] = (
+            f'Definition EN "{candidate["definition_en"]}" and example '
+            f'"{support}" approve "{final_vi}".'
+        )
+        review["semantic_evidence"] = (
+            f'Final VI "{final_vi}"; Definition EN "{candidate["definition_en"]}"; '
+            f'example "{support}"; approved for this sense.'
+        )
+
+    duplicate_errors = validate_vietnamese_review(
+        summary,
+        candidates,
+        review_summary,
+        reviews,
+        require_complete=True,
+    )
+    assert any("duplicate_template" in error for error in duplicate_errors)
+
+    for review in reviews:
+        token = hashlib.sha256(review["candidate_id"].encode()).hexdigest()[:12]
+        review["reason"] += f" {token}"
+        review["semantic_evidence"] += f" {token}"
+
+    token_errors = validate_vietnamese_review(
+        summary,
+        candidates,
+        review_summary,
+        reviews,
+        require_complete=True,
+    )
+    assert any("suspicious_token" in error for error in token_errors)
+
+
+def test_ordinary_evidence_requires_exact_english_and_example_grounding() -> None:
+    registry_rows, audit_rows, card_rows = _inputs()
+    summary, candidates = build_vietnamese_audit(
+        registry_rows,
+        audit_rows,
+        card_rows,
+    )
+    review_summary, reviews = _complete_review(summary, candidates)
+    contender = next(row for row in reviews if row["word"] == "contender")
+    contender["semantic_evidence"] = (
+        f'Final VI "{contender["proposed_vi"]}": reviewed without exact source text.'
+    )
+
+    errors = validate_vietnamese_review(
+        summary,
+        candidates,
+        review_summary,
+        reviews,
+        require_complete=True,
+    )
+
+    assert any("evidence_missing_definition_en" in error for error in errors)
+    assert any("evidence_missing_support" in error for error in errors)
+
+
+def test_source_definition_grounds_a_sense_without_examples() -> None:
+    registry, audit, card = _card(
+        "compel",
+        "sem-compel",
+        "force somebody to act",
+        "ép buộc",
+        "ép buộc",
+    )
+    registry["senses"][0]["examples"] = []
+    audit["semantic_senses"][0]["current"]["examples"] = []
+    summary, candidates = build_vietnamese_audit(
+        [registry],
+        [audit],
+        [card],
+        scope="all",
+    )
+    review_summary, reviews = scaffold_vietnamese_review(summary, candidates)
+    review = reviews[0]
+    candidate = candidates[0]
+    review.update({
+        "decision": "keep_natural",
+        "reason": "The direct lexical equivalent preserves the force relation.",
+        "reviewer": "reviewer",
+        "reviewed_at": "2026-07-18",
+        "approval": "approved",
+    })
+    _add_review_evidence(review, candidate)
+
+    assert candidate["examples"] == []
+    assert candidate["source_definitions"] == ["force somebody to act"]
+    assert validate_vietnamese_review(
+        summary,
+        candidates,
+        review_summary,
+        reviews,
+        require_complete=True,
+    ) == []
+
+
+def test_v4_migration_enriches_and_reuses_unique_reviews() -> None:
+    registry_rows, audit_rows, card_rows = _inputs()
+    summary, candidates = build_vietnamese_audit(
+        registry_rows,
+        audit_rows,
+        card_rows,
+    )
+    _, reviews = _complete_matching_review(summary, candidates)
+    candidates_by_id = {row["candidate_id"]: row for row in candidates}
+    legacy = copy.deepcopy(reviews)
+    for review in legacy:
+        candidate = candidates_by_id[review["candidate_id"]]
+        final_vi = (
+            review["proposed_vi"]
+            if review["decision"] == "rewrite"
+            else review["expected_definition_vi"]
+        )
+        review["semantic_evidence"] = (
+            f'Final VI "{final_vi}": {review["reason"]}'
+        )
+        review["schema_version"] = 4
+        review["candidate_fingerprint"] = "legacy"
+        review["context_fingerprint"] = _context_fingerprint_v4(candidate)
+
+    migrated_summary, migrated = scaffold_vietnamese_review(
+        summary,
+        candidates,
+        existing_review_rows=legacy,
+    )
+
+    assert migrated_summary["schema_version"] == 5
+    assert all(row["schema_version"] == 5 for row in migrated)
+    assert all(row["decision"] != "pending" for row in migrated)
+    assert [row["candidate_fingerprint"] for row in migrated] == [
+        row["candidate_fingerprint"] for row in candidates
+    ]
+    for review in migrated:
+        candidate = candidates_by_id[review["candidate_id"]]
+        support = (candidate["examples"] or candidate["source_definitions"])[0]
+        assert f'Definition EN "{candidate["definition_en"]}".' in review[
+            "semantic_evidence"
+        ]
+        assert f'Support "{support}".' in review["semantic_evidence"]
+
+
+def test_v4_migration_resets_every_member_of_duplicate_template_group() -> None:
+    registry_rows, audit_rows, card_rows = _inputs()
+    summary, candidates = build_vietnamese_audit(
+        registry_rows,
+        audit_rows,
+        card_rows,
+    )
+    _, reviews = _complete_matching_review(summary, candidates)
+    candidates_by_id = {row["candidate_id"]: row for row in candidates}
+    for review in reviews:
+        candidate = candidates_by_id[review["candidate_id"]]
+        final_vi = (
+            review["proposed_vi"]
+            if review["decision"] == "rewrite"
+            else review["expected_definition_vi"]
+        )
+        review["reason"] = (
+            f'Final VI "{final_vi}" is approved for this lexical wording.'
+        )
+        review["semantic_evidence"] = (
+            f'Final VI "{final_vi}": approved for this lexical wording.'
+        )
+        review["schema_version"] = 4
+        review["candidate_fingerprint"] = "legacy"
+        review["context_fingerprint"] = _context_fingerprint_v4(candidate)
+
+    _, migrated = scaffold_vietnamese_review(
+        summary,
+        candidates,
+        existing_review_rows=reviews,
+    )
+
+    assert all(row["decision"] == "pending" for row in migrated)
+    assert all(row["approval"] == "" for row in migrated)

@@ -11,11 +11,12 @@ import hashlib
 import json
 import re
 from collections.abc import Iterable, Mapping
+from datetime import date
 
 from src.deck_builder.semantic_audit import CHECK_FIELDS, validate_audit_rows
 
 
-VIETNAMESE_AUDIT_SCHEMA_VERSION = 3
+VIETNAMESE_AUDIT_SCHEMA_VERSION = 5
 DEFAULT_MIN_TOKENS = 8
 AUDIT_SCOPES = ("long", "all")
 REVIEW_DECISIONS = (
@@ -26,6 +27,33 @@ REVIEW_DECISIONS = (
     "uncertain",
 )
 REVIEW_APPROVALS = ("", "approved", "rejected")
+REASON_CODES_BY_DECISION = {
+    "keep_natural": {"natural_lexical_gloss", "user_lock"},
+    "keep_explanatory": {"necessary_explanation", "user_lock"},
+    "rewrite": {"natural_rewrite", "user_lock"},
+}
+_GENERIC_EVIDENCE = {
+    "already natural",
+    "already concise",
+    "preserves nuance",
+    "the current vietnamese gloss is natural and concise",
+    "tự nhiên và rõ nghĩa",
+    "đã ngắn gọn",
+}
+_GENERIC_REVIEW_RESIDUALS = {
+    "is already a concise idiomatic lexical gloss for this sense of",
+    "use as the more direct idiomatic lexical gloss for this sense of",
+    "nghĩa này của được bao quát gọn bằng không có chi tiết máy móc cần lược",
+    (
+        "cách viết phù hợp với cách xuất hiện trong ví dụ và không có phần "
+        "dịch máy móc cần lược bỏ"
+    ),
+}
+_SUSPICIOUS_TOKEN_RE = re.compile(
+    r"(?<!\w)(?:[0-9a-f]{8,}|(?=[a-z0-9_-]{8,}(?!\w))"
+    r"(?=[a-z0-9_-]*[a-z])(?=[a-z0-9_-]*\d)[a-z0-9_-]+)(?!\w)",
+    re.IGNORECASE,
+)
 INPUT_NAMES = (
     "bilingual_semantic_audit",
     "card_registry",
@@ -202,27 +230,43 @@ def _candidate_fingerprint(candidate: dict) -> str:
     return _json_digest(payload)
 
 
-def _context_fingerprint(candidate: Mapping[str, object]) -> str:
+_CONTEXT_FIELDS_V4 = (
+    "candidate_id",
+    "guid",
+    "semantic_sense_id",
+    "order",
+    "word",
+    "cefr",
+    "list",
+    "variant",
+    "pos",
+    "source_fingerprint",
+    "definition_en",
+    "examples",
+    "source_sense_ids",
+)
+_CONTEXT_FIELDS = (
+    *_CONTEXT_FIELDS_V4[:-1],
+    "source_definitions",
+    _CONTEXT_FIELDS_V4[-1],
+)
+
+
+def _context_fingerprint_for_fields(
+    candidate: Mapping[str, object],
+    fields: Iterable[str],
+) -> str:
     return _json_digest(
-        {
-            key: candidate.get(key)
-            for key in (
-                "candidate_id",
-                "guid",
-                "semantic_sense_id",
-                "order",
-                "word",
-                "cefr",
-                "list",
-                "variant",
-                "pos",
-                "source_fingerprint",
-                "definition_en",
-                "examples",
-                "source_sense_ids",
-            )
-        }
+        {key: candidate.get(key) for key in fields}
     )
+
+
+def _context_fingerprint(candidate: Mapping[str, object]) -> str:
+    return _context_fingerprint_for_fields(candidate, _CONTEXT_FIELDS)
+
+
+def _context_fingerprint_v4(candidate: Mapping[str, object]) -> str:
+    return _context_fingerprint_for_fields(candidate, _CONTEXT_FIELDS_V4)
 
 
 def _candidate_set_digest(candidates: list[dict]) -> str:
@@ -243,6 +287,258 @@ def _review_final_vi(review: Mapping[str, object]) -> str:
     if review.get("decision") in {"keep_natural", "keep_explanatory"}:
         return str(review.get("expected_definition_vi") or "")
     return ""
+
+
+def _upgrade_review_row(review: dict, candidate: Mapping[str, object]) -> dict:
+    """Rebind a v3/v4 snapshot and add immutable v5 grounding citations."""
+    upgraded = copy.deepcopy(review)
+    legacy_schema = upgraded.get("schema_version")
+    if legacy_schema not in {3, 4}:
+        return upgraded
+    if legacy_schema == 3:
+        decision = upgraded.get("decision")
+        final_vi = _review_final_vi(upgraded)
+        reason = str(upgraded.get("reason") or "").strip()
+        upgraded["reason_code"] = {
+            "keep_natural": "natural_lexical_gloss",
+            "keep_explanatory": "necessary_explanation",
+            "rewrite": "natural_rewrite",
+        }.get(decision, "")
+        upgraded["semantic_evidence"] = (
+            f'Final VI "{final_vi}": {reason}' if final_vi and reason else ""
+        )
+        upgraded["lock_id"] = ""
+    if upgraded.get("context_fingerprint") != _context_fingerprint_v4(candidate):
+        return upgraded
+    if upgraded.get("reason_code") != "user_lock":
+        evidence = str(upgraded.get("semantic_evidence") or "").strip()
+        definition_en = str(candidate.get("definition_en") or "").strip()
+        support = next(
+            (
+                str(value).strip()
+                for value in (
+                    *(candidate.get("examples") or []),
+                    *(candidate.get("source_definitions") or []),
+                )
+                if str(value).strip()
+            ),
+            "",
+        )
+        citations: list[str] = []
+        if definition_en and not _contains_exact_review_text(evidence, definition_en):
+            citations.append(f'Definition EN "{definition_en}".')
+        if support and not _contains_exact_review_text(evidence, support):
+            citations.append(f'Support "{support}".')
+        if citations:
+            upgraded["semantic_evidence"] = " ".join(
+                part for part in (evidence, *citations) if part
+            )
+    upgraded["schema_version"] = VIETNAMESE_AUDIT_SCHEMA_VERSION
+    upgraded["candidate_fingerprint"] = candidate["candidate_fingerprint"]
+    upgraded["context_fingerprint"] = candidate["context_fingerprint"]
+    return upgraded
+
+
+def _review_evidence_error(
+    review: Mapping[str, object],
+    *,
+    candidate: Mapping[str, object],
+    identity: str,
+    final_vi: str,
+    seen_reason_templates: dict[str, str],
+    seen_evidence_templates: dict[str, str],
+    prefix: str,
+) -> list[str]:
+    errors: list[str] = []
+    decision = str(review.get("decision") or "")
+    reason_code = str(review.get("reason_code") or "")
+    reason = str(review.get("reason") or "").strip()
+    evidence = str(review.get("semantic_evidence") or "").strip()
+    lock_id = str(review.get("lock_id") or "").strip()
+    reviewer = str(review.get("reviewer") or "").strip()
+    reviewed_at = str(review.get("reviewed_at") or "").strip()
+    if reason_code not in REASON_CODES_BY_DECISION.get(decision, set()):
+        errors.append(f"{prefix}_invalid_reason_code:{identity}")
+    if reason_code == "user_lock":
+        if not lock_id:
+            errors.append(f"{prefix}_missing_lock_id:{identity}")
+    elif lock_id:
+        errors.append(f"{prefix}_unexpected_lock_id:{identity}")
+    if reviewer and len(re.findall(r"\w", reviewer, flags=re.UNICODE)) < 3:
+        errors.append(f"{prefix}_invalid_reviewer:{identity}")
+    if reviewed_at:
+        try:
+            date.fromisoformat(reviewed_at)
+        except ValueError:
+            errors.append(f"{prefix}_invalid_reviewed_at:{identity}")
+    interpolation_values = _review_interpolation_values(
+        review,
+        candidate=candidate,
+        final_vi=final_vi,
+    )
+    if reason_code != "user_lock" and reason:
+        errors.extend(
+            _review_template_errors(
+                reason,
+                identity=identity,
+                interpolation_values=interpolation_values,
+                seen_templates=seen_reason_templates,
+                prefix=f"{prefix}_reason",
+            )
+        )
+    if not evidence:
+        errors.append(f"{prefix}_missing_semantic_evidence:{identity}")
+        return errors
+    normalized = re.sub(r"\s+", " ", evidence).strip().casefold()
+    generic = normalized.replace("final vi", " ")
+    if final_vi:
+        generic = generic.replace(final_vi.casefold(), " ")
+    generic = re.sub(r"[^\w\s]", " ", generic, flags=re.UNICODE)
+    generic = re.sub(r"\s+", " ", generic).strip()
+    if generic in _GENERIC_EVIDENCE:
+        errors.append(f"{prefix}_generic_semantic_evidence:{identity}")
+    if reason_code != "user_lock" and final_vi.casefold() not in normalized:
+        errors.append(f"{prefix}_evidence_missing_final_vi:{identity}")
+    if reason_code != "user_lock":
+        definition_en = str(candidate.get("definition_en") or "").strip()
+        examples = [
+            str(value).strip()
+            for value in candidate.get("examples") or []
+            if str(value).strip()
+        ]
+        source_definitions = [
+            str(value).strip()
+            for value in candidate.get("source_definitions") or []
+            if str(value).strip()
+        ]
+        if not _contains_exact_review_text(evidence, definition_en):
+            errors.append(f"{prefix}_evidence_missing_definition_en:{identity}")
+        required_support = [*examples, *source_definitions]
+        if not required_support or not any(
+            _contains_exact_review_text(evidence, value)
+            for value in required_support
+        ):
+            errors.append(f"{prefix}_evidence_missing_support:{identity}")
+        errors.extend(
+            _review_template_errors(
+                evidence,
+                identity=identity,
+                interpolation_values=interpolation_values,
+                seen_templates=seen_evidence_templates,
+                prefix=f"{prefix}_evidence",
+            )
+        )
+    return errors
+
+
+def _normalised_review_text(value: object) -> str:
+    return re.sub(r"\s+", " ", str(value or "")).strip().casefold()
+
+
+def _contains_exact_review_text(container: object, required: object) -> bool:
+    needle = _normalised_review_text(required)
+    return bool(needle and needle in _normalised_review_text(container))
+
+
+def _review_interpolation_values(
+    review: Mapping[str, object],
+    *,
+    candidate: Mapping[str, object],
+    final_vi: str,
+) -> list[str]:
+    values: list[object] = [
+        final_vi,
+        review.get("expected_definition_vi"),
+        review.get("proposed_vi"),
+        review.get("shorter_vi_considered"),
+        review.get("preserved_distinction"),
+        candidate.get("word"),
+        candidate.get("definition_en"),
+        candidate.get("candidate_id"),
+        candidate.get("guid"),
+        candidate.get("semantic_sense_id"),
+        *(candidate.get("examples") or []),
+        *(candidate.get("source_definitions") or []),
+        *(candidate.get("source_sense_ids") or []),
+    ]
+    return [str(value) for value in values if str(value or "").strip()]
+
+
+def _review_template_residual(
+    value: str,
+    *,
+    interpolation_values: Iterable[str],
+) -> str:
+    """Remove row interpolation so repeated stock review prose stays visible."""
+
+    normalized = _normalised_review_text(value)
+    for interpolation in sorted(
+        {_normalised_review_text(item) for item in interpolation_values if item},
+        key=len,
+        reverse=True,
+    ):
+        if len(interpolation) >= 2:
+            normalized = normalized.replace(interpolation, " ")
+    for label in (
+        "final vi",
+        "definition en",
+        "exact definition en",
+        "source definition",
+        "support",
+        "sense-specific evidence",
+        "sense specific evidence",
+        "example",
+        "ví dụ",
+    ):
+        normalized = normalized.replace(label, " ")
+    normalized = re.sub(r"[^\w\s]", " ", normalized, flags=re.UNICODE)
+    return re.sub(r"\s+", " ", normalized).strip()
+
+
+def _review_template_errors(
+    value: str,
+    *,
+    identity: str,
+    interpolation_values: Iterable[str],
+    seen_templates: dict[str, str],
+    prefix: str,
+) -> list[str]:
+    residual = _review_template_residual(
+        value,
+        interpolation_values=interpolation_values,
+    )
+    errors: list[str] = []
+    if _SUSPICIOUS_TOKEN_RE.search(residual):
+        errors.append(f"{prefix}_suspicious_token:{identity}")
+    residual_words = re.findall(r"\w+", residual, flags=re.UNICODE)
+    if (
+        not residual
+        or len(residual_words) < 3
+        or residual in _GENERIC_EVIDENCE
+        or residual in _GENERIC_REVIEW_RESIDUALS
+    ):
+        errors.append(f"{prefix}_generic_template:{identity}")
+    previous = seen_templates.get(residual)
+    if residual and previous is not None:
+        errors.append(f"{prefix}_duplicate_template:{previous}:{identity}")
+    elif residual:
+        seen_templates[residual] = identity
+    return errors
+
+
+def _source_definitions(audit_card: Mapping[str, object], source_ids: Iterable[str]) -> list[str]:
+    source_by_id = {
+        str(row.get("source_sense_id") or ""): row
+        for row in audit_card.get("source_senses") or []
+    }
+    definitions: list[str] = []
+    seen: set[str] = set()
+    for source_id in source_ids:
+        definition = str((source_by_id.get(str(source_id)) or {}).get("definition") or "").strip()
+        if definition and definition not in seen:
+            seen.add(definition)
+            definitions.append(definition)
+    return definitions
 
 
 def _review_is_reusable(review: dict, candidate: dict) -> bool:
@@ -355,6 +651,7 @@ def build_vietnamese_audit(
                 (audit_sense.get("proposed") or {}).get("definition_vi") or ""
             )
             cambridge = audit_sense.get("cambridge") or {}
+            source_sense_ids = list(sense.get("source_sense_ids") or [])
             candidate = {
                 "record_type": "candidate",
                 "schema_version": VIETNAMESE_AUDIT_SCHEMA_VERSION,
@@ -371,7 +668,11 @@ def build_vietnamese_audit(
                 "definition_en": str(sense.get("definition_en") or ""),
                 "definition_vi": definition_vi,
                 "examples": list(sense.get("examples") or []),
-                "source_sense_ids": list(sense.get("source_sense_ids") or []),
+                "source_definitions": _source_definitions(
+                    audit_card,
+                    source_sense_ids,
+                ),
+                "source_sense_ids": source_sense_ids,
                 "vi_token_count": token_count,
                 "vi_char_count": len(definition_vi),
                 "heuristic_flags": _heuristic_flags(
@@ -469,6 +770,13 @@ def validate_vietnamese_audit(summary: dict, candidates: list[dict]) -> list[str
             errors.append(f"candidate_below_threshold:{candidate_id}")
         if row.get("vi_char_count") != len(definition_vi):
             errors.append(f"char_count_mismatch:{candidate_id}")
+        source_definitions = row.get("source_definitions")
+        if (
+            not isinstance(source_definitions, list)
+            or any(not isinstance(value, str) or not value.strip() for value in source_definitions)
+            or (not row.get("examples") and not source_definitions)
+        ):
+            errors.append(f"invalid_candidate_source_definitions:{candidate_id}")
         if row.get("candidate_fingerprint") != _candidate_fingerprint(row):
             errors.append(f"candidate_fingerprint_mismatch:{candidate_id}")
         if row.get("context_fingerprint") != _context_fingerprint(row):
@@ -527,14 +835,65 @@ def scaffold_vietnamese_review(
             continue
         existing_by_id[candidate_id] = row
 
-    review_rows: list[dict] = []
+    reusable_by_id: dict[str, dict] = {}
+    candidates_by_id = {row["candidate_id"]: row for row in candidates}
     for candidate in candidates:
         existing = existing_by_id.get(candidate["candidate_id"])
+        if existing is not None:
+            existing = _upgrade_review_row(existing, candidate)
         if (
             candidate["candidate_id"] not in duplicate_ids
             and existing is not None
             and _review_is_reusable(existing, candidate)
         ):
+            reusable_by_id[candidate["candidate_id"]] = existing
+
+    invalid_reuse: set[str] = set()
+    reason_groups: dict[str, list[str]] = {}
+    evidence_groups: dict[str, list[str]] = {}
+    for candidate_id, review in reusable_by_id.items():
+        candidate = candidates_by_id[candidate_id]
+        identity = f"{candidate['guid']}:{candidate['semantic_sense_id']}"
+        final_vi = _review_final_vi(review)
+        row_errors = _review_evidence_error(
+            review,
+            candidate=candidate,
+            identity=identity,
+            final_vi=final_vi,
+            seen_reason_templates={},
+            seen_evidence_templates={},
+            prefix="review",
+        )
+        if row_errors:
+            invalid_reuse.add(candidate_id)
+            continue
+        if review.get("reason_code") == "user_lock":
+            continue
+        interpolation_values = _review_interpolation_values(
+            review,
+            candidate=candidate,
+            final_vi=final_vi,
+        )
+        for value, groups in (
+            (str(review.get("reason") or ""), reason_groups),
+            (str(review.get("semantic_evidence") or ""), evidence_groups),
+        ):
+            residual = _review_template_residual(
+                value,
+                interpolation_values=interpolation_values,
+            )
+            if residual:
+                groups.setdefault(residual, []).append(candidate_id)
+    for groups in (reason_groups, evidence_groups):
+        for candidate_ids in groups.values():
+            if len(candidate_ids) > 1:
+                invalid_reuse.update(candidate_ids)
+
+    review_rows: list[dict] = []
+    for candidate in candidates:
+        candidate_id = candidate["candidate_id"]
+        existing = reusable_by_id.get(candidate_id)
+        if existing is not None and candidate_id not in invalid_reuse:
             review_rows.append(copy.deepcopy(existing))
             continue
         review_rows.append(
@@ -554,6 +913,9 @@ def scaffold_vietnamese_review(
                 "shorter_vi_considered": "",
                 "preserved_distinction": "",
                 "reason": "",
+                "reason_code": "",
+                "semantic_evidence": "",
+                "lock_id": "",
                 "reviewer": "",
                 "reviewed_at": "",
                 "approval": "",
@@ -592,6 +954,8 @@ def validate_vietnamese_review(
 
     candidates_by_id = {row["candidate_id"]: row for row in candidates}
     seen: set[str] = set()
+    seen_reason_templates: dict[str, str] = {}
+    seen_evidence_templates: dict[str, str] = {}
     for review in review_rows:
         candidate_id = str(review.get("candidate_id") or "")
         if not candidate_id or candidate_id in seen:
@@ -650,6 +1014,17 @@ def validate_vietnamese_review(
         ).strip()
         expected_vi = str(review.get("expected_definition_vi") or "")
         expected_token_count = vietnamese_token_count(expected_vi)
+        final_vi = _review_final_vi(review)
+        if decision in {"keep_natural", "keep_explanatory", "rewrite"}:
+            errors.extend(_review_evidence_error(
+                review,
+                candidate=candidate,
+                identity=identity,
+                final_vi=final_vi,
+                seen_reason_templates=seen_reason_templates,
+                seen_evidence_templates=seen_evidence_templates,
+                prefix="review",
+            ))
         if decision == "rewrite":
             if _invalid_vietnamese(proposed_vi):
                 errors.append(f"review_invalid_proposed_vi:{identity}")
@@ -763,6 +1138,10 @@ def validate_vietnamese_review_for_promotion(
                 "definition_en": str(effective.get("definition_en") or ""),
                 "definition_vi": str(effective.get("definition_vi") or ""),
                 "examples": list(effective.get("examples") or []),
+                "source_definitions": _source_definitions(
+                    card,
+                    sense.get("source_sense_ids") or [],
+                ),
                 "source_sense_ids": list(sense.get("source_sense_ids") or []),
             }
             candidate["context_fingerprint"] = _context_fingerprint(candidate)
@@ -781,6 +1160,8 @@ def validate_vietnamese_review_for_promotion(
 
     for candidate_id in sorted(set(reviews_by_id) - set(effective_by_id)):
         errors.append(f"promotion_review_extra_candidate:{candidate_id}")
+    seen_reason_templates: dict[str, str] = {}
+    seen_evidence_templates: dict[str, str] = {}
     for candidate_id in sorted(effective_by_id):
         candidate = effective_by_id[candidate_id]
         review = reviews_by_id.get(candidate_id)
@@ -862,6 +1243,16 @@ def validate_vietnamese_review_for_promotion(
                 errors.append(f"promotion_review_unexpected_keep_evidence:{identity}")
 
         final_vi = _review_final_vi(review)
+        if decision in {"keep_natural", "keep_explanatory", "rewrite"}:
+            errors.extend(_review_evidence_error(
+                review,
+                candidate=candidate,
+                identity=identity,
+                final_vi=final_vi,
+                seen_reason_templates=seen_reason_templates,
+                seen_evidence_templates=seen_evidence_templates,
+                prefix="promotion_review",
+            ))
         if _invalid_vietnamese(final_vi) or final_vi != candidate["definition_vi"]:
             errors.append(f"promotion_review_final_vi_mismatch:{identity}")
 

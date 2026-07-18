@@ -1,6 +1,8 @@
 """Shared build contracts for registry build, validation, and publishing."""
 from __future__ import annotations
 
+import csv
+import io
 import json
 from pathlib import Path
 from typing import NamedTuple
@@ -94,7 +96,7 @@ class BuiltCard(NamedTuple):
     idiom_meaning_vi: str = ""
 
     def to_tsv(self) -> str:
-        return '\t'.join([
+        fields = [
             self.guid, self.notetype, self.deck, self.word, self.pos, self.ipa,
             self.definition, self.example, self.collocations, self.wordfamily,
             self.uk_audio, self.us_audio, self.source1, self.source2, self.cefr,
@@ -106,7 +108,11 @@ class BuiltCard(NamedTuple):
             self.production_answer,
             self.sense_pos,
             self.idiom_meaning_vi,
-        ])
+        ]
+        output = io.StringIO(newline="")
+        writer = csv.writer(output, delimiter="\t", lineterminator="")
+        writer.writerow(fields)
+        return output.getvalue()
 
     def to_dict(self) -> dict:
         return {

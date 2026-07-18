@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
+import hashlib
 import json
 import re
 import sys
@@ -10,13 +13,14 @@ from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 import requests
 
 from src.config import ProjectPaths
 from src.deck_builder.package_command import (
     BACK_TEMPLATE,
+    DESIGN_INDEX,
     EAVM_FIELD_NAMES,
     EAVM_JSON_TO_FIELD,
     EAVM_MODEL_ID,
@@ -30,6 +34,17 @@ from src.deck_builder.package_command import (
     EavmTemplate,
     load_eavm_templates,
 )
+from src.deck_builder.package_archive import validate_package_archive
+from src.deck_builder.package_provenance import (
+    invalidate_verified_import_receipt,
+    media_file_map,
+    package_provenance_inputs,
+    provenance_path_for,
+    validate_package_provenance,
+    verified_receipt_path_for,
+    write_verified_import_receipt,
+)
+from src.deck_builder.live_guid_proof import export_and_verify_live_guid_map
 from src.deck_builder.production import production_eligible
 from src.design_css import load_production_css
 
@@ -51,6 +66,7 @@ JSON_TO_ANKI_FIELD: tuple[tuple[str, str], ...] = EAVM_JSON_TO_FIELD
 SCHEDULE_FIELDS = (
     "type", "queue", "due", "interval", "factor", "reps", "lapses", "left",
 )
+LIVE_MEDIA_VERIFY_BATCH_SIZE = 20
 
 
 @dataclass(frozen=True)
@@ -94,12 +110,28 @@ def _chunks(values: list[int], size: int = 500) -> Iterable[list[int]]:
 
 
 def _require_not_false(result: Any, action: str) -> None:
-    """Treat an explicit AnkiConnect ``false`` as a failed mutation."""
+    """Reject explicit failures, including nested AnkiConnect ``multi`` errors."""
 
-    if result is False or (
-        isinstance(result, list) and any(item is False for item in result)
-    ):
+    if result is False:
         raise AnkiConnectError(f"AnkiConnect {action} returned false")
+    if not isinstance(result, list):
+        return
+    for index, item in enumerate(result):
+        if item is False:
+            raise AnkiConnectError(
+                f"AnkiConnect {action} item {index} returned false"
+            )
+        # Nested actions using API v5+ return envelopes.  Without this check a
+        # partially failed multi mutation could continue changing the live deck.
+        if isinstance(item, dict) and "error" in item:
+            if item.get("error") is not None:
+                raise AnkiConnectError(
+                    f"AnkiConnect {action} item {index} failed: {item['error']}"
+                )
+            if item.get("result") is False:
+                raise AnkiConnectError(
+                    f"AnkiConnect {action} item {index} returned false"
+                )
 
 
 def _template_state(templates: dict[str, Any]) -> str:
@@ -594,15 +626,34 @@ def sync_missing_media(
     expected_media: set[str],
     audio_dir: Path,
 ) -> int:
-    """Copy package media skipped by Anki's importer into the live collection."""
+    """Make every referenced live media file byte-identical to its source.
+
+    Anki's native package import may retain an older file when the filename is
+    unchanged.  Filename presence therefore is not proof of current content:
+    retrieve existing files, compare SHA-256, and overwrite both missing and
+    stale entries before final verification.
+    """
+
     remote = set(client.call("getMediaFilesNames", pattern="*") or [])
     missing = sorted(expected_media - remote)
+    expected_hashes = _canonical_media_hashes(expected_media, audio_dir)
+    existing = sorted(expected_media & remote)
+    live_hashes = _retrieve_live_media_hashes(
+        client,
+        existing,
+        allow_missing=True,
+    )
+    stale = [
+        filename
+        for filename in existing
+        if live_hashes.get(filename) != expected_hashes[filename]
+    ]
     actions = []
     audio_root = audio_dir.resolve()
-    for filename in missing:
+    for filename in sorted({*missing, *stale}):
         source = (audio_root / filename).resolve()
         if not source.is_relative_to(audio_root) or not source.is_file():
-            raise AnkiConnectError(f"Cannot upload missing local media: {source}")
+            raise AnkiConnectError(f"Cannot upload canonical local media: {source}")
         actions.append({
             "action": "storeMediaFile",
             "params": {"filename": filename, "path": source.as_posix()},
@@ -613,6 +664,112 @@ def sync_missing_media(
             "multi",
         )
     return len(actions)
+
+
+def _sha256_path(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _canonical_media_hashes(
+    expected_media: set[str],
+    audio_dir: Path,
+) -> dict[str, str]:
+    audio_root = audio_dir.resolve()
+    hashes: dict[str, str] = {}
+    for filename in sorted(expected_media):
+        source = (audio_root / filename).resolve()
+        if not source.is_relative_to(audio_root) or not source.is_file():
+            raise AnkiConnectError(
+                f"Cannot verify canonical local media bytes: {source}"
+            )
+        hashes[filename] = _sha256_path(source)
+    return hashes
+
+
+def _retrieve_live_media_hashes(
+    client: AnkiConnectClient,
+    filenames: list[str],
+    *,
+    allow_missing: bool,
+) -> dict[str, str | None]:
+    hashes: dict[str, str | None] = {}
+    for start in range(0, len(filenames), LIVE_MEDIA_VERIFY_BATCH_SIZE):
+        batch = filenames[start:start + LIVE_MEDIA_VERIFY_BATCH_SIZE]
+        actions = [
+            {
+                "action": "retrieveMediaFile",
+                # ``multi`` dispatches each nested action independently.  Without
+                # an explicit version AnkiConnect falls back to v4 and returns a
+                # raw result instead of the v5+ {result, error} envelope below.
+                "version": ANKI_CONNECT_API_VERSION,
+                "params": {"filename": filename},
+            }
+            for filename in batch
+        ]
+        responses = client.call("multi", actions=actions)
+        if not isinstance(responses, list) or len(responses) != len(batch):
+            raise AnkiConnectError(
+                "Anki returned a malformed live media retrieval batch"
+            )
+        for filename, envelope in zip(batch, responses):
+            if not isinstance(envelope, dict) or not {
+                "result", "error"
+            }.issubset(envelope):
+                raise AnkiConnectError(
+                    f"Anki returned malformed live media data for {filename!r}"
+                )
+            if envelope["error"] is not None:
+                raise AnkiConnectError(
+                    f"Anki could not retrieve live media {filename!r}: "
+                    f"{envelope['error']}"
+                )
+            encoded = envelope["result"]
+            if encoded is False or encoded is None:
+                if allow_missing:
+                    hashes[filename] = None
+                    continue
+                raise AnkiConnectError(
+                    f"Anki live media is missing during byte verification: {filename!r}"
+                )
+            if not isinstance(encoded, str):
+                raise AnkiConnectError(
+                    f"Anki returned malformed live media data for {filename!r}"
+                )
+            try:
+                live_bytes = base64.b64decode(encoded, validate=True)
+            except (binascii.Error, ValueError) as exc:
+                raise AnkiConnectError(
+                    f"Anki returned invalid base64 for live media {filename!r}"
+                ) from exc
+            hashes[filename] = hashlib.sha256(live_bytes).hexdigest()
+    return hashes
+
+
+def _verify_live_media_bytes(
+    client: AnkiConnectClient,
+    expected_media: set[str],
+    audio_dir: Path,
+) -> None:
+    """Require every referenced live media file to match its canonical bytes."""
+
+    if not expected_media:
+        return
+    expected_hashes = _canonical_media_hashes(expected_media, audio_dir)
+    filenames = sorted(expected_hashes)
+    live_hashes = _retrieve_live_media_hashes(
+        client,
+        filenames,
+        allow_missing=False,
+    )
+    for filename in filenames:
+        if live_hashes[filename] != expected_hashes[filename]:
+            raise AnkiConnectError(
+                f"Anki live media bytes do not match canonical source: {filename!r}"
+            )
 
 
 def sync_existing_notes(
@@ -709,6 +866,7 @@ def verify_import(
     prior: ExistingCollectionSnapshot | None = None,
     templates: tuple[EavmTemplate, ...] | None = None,
     css: str | None = None,
+    audio_dir: Path | None = None,
 ) -> int:
     """Fail closed unless the complete live model, notes, and cards are canonical."""
 
@@ -943,9 +1101,10 @@ def verify_import(
             new_production_ids = production_ids - prior.card_ids
             if prior.had_production_template and new_production_ids:
                 raise AnkiConnectError("Idempotent migration created unexpected Production cards")
+            new_card_ids = set(cards) - prior.card_ids
         else:
-            new_production_ids = production_ids
-        for card_id in new_production_ids:
+            new_card_ids = set(cards)
+        for card_id in new_card_ids:
             card = cards[card_id]
             if (
                 card.get("type") != 0
@@ -957,7 +1116,7 @@ def verify_import(
                 or card.get("left", 0) != 0
             ):
                 raise AnkiConnectError(
-                    f"New Production card {card_id} is not active and unreviewed"
+                    f"New card {card_id} is not active and unreviewed"
                 )
 
     remote_media = set(client.call("getMediaFilesNames", pattern="*") or [])
@@ -966,6 +1125,11 @@ def verify_import(
         raise AnkiConnectError(
             f"Import verification found {len(missing_media)} missing media file(s): {missing_media[:5]}"
         )
+    _verify_live_media_bytes(
+        client,
+        expected_media,
+        audio_dir or ProjectPaths().audio_dir,
+    )
     return expected_count
 
 
@@ -1156,16 +1320,48 @@ def import_and_verify(
     notes_jsonl: Path,
     scratch_dir: Path,
     audio_dir: Path | None = None,
+    *,
+    provenance_path: Path | None = None,
+    provenance_inputs: Mapping[str, Path] | None = None,
+    receipt_path: Path | None = None,
 ) -> int:
     """Install fresh or migrate live in place while preserving note/card history."""
 
     if not package_path.is_file():
         raise ValueError(f"APKG not found: {package_path}")
+    resolved_audio_dir = audio_dir or ProjectPaths().audio_dir
     expected = load_expected_signatures(notes_jsonl)
     expected_records = load_expected_records(notes_jsonl)
     expected_media = load_expected_media(notes_jsonl)
+    provenance_path = provenance_path or provenance_path_for(package_path)
+    provenance_inputs = provenance_inputs or package_provenance_inputs(
+        ProjectPaths(),
+        notes_jsonl=notes_jsonl,
+        recognition_front=FRONT_TEMPLATE,
+        recognition_back=BACK_TEMPLATE,
+        production_front=PRODUCTION_FRONT_TEMPLATE,
+        production_answer_prefix=PRODUCTION_ANSWER_PREFIX,
+        styling=STYLING_TXT,
+        design_index=DESIGN_INDEX,
+    )
+    validated_provenance = validate_package_provenance(
+        provenance_path,
+        package_path,
+        provenance_inputs,
+        media_file_map(resolved_audio_dir / name for name in expected_media),
+    )
+    receipt_path = receipt_path or verified_receipt_path_for(package_path)
+    invalidate_verified_import_receipt(receipt_path)
+
     templates = load_eavm_templates()
     css = load_production_css(STYLING_TXT)
+    validate_package_archive(
+        package_path,
+        notes_jsonl,
+        media_file_map(resolved_audio_dir / name for name in expected_media),
+        expected_templates=templates,
+        expected_css=css,
+    )
     model_exists, current_fields, template_state = _model_contract(client)
     preflight_and_backup(client, scratch_dir)
     existing_note_ids = (
@@ -1202,8 +1398,8 @@ def import_and_verify(
         # Route both ordinals after template creation; Anki may place a new
         # ordinal in the model's default deck rather than its sibling deck.
         sync_existing_notes(client, notes_jsonl)
-    sync_missing_media(client, expected_media, audio_dir or ProjectPaths().audio_dir)
-    return verify_import(
+    sync_missing_media(client, expected_media, resolved_audio_dir)
+    verified_count = verify_import(
         client,
         expected,
         expected_media,
@@ -1211,7 +1407,28 @@ def import_and_verify(
         prior,
         templates,
         css,
+        resolved_audio_dir,
     )
+    guid_proof = export_and_verify_live_guid_map(
+        client,
+        scratch_dir,
+        expected_records,
+    )
+    write_verified_import_receipt(
+        receipt_path,
+        validated_provenance,
+        verified_count,
+        guid_proof=guid_proof.as_receipt_payload(),
+    )
+    return verified_count
+
+
+def validate_canonical_release_state(project_paths: ProjectPaths) -> None:
+    """Reject stale or mutually inconsistent canonical release inputs."""
+
+    from src.deck_builder.release_guard import run_release_guard
+
+    run_release_guard(project_paths, "canonical")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1219,15 +1436,53 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dry-run", action="store_true", help="Validate local inputs without contacting Anki.")
     parser.add_argument("--url", default=ANKI_CONNECT_URL, help="AnkiConnect endpoint.")
     parser.add_argument("--package", type=Path, default=OUTPUT_APKG, help="APKG to import.")
+    parser.add_argument(
+        "--provenance", type=Path,
+        help="Package provenance sidecar (defaults to scratch/release).",
+    )
+    parser.add_argument(
+        "--receipt", type=Path,
+        help="Verified-import receipt path (defaults to scratch/release).",
+    )
     args = parser.parse_args(argv)
 
     paths = ProjectPaths()
     package_path = args.package.resolve()
+    provenance_path = (
+        args.provenance.resolve() if args.provenance else provenance_path_for(package_path)
+    )
+    receipt_path = (
+        args.receipt.resolve() if args.receipt else verified_receipt_path_for(package_path)
+    )
+    provenance_inputs = package_provenance_inputs(
+        paths,
+        notes_jsonl=paths.anki_notes_jsonl,
+        recognition_front=FRONT_TEMPLATE,
+        recognition_back=BACK_TEMPLATE,
+        production_front=PRODUCTION_FRONT_TEMPLATE,
+        production_answer_prefix=PRODUCTION_ANSWER_PREFIX,
+        styling=STYLING_TXT,
+        design_index=DESIGN_INDEX,
+    )
     try:
-        expected, _ = validate_local_inputs(
+        validate_canonical_release_state(paths)
+        expected, media = validate_local_inputs(
             package_path, paths.anki_notes_jsonl, paths.audio_dir
         )
-    except ValueError as exc:
+        validate_package_provenance(
+            provenance_path,
+            package_path,
+            provenance_inputs,
+            media_file_map(paths.audio_dir / name for name in media),
+        )
+        validate_package_archive(
+            package_path,
+            paths.anki_notes_jsonl,
+            media_file_map(paths.audio_dir / name for name in media),
+            expected_templates=load_eavm_templates(),
+            expected_css=load_production_css(STYLING_TXT),
+        )
+    except (OSError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
     if args.dry_run:
@@ -1242,6 +1497,9 @@ def main(argv: list[str] | None = None) -> int:
         verified_count = import_and_verify(
             AnkiConnectClient(args.url), package_path, paths.anki_notes_jsonl,
             paths.root / "scratch", paths.audio_dir,
+            provenance_path=provenance_path,
+            provenance_inputs=provenance_inputs,
+            receipt_path=receipt_path,
         )
     except (AnkiConnectError, OSError, ValueError) as exc:
         print(f"Error: {exc}", file=sys.stderr)

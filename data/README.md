@@ -1,94 +1,122 @@
 # `data/` artifact layout
 
-This directory stores tracked datasets by lifecycle. Runtime code must obtain
-canonical paths from `src.config.ProjectPaths` instead of constructing paths
-or embedding machine-specific repository roots.
+This directory stores tracked datasets by lifecycle. Runtime code obtains every
+canonical path from `src.config.ProjectPaths`; this file owns each artifact's
+authority, writer, and edit policy.
 
-## Canonical artifacts
+## Artifact ownership
 
-| Path | Role |
-| --- | --- |
-| `sources/oxford.jsonl` | Consolidated Oxford parser output and canonical builder source. Multi-file homonyms are merged; `_skip` records remain for auditability. |
-| `sources/cambridge.jsonl` | Cambridge parser output using the shared dictionary-record schema. |
-| `curated/deck_audit.jsonl` | Production gloss, example, and collocation overrides consumed during note building. This is production data, not review state. |
-| `review/gamma_verdicts.json` | Cached gamma decisions used by sense simplification. |
-| `review/manual_card_fills.json` | Reviewed manual fills that require preservation during rebuilds. |
-| `review/non_oxford_non_c2_overrides.jsonl` | Review overrides for 381 non-Oxford / non-C2 cards. |
-| `build/anki_notes.jsonl` | Generated structured notes consumed by the deck packager. |
-| `build/anki_notes.txt` | Generated tab-separated Anki notes and the source used to preserve GUIDs across rebuilds. |
+| Path | Authority / role | Canonical writer | Manual edits? |
+| --- | --- | --- | --- |
+| `sources/oxford.jsonl` | Canonical Oxford parser output; raw senses remain auditable. | `python -m tools._run_full_cache` | No; fix parser/cache inputs or use an explicitly reviewed source repair. |
+| `sources/cambridge.jsonl` | Canonical Cambridge parser output. | `python -m tools._run_full_cache` | No. |
+| `curated/card_registry.jsonl` | Canonical card identity, GUID, status, and routing inventory. | `python -m tools.sync_card_registry` | No. |
+| `curated/semantic_policy_locks.jsonl` | Machine-readable exact-VI and absent/retain/exclude release invariants. | Reviewed semantic-policy workflow | Append reviewed history for ordinary locks. The four required user exact-VI locks need explicit user instruction plus a coordinated code/data change and cannot be silently deleted or superseded. |
+| `review/bilingual_semantic_audit.jsonl` | Fingerprint-bound English/Vietnamese sense decisions and complete source coverage. | `python -m tools.semantic_audit scaffold/import-xlsx/apply-review` | Only through a validated review transaction. |
+| `review/vietnamese_naturalness_review.jsonl` | All-sense Vietnamese naturalness evidence with row-specific `reason_code` and EN/example-grounded `semantic_evidence`; user-locked rows also cite `lock_id`, while interpolated bulk templates are rejected. | `python -m tools.semantic_audit vietnamese-review-scaffold/apply-vietnamese-review` | Only through a complete validated review. |
+| `review/bilingual_idiom_audit.jsonl` | Phrase-level idiom meaning and display-mode decisions. | `python -m tools.idiom_audit scaffold/import-xlsx` | Only through a validated review transaction. |
+| `review/definition_concision_review.jsonl` | Exact-coverage, fingerprint-bound promotion gate for every current English concision candidate. | `python -m tools.semantic_audit definition-review-scaffold` | Only through a complete validated review; required rewrites/splits belong in the Bilingual Semantic Audit first. |
+| `review/semantic_sense_merge_review.jsonl` | Exact-coverage, fingerprint-bound promotion gate proving why every current overlap candidate remains separate. | `python -m tools.semantic_audit sense-merge-review-scaffold` | Only through a complete validated review; apply merge/reword bundles to the Bilingual Semantic Audit first. |
+| `curated/semantic_registry.jsonl` | Sole production owner of promoted Definition, DefinitionVI, Example, and idiom semantic payload; schema v4 includes all review provenance. | `python -m tools.semantic_audit promote` | Never. |
+| `curated/deck_audit.jsonl` | Legacy/non-semantic curated builder overrides; cannot override Semantic Registry content. | Reviewed curated-data workflow | Reviewed changes only. |
+| `review/gamma_verdicts.json` | Cached legacy sense-simplification decisions. | Sense-simplification workflow | No ad-hoc edits. |
+| `review/manual_card_fills.json` | Reviewed manual fills preserved across rebuilds. | Manual-fill review workflow | Reviewed changes only. |
+| `review/manual_cards.jsonl` | Manual Card Payloads for content not reconstructable from sources. | Manual-card review workflow | Reviewed changes only. |
+| `review/non_oxford_non_c2_overrides.jsonl` | Reviewed non-Oxford/non-C2 routing decisions. | `python -m tools.import_non_oxford_review` | No ad-hoc edits. |
+| `review/synonym_example_overrides.jsonl` | Reviewed per-example synonym annotations. | Relation review workflow | Reviewed changes only. |
+| `review/antonym_example_overrides.jsonl` | Reviewed per-example antonym annotations. | Relation review workflow | Reviewed changes only. |
+| `review/antonym_loop_decisions.jsonl` | Reviewed antonym-loop decisions. | Relation review workflow | Reviewed changes only. |
+| `review/sense_label_overrides.jsonl` | Reviewed sense-label corrections. | Sense-label review workflow | Reviewed changes only. |
+| `build/anki_notes.jsonl` | Generated structured notes consumed by validation and packaging. | `python -m src.pipeline build` | Never. |
+| `build/anki_notes.txt` | Generated tab-separated projection of the same note set. | `python -m src.pipeline build` | Never. |
 
-Supporting data remains in place:
+Card Registry—not either build output—is the authority for stable GUIDs. Build
+JSONL and TXT are replaceable projections and must remain semantically aligned.
 
-- `schema/` contains Oxford and Cambridge JSON schemas.
-- `oxford_labels.json` contains the Oxford labels taxonomy.
-- `oxford_symbols.json` contains the Oxford dictionary-symbol taxonomy.
+Supporting data:
+
+- `schema/` contains source-record JSON schemas.
+- `oxford_labels.json` and `oxford_symbols.json` contain Oxford taxonomies.
 - `.cache_html/{oxford,cambridge}/` contains ignored fetcher caches.
-- Retired audit snapshots and intermediate analysis artifacts are not tracked
-  in `data/`. Runtime code must depend only on paths exposed through
-  `ProjectPaths`. Local audit tools may recreate ignored output directories
-  such as `cefr_audit/`, `simplify_diff/`, or `archive/`.
+- `scratch/release/*.provenance.json` binds an exact `.apkg` to all canonical
+  package inputs and media; `*.verified-import.json` additionally binds the
+  exact package to a completed live verification and the post-import APKG
+  export's archive/GUID-map hashes and note/card counts. The exported
+  `live_guid_proof_*.apkg` is ignored audit evidence, never a semantic
+  authority. Other `build/.staging/`, `scratch/`, backups, logs, and reports are
+  disposable or ignored workspace artifacts.
 
 ## Lifecycle
 
 ```text
-data/.cache_html/{oxford,cambridge}
-                 |
-                 v
-data/sources/{oxford,cambridge}.jsonl
-                 |
-                 +-- data/curated/deck_audit.jsonl
-                 +-- data/review/*.json
-                 |
-                 v
-data/build/anki_notes.{txt,jsonl}
-                 |
-                 v
-ielts_deck.apkg
+sources + Card Registry + reviewed ledgers + policy locks
+                         |
+                         v
+             semantic_audit promote
+                         |
+                         v
+          curated/semantic_registry.jsonl
+                         |
+                         v
+               pipeline build/validate
+                         |
+                         v
+             build/anki_notes.{jsonl,txt}
+                         |
+                         v
+       package + provenance + verified import receipt
 ```
 
-The Oxford source is consolidated because Oxford can have multiple cache files
-for one word. Cambridge currently has one source record per cache page. Those
-implementation details do not appear in filenames; the source field and schema
-carry source-specific semantics.
-
-## Commands
+## Supported workflows
 
 ```bash
-# Rebuild both source datasets from the local HTML caches.
+# Rebuild source datasets from isolated local caches.
 python -m tools._run_full_cache
 
-# Rebuild only Oxford and preserve the determinism contract.
-python -m tools._run_full_cache --oxford-only
+# Validate and promote reviewed semantics.
+python -m tools.semantic_audit definition-review-scaffold --replace
+python -m tools.semantic_audit sense-merge-review-scaffold --replace
+python -m tools.semantic_audit validate --require-complete
+python -m tools.idiom_audit validate --require-complete
+python -m tools.semantic_audit promote
 
-# Validate source JSONL files against their schemas.
-python -m tools._validate_jsonl
-
-# Compute Anki notes without writing files.
+# Compute notes without writing outputs, then validate production state.
 python -m tools.build_notes --dry-run
+python -m src.pipeline validate
 
-# Validate the production pipeline without writing outputs.
-python -m src.pipeline --dry-run
+# Read-only release checks; use import only after a live verified import.
+python -m tools.release_guard canonical
+python -m tools.release_guard package
+python -m tools.release_guard import
 ```
 
 ## Contracts
 
-- Rebuilding `sources/oxford.jsonl` from the same cache must be byte-identical.
-- `build/anki_notes.txt` and `build/anki_notes.jsonl` represent the same notes
-  and must preserve GUIDs.
-- Source JSONL, curated overrides, and review inputs are tracked. HTML caches,
-  audit/intermediate output directories, backups, logs, and `.apkg` packages
-  are ignored.
-- New maintained code must use `ProjectPaths`; old artifact names and absolute
-  checkout paths are rejected by `tests/test_drift_guard.py`.
+- Same canonical inputs must produce byte-identical source, registry, and build
+  artifacts.
+- Review state is fingerprint-bound; missing, pending, uncertain, unapproved,
+  or stale coverage fails closed.
+- Length, connector, label, overlap, and translation-shape signals only create
+  review candidates; they never rewrite, delete, split, or merge a sense.
+- The exact user locks `compel` → `ép buộc`, `contender` → `đối thủ nặng ký`,
+  `transcribe` → `chép lại`, and `venture` → `mạo hiểm, cả gan` remain release
+  invariants until the user explicitly instructs a coordinated change.
+- Source definitions are evidence. Only promoted Semantic Registry content may
+  populate learner-facing Definition/Example fields.
+- Every package provenance sidecar binds both build projections, Card and
+  Semantic Registries, every semantic review/policy ledger, every EAVM
+  Recognition/Production template input, packaged styling, `design/index.html`,
+  the packager implementation and EAVM/genanki contract, the `.apkg`, and its
+  media set. Repackaging invalidates the old import receipt.
+- Never hand-edit generated registries or build outputs to fix a card. Change
+  the authoritative reviewed input and regenerate downstream artifacts.
+- New maintained data paths must be exposed by `ProjectPaths` and documented in
+  the ownership table above.
 
-## Schema notes
+## Source schema notes
 
-Each source file contains one JSON object per line. Both share the same general
-record shape: headword metadata plus `pos_data`, definitions, examples, IPA,
-audio references, register tags, topics, idioms, and source files. Oxford-only
-fields such as `oxford_lists`, `opal`, and topics remain empty on Cambridge
-records.
-
-`sensenum_local` preserves Oxford's numbering within each POS section. A null
-value commonly identifies an idiom or phrasal-verb sense and is not by itself
-an error.
+Each source file contains one JSON object per line. Oxford and Cambridge share
+the general record shape: headword metadata plus `pos_data`, definitions,
+examples, IPA, audio, labels, idioms, and provenance. `sensenum_local` preserves
+Oxford order inside a POS section; null commonly identifies an idiom or
+phrasal-verb sense and is not by itself an error.

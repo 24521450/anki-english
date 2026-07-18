@@ -2,3 +2,9 @@
 # tabs are load-bearing (they delimit empty trailing note fields in canonical
 # rows), not "blank at eol" violations.
 data/build/anki_notes.txt whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab
+
+# Canonical semantic and package inputs are hashed as UTF-8/LF on every OS.
+*.jsonl text eol=lf
+data/build/anki_notes.txt text eol=lf whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab
+design/EAVM/*.txt text eol=lf
+design/index.html text eol=lf

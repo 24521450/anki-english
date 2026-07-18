@@ -152,7 +152,7 @@ def test_exact_source_cefr_rescue_is_owned_by_canonical_inputs():
     assert approximate["example"] == approximate_manual["example"]
     assert approximate["source1"] == "Cambridge"
     assert "CEFR::cambridge" in approximate["tags"]
-    assert cards['"L-#l1@LS<>"']["deck"].endswith("Oxford 3000 Advanced")
+    assert cards["L-#l1@LS<>"]["deck"].endswith("Oxford 3000 Advanced")
     assert cards["m}g1cKg({G"]["cefr"] == "UNCLASSIFIED"
 
 

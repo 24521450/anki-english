@@ -1,5 +1,4 @@
 from copy import deepcopy
-import hashlib
 import json
 
 import pytest
@@ -9,17 +8,53 @@ from src.deck_builder.build_contracts import BuiltCard
 from src.deck_builder.semantic_registry import (
     SEMANTIC_REGISTRY_SCHEMA_VERSION,
     apply_semantic_registry,
-    promote_audit_rows,
+    _render_promoted_audit_rows,
+    promote_reviewed_semantics,
     serialize_semantic_registry,
     validate_semantic_registry_rows,
 )
 from src.deck_builder.idiom_audit import idiom_source_fingerprint
+from src.deck_builder.canonical_io import canonical_json_bytes, canonical_jsonl_bytes
 
 
 AUDIT_SHA = "a" * 64
 SOURCE_SHA = "b" * 64
 IDIOM_AUDIT_SHA = "c" * 64
 VIETNAMESE_REVIEW_SHA = "d" * 64
+SEMANTIC_POLICY_SHA = "e" * 64
+DEFINITION_REVIEW_SHA = "f" * 64
+SENSE_MERGE_REVIEW_SHA = "0" * 64
+
+
+def _empty_gate_documents() -> dict:
+    empty_set_sha = __import__("hashlib").sha256(canonical_json_bytes([])).hexdigest()
+    definition_summary = {
+        "record_type": "review_summary",
+        "schema_version": 3,
+        "candidate_count": 0,
+        "candidate_set_sha256": empty_set_sha,
+    }
+    sense_merge_summary = {
+        "schema_version": 1,
+        "kind": "semantic_sense_merge_review",
+        "candidate_set_sha256": empty_set_sha,
+        "candidate_cards": 0,
+        "input_hashes": {},
+    }
+    return {
+        "policy_rows": [],
+        "definition_review_summary": definition_summary,
+        "definition_review_rows": [],
+        "sense_merge_review_summary": sense_merge_summary,
+        "sense_merge_review_rows": [],
+        "deck_audit_rows": [],
+        "non_oxford_non_c2_override_rows": [],
+        "policy_bytes": b"",
+        "definition_review_bytes": canonical_jsonl_bytes([definition_summary]),
+        "sense_merge_review_bytes": canonical_jsonl_bytes([sense_merge_summary]),
+        "deck_audit_bytes": b"",
+        "non_oxford_non_c2_override_bytes": b"",
+    }
 
 
 def _registry(**overrides):
@@ -96,6 +131,9 @@ def _promoted(**overrides):
         "senses": [_promoted_sense()],
         "idiom_audit_sha256": IDIOM_AUDIT_SHA,
         "vietnamese_review_sha256": VIETNAMESE_REVIEW_SHA,
+        "semantic_policy_sha256": SEMANTIC_POLICY_SHA,
+        "definition_review_sha256": DEFINITION_REVIEW_SHA,
+        "sense_merge_review_sha256": SENSE_MERGE_REVIEW_SHA,
         "idioms": [],
     }
     row.update(overrides)
@@ -142,16 +180,22 @@ def _card(**overrides):
 
 
 def test_promotion_is_deterministic_and_selects_pass_current_content():
-    rows = promote_audit_rows(
+    rows = _render_promoted_audit_rows(
         [_audit()], [_registry()], audit_sha256=AUDIT_SHA,
         idiom_audit_sha256=IDIOM_AUDIT_SHA,
         vietnamese_review_sha256=VIETNAMESE_REVIEW_SHA,
+        semantic_policy_sha256=SEMANTIC_POLICY_SHA,
+        definition_review_sha256=DEFINITION_REVIEW_SHA,
+        sense_merge_review_sha256=SENSE_MERGE_REVIEW_SHA,
         idioms_by_guid={},
     )
-    assert rows == promote_audit_rows(
+    assert rows == _render_promoted_audit_rows(
         [_audit()], [_registry()], audit_sha256=AUDIT_SHA,
         idiom_audit_sha256=IDIOM_AUDIT_SHA,
         vietnamese_review_sha256=VIETNAMESE_REVIEW_SHA,
+        semantic_policy_sha256=SEMANTIC_POLICY_SHA,
+        definition_review_sha256=DEFINITION_REVIEW_SHA,
+        sense_merge_review_sha256=SENSE_MERGE_REVIEW_SHA,
         idioms_by_guid={},
     )
     assert rows[0]["senses"] == [_promoted_sense()]
@@ -169,6 +213,34 @@ def test_validator_requires_vietnamese_review_provenance_hash():
     assert "invalid_vietnamese_review_sha256:guid-1" in errors
 
 
+def test_production_validator_and_apply_reject_legacy_registry_schema():
+    legacy = _promoted(schema_version=2)
+
+    assert "invalid_schema_version:guid-1" in validate_semantic_registry_rows(
+        [legacy], [_registry()]
+    )
+    with pytest.raises(ValueError, match="Invalid Semantic Registry"):
+        apply_semantic_registry([_card()], [legacy])
+
+
+def test_public_promotion_requires_the_complete_vietnamese_review_document():
+    audit_rows = [_audit()]
+    gate_documents = _empty_gate_documents()
+
+    with pytest.raises(ValueError, match="Vietnamese review is not promotion-ready"):
+        promote_reviewed_semantics(
+            audit_rows,
+            [_registry()],
+            [],
+            {},
+            [],
+            **gate_documents,
+            audit_bytes=canonical_jsonl_bytes(audit_rows),
+            idiom_audit_bytes=b"",
+            vietnamese_review_bytes=b"{}\n",
+        )
+
+
 def test_promotion_selects_complete_approved_repair_content():
     repaired = _sense(
         decision="repair_proposed", approval="approved",
@@ -181,10 +253,13 @@ def test_promotion_selects_complete_approved_repair_content():
             "examples": ["They equated money with success."],
         },
     )
-    rows = promote_audit_rows(
+    rows = _render_promoted_audit_rows(
         [_audit(semantic_senses=[repaired])], [_registry()], audit_sha256=AUDIT_SHA,
         idiom_audit_sha256=IDIOM_AUDIT_SHA,
         vietnamese_review_sha256=VIETNAMESE_REVIEW_SHA,
+        semantic_policy_sha256=SEMANTIC_POLICY_SHA,
+        definition_review_sha256=DEFINITION_REVIEW_SHA,
+        sense_merge_review_sha256=SENSE_MERGE_REVIEW_SHA,
         idioms_by_guid={},
     )
     assert rows[0]["senses"][0]["definition_en"] == "treat as equal"
@@ -195,10 +270,13 @@ def test_promotion_selects_complete_approved_repair_content():
 def test_promotion_rejects_pending_or_unapproved_audit():
     pending = _sense(decision="pending")
     with pytest.raises(ValueError, match="not promotion-ready"):
-        promote_audit_rows(
+        _render_promoted_audit_rows(
             [_audit(semantic_senses=[pending])], [_registry()], audit_sha256=AUDIT_SHA,
             idiom_audit_sha256=IDIOM_AUDIT_SHA,
             vietnamese_review_sha256=VIETNAMESE_REVIEW_SHA,
+            semantic_policy_sha256=SEMANTIC_POLICY_SHA,
+            definition_review_sha256=DEFINITION_REVIEW_SHA,
+            sense_merge_review_sha256=SENSE_MERGE_REVIEW_SHA,
             idioms_by_guid={},
         )
 
@@ -214,10 +292,13 @@ def test_promotion_rejects_pending_or_unapproved_audit():
         },
     )
     with pytest.raises(ValueError, match="not promotion-ready"):
-        promote_audit_rows(
+        _render_promoted_audit_rows(
             [_audit(semantic_senses=[repair])], [_registry()], audit_sha256=AUDIT_SHA,
             idiom_audit_sha256=IDIOM_AUDIT_SHA,
             vietnamese_review_sha256=VIETNAMESE_REVIEW_SHA,
+            semantic_policy_sha256=SEMANTIC_POLICY_SHA,
+            definition_review_sha256=DEFINITION_REVIEW_SHA,
+            sense_merge_review_sha256=SENSE_MERGE_REVIEW_SHA,
             idioms_by_guid={},
         )
 
@@ -434,15 +515,62 @@ def test_canonical_semantic_registry_is_the_current_deterministic_promotion():
         if line.strip()
     ]
     vietnamese_review_bytes = paths.vietnamese_naturalness_review.read_bytes()
-    promoted = promote_audit_rows(
+    vietnamese_review_rows = [
+        json.loads(line)
+        for line in vietnamese_review_bytes.decode("utf-8").splitlines()
+        if line.strip()
+    ]
+    policy_bytes = paths.semantic_policy_locks.read_bytes()
+    policy_rows = [
+        json.loads(line)
+        for line in policy_bytes.decode("utf-8").splitlines()
+        if line.strip()
+    ]
+    definition_review_bytes = paths.definition_concision_review.read_bytes()
+    definition_review_records = [
+        json.loads(line)
+        for line in definition_review_bytes.decode("utf-8").splitlines()
+        if line.strip()
+    ]
+    sense_merge_review_bytes = paths.semantic_sense_merge_review.read_bytes()
+    sense_merge_review_records = [
+        json.loads(line)
+        for line in sense_merge_review_bytes.decode("utf-8").splitlines()
+        if line.strip()
+    ]
+    deck_audit_bytes = paths.deck_audit_jsonl.read_bytes()
+    deck_audit_rows = [
+        json.loads(line)
+        for line in deck_audit_bytes.decode("utf-8").splitlines()
+        if line.strip()
+    ]
+    override_bytes = paths.non_oxford_non_c2_overrides.read_bytes()
+    override_rows = [
+        json.loads(line)
+        for line in override_bytes.decode("utf-8").splitlines()
+        if line.strip()
+    ]
+    promoted = promote_reviewed_semantics(
         audit_rows,
         card_registry_rows,
-        audit_sha256=hashlib.sha256(audit_bytes).hexdigest(),
-        idiom_audit_sha256=hashlib.sha256(idiom_audit_bytes).hexdigest(),
-        vietnamese_review_sha256=hashlib.sha256(
-            vietnamese_review_bytes
-        ).hexdigest(),
-        idiom_audit_rows=idiom_audit_rows,
+        idiom_audit_rows,
+        vietnamese_review_rows[0],
+        vietnamese_review_rows[1:],
+        policy_rows=policy_rows,
+        definition_review_summary=definition_review_records[0],
+        definition_review_rows=definition_review_records[1:],
+        sense_merge_review_summary=sense_merge_review_records[0],
+        sense_merge_review_rows=sense_merge_review_records[1:],
+        deck_audit_rows=deck_audit_rows,
+        non_oxford_non_c2_override_rows=override_rows,
+        audit_bytes=audit_bytes,
+        idiom_audit_bytes=idiom_audit_bytes,
+        vietnamese_review_bytes=vietnamese_review_bytes,
+        policy_bytes=policy_bytes,
+        definition_review_bytes=definition_review_bytes,
+        sense_merge_review_bytes=sense_merge_review_bytes,
+        deck_audit_bytes=deck_audit_bytes,
+        non_oxford_non_c2_override_bytes=override_bytes,
     )
 
     assert paths.semantic_registry.read_text(encoding="utf-8") == (

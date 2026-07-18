@@ -254,7 +254,7 @@ def test_anki_card_fix_notes_are_applied_to_generated_cards():
             "collocations": "hint at sth",
         },
         ("rally", "noun", "C1"): {
-            "guid": "\"b3wpN/#H?F\"",
+            "guid": "b3wpN/#H?F",
             "definition": "support meeting (cuộc mít tinh)|road race (đua rally)",
             "example": "to attend/hold a rally|the Monte Carlo rally",
             "collocations": "hold/attend a rally|peace/protest rally|Monte Carlo rally",

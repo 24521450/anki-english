@@ -4,6 +4,11 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
 
 > **Read first:** [`CONTEXT.md`](./CONTEXT.md) for the project glossary (canonical terms, no implementation details). Come back here for commands, layout, and conventions.
 
+Documentation ownership: `CONTEXT.md` holds current vocabulary;
+`docs/adr/` records rationale and trade-offs; `USER_NOTES.md` is chronological
+user-request provenance; `data/README.md` owns artifact lifecycle;
+`tools/README.md` owns supported workflows; this file owns operations.
+
 ## Setup commands
 
 - Install deps: `pip install -r requirements.txt` (then `python -c "import nltk; nltk.download('wordnet'); nltk.download('omw-1.4')"`)
@@ -36,7 +41,7 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   - **build**: enriches with CEFR resolution + audio refs. **Enforces [Card Identity](./CONTEXT.md), the reviewed [Learner Relevance Filter](./CONTEXT.md), and [Sense Sorting](./CONTEXT.md)**, then replaces the final Definition/Example payload with `data/curated/semantic_registry.jsonl`. The production command fails closed when that registry is missing or invalid. See `design/README.md § Card design rules` for the rule reference.
   - **validate**: checks registry, card identity, JSONL/TXT parity, audio references, and deterministic output before publish.
   - **deck**: bakes `.apkg` via `update_anki_deck.py`.
-  - **import**: imports the validated `.apkg` through AnkiConnect and verifies the EAVM note type, note GUID coverage, and media. Requires Anki + AnkiConnect to be running; never edits `collection.anki2` directly.
+  - **import**: imports the validated `.apkg` through AnkiConnect and verifies the EAVM note type, byte-exact media, and note GUID coverage through a post-import APKG export. Requires Anki + AnkiConnect to be running; never edits `collection.anki2` directly.
   - Archived one-shot fixers are unsupported and are not wrapped by the pipeline.
 
 ### Bilingual semantic audit and promotion
@@ -48,8 +53,10 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   at `scratch/bilingual_semantic_audit.xlsx`; `import-xlsx` validates immutable
   fingerprints and writes decisions back transactionally to JSONL.
 - `python -m tools.semantic_audit validate --require-complete` is the promotion
-  gate. Pending/uncertain decisions, unapproved repairs, or unaccounted source
-  senses fail.
+  gate across the bilingual semantic, idiom, all-sense Vietnamese, Definition
+  concision, Semantic Sense merge, and semantic-policy authorities.
+  Pending/uncertain decisions, unapproved repairs, stale fingerprints, missing
+  candidate coverage, or unaccounted source senses fail.
 - `python -m tools.semantic_audit promote` deterministically writes the complete,
   approved sense and idiom payload to `data/curated/semantic_registry.jsonl`.
   Re-running it from the same ledgers must be byte-identical.
@@ -68,12 +75,28 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   text. The default 12-token trigger is review triage, not a length cap. The
   report may consume an explicit scratch review file via `--reviews`; it never
   writes the canonical ledger or Semantic Registry.
+- `python -m tools.semantic_audit definition-review-scaffold` creates the
+  fingerprint-bound canonical candidate ledger at
+  `data/review/definition_concision_review.jsonl`. Promotion requires exact
+  current coverage and approved `keep_explanatory` rows with a genuinely
+  shorter or connector-reduced alternative, the exact preserved distinction,
+  and row-specific semantic evidence. A required rewrite or split must first be
+  applied through the Bilingual Semantic Audit, then the queue must be
+  regenerated; a report verdict does not mutate canonical data.
 - `python -m tools.semantic_audit sense-merge-audit` creates the fingerprint-bound,
   report-only Semantic Sense Merge Audit in `scratch/`. After every candidate is
   reviewed, pass `--reviews`, `--bundle-output`, `--reviewer`, `--reviewed-at`,
   and `--approval approved` to create a canonical-compatible review bundle in
-  `scratch/`; apply that bundle through `apply-review`, then validate and promote.
+  `scratch/`; apply that bundle through `apply-review`, then regenerate and
+  complete the canonical candidate ledgers before validation and promotion.
   Bundle generation remaps every affected source before removing a Semantic Sense.
+- `python -m tools.semantic_audit sense-merge-review-scaffold` creates the
+  fingerprint-bound canonical candidate ledger at
+  `data/review/semantic_sense_merge_review.jsonl`. Promotion requires exact
+  current coverage and an approved, row-specific `keep_separate` distinction
+  citing at least two affected Semantic Sense IDs. Merge/reword proposals,
+  uncertain verdicts, unapplied bundles, generic explanations, and stale rows
+  block promotion.
 - `python -m tools.semantic_audit vietnamese-audit` creates the report-only
   `DefinitionVI` naturalness queue in `scratch/`. The default eight-token
   threshold is review triage, not a length cap and never an automatic rewrite.
@@ -86,7 +109,14 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   uncertain, or unapproved review state fails before the bilingual semantic
   ledger changes or promotion proceeds. Unchanged text is not automatically
   reviewed; an approved row is reused only while its per-sense fingerprint is
-  unchanged, and every new or changed sense must receive a new verdict.
+  unchanged, and every new or changed sense must receive a new verdict. Every
+  resolved row needs a decision-specific `reason_code` and unique,
+  wording-specific `semantic_evidence`; `reason_code=user_lock` additionally
+  requires the exact `lock_id`, while non-locked rows must leave `lock_id`
+  empty. Ordinary evidence must cite the row's exact English sense and a
+  sense-specific example or source definition. Interpolating the headword or
+  final VI into shared approval prose is still a bulk pass; normalized generic
+  or duplicate templates fail validation.
   `validate --require-complete` and `promote` both require exact coverage from
   this all-sense ledger.
 - `python -m tools.semantic_audit vietnamese-review-scaffold --scope long`
@@ -95,11 +125,29 @@ IELTS / Academic English Anki deck builder — notes DB + scraper pipeline (Oxfo
   whitespace-token count; `keep_explanatory` must record a strictly shorter
   wording considered and the exact material distinction it would lose. Merely
   changing punctuation or word order does not close a verbosity finding.
+- `data/curated/semantic_policy_locks.jsonl` is the machine-readable release
+  policy for exact wording and retained/excluded/absent sense decisions. The
+  exact user locks `compel` → `ép buộc`, `contender` → `đối thủ nặng ký`,
+  `transcribe` → `chép lại`, and `venture` → `mạo hiểm, cả gan` are release
+  invariants. Change any of them only after an explicit user instruction and a
+  coordinated code/data update; deleting or superseding a ledger row must not
+  relax them silently.
 - Since the ADR 0011 cutover on 2026-07-15, Semantic Registry owns production
   Definition/Example content and the promoted bilingual Idiom Box payload. The
   legacy β/γ/M3 and review layers still support source indexing and non-semantic
   metadata during the remaining decoupling; they must not override the promoted
   final semantic payload.
+
+### Change-impact matrix
+
+| Change | Required path | Forbidden shortcut |
+| --- | --- | --- |
+| Definition EN/VI or examples | Update the fingerprint-bound review input, validate all affected ledgers, promote, rebuild, and run release validation. | Hand-edit Semantic Registry or build outputs. |
+| Remove or retain a source sense | Use the reviewed Learner Relevance Filter, account for every source ID, and add/retain stable regression evidence. | Delete by label, length, or specialist heuristic alone. |
+| User-locked VI wording | Obtain explicit user instruction, then update the matching policy/code/data contract and regenerate every downstream artifact. | Infer permission from a dictionary/source change or silently supersede the lock. |
+| Parser fixture | Declare it in the clean-checkout fixture manifest with semantic assertions; hydrate through the shared helper. | Read an undeclared ignored cache file from a default test. |
+| Generated artifact | Run its documented canonical writer and verify deterministic output contains no unrelated changes. | Treat an output file as an upstream authority. |
+| Release/import | Run the CI-equivalent guard, full `pytest`, pipeline validation, package provenance check, and verified AnkiConnect import when live release is in scope. | Import a stale/unverified `.apkg` or edit `collection.anki2`. |
 
 ## Architecture context
 
@@ -174,7 +222,7 @@ fallback.
 
 ### Test slices
 
-- Smoke: `pytest tests/test_config.py tests/test_pipeline.py tests/test_schema_validation.py tests/test_drift_guard.py tests/tools/test_sync_card_registry.py`
+- Smoke: `pytest tests/test_config.py tests/test_pipeline.py tests/test_schema_validation.py tests/test_drift_guard.py tests/test_documentation_contracts.py tests/tools/test_sync_card_registry.py`
 - Scraper: `pytest tests/scraper`
 - Deck builder core: `pytest tests/deck_builder -m "not external"`
 - Design: `pytest tests/design`
@@ -286,12 +334,50 @@ Example Audio delimiter grammar.
 
 The pipeline's `import` stage is the supported live update path. It calls
 AnkiConnect `importPackage` with the generated `.apkg`, then verifies the note
-type fields, canonical GUID coverage, and referenced media. Every successful
+type fields, canonical GUID coverage, and referenced media. GUID coverage is
+proved from a post-import AnkiConnect APKG export because `notesInfo` does not
+return GUIDs; never treat a missing `notesInfo.guid` field as success. Every successful
 non-dry-run workflow containing `deck` automatically continues into `import`;
 `python -m src.pipeline import` remains available for a standalone re-import.
 Anki and AnkiConnect must be running, and the workflow must fail visibly if the
 import or post-import verification fails. Never edit `collection.anki2`
 directly.
+
+Packaging writes `scratch/release/ielts_deck.provenance.json`, binding the
+`.apkg`, packaged media set, build JSONL/TXT, Card Registry, Semantic Registry,
+all semantic review/policy ledgers, all Recognition/Production template inputs,
+EAVM styling, `design/index.html`, the machine-readable EAVM packager contract,
+the packager implementation, and the installed `genanki` version. Repackaging
+invalidates any previous verified-import receipt. Both packaging and import run
+the canonical release guard before crossing their release boundary; import then
+validates package provenance before contacting Anki and writes
+`scratch/release/ielts_deck.verified-import.json` only after the live
+post-import checks succeed.
+
+Run the read-only release boundary that matches the work:
+
+- `python -m tools.release_guard canonical` — reproduce Semantic Registry and
+  both build projections from current canonical inputs without writing them.
+- `python -m tools.release_guard package` — validate design sync, current local
+  inputs/media, the `.apkg` archive's exact SQLite/model/note/card/media
+  contents, and its provenance sidecar.
+- `python -m tools.release_guard import` — run the package checks and require a
+  verified-import receipt for that exact package and expected note count.
+
+The live import verifier compares the bytes of every referenced Anki media file
+with the tracked source, overwrites a same-name stale file before independently
+verifying it again, and requires every newly created Recognition and Production
+card to be pristine. It then exports the root deck, prefers
+`collection.anki21` over the compatibility `collection.anki2`, rejects
+unsupported `collection.anki21b`, and checks the exact GUID-to-identity/card
+map before writing the receipt. Matching filenames or note counts are not
+sufficient, and GUID text is not considered verified until the export proof
+succeeds.
+
+The guard never promotes, builds, packages, contacts Anki, or fixes state. CI
+runs the canonical scope on Linux and Windows, and builds then checks package
+provenance on Linux; the import scope remains a live-release check because CI
+has no Anki collection.
 
 ### Anki deletion/update workflow
 When deleting or merging notes in the local Anki app, use AnkiConnect if

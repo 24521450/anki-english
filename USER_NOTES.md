@@ -1,5 +1,11 @@
 # User Notes
 
+> **Vai trò:** nhật ký theo thời gian về yêu cầu trực tiếp của người dùng. Các
+> mục cũ có thể đã được thực hiện, sửa lại hoặc supersede; không dùng file này
+> làm current specification. Trạng thái hiện hành thuộc canonical ledgers/data,
+> thuật ngữ trong `CONTEXT.md`, quyết định trong `docs/adr/`, và executable
+> contracts trong tests. `AGENTS.md` giữ workflow vận hành.
+
 Ghi lại các yêu cầu, câu hỏi và định hướng do người dùng trực tiếp nêu. Các
 kết luận hoặc đề xuất của agent không được tự động xem là quyết định của người
 dùng.
@@ -115,3 +121,28 @@ dùng.
   Một wording không đổi chỉ được xem là đã review khi có verdict riêng được
   duyệt; verdict cũ được giữ lại khi fingerprint của chính sense đó không đổi,
   còn sense mới hoặc thay đổi phải chặn promotion cho đến khi được duyệt.
+
+## 2026-07-18
+
+- Dựa trên toàn bộ lỗi nghĩa EN/VI dài dòng, dịch máy móc, sense quá hẹp/chuyên
+  ngành, và lỗi release/CI đã xác định và sửa, thiết lập ghi chú cùng hàng rào
+  bền vững để những lỗi này không tái diễn ở lần scaffold, promote, build,
+  package, import hoặc push sau.
+- Rà lại cả các dòng từng được bulk-pass bằng cùng một mẫu lý do. Bằng chứng VI
+  phải bám đúng nghĩa EN và ví dụ/source của từng sense; chỉ thay headword hoặc
+  final VI trong một câu mẫu không được tính là review riêng.
+- Audit nội dung đã phát hiện và sửa thêm 22 card/sense bị gộp sai, diễn giải
+  dài, hoặc giữ sense quá chuyên biệt. Mọi split/remap/exclude phải đi qua
+  Bilingual Semantic Audit và giữ đầy đủ source coverage; không sửa tay Registry
+  hay build output.
+- Release guard phải kiểm tra nội dung thật bên trong `.apkg`, byte media sau
+  import, và trạng thái sạch của cả card Recognition lẫn Production mới; sidecar,
+  filename và note count không tự chứng minh package/import là đúng.
+- GUID có dấu ngoặc kép do quoting của TSV cũ phải được chuẩn hóa về đúng giá trị
+  Anki khi bootstrap, nhưng registry đã tồn tại phải từ chối GUID không canonical
+  hoặc collision thay vì tự sửa âm thầm.
+- Không được xem `notesInfo` là bằng chứng GUID vì API này không trả trường GUID.
+  Sau import phải export deck qua AnkiConnect, đọc SQLite trong APKG, đối chiếu
+  chính xác GUID với Card Identity/card ordinal và chỉ sau đó mới ghi receipt.
+- Media cùng filename nhưng khác byte phải được xem là stale: sync ghi đè từ file
+  canonical rồi verifier đọc lại độc lập. Chỉ kiểm tra filename tồn tại là chưa đủ.

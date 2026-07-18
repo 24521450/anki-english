@@ -100,7 +100,7 @@ def test_directly_excluded_niche_sources_stay_excluded():
             "ox_82f45acbe6774ee4e3229cb6",
             "cam_e22f4ad6fb6ab85c2939f941",
         },
-        '"r`_r,m.#U]"': {"ox_1ecdd7f4cd992c0618d667aa"},
+        "r`_r,m.#U]": {"ox_1ecdd7f4cd992c0618d667aa"},
         "V8mV8Z*-r3": {"ox_8d7848e50bf7752154f6db85"},
         "j;VJZAa9!J": {
             "ox_8dc089a27f6fb2b9edba35dc",
@@ -134,7 +134,7 @@ def test_reviewed_lexical_glosses_stay_concise_in_production_registry():
     )
     assert "sem_4e90d7b508570047f607b454" in transcribe
 
-    implicate = registry['"r`_r,m.#U]"']["senses"]
+    implicate = registry["r`_r,m.#U]"]["senses"]
     assert len(implicate) == 1
     assert (
         implicate[0]["semantic_sense_id"],
@@ -168,7 +168,7 @@ def test_excluded_sources_and_removed_sense_do_not_reach_production_registry():
             "ox_82f45acbe6774ee4e3229cb6",
             "cam_e22f4ad6fb6ab85c2939f941",
         },
-        '"r`_r,m.#U]"': {"ox_1ecdd7f4cd992c0618d667aa"},
+        "r`_r,m.#U]": {"ox_1ecdd7f4cd992c0618d667aa"},
         "V8mV8Z*-r3": {"ox_8d7848e50bf7752154f6db85"},
         "j;VJZAa9!J": {
             "ox_8dc089a27f6fb2b9edba35dc",

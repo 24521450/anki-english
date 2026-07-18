@@ -10,24 +10,17 @@ intentional).
 """
 from __future__ import annotations
 
-import json
-import os
 import re
-import sys
-
-from pathlib import Path
-PROJECT_ROOT = str(Path(__file__).resolve().parents[2])
-sys.path.insert(0, PROJECT_ROOT)
 
 import pytest  # noqa: E402
 
 from src.scraper.oxford import parse_oxford  # noqa: E402
 from src.scraper.cambridge import parse_cambridge  # noqa: E402
+from tools import ci_hydrate_parser_fixtures as fixture_catalog  # noqa: E402
 
-OXFORD_DIR = os.path.join(PROJECT_ROOT, "data", ".cache_html", "oxford")
-CAMBRIDGE_DIR = os.path.join(PROJECT_ROOT, "data", ".cache_html", "cambridge")
-OXFORD_GOLDEN = os.path.join(PROJECT_ROOT, "tests", "fixtures", "golden_oxford_v2.json")
-CAMBRIDGE_GOLDEN = os.path.join(PROJECT_ROOT, "tests", "fixtures", "golden_cambridge_v2.json")
+OXFORD_GOLDEN = fixture_catalog.golden_records("oxford")
+CAMBRIDGE_GOLDEN = fixture_catalog.golden_records("cambridge")
+SPECIAL_FIXTURES = fixture_catalog.special_fixtures()
 
 
 def _normalize_ws(obj):
@@ -41,15 +34,8 @@ def _normalize_ws(obj):
     return obj
 
 
-def _load_golden(path: str) -> list[dict]:
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
 def _parse_oxford_record(filename: str) -> dict:
-    path = os.path.join(OXFORD_DIR, filename)
-    with open(path, "rb") as f:
-        raw = f.read()
+    raw = fixture_catalog.fixture_path("oxford", filename).read_bytes()
     record = parse_oxford(raw, source_files=[filename])
     record["source_url"] = None  # not test target
     # Canonical POS provenance was added after the frozen v2 golden fixture.
@@ -59,9 +45,7 @@ def _parse_oxford_record(filename: str) -> dict:
 
 
 def _parse_cambridge_record(filename: str) -> dict:
-    path = os.path.join(CAMBRIDGE_DIR, filename)
-    with open(path, "rb") as f:
-        raw = f.read()
+    raw = fixture_catalog.fixture_path("cambridge", filename).read_bytes()
     record = parse_cambridge(raw, source_files=[filename])
     record["source_url"] = None
     return record
@@ -73,19 +57,19 @@ def _parse_cambridge_record(filename: str) -> dict:
 
 @pytest.fixture(scope="module")
 def oxford_golden():
-    return _load_golden(OXFORD_GOLDEN)
+    return OXFORD_GOLDEN
 
 
 @pytest.fixture(scope="module")
 def cambridge_golden():
-    return _load_golden(CAMBRIDGE_GOLDEN)
+    return CAMBRIDGE_GOLDEN
 
 
 # -----------------------------------------------------------------------------
 # Oxford tests
 # -----------------------------------------------------------------------------
 
-@pytest.mark.parametrize("record", _load_golden(OXFORD_GOLDEN), ids=lambda r: r["file"])
+@pytest.mark.parametrize("record", OXFORD_GOLDEN, ids=lambda r: r["file"])
 def test_oxford_parser_consistent(record, oxford_golden):
     filename = record["file"]
     parsed = _parse_oxford_record(filename)
@@ -152,7 +136,7 @@ def test_oxford_parser_rejects_conflicting_valid_canonical_urls():
 # Cambridge tests
 # -----------------------------------------------------------------------------
 
-@pytest.mark.parametrize("record", _load_golden(CAMBRIDGE_GOLDEN), ids=lambda r: r["file"])
+@pytest.mark.parametrize("record", CAMBRIDGE_GOLDEN, ids=lambda r: r["file"])
 def test_cambridge_parser_consistent(record, cambridge_golden):
     filename = record["file"]
     parsed = _parse_cambridge_record(filename)
@@ -163,6 +147,17 @@ def test_cambridge_parser_consistent(record, cambridge_golden):
         from deepdiff import DeepDiff
         diff = DeepDiff(expected_norm, parsed_norm, ignore_order=True, verbose_level=2)
         pytest.fail(f"Cambridge parse mismatch for {filename}:\n{diff}")
+
+
+@pytest.mark.parametrize("fixture", SPECIAL_FIXTURES, ids=lambda item: item["id"])
+def test_special_parser_fixture_matches_manifest(fixture):
+    filename = fixture["filename"]
+    raw = fixture_catalog.fixture_path(fixture["source"], filename).read_bytes()
+    parser = parse_oxford if fixture["source"] == "oxford" else parse_cambridge
+    parsed = parser(raw, source_files=[filename])
+
+    assert parsed is not None, f"Special fixture {fixture['id']} parsed to None"
+    assert fixture_catalog.matches_semantic_assertions(parsed, fixture["assertions"])
 
 
 # -----------------------------------------------------------------------------
@@ -194,8 +189,7 @@ def test_cambridge_schema_required_fields(cambridge_golden):
 
 def test_oxford_parser_does_not_emit_schema_field():
     """Oxford parser must not emit the $schema key in its output (v3 cleanup)."""
-    filename = oxford_golden.__self__ if False else None
-    recs = _load_golden(OXFORD_GOLDEN)
+    recs = OXFORD_GOLDEN
     # Pick a real word page (not None-returning non-word page)
     candidates = [r for r in recs if r.get("word")]
     assert candidates, "No Oxford word records in golden fixture to test"
@@ -210,7 +204,7 @@ def test_oxford_parser_does_not_emit_schema_field():
 
 def test_cambridge_parser_does_not_emit_schema_field():
     """Cambridge parser must not emit the $schema key in its output (v3 cleanup)."""
-    recs = _load_golden(CAMBRIDGE_GOLDEN)
+    recs = CAMBRIDGE_GOLDEN
     candidates = [r for r in recs if r.get("word")]
     assert candidates, "No Cambridge word records in golden fixture to test"
     filename = candidates[0]["file"]

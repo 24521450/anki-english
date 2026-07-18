@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "golden_sets": [
+    {
+      "id": "oxford-v2",
+      "source": "oxford",
+      "records": "tests/fixtures/golden_oxford_v2.json",
+      "slug_strategy": "oxford_filename_v1"
+    },
+    {
+      "id": "cambridge-v2",
+      "source": "cambridge",
+      "records": "tests/fixtures/golden_cambridge_v2.json",
+      "slug_strategy": "cambridge_filename_v1"
+    }
+  ],
+  "special_fixtures": [
+    {
+      "id": "sick-adjective-boundary",
+      "source": "oxford",
+      "filename": "oxford_sick_1_(adj).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "sick",
+        "pos_sections": [
+          {"pos": "adjective", "definition_count": 7}
+        ],
+        "required_idioms": [
+          {"phrase": "be sick", "pos": "adjective"}
+        ],
+        "required_see_also": []
+      }
+    },
+    {
+      "id": "aggregate-adjective-boundary",
+      "source": "oxford",
+      "filename": "oxford_aggregate_(adj).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "aggregate",
+        "pos_sections": [
+          {"pos": "adjective", "definition_count": 1}
+        ],
+        "required_idioms": [],
+        "required_see_also": []
+      }
+    },
+    {
+      "id": "aggregate-verb-boundary",
+      "source": "oxford",
+      "filename": "oxford_aggregate_(verb).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "aggregate",
+        "pos_sections": [
+          {"pos": "verb", "definition_count": 1}
+        ],
+        "required_idioms": [],
+        "required_see_also": []
+      }
+    },
+    {
+      "id": "aggregate-noun-boundary",
+      "source": "oxford",
+      "filename": "oxford_aggregate_1_(noun).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "aggregate",
+        "pos_sections": [
+          {"pos": "noun", "definition_count": 2}
+        ],
+        "required_idioms": [
+          {"phrase": "in (the) aggregate", "pos": "noun"},
+          {"phrase": "on aggregate", "pos": "noun"}
+        ],
+        "required_see_also": []
+      }
+    },
+    {
+      "id": "abolish-schema",
+      "source": "oxford",
+      "filename": "oxford_abolish_(verb).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "abolish",
+        "pos_sections": [
+          {"pos": "verb", "definition_count": 1}
+        ],
+        "required_idioms": [],
+        "required_see_also": []
+      }
+    },
+    {
+      "id": "stack-noun-idiom-owner",
+      "source": "oxford",
+      "filename": "oxford_stack_(noun).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "stack",
+        "pos_sections": [
+          {"pos": "noun", "definition_count": 6}
+        ],
+        "required_idioms": [
+          {"phrase": "blow your top", "pos": "noun"}
+        ],
+        "required_see_also": []
+      }
+    },
+    {
+      "id": "stack-verb-idiom-owner",
+      "source": "oxford",
+      "filename": "oxford_stack_(verb).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "stack",
+        "pos_sections": [
+          {"pos": "verb", "definition_count": 3}
+        ],
+        "required_idioms": [
+          {"phrase": "stack it", "pos": "verb"}
+        ],
+        "required_see_also": []
+      }
+    },
+    {
+      "id": "four-number-idiom-owner",
+      "source": "oxford",
+      "filename": "oxford_four_(num).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "four",
+        "pos_sections": [
+          {"pos": "number", "definition_count": 4}
+        ],
+        "required_idioms": [
+          {"phrase": "on all fours", "pos": "number"},
+          {"phrase": "these four walls", "pos": "number"}
+        ],
+        "required_see_also": []
+      }
+    },
+    {
+      "id": "cambridge-violation-cleaning",
+      "source": "cambridge",
+      "filename": "cambridge_violation.html",
+      "slug_strategy": "cambridge_filename_v1",
+      "assertions": {
+        "word": "violation",
+        "pos_sections": [
+          {"pos": "noun", "definition_count": 3}
+        ],
+        "required_idioms": [],
+        "required_see_also": ["infraction", "misdemeanour"]
+      }
+    }
+  ]
+}

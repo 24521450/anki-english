@@ -12,8 +12,12 @@ drift. When a new concept emerges, add it here.
 contain implementation details, command examples, or stage descriptions. For
 those, see:
 
-- `AGENTS.md` — project conventions, commands, layout
-- `design/README.md` — visual design system, card rules
+- `AGENTS.md` — current operational commands, conventions, and change impact
+- `docs/adr/` — durable rationale and trade-offs behind architectural decisions
+- `data/README.md` — artifact authority, writers, and lifecycle
+- `tools/README.md` — supported audit/build workflows
+- `USER_NOTES.md` — chronological user-request provenance, not current state
+- `design/README.md` — visual design system and card rules
 - `CONTEXT-FORMAT.md` (if present) — format spec for new entries
 
 ## Language
@@ -231,22 +235,42 @@ would lose.
 _Avoid_: source-definition transcription, machine-shaped paraphrase, hard word cap
 
 **Definition Sense Audit**:
-A report-only review of unusually long, token-heavy, or connector-heavy
+A report-only triage view of unusually long, token-heavy, or connector-heavy
 Definition text. It checks both lexical concision and whether
 semicolon-separated clauses are independent senses or belong in one bilingual
 sense, preserves Oxford/Cambridge evidence IDs, and requires
-Definition/Example pipe alignment. Candidate thresholds are triage only and
-never authorize an automatic rewrite or split.
+Definition/Example pipe alignment. It never writes canonical review or
+production data. Candidate thresholds only select the current Definition
+Concision Review queue; they never authorize an automatic rewrite or split.
 _Avoid_: automatic definition rewrite, splitting every semicolon, maximum English length
 
+**Definition Concision Review**:
+The fail-closed, fingerprint-bound promotion review for every current
+Definition Sense Audit candidate. An approved retained explanation names a
+genuinely shorter or connector-reduced English wording considered, the exact
+material distinction it would lose, and row-specific semantic evidence that
+contains the current wording, alternative, and distinction. A required rewrite
+or split stays open until the Bilingual Semantic Audit is changed through its
+review transaction and the candidate queue is regenerated.
+_Avoid_: report-equals-approved, generic “needs detail” reason, length-based rewrite
+
 **Semantic Sense Merge Audit**:
-A report-only, fingerprint-bound review of promoted Semantic Senses that may
-repeat one learner meaning. Vietnamese overlap and historical grouping are
-triage signals only. A merge proposal must preserve a natural bilingual
-Lexical Gloss, ordered examples, and every Semantic Source Coverage mapping;
-uncertain cases remain separate. The audit never changes Semantic Registry or
-Anki without a later approved Bilingual Semantic Audit review bundle.
+A report-only, fingerprint-bound triage view of promoted Semantic Senses that
+may repeat one learner meaning. Vietnamese overlap and historical grouping are
+signals only. A merge proposal must preserve a natural bilingual Lexical
+Gloss, ordered examples, and every Semantic Source Coverage mapping. The report
+never changes canonical data; an approved bundle must first update the
+Bilingual Semantic Audit and then regenerate the queue.
 _Avoid_: duplicate-VI auto-merge, heuristic sense deletion, canonical audit mutation
+
+**Semantic Sense Merge Review**:
+The fail-closed canonical promotion review for every candidate that remains in
+the current Semantic Sense Merge Audit queue. Each approved `keep_separate`
+verdict records a row-specific semantic distinction and cites at least two
+affected Semantic Sense IDs. A proposed merge, Vietnamese rewording, uncertain
+verdict, missing row, stale fingerprint, or generic repeated explanation blocks
+promotion until the underlying audit is repaired and the queue is regenerated.
+_Avoid_: overlap-equals-duplicate, bulk keep-separate, unapplied merge proposal
 
 **Idiom Selection**:
 Each card carries at most two entries in its Idiom Box. When an Oxford record has at most two idioms, keep every entry in Oxford order, including entries whose `cefr` is null. When it has more than two, rank CEFR-tagged idioms before ungraded idioms, preserve Oxford order within each rank, and keep the first two. Manual Card Payloads must already satisfy the same limit; build validation rejects rather than silently truncates an oversized manual field.
@@ -414,7 +438,14 @@ read like a literal translation. Each sense is explicitly kept as natural,
 kept as a necessary explanatory gloss, rewritten, or left uncertain. Text
 equality is not review evidence: an approved verdict is reused only while that
 sense's fingerprint is unchanged, and every new or changed sense blocks
-promotion until reviewed. A separate whitespace-token threshold (currently 8
+promotion until reviewed. Every resolved row carries a decision-specific
+`reason_code` and unique `semantic_evidence` tied to its final wording; a
+`user_lock` row must also cite its exact `lock_id`, while non-locked rows leave
+that field empty. For an ordinary row, the evidence cites its exact English
+sense plus a sense-specific example or source definition. Reusing approval
+prose with only the headword or final VI interpolated is a bulk pass, not
+row-specific evidence; validation normalizes those substitutions and rejects
+generic or duplicate residual templates. A separate whitespace-token threshold (currently 8
 or more tokens) remains report triage for verbosity, never a coverage boundary,
 length cap, or automatic rewrite rule. In that long-gloss queue, a rewrite must
 reduce the token count; keeping an explanatory gloss requires a shorter
@@ -423,7 +454,17 @@ coverage requires semantic accounting, not clause-by-clause Vietnamese wording.
 English definitions, examples, source mappings, Card Identity, and idioms remain
 unchanged. Cambridge English–Vietnamese is supporting evidence rather than a
 mandatory wording source.
-_Avoid_: unchanged-equals-reviewed, punctuation-only rewrite, generic “preserves nuance” reason, maximum Vietnamese length, automatic translation
+_Avoid_: unchanged-equals-reviewed, interpolated approval template, punctuation-only rewrite, generic “preserves nuance” reason, maximum Vietnamese length, automatic translation
+
+**Semantic Policy Lock**:
+A machine-readable release invariant for an explicit semantic decision. Locks
+cover exact Vietnamese wording, absent Semantic Senses, and retained or
+excluded source mappings; validation checks them against the Bilingual Semantic
+Audit, promoted Semantic Registry, and built notes. The user-locked exact pairs
+`compel` → `ép buộc`, `contender` → `đối thủ nặng ký`, `transcribe` →
+`chép lại`, and `venture` → `mạo hiểm, cả gan` may change only after an explicit
+user instruction and the matching coordinated code/data update.
+_Avoid_: optional regression row, silent lock supersession, inferred user preference
 
 **Bilingual Idiom Audit**:
 A fail-closed phrase-level review of every idiom selected for an active card.
@@ -449,10 +490,13 @@ _Avoid_: auto sense zip, sense-number key
 
 **Semantic Registry**:
 The canonical production semantic payload promoted from a complete Bilingual
-Semantic Audit and Bilingual Idiom Audit, stored at
+Semantic Audit, Bilingual Idiom Audit, Vietnamese Naturalness Review,
+Definition Concision Review, Semantic Sense Merge Review, and Semantic Policy
+Lock set, stored at
 `data/curated/semantic_registry.jsonl`. It owns ordered English/Vietnamese
 sense content, reviewed idiom display payload, examples, POS coverage, and
-source provenance.
+source provenance. Each row binds the canonical review documents through their
+content hashes.
 Card Identity remains in Card Registry; non-semantic source-derived fields and
 explicit metadata exceptions remain outside Semantic Registry. Production
 cutover is governed by ADR 0011 and its bilingual-idiom extension.
@@ -731,6 +775,43 @@ glosses. Accepted decisions are stored in canonical curated/review inputs; the
 one-shot batch executable and intermediate jobs are retained only in Git
 history. The same role also acts as γ-judge in three-tier sense merging.
 _Avoid_: LLM judge, gloss generator
+
+### Release boundaries
+
+**Package Provenance**:
+The canonical sidecar for one generated `.apkg`. It binds the package digest,
+the content hashes of all semantic authorities and build projections, every
+Recognition/Production template, packaged styling and its Design Source of
+Truth, the packager implementation and machine-readable EAVM model/field/card
+contract (including the generator version), plus the complete packaged media
+set. Any data, design, generator, or packaging-contract change makes the
+package stale even when its filename is unchanged.
+_Avoid_: build log, package timestamp, notes-only checksum
+
+**Verified Import Receipt**:
+The post-import evidence written only after AnkiConnect import and verification
+succeed. It binds the exact Package Provenance and package digests, verified
+note count, UTC verification time, and Live GUID Proof hashes/counts.
+Repackaging invalidates an earlier receipt; the receipt is evidence for the
+current package, not a substitute for live collection verification.
+_Avoid_: import attempted flag, reusable success marker, CI import proof
+
+**Live GUID Proof**:
+The post-import APKG export evidence used to read the live SQLite
+`notes.guid` values that AnkiConnect `notesInfo` does not expose. It binds every
+canonical GUID to the exact EAVM identity, fields, tags, deck, and card
+ordinals. Prefer `collection.anki21` when an export also contains the legacy
+compatibility `collection.anki2`; reject unsupported `collection.anki21b`
+rather than falling back to a potentially empty compatibility database.
+_Avoid_: notesInfo GUID check, note-count proof, direct collection.anki2 read
+
+**Release Guard**:
+The read-only, fail-closed verifier for one of three boundaries: `canonical`
+reproduces Semantic Registry and build artifacts from current authorities;
+`package` validates design sync, local package inputs, media, and Package
+Provenance; `import` additionally validates the current Verified Import
+Receipt. It never promotes, builds, packages, contacts Anki, or repairs state.
+_Avoid_: release writer, auto-fixer, live importer
 
 ### Design system structure
 

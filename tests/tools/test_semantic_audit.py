@@ -3,6 +3,8 @@ import hashlib
 import copy
 from pathlib import Path
 
+import pytest
+
 from src.deck_builder.idiom_audit import build_audit_rows, serialize_jsonl
 from src.deck_builder.semantic_registry import SEMANTIC_REGISTRY_SCHEMA_VERSION
 from src.deck_builder.vietnamese_audit import (
@@ -11,10 +13,50 @@ from src.deck_builder.vietnamese_audit import (
     serialize_vietnamese_review,
 )
 from tools.semantic_audit import main
+from src.deck_builder.canonical_io import canonical_text_sha256
 
 
 def _write_jsonl(path, rows):
     path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+
+
+def _add_vietnamese_evidence(row, candidate):
+    decision = row["decision"]
+    final_vi = row["proposed_vi"] if decision == "rewrite" else row["expected_definition_vi"]
+    row["reason_code"] = {
+        "keep_natural": "natural_lexical_gloss",
+        "keep_explanatory": "necessary_explanation",
+        "rewrite": "natural_rewrite",
+    }[decision]
+    support = (
+        candidate.get("examples")
+        or candidate.get("source_definitions")
+        or [""]
+    )[0]
+    row["semantic_evidence"] = (
+        f'Final VI "{final_vi}" expresses exact Definition EN '
+        f'"{candidate["definition_en"]}" in Support "{support}"; '
+        f'{row["reason"]}'
+    )
+    row["lock_id"] = ""
+
+
+def _vietnamese_candidate_from_registry(registry, review):
+    cards = [
+        json.loads(line)
+        for line in registry.read_text(encoding="utf-8").splitlines()
+    ]
+    card = next(row for row in cards if row["guid"] == review["guid"])
+    sense = next(
+        row
+        for row in card["senses"]
+        if row["semantic_sense_id"] == review["semantic_sense_id"]
+    )
+    return {
+        "definition_en": sense["definition_en"],
+        "examples": list(sense.get("examples") or []),
+        "source_definitions": [],
+    }
 
 
 def _write_complete_all_vietnamese_review(path, audit, registry):
@@ -60,14 +102,16 @@ def _write_complete_all_vietnamese_review(path, audit, registry):
         scope="all",
     )
     review_summary, review_rows = scaffold_vietnamese_review(summary, candidates)
+    candidates_by_id = {row["candidate_id"]: row for row in candidates}
     for row in review_rows:
         row.update({
             "decision": "keep_natural",
-            "reason": "The current Vietnamese gloss is natural and concise.",
+            "reason": "The gloss directly expresses this reviewed learner meaning without source-shaped expansion.",
             "reviewer": "test-reviewer",
             "reviewed_at": "2026-07-17",
             "approval": "approved",
         })
+        _add_vietnamese_evidence(row, candidates_by_id[row["candidate_id"]])
     path.write_text(
         serialize_vietnamese_review(review_summary, review_rows),
         encoding="utf-8",
@@ -146,6 +190,51 @@ def _promotion_fixture(tmp_path, *, complete):
     return audit, registry, idiom_audit, vietnamese_review
 
 
+def _promotion_gate_cli_args(tmp_path):
+    semantic_policy = tmp_path / "semantic_policy.jsonl"
+    definition_review = tmp_path / "definition_review.jsonl"
+    sense_merge_review = tmp_path / "sense_merge_review.jsonl"
+    deck_audit = tmp_path / "deck_audit.jsonl"
+    overrides = tmp_path / "overrides.jsonl"
+    empty_set_sha = hashlib.sha256(b"[]").hexdigest()
+    semantic_policy.write_text("", encoding="utf-8")
+    _write_jsonl(definition_review, [{
+        "record_type": "review_summary",
+        "schema_version": 3,
+        "candidate_count": 0,
+        "candidate_set_sha256": empty_set_sha,
+    }])
+    _write_jsonl(sense_merge_review, [{
+        "schema_version": 1,
+        "kind": "semantic_sense_merge_review",
+        "candidate_set_sha256": empty_set_sha,
+        "candidate_cards": 0,
+        "input_hashes": {},
+    }])
+    _write_jsonl(deck_audit, [])
+    _write_jsonl(overrides, [])
+    return [
+        "--semantic-policy", str(semantic_policy),
+        "--definition-review", str(definition_review),
+        "--sense-merge-review", str(sense_merge_review),
+        "--deck-audit", str(deck_audit),
+        "--overrides", str(overrides),
+    ]
+
+
+def _promotion_scaffold_cli_args(tmp_path):
+    args = _promotion_gate_cli_args(tmp_path)
+    excluded = {"--definition-review", "--sense-merge-review"}
+    return [
+        value
+        for index, value in enumerate(args)
+        if not (
+            value in excluded
+            or (index > 0 and args[index - 1] in excluded)
+        )
+    ]
+
+
 def _definition_audit_fixture(tmp_path):
     audit = tmp_path / "audit.jsonl"
     card_registry = tmp_path / "card_registry.jsonl"
@@ -183,7 +272,7 @@ def _definition_audit_fixture(tmp_path):
         ],
         "semantic_senses": [{"semantic_sense_id": "sem-1", "decision": "pass"}],
     }])
-    audit_sha = hashlib.sha256(audit.read_bytes()).hexdigest()
+    audit_sha = canonical_text_sha256(audit.read_bytes())
     _write_jsonl(card_registry, [{
         "guid": "g1", "word": "uphold", "pos": "verb", "cefr": "C1",
         "list": "Oxford_5000", "variant": "", "status": "active",
@@ -204,6 +293,9 @@ def _definition_audit_fixture(tmp_path):
         }],
         "idiom_audit_sha256": "c" * 64,
         "vietnamese_review_sha256": "d" * 64,
+        "semantic_policy_sha256": "e" * 64,
+        "definition_review_sha256": "f" * 64,
+        "sense_merge_review_sha256": "0" * 64,
         "idioms": [],
     }])
     _write_jsonl(notes, [{
@@ -250,7 +342,7 @@ def _vietnamese_audit_fixture(
         "list": card["list"],
         "variant": card["variant"],
         "pos": card["pos"],
-        "audit_sha256": hashlib.sha256(audit.read_bytes()).hexdigest(),
+        "audit_sha256": canonical_text_sha256(audit.read_bytes()),
         "source_fingerprint": card["source_fingerprint"],
         "senses": [registry_sense],
     }
@@ -258,11 +350,22 @@ def _vietnamese_audit_fixture(
         semantic_card.update({"idiom_audit_sha256": "c" * 64, "idioms": []})
     if schema_version >= 3:
         semantic_card["vietnamese_review_sha256"] = "d" * 64
+    if schema_version >= 4:
+        semantic_card.update({
+            "semantic_policy_sha256": "e" * 64,
+            "definition_review_sha256": "f" * 64,
+            "sense_merge_review_sha256": "0" * 64,
+        })
     _write_jsonl(semantic_registry, [semantic_card])
     return audit, card_registry, semantic_registry
 
 
-def _complete_vietnamese_review(path, *, proposed_vi="đối thủ nặng ký"):
+def _complete_vietnamese_review(
+    path,
+    semantic_registry,
+    *,
+    proposed_vi="đối thủ nặng ký",
+):
     rows = [
         json.loads(line)
         for line in path.read_text(encoding="utf-8").splitlines()
@@ -276,6 +379,10 @@ def _complete_vietnamese_review(path, *, proposed_vi="đối thủ nặng ký"):
             "reviewed_at": "2026-07-16",
             "approval": "approved",
         })
+        _add_vietnamese_evidence(
+            row,
+            _vietnamese_candidate_from_registry(semantic_registry, row),
+        )
     _write_jsonl(path, rows)
     return rows
 
@@ -326,6 +433,7 @@ def test_cli_promote_dry_run_does_not_write_output(tmp_path, capsys):
         "--audit", str(audit), "--registry", str(registry), "promote",
         "--idiom-audit", str(idiom_audit),
         "--vietnamese-review", str(vietnamese_review),
+        *_promotion_gate_cli_args(tmp_path),
         "--output", str(output), "--dry-run",
     ]) == 0
 
@@ -346,6 +454,7 @@ def test_cli_promote_rejects_incomplete_audit(tmp_path, capsys):
         "--audit", str(audit), "--registry", str(registry), "promote",
         "--idiom-audit", str(idiom_audit),
         "--vietnamese-review", str(vietnamese_review),
+        *_promotion_gate_cli_args(tmp_path),
         "--output", str(output),
     ]) == 1
 
@@ -378,6 +487,7 @@ def test_cli_promote_rejects_incomplete_idiom_audit(tmp_path, capsys):
         "--audit", str(audit), "--registry", str(registry), "promote",
         "--idiom-audit", str(idiom_audit),
         "--vietnamese-review", str(vietnamese_review),
+        *_promotion_gate_cli_args(tmp_path),
         "--output", str(output),
     ]) == 1
 
@@ -390,7 +500,7 @@ def test_cli_validate_require_complete_fails_closed_on_vietnamese_review(
     tmp_path,
     capsys,
 ):
-    audit, registry, _, vietnamese_review = _promotion_fixture(
+    audit, registry, idiom_audit, vietnamese_review = _promotion_fixture(
         tmp_path, complete=True
     )
     command = [
@@ -398,7 +508,9 @@ def test_cli_validate_require_complete_fails_closed_on_vietnamese_review(
         "--registry", str(registry),
         "validate",
         "--require-complete",
+        "--idiom-audit", str(idiom_audit),
         "--vietnamese-review", str(vietnamese_review),
+        *_promotion_gate_cli_args(tmp_path),
     ]
     capsys.readouterr()
 
@@ -427,6 +539,7 @@ def test_cli_promote_rejects_missing_pending_and_stale_vietnamese_review(
         "--audit", str(audit), "--registry", str(registry), "promote",
         "--idiom-audit", str(idiom_audit),
         "--vietnamese-review", str(vietnamese_review),
+        *_promotion_gate_cli_args(tmp_path),
         "--output", str(output),
     ]
     original = vietnamese_review.read_bytes()
@@ -465,18 +578,28 @@ def test_cli_promote_writes_hashed_deterministic_registry(tmp_path, capsys):
         tmp_path, complete=True
     )
     output = tmp_path / "semantic_registry.jsonl"
-    audit_sha256 = hashlib.sha256(audit.read_bytes()).hexdigest()
-    idiom_audit_sha256 = hashlib.sha256(idiom_audit.read_bytes()).hexdigest()
-    vietnamese_review_sha256 = hashlib.sha256(
+    audit_sha256 = canonical_text_sha256(audit.read_bytes())
+    idiom_audit_sha256 = canonical_text_sha256(idiom_audit.read_bytes())
+    vietnamese_review_sha256 = canonical_text_sha256(
         vietnamese_review.read_bytes()
-    ).hexdigest()
+    )
     capsys.readouterr()
     command = [
         "--audit", str(audit), "--registry", str(registry), "promote",
         "--idiom-audit", str(idiom_audit),
         "--vietnamese-review", str(vietnamese_review),
+        *_promotion_gate_cli_args(tmp_path),
         "--output", str(output),
     ]
+    semantic_policy_sha256 = canonical_text_sha256(
+        (tmp_path / "semantic_policy.jsonl").read_bytes()
+    )
+    definition_review_sha256 = canonical_text_sha256(
+        (tmp_path / "definition_review.jsonl").read_bytes()
+    )
+    sense_merge_review_sha256 = canonical_text_sha256(
+        (tmp_path / "sense_merge_review.jsonl").read_bytes()
+    )
 
     assert main(command) == 0
     first_summary = json.loads(capsys.readouterr().out)
@@ -484,9 +607,12 @@ def test_cli_promote_writes_hashed_deterministic_registry(tmp_path, capsys):
     assert first_summary == {
         "audit_sha256": audit_sha256,
         "cards": 1,
+        "definition_review_sha256": definition_review_sha256,
         "idiom_audit_sha256": idiom_audit_sha256,
         "idioms": 0,
+        "semantic_policy_sha256": semantic_policy_sha256,
         "semantic_registry_sha256": hashlib.sha256(first_payload).hexdigest(),
+        "sense_merge_review_sha256": sense_merge_review_sha256,
         "senses": 1,
         "vietnamese_review_sha256": vietnamese_review_sha256,
     }
@@ -557,6 +683,53 @@ def test_cli_definition_audit_rejects_canonical_output_paths(tmp_path, capsys):
     assert not forbidden.exists()
 
 
+@pytest.mark.parametrize(
+    ("command_name", "summary_kind"),
+    [
+        ("definition-review-scaffold", "review_summary"),
+        ("sense-merge-review-scaffold", "semantic_sense_merge_review"),
+    ],
+)
+def test_cli_promotion_gate_scaffolds_are_deterministic_and_replace_guarded(
+    tmp_path,
+    capsys,
+    command_name,
+    summary_kind,
+):
+    audit, registry, idiom_audit, vietnamese_review = _promotion_fixture(
+        tmp_path, complete=True
+    )
+    capsys.readouterr()
+    output = tmp_path / f"{command_name}.jsonl"
+    base = [
+        "--audit", str(audit),
+        "--registry", str(registry),
+        command_name,
+        "--idiom-audit", str(idiom_audit),
+        "--vietnamese-review", str(vietnamese_review),
+        *_promotion_scaffold_cli_args(tmp_path),
+        "--output", str(output),
+    ]
+
+    assert main([*base, "--dry-run"]) == 0
+    assert json.loads(capsys.readouterr().out)["candidates"] == 0
+    assert not output.exists()
+
+    assert main(base) == 0
+    capsys.readouterr()
+    first = output.read_bytes()
+    summary = json.loads(first.decode("utf-8").splitlines()[0])
+    assert summary.get("record_type", summary.get("kind")) == summary_kind
+
+    assert main(base) == 1
+    assert "use --replace" in capsys.readouterr().err
+    assert output.read_bytes() == first
+
+    assert main([*base, "--replace"]) == 0
+    capsys.readouterr()
+    assert output.read_bytes() == first
+
+
 def test_cli_vietnamese_audit_is_deterministic_and_honours_threshold(tmp_path, capsys):
     audit, card_registry, semantic_registry = _vietnamese_audit_fixture(tmp_path)
     output = tmp_path / "scratch" / "vietnamese_audit.jsonl"
@@ -618,7 +791,7 @@ def test_cli_vietnamese_audit_is_deterministic_and_honours_threshold(tmp_path, c
     assert "min_tokens_requires_long_scope" in capsys.readouterr().err
 
 
-def test_cli_vietnamese_audit_supports_v2_and_rejects_stale_registry_hash(
+def test_cli_vietnamese_audit_uses_complete_audit_when_registry_is_legacy_or_stale(
     tmp_path,
     capsys,
 ):
@@ -646,8 +819,8 @@ def test_cli_vietnamese_audit_supports_v2_and_rejects_stale_registry_hash(
     registry_rows[0]["audit_sha256"] = "0" * 64
     _write_jsonl(semantic_registry, registry_rows)
 
-    assert main(command) == 1
-    assert "audit_hash_mismatch" in capsys.readouterr().err
+    assert main(command) == 0
+    assert json.loads(capsys.readouterr().out)["candidate_senses"] == 1
 
 
 def test_cli_vietnamese_review_scaffold_is_deterministic_and_replace_guarded(
@@ -688,11 +861,15 @@ def test_cli_vietnamese_review_scaffold_is_deterministic_and_replace_guarded(
 
     records[1].update({
         "decision": "keep_natural",
-        "reason": "The current Vietnamese gloss is natural and concise.",
+        "reason": "The gloss directly expresses this reviewed learner meaning without source-shaped expansion.",
         "reviewer": "test-reviewer",
         "reviewed_at": "2026-07-17",
         "approval": "approved",
     })
+    _add_vietnamese_evidence(
+        records[1],
+        _vietnamese_candidate_from_registry(semantic_registry, records[1]),
+    )
     _write_jsonl(review, records)
     assert main([*command, "--replace"]) == 0
     capsys.readouterr()
@@ -730,7 +907,7 @@ def test_cli_apply_vietnamese_review_failures_are_transactional(tmp_path, capsys
     assert audit.read_bytes() == audit_before
 
     review.write_bytes(scaffold_bytes)
-    rows = _complete_vietnamese_review(review)
+    rows = _complete_vietnamese_review(review, semantic_registry)
     rows[0]["inputs"]["semantic_registry"] = "0" * 64
     _write_jsonl(review, rows)
     assert main(apply_command) == 1
@@ -738,7 +915,11 @@ def test_cli_apply_vietnamese_review_failures_are_transactional(tmp_path, capsys
     assert audit.read_bytes() == audit_before
 
     review.write_bytes(scaffold_bytes)
-    _complete_vietnamese_review(review, proposed_vi="không | hợp lệ")
+    _complete_vietnamese_review(
+        review,
+        semantic_registry,
+        proposed_vi="không | hợp lệ",
+    )
     assert main(apply_command) == 1
     assert "review_invalid_proposed_vi" in capsys.readouterr().err
     assert audit.read_bytes() == audit_before
@@ -762,7 +943,7 @@ def test_cli_apply_vietnamese_review_changes_only_vi_and_review_metadata(
     ]
     assert main(scaffold_command) == 0
     capsys.readouterr()
-    _complete_vietnamese_review(review)
+    _complete_vietnamese_review(review, semantic_registry)
 
     before_rows = [
         json.loads(line)
@@ -883,7 +1064,12 @@ def test_cli_sense_merge_audit_writes_approved_review_bundle(tmp_path, capsys):
             "reason": "The reviewed learner meanings remain distinct.",
         })
     candidate = candidates[0]
-    reviews[1].update({
+    candidate_review = next(
+        row
+        for row in reviews[1:]
+        if row["candidate_id"] == candidate["candidate_id"]
+    )
+    candidate_review.update({
         "decision": "merge_candidate",
         "merge_groups": [{
             "semantic_sense_ids": [
@@ -935,7 +1121,7 @@ def test_cli_sense_merge_audit_rejects_canonical_report_output(capsys):
 def test_cli_sense_merge_audit_rejects_stale_registry_audit_pair(tmp_path, capsys):
     audit, card_registry, semantic_registry = _vietnamese_audit_fixture(
         tmp_path,
-        schema_version=3,
+        schema_version=4,
     )
     deck_audit = tmp_path / "deck_audit.jsonl"
     overrides = tmp_path / "overrides.jsonl"

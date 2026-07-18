@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 from collections import Counter
 from datetime import datetime, timezone
@@ -7,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from src.config import ProjectPaths
 from src.deck_builder.anki_import_command import (
     EAVM_FIELDS,
     EAVM_MODEL_ID,
@@ -16,6 +18,7 @@ from src.deck_builder.anki_import_command import (
     ROOT_DECK,
     AnkiConnectClient,
     AnkiConnectError,
+    ExistingCollectionSnapshot,
     import_and_verify,
     load_expected_media,
     load_expected_records,
@@ -31,8 +34,31 @@ from src.deck_builder.anki_import_command import (
     verify_import,
 )
 from src.deck_builder.package_command import load_eavm_templates
+from src.deck_builder.live_guid_proof import LiveGuidProof
+from src.deck_builder.package_archive import (
+    PackageArchiveError,
+    validate_package_archive as real_validate_package_archive,
+)
+from src.deck_builder.package_provenance import (
+    media_file_map,
+    package_provenance_inputs,
+    provenance_path_for,
+    verified_receipt_path_for,
+    write_package_provenance,
+)
 from src.design_css import load_production_css
 import src.deck_builder.anki_import_command as import_module
+
+
+@pytest.fixture(autouse=True)
+def _isolate_archive_validation(monkeypatch: pytest.MonkeyPatch):
+    """Archive mechanics have dedicated tests; import tests assert call ordering."""
+
+    monkeypatch.setattr(
+        import_module,
+        "validate_package_archive",
+        lambda *args, **kwargs: None,
+    )
 
 
 def _row(**updates) -> dict:
@@ -55,8 +81,66 @@ def _row(**updates) -> dict:
     return row
 
 
+@pytest.mark.parametrize(
+    "result",
+    [
+        False,
+        [None, False],
+        [{"result": None, "error": "inner failure"}],
+        [{"result": False, "error": None}],
+    ],
+)
+def test_mutation_result_rejects_outer_and_nested_failures(result) -> None:
+    with pytest.raises(AnkiConnectError):
+        import_module._require_not_false(result, "multi")
+
+
+@pytest.mark.parametrize(
+    "result",
+    [None, True, [None], [{"result": None, "error": None}]],
+)
+def test_mutation_result_accepts_raw_v4_and_enveloped_success(result) -> None:
+    import_module._require_not_false(result, "multi")
+
+
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
     path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+
+
+def _write_test_provenance(
+    tmp_path: Path,
+    package: Path,
+    notes: Path,
+    audio_dir: Path,
+) -> tuple[Path, dict[str, Path], Path]:
+    inputs = package_provenance_inputs(
+        ProjectPaths(tmp_path),
+        notes_jsonl=notes,
+        recognition_front=import_module.FRONT_TEMPLATE,
+        recognition_back=import_module.BACK_TEMPLATE,
+        production_front=import_module.PRODUCTION_FRONT_TEMPLATE,
+        production_answer_prefix=import_module.PRODUCTION_ANSWER_PREFIX,
+        styling=import_module.STYLING_TXT,
+        design_index=import_module.DESIGN_INDEX,
+    )
+    design_labels = {
+        "recognition_front", "recognition_back", "production_front",
+        "production_answer_prefix", "styling", "design_index",
+    }
+    for label, path in inputs.items():
+        if label in design_labels or path == notes:
+            continue
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("fixture\n", encoding="utf-8")
+    media = load_expected_media(notes)
+    sidecar = provenance_path_for(package)
+    write_package_provenance(
+        sidecar,
+        package,
+        inputs,
+        media_file_map(audio_dir / name for name in media),
+    )
+    return sidecar, inputs, verified_receipt_path_for(package)
 
 
 def _live_note(row: dict) -> dict:
@@ -178,6 +262,9 @@ def test_empty_existing_model_is_aligned_before_native_import(tmp_path: Path, mo
             "production_eligible": False,
         }
     }
+    provenance_path, provenance_inputs, receipt_path = _write_test_provenance(
+        tmp_path, package, notes, tmp_path / "audio"
+    )
 
     monkeypatch.setattr(import_module, "load_expected_signatures", lambda _: expected)
     monkeypatch.setattr(import_module, "load_expected_records", lambda _: records)
@@ -205,6 +292,17 @@ def test_empty_existing_model_is_aligned_before_native_import(tmp_path: Path, mo
         import_module, "verify_import",
         lambda *args: calls.append("verify") or 1,
     )
+    monkeypatch.setattr(
+        import_module,
+        "export_and_verify_live_guid_map",
+        lambda *args, **kwargs: LiveGuidProof(
+            "fixture.apkg", "a" * 64, "b" * 64, "collection.anki2", 1, 1
+        ),
+    )
+    monkeypatch.setattr(
+        import_module, "write_verified_import_receipt",
+        lambda *args, **kwargs: calls.append("receipt"),
+    )
 
     class Client:
         def call(self, action, **params):
@@ -216,9 +314,15 @@ def test_empty_existing_model_is_aligned_before_native_import(tmp_path: Path, mo
             raise AssertionError(action)
 
     assert import_module.import_and_verify(
-        Client(), package, notes, tmp_path / "scratch", tmp_path / "audio"
+        Client(), package, notes, tmp_path / "scratch", tmp_path / "audio",
+        provenance_path=provenance_path,
+        provenance_inputs=provenance_inputs,
+        receipt_path=receipt_path,
     ) == 1
-    assert calls == ["findNotes", "migrate", "design", "importPackage", "media", "verify"]
+    assert calls == [
+        "findNotes", "migrate", "design", "importPackage", "media", "verify",
+        "receipt",
+    ]
 
 
 @pytest.mark.parametrize("field_count", [15, 19, 20, 21, 22])
@@ -451,9 +555,197 @@ def test_validate_local_inputs_requires_package_and_all_media(tmp_path: Path):
     assert media == {"uk_conquer.mp3", "example_uk_a.mp3", "example_us_a.mp3"}
 
 
-def test_verify_import_checks_fields_notes_and_media():
+@pytest.mark.parametrize("provenance_state", ["missing", "stale", "stale_ledger"])
+def test_import_rejects_invalid_provenance_before_any_anki_call(
+    tmp_path: Path, provenance_state: str,
+):
+    package = tmp_path / "deck.apkg"
+    package.write_bytes(b"package")
+    notes = tmp_path / "notes.jsonl"
+    row = _row(uk_audio="", example_audio_uk="", example_audio_us="")
+    _write_jsonl(notes, [row])
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    sidecar, inputs, receipt = _write_test_provenance(
+        tmp_path, package, notes, audio_dir
+    )
+    if provenance_state == "missing":
+        sidecar.unlink()
+    elif provenance_state == "stale":
+        package.write_bytes(b"stale package")
+    else:
+        inputs["semantic_policy_locks"].write_text(
+            "changed policy\n", encoding="utf-8"
+        )
+    calls = []
+
+    class Client:
+        def call(self, action, **params):
+            calls.append((action, params))
+            raise AssertionError("AnkiConnect must not be called")
+
+    with pytest.raises(ValueError, match="package provenance"):
+        import_and_verify(
+            Client(), package, notes, tmp_path / "scratch", audio_dir,
+            provenance_path=sidecar,
+            provenance_inputs=inputs,
+            receipt_path=receipt,
+        )
+    assert calls == []
+    assert not receipt.exists()
+
+
+def test_failed_import_leaves_no_verified_receipt(tmp_path: Path):
+    package = tmp_path / "deck.apkg"
+    package.write_bytes(b"package")
+    notes = tmp_path / "notes.jsonl"
+    row = _row(uk_audio="", example_audio_uk="", example_audio_us="")
+    _write_jsonl(notes, [row])
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    sidecar, inputs, receipt = _write_test_provenance(
+        tmp_path, package, notes, audio_dir
+    )
+    receipt.parent.mkdir(parents=True, exist_ok=True)
+    receipt.write_text("old receipt", encoding="utf-8")
+
+    class Client:
+        def call(self, action, **params):
+            raise AnkiConnectError("simulated live failure")
+
+    with pytest.raises(AnkiConnectError, match="simulated live failure"):
+        import_and_verify(
+            Client(), package, notes, tmp_path / "scratch", audio_dir,
+            provenance_path=sidecar,
+            provenance_inputs=inputs,
+            receipt_path=receipt,
+        )
+    assert not receipt.exists()
+
+
+def test_live_media_byte_mismatch_leaves_no_verified_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    package = tmp_path / "deck.apkg"
+    package.write_bytes(b"package")
+    notes = tmp_path / "notes.jsonl"
+    filename = "same-name.mp3"
+    row = _row(
+        uk_audio=f"[sound:{filename}]",
+        example_audio_uk="",
+        example_audio_us="",
+    )
+    _write_jsonl(notes, [row])
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    (audio_dir / filename).write_bytes(b"canonical source bytes")
+    sidecar, inputs, receipt = _write_test_provenance(
+        tmp_path, package, notes, audio_dir
+    )
+    receipt.parent.mkdir(parents=True, exist_ok=True)
+    receipt.write_text("old receipt", encoding="utf-8")
+
+    monkeypatch.setattr(
+        import_module,
+        "_model_contract",
+        lambda _client: (False, (), None),
+    )
+    monkeypatch.setattr(
+        import_module,
+        "preflight_and_backup",
+        lambda *args, **kwargs: None,
+    )
+
+    def verify_live_bytes(
+        client, _expected, expected_media, _records, _prior,
+        _templates, _css, resolved_audio_dir,
+    ):
+        import_module._verify_live_media_bytes(
+            client, expected_media, resolved_audio_dir
+        )
+        return 1
+
+    monkeypatch.setattr(import_module, "verify_import", verify_live_bytes)
+
+    class Client:
+        def call(self, action, **params):
+            if action == "importPackage": return True
+            if action == "getMediaFilesNames": return [filename]
+            if action == "multi":
+                return [{
+                    "result": base64.b64encode(b"wrong live bytes").decode("ascii"),
+                    "error": None,
+                }]
+            raise AssertionError(action)
+
+    with pytest.raises(AnkiConnectError, match="bytes do not match canonical source"):
+        import_and_verify(
+            Client(),
+            package,
+            notes,
+            tmp_path / "scratch",
+            audio_dir,
+            provenance_path=sidecar,
+            provenance_inputs=inputs,
+            receipt_path=receipt,
+        )
+    assert not receipt.exists()
+
+
+def test_import_rejects_invalid_archive_before_any_anki_call(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    package = tmp_path / "deck.apkg"
+    package.write_bytes(b"not an APKG")
+    notes = tmp_path / "notes.jsonl"
+    row = _row(
+        uk_audio="",
+        example_audio_uk="",
+        example_audio_us="",
+        deck="English Academic Vocabulary::C1",
+        guid="canonical-guid",
+        tags="",
+    )
+    _write_jsonl(notes, [row])
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    sidecar, inputs, receipt = _write_test_provenance(
+        tmp_path, package, notes, audio_dir
+    )
+    monkeypatch.setattr(
+        import_module, "validate_package_archive", real_validate_package_archive
+    )
+    calls: list[str] = []
+
+    class Client:
+        def call(self, action, **params):
+            calls.append(action)
+            raise AssertionError("AnkiConnect must not be called")
+
+    with pytest.raises(PackageArchiveError, match="invalid APKG archive"):
+        import_and_verify(
+            Client(),
+            package,
+            notes,
+            tmp_path / "scratch",
+            audio_dir,
+            provenance_path=sidecar,
+            provenance_inputs=inputs,
+            receipt_path=receipt,
+        )
+    assert calls == []
+    assert not receipt.exists()
+
+
+def test_verify_import_checks_fields_notes_and_media(tmp_path: Path):
     row = _row()
     expected = Counter({tuple((field["value"] for field in _live_note(row)["fields"].values())): 1})
+    media_payloads = {
+        "uk_conquer.mp3": b"canonical headword audio",
+        "example_uk_a.mp3": b"canonical example audio",
+    }
+    for filename, payload in media_payloads.items():
+        (tmp_path / filename).write_bytes(payload)
 
     class Client:
         def call(self, action, **params):
@@ -464,9 +756,223 @@ def test_verify_import_checks_fields_notes_and_media():
             if action == "findNotes": return [123]
             if action == "notesInfo": return [_live_note(row)]
             if action == "getMediaFilesNames": return ["uk_conquer.mp3", "example_uk_a.mp3"]
+            if action == "multi":
+                return [
+                    {
+                        "result": base64.b64encode(
+                            media_payloads[item["params"]["filename"]]
+                        ).decode("ascii"),
+                        "error": None,
+                    }
+                    for item in params["actions"]
+                ]
             raise AssertionError(action)
 
-    assert verify_import(Client(), expected, {"uk_conquer.mp3", "example_uk_a.mp3"}) == 1
+    assert verify_import(
+        Client(),
+        expected,
+        {"uk_conquer.mp3", "example_uk_a.mp3"},
+        audio_dir=tmp_path,
+    ) == 1
+
+
+@pytest.mark.parametrize(
+    ("envelope", "message"),
+    [
+        (
+            {
+                "result": base64.b64encode(b"wrong live bytes").decode("ascii"),
+                "error": None,
+            },
+            "bytes do not match canonical source",
+        ),
+        ({"result": "not-base64!", "error": None}, "invalid base64"),
+        ({"result": False, "error": None}, "missing during byte verification"),
+        ({"result": 123, "error": None}, "malformed live media data"),
+        ({"result": None, "error": "read failed"}, "could not retrieve live media"),
+        ({"result": "unused"}, "malformed live media data"),
+    ],
+)
+def test_verify_import_rejects_unverified_live_media_bytes(
+    tmp_path: Path, envelope: dict, message: str
+) -> None:
+    row = _row()
+    live_note = _live_note(row)
+    expected = Counter({
+        tuple(field["value"] for field in live_note["fields"].values()): 1
+    })
+    filename = "same-name.mp3"
+    (tmp_path / filename).write_bytes(b"canonical source bytes")
+
+    class Client:
+        def call(self, action, **params):
+            if action == "modelNamesAndIds": return {EAVM_MODEL_NAME: EAVM_MODEL_ID}
+            if action == "modelFieldNames": return list(EAVM_FIELDS)
+            if action == "modelTemplates": return _canonical_templates()
+            if action == "modelStyling": return {"css": load_production_css(Path("design/EAVM/styling.txt"))}
+            if action == "findNotes": return [123]
+            if action == "notesInfo": return [live_note]
+            if action == "getMediaFilesNames": return [filename]
+            if action == "multi":
+                assert params["actions"] == [{
+                    "action": "retrieveMediaFile",
+                    "version": import_module.ANKI_CONNECT_API_VERSION,
+                    "params": {"filename": filename},
+                }]
+                return [envelope]
+            raise AssertionError(action)
+
+    with pytest.raises(AnkiConnectError, match=message):
+        verify_import(
+            Client(),
+            expected,
+            {filename},
+            audio_dir=tmp_path,
+        )
+
+
+def test_verify_import_rejects_dirty_new_recognition_card(tmp_path: Path) -> None:
+    row = _row(
+        deck="English Academic Vocabulary::C1",
+        guid="canonical-guid",
+        tags="",
+    )
+    notes = tmp_path / "notes.jsonl"
+    _write_jsonl(notes, [row])
+    live_note = _live_note(row)
+    live_note.update({
+        "noteId": 1,
+        "guid": row["guid"],
+        "cards": [10, 11],
+        "tags": [],
+    })
+    cards = [
+        {
+            "cardId": 10,
+            "note": 1,
+            "ord": 0,
+            "deckName": row["deck"],
+            "modelName": EAVM_MODEL_NAME,
+            "type": 0,
+            "queue": -1,
+            "interval": 0,
+            "reps": 0,
+            "lapses": 0,
+        },
+        {
+            "cardId": 11,
+            "note": 1,
+            "ord": 1,
+            "deckName": row["deck"],
+            "modelName": EAVM_MODEL_NAME,
+            "type": 0,
+            "queue": 0,
+            "interval": 0,
+            "reps": 0,
+            "lapses": 0,
+        },
+    ]
+
+    class Client:
+        def call(self, action, **params):
+            if action == "modelNamesAndIds": return {EAVM_MODEL_NAME: EAVM_MODEL_ID}
+            if action == "modelFieldNames": return list(EAVM_FIELDS)
+            if action == "modelTemplates": return _canonical_templates()
+            if action == "modelStyling": return {"css": load_production_css(Path("design/EAVM/styling.txt"))}
+            if action == "findNotes": return [1]
+            if action == "notesInfo": return [live_note]
+            if action == "findCards": return [10, 11]
+            if action == "cardsInfo": return cards
+            if action == "getMediaFilesNames": return []
+            raise AssertionError(action)
+
+    with pytest.raises(AnkiConnectError, match="New card 10 is not active and unreviewed"):
+        verify_import(
+            Client(),
+            load_expected_signatures(notes),
+            set(),
+            load_expected_records(notes),
+            audio_dir=tmp_path,
+        )
+
+
+def test_verify_import_preserves_prior_schedule_and_checks_only_new_card_state(
+    tmp_path: Path,
+) -> None:
+    row = _row(
+        deck="English Academic Vocabulary::C1",
+        guid="canonical-guid",
+        tags="",
+    )
+    notes = tmp_path / "notes.jsonl"
+    _write_jsonl(notes, [row])
+    live_note = _live_note(row)
+    live_note.update({
+        "noteId": 1,
+        "guid": row["guid"],
+        "cards": [10, 11],
+        "tags": [],
+    })
+    prior_schedule = (2, 2, 10, 3, 2500, 4, 0, 0)
+    cards = [
+        {
+            "cardId": 10,
+            "note": 1,
+            "ord": 0,
+            "deckName": row["deck"],
+            "modelName": EAVM_MODEL_NAME,
+            "type": prior_schedule[0],
+            "queue": prior_schedule[1],
+            "due": prior_schedule[2],
+            "interval": prior_schedule[3],
+            "factor": prior_schedule[4],
+            "reps": prior_schedule[5],
+            "lapses": prior_schedule[6],
+            "left": prior_schedule[7],
+        },
+        {
+            "cardId": 11,
+            "note": 1,
+            "ord": 1,
+            "deckName": row["deck"],
+            "modelName": EAVM_MODEL_NAME,
+            "type": 0,
+            "queue": 0,
+            "interval": 0,
+            "factor": 0,
+            "reps": 0,
+            "lapses": 0,
+            "left": 0,
+        },
+    ]
+    prior = ExistingCollectionSnapshot(
+        note_ids=frozenset({1}),
+        card_ids=frozenset({10}),
+        schedules={10: prior_schedule},
+        had_production_template=False,
+    )
+
+    class Client:
+        def call(self, action, **params):
+            if action == "modelNamesAndIds": return {EAVM_MODEL_NAME: EAVM_MODEL_ID}
+            if action == "modelFieldNames": return list(EAVM_FIELDS)
+            if action == "modelTemplates": return _canonical_templates()
+            if action == "modelStyling": return {"css": load_production_css(Path("design/EAVM/styling.txt"))}
+            if action == "findNotes": return [1]
+            if action == "notesInfo": return [live_note]
+            if action == "findCards": return [10, 11]
+            if action == "cardsInfo": return cards
+            if action == "getMediaFilesNames": return []
+            raise AssertionError(action)
+
+    assert verify_import(
+        Client(),
+        load_expected_signatures(notes),
+        set(),
+        load_expected_records(notes),
+        prior,
+        audio_dir=tmp_path,
+    ) == 1
 
 
 def test_sync_example_audio_fields_matches_established_signature_and_batches_update():
@@ -516,17 +1022,60 @@ def test_sync_missing_media_uses_local_paths_and_only_uploads_missing(tmp_path: 
         def call(self, action, **params):
             calls.append((action, params))
             if action == "getMediaFilesNames": return ["existing.mp3"]
-            if action == "multi": return ["missing.mp3"]
+            if action == "multi":
+                nested = params["actions"]
+                if nested[0]["action"] == "retrieveMediaFile":
+                    return [{
+                        "result": base64.b64encode(b"existing").decode("ascii"),
+                        "error": None,
+                    }]
+                return ["missing.mp3"]
             raise AssertionError(action)
 
     assert sync_missing_media(
         Client(), {"existing.mp3", "missing.mp3"}, tmp_path
     ) == 1
-    actions = next(params["actions"] for action, params in calls if action == "multi")
+    actions = next(
+        params["actions"]
+        for action, params in calls
+        if action == "multi" and params["actions"][0]["action"] == "storeMediaFile"
+    )
     assert actions == [{
         "action": "storeMediaFile",
         "params": {"filename": "missing.mp3", "path": missing.resolve().as_posix()},
     }]
+
+
+def test_sync_missing_media_overwrites_same_name_with_stale_bytes(tmp_path: Path):
+    media = tmp_path / "same-name.mp3"
+    media.write_bytes(b"canonical")
+    calls = []
+
+    class Client:
+        def call(self, action, **params):
+            calls.append((action, params))
+            if action == "getMediaFilesNames":
+                return [media.name]
+            if action == "multi":
+                nested = params["actions"]
+                if nested[0]["action"] == "retrieveMediaFile":
+                    return [{
+                        "result": base64.b64encode(b"stale").decode("ascii"),
+                        "error": None,
+                    }]
+                return [media.name]
+            raise AssertionError(action)
+
+    assert sync_missing_media(Client(), {media.name}, tmp_path) == 1
+    store_actions = [
+        params["actions"]
+        for action, params in calls
+        if action == "multi" and params["actions"][0]["action"] == "storeMediaFile"
+    ]
+    assert store_actions == [[{
+        "action": "storeMediaFile",
+        "params": {"filename": media.name, "path": media.resolve().as_posix()},
+    }]]
 
 
 def test_sync_existing_notes_updates_all_fields_and_routes_cards(tmp_path: Path):
@@ -595,12 +1144,26 @@ def test_verify_import_rejects_duplicate_live_notes():
         verify_import(Client(), Counter({signature: 1}), set())
 
 
-def test_import_and_verify_uses_absolute_forward_slash_package_path(tmp_path: Path):
+def test_import_and_verify_uses_absolute_forward_slash_package_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
     notes = tmp_path / "notes.jsonl"
     package = tmp_path / "deck.apkg"
     package.write_bytes(b"package")
     row = _row(uk_audio="", example_audio_uk="", example_audio_us="")
     _write_jsonl(notes, [row])
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    provenance_path, provenance_inputs, receipt_path = _write_test_provenance(
+        tmp_path, package, notes, audio_dir
+    )
+    monkeypatch.setattr(
+        import_module,
+        "export_and_verify_live_guid_map",
+        lambda *args, **kwargs: LiveGuidProof(
+            "fixture.apkg", "a" * 64, "b" * 64, "collection.anki2", 1, 2
+        ),
+    )
     calls = []
     imported = False
 
@@ -626,13 +1189,66 @@ def test_import_and_verify_uses_absolute_forward_slash_package_path(tmp_path: Pa
             if action == "findCards": return [10, 11]
             if action == "cardsInfo":
                 return [
-                    {"cardId": 10, "note": 1, "ord": 0, "deckName": row.get("deck", ""), "modelName": EAVM_MODEL_NAME},
+                    {"cardId": 10, "note": 1, "ord": 0, "deckName": row.get("deck", ""), "modelName": EAVM_MODEL_NAME,
+                     "type": 0, "queue": 0, "interval": 0, "reps": 0, "lapses": 0},
                     {"cardId": 11, "note": 1, "ord": 1, "deckName": row.get("deck", ""), "modelName": EAVM_MODEL_NAME,
                      "type": 0, "queue": 0, "interval": 0, "reps": 0, "lapses": 0},
                 ]
             if action == "getMediaFilesNames": return []
             raise AssertionError(action)
 
-    assert import_and_verify(Client(), package, notes, tmp_path / "scratch") == 1
+    assert import_and_verify(
+        Client(), package, notes, tmp_path / "scratch", audio_dir,
+        provenance_path=provenance_path,
+        provenance_inputs=provenance_inputs,
+        receipt_path=receipt_path,
+    ) == 1
     import_call = next(call for call in calls if call[0] == "importPackage")
     assert import_call[1]["path"] == package.resolve().as_posix()
+    assert receipt_path.is_file()
+
+
+def test_import_main_stops_before_package_or_anki_when_canonical_guard_fails(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+):
+    def reject(_project_paths):
+        raise ValueError("semantic authorities disagree")
+
+    monkeypatch.setattr(import_module, "validate_canonical_release_state", reject)
+
+    assert import_module.main([
+        "--dry-run",
+        "--package",
+        str(tmp_path / "missing.apkg"),
+    ]) == 1
+    assert "semantic authorities disagree" in capsys.readouterr().err
+
+
+def test_import_main_dry_run_rejects_archive_content(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    package = tmp_path / "deck.apkg"
+    package.write_bytes(b"invalid")
+    monkeypatch.setattr(
+        import_module, "validate_canonical_release_state", lambda _paths: None
+    )
+    monkeypatch.setattr(
+        import_module,
+        "validate_local_inputs",
+        lambda *args: (Counter({("signature",): 1}), set()),
+    )
+    monkeypatch.setattr(
+        import_module, "validate_package_provenance", lambda *args, **kwargs: None
+    )
+
+    def reject(*args, **kwargs):
+        raise PackageArchiveError("invalid APKG archive: fixture")
+
+    monkeypatch.setattr(import_module, "validate_package_archive", reject)
+
+    assert import_module.main(["--dry-run", "--package", str(package)]) == 1
+    assert "invalid APKG archive" in capsys.readouterr().err

@@ -50,6 +50,18 @@ class ProjectPaths:
         return self.root / "data" / "curated" / "semantic_registry.jsonl"
 
     @property
+    def semantic_policy_locks(self) -> Path:
+        return self.root / "data" / "curated" / "semantic_policy_locks.jsonl"
+
+    @property
+    def definition_concision_review(self) -> Path:
+        return self.root / "data" / "review" / "definition_concision_review.jsonl"
+
+    @property
+    def semantic_sense_merge_review(self) -> Path:
+        return self.root / "data" / "review" / "semantic_sense_merge_review.jsonl"
+
+    @property
     def gamma_verdicts(self) -> Path:
         return self.root / "data" / "review" / "gamma_verdicts.json"
 

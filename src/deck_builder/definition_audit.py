@@ -2,35 +2,96 @@
 from __future__ import annotations
 
 import copy
-import hashlib
 import json
 import re
+from datetime import date
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Iterable
 
 from src.deck_builder.semantic_registry import validate_semantic_registry_rows
+from src.deck_builder.canonical_io import (
+    canonical_json_bytes,
+    canonical_text_sha256,
+    load_jsonl_document,
+)
 
 
-DEFINITION_AUDIT_SCHEMA_VERSION = 2
+DEFINITION_AUDIT_SCHEMA_VERSION = 3
 LONG_DEFINITION_LENGTH = 80
 CONNECTOR_DEFINITION_LENGTH = 60
 DEFAULT_MIN_TOKENS = 12
 _AND_RE = re.compile(r"\band\b", re.IGNORECASE)
+DEFINITION_REVIEW_DECISIONS = {
+    "pending",
+    "keep_explanatory",
+    "rewrite_required",
+    "split_required",
+    "uncertain",
+}
+DEFINITION_REVIEW_APPROVALS = {"", "approved", "rejected"}
+_GENERIC_REVIEW_TEXT = {
+    "approved",
+    "definition is fine",
+    "good as is",
+    "keep as is",
+    "looks good",
+    "loses detail",
+    "loses meaning",
+    "necessary detail",
+    "needs context",
+    "too vague",
+}
+_SUSPICIOUS_TOKEN_RE = re.compile(
+    r"(?<!\w)(?:[0-9a-f]{8,}|(?=[a-z0-9_-]{8,}(?!\w))"
+    r"(?=[a-z0-9_-]*[a-z])(?=[a-z0-9_-]*\d)[a-z0-9_-]+)(?!\w)",
+    re.IGNORECASE,
+)
 
 
 def sha256_bytes(payload: bytes) -> str:
-    return hashlib.sha256(payload).hexdigest()
+    return canonical_text_sha256(payload)
 
 
 def load_jsonl_bytes(path: Path) -> tuple[bytes, list[dict]]:
-    payload = path.read_bytes()
-    rows = [
-        json.loads(line)
-        for line in payload.decode("utf-8").splitlines()
-        if line.strip()
-    ]
-    return payload, rows
+    return load_jsonl_document(path)
+
+
+def _json_digest(value: object) -> str:
+    return sha256_bytes(canonical_json_bytes(value))
+
+
+def _candidate_id(row: dict) -> str:
+    return f"{row.get('guid') or ''}::{row.get('semantic_sense_id') or ''}"
+
+
+def _candidate_fingerprint(row: dict) -> str:
+    """Bind review to learner content and evidence, not report suggestions."""
+    return _json_digest({
+        "candidate_id": row.get("candidate_id"),
+        "guid": row.get("guid"),
+        "word": row.get("word"),
+        "cefr": row.get("cefr"),
+        "list": row.get("list"),
+        "variant": row.get("variant"),
+        "pos": row.get("pos"),
+        "semantic_sense_id": row.get("semantic_sense_id"),
+        "order": row.get("order"),
+        "source_fingerprint": row.get("source_fingerprint"),
+        "current": {
+            key: (row.get("current") or {}).get(key)
+            for key in ("definition_en", "definition_vi", "examples")
+        },
+        "triggers": row.get("triggers"),
+        "evidence": row.get("evidence"),
+    })
+
+
+def _candidate_set_digest(candidates: list[dict]) -> str:
+    return _json_digest([
+        [row.get("candidate_id"), row.get("candidate_fingerprint")]
+        for row in candidates
+    ])
 
 
 def _render_definition(senses: Iterable[dict]) -> str:
@@ -420,9 +481,10 @@ def build_definition_audit(
             evidence, coverage = _relevant_evidence(audit_row, sense)
             recommendation, segments, reason = _draft_proposal(card, sense, evidence)
             proposal = _render_proposal(segments)
-            candidates.append({
+            candidate = {
                 "record_type": "candidate",
                 "schema_version": DEFINITION_AUDIT_SCHEMA_VERSION,
+                "candidate_id": f"{card['guid']}::{sense['semantic_sense_id']}",
                 "guid": card["guid"],
                 "word": card["word"],
                 "cefr": card["cefr"],
@@ -465,7 +527,9 @@ def build_definition_audit(
                     "reviewer": "",
                     "reviewed_at": "",
                 },
-            })
+            }
+            candidate["candidate_fingerprint"] = _candidate_fingerprint(candidate)
+            candidates.append(candidate)
 
     candidates.sort(key=lambda row: (
         row["word"].casefold(),
@@ -489,6 +553,7 @@ def build_definition_audit(
         "senses_scanned": senses_scanned,
         "candidate_cards": len({row["guid"] for row in candidates}),
         "candidate_senses": len(candidates),
+        "candidate_set_sha256": _candidate_set_digest(candidates),
         "recommendations": {
             value: sum(row["recommendation"] == value for row in candidates)
             for value in ("keep_common", "split", "uncertain")
@@ -586,14 +651,25 @@ def apply_definition_review_overrides(
 
 def validate_definition_audit(summary: dict, candidates: list[dict]) -> list[str]:
     errors: list[str] = []
+    if summary.get("record_type") != "summary":
+        errors.append("invalid_summary_record_type")
     if summary.get("schema_version") != DEFINITION_AUDIT_SCHEMA_VERSION:
         errors.append("invalid_summary_schema_version")
-    seen: set[tuple[str, str]] = set()
+    seen: set[str] = set()
     for row in candidates:
         identity = (str(row.get("guid") or ""), str(row.get("semantic_sense_id") or ""))
-        if not all(identity) or identity in seen:
+        candidate_id = str(row.get("candidate_id") or "")
+        if not all(identity) or not candidate_id or candidate_id in seen:
             errors.append(f"duplicate_or_empty_candidate:{identity}")
-        seen.add(identity)
+        seen.add(candidate_id)
+        if row.get("record_type") != "candidate":
+            errors.append(f"invalid_candidate_record_type:{identity}")
+        if row.get("schema_version") != DEFINITION_AUDIT_SCHEMA_VERSION:
+            errors.append(f"invalid_candidate_schema_version:{identity}")
+        if candidate_id != _candidate_id(row):
+            errors.append(f"candidate_id_mismatch:{identity}")
+        if row.get("candidate_fingerprint") != _candidate_fingerprint(row):
+            errors.append(f"candidate_fingerprint_mismatch:{identity}")
         if row.get("recommendation") not in {"keep_common", "split", "uncertain"}:
             errors.append(f"invalid_recommendation:{identity}")
         proposal = row.get("proposal") or {}
@@ -629,6 +705,18 @@ def validate_definition_audit(summary: dict, candidates: list[dict]) -> list[str
         errors.append("candidate_sense_count_mismatch")
     if summary.get("candidate_cards") != len({row.get("guid") for row in candidates}):
         errors.append("candidate_card_count_mismatch")
+    expected_order = sorted(candidates, key=lambda row: (
+        str(row.get("word") or "").casefold(),
+        str(row.get("cefr") or ""),
+        str(row.get("list") or ""),
+        str(row.get("variant") or ""),
+        str(row.get("guid") or ""),
+        row.get("order"),
+    ))
+    if candidates != expected_order:
+        errors.append("candidate_order_mismatch")
+    if summary.get("candidate_set_sha256") != _candidate_set_digest(candidates):
+        errors.append("candidate_set_sha256_mismatch")
     expected_recommendations = {
         value: sum(row.get("recommendation") == value for row in candidates)
         for value in ("keep_common", "split", "uncertain")
@@ -643,6 +731,421 @@ def serialize_definition_audit(summary: dict, candidates: list[dict]) -> str:
     return "".join(
         json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
         for row in rows
+    )
+
+
+def scaffold_definition_review(
+    summary: dict,
+    candidates: list[dict],
+    *,
+    existing_review_rows: list[dict] | None = None,
+) -> tuple[dict, list[dict]]:
+    """Create the exact-coverage canonical Definition EN review ledger."""
+    errors = validate_definition_audit(summary, candidates)
+    if errors:
+        raise ValueError("Invalid Definition audit:\n" + "\n".join(errors))
+    review_summary = {
+        "record_type": "review_summary",
+        "schema_version": DEFINITION_AUDIT_SCHEMA_VERSION,
+        "candidate_count": len(candidates),
+        "candidate_set_sha256": summary["candidate_set_sha256"],
+    }
+    existing_by_id: dict[str, dict] = {}
+    duplicate_ids: set[str] = set()
+    for review in existing_review_rows or []:
+        candidate_id = str(review.get("candidate_id") or "")
+        if not candidate_id or candidate_id in existing_by_id:
+            duplicate_ids.add(candidate_id)
+            continue
+        existing_by_id[candidate_id] = review
+
+    rows: list[dict] = []
+    for candidate in candidates:
+        existing = existing_by_id.get(candidate["candidate_id"])
+        if (
+            candidate["candidate_id"] not in duplicate_ids
+            and existing is not None
+            and existing.get("record_type") == "review"
+            and existing.get("schema_version") == DEFINITION_AUDIT_SCHEMA_VERSION
+            and existing.get("candidate_fingerprint")
+            == candidate["candidate_fingerprint"]
+            and existing.get("guid") == candidate["guid"]
+            and existing.get("semantic_sense_id")
+            == candidate["semantic_sense_id"]
+            and existing.get("expected_definition_en")
+            == candidate["current"]["definition_en"]
+        ):
+            rows.append(copy.deepcopy(existing))
+            continue
+        rows.append({
+            "record_type": "review",
+            "schema_version": DEFINITION_AUDIT_SCHEMA_VERSION,
+            "candidate_id": candidate["candidate_id"],
+            "candidate_fingerprint": candidate["candidate_fingerprint"],
+            "guid": candidate["guid"],
+            "semantic_sense_id": candidate["semantic_sense_id"],
+            "word": candidate["word"],
+            "order": candidate["order"],
+            "expected_definition_en": candidate["current"]["definition_en"],
+            "decision": "pending",
+            "shorter_en_considered": "",
+            "preserved_distinction": "",
+            "reason": "",
+            "semantic_evidence": "",
+            "reviewer": "",
+            "reviewed_at": "",
+            "approval": "",
+        })
+    return review_summary, rows
+
+
+def _normalise_review_text(value: object) -> str:
+    return re.sub(r"\s+", " ", str(value or "")).strip().casefold()
+
+
+def _lexical_review_text(value: object) -> str:
+    lexical = re.sub(
+        r"[^\w\s]",
+        " ",
+        _normalise_review_text(value),
+        flags=re.UNICODE,
+    )
+    return re.sub(r"\s+", " ", lexical).strip()
+
+
+def _connector_count(value: object) -> int:
+    text = str(value or "")
+    return text.count(";") + text.count("/") + len(_AND_RE.findall(text))
+
+
+def _is_conciser_definition(current: str, alternative: str) -> bool:
+    current = current.strip()
+    alternative = alternative.strip()
+    if not current or not alternative:
+        return False
+    if _lexical_review_text(current) == _lexical_review_text(alternative):
+        return False
+    return (
+        len(alternative) < len(current)
+        or _connector_count(alternative) < _connector_count(current)
+    )
+
+
+def _is_specific_distinction(value: object) -> bool:
+    normalized = _normalise_review_text(value)
+    lexical = re.sub(r"[^\w\s]", " ", normalized, flags=re.UNICODE)
+    lexical = re.sub(r"\s+", " ", lexical).strip()
+    if lexical in _GENERIC_REVIEW_TEXT:
+        return False
+    if re.fullmatch(
+        r"(?:it|this|the shorter (?:wording|definition)) "
+        r"(?:loses|omits) (?:detail|meaning|context|nuance)s?",
+        lexical,
+    ):
+        return False
+    return len(re.findall(r"\w+", lexical, flags=re.UNICODE)) >= 3
+
+
+def _contains_exact_review_text(container: object, required: object) -> bool:
+    needle = _normalise_review_text(required)
+    return bool(needle and needle in _normalise_review_text(container))
+
+
+def _definition_grounding_values(candidate: dict) -> list[str]:
+    values: list[str] = []
+    seen: set[str] = set()
+    for value in (candidate.get("current") or {}).get("examples") or []:
+        text = str(value or "").strip()
+        if text and text not in seen:
+            seen.add(text)
+            values.append(text)
+    for source in (candidate.get("evidence") or {}).get("source_senses") or []:
+        for value in [source.get("definition"), *(source.get("examples") or [])]:
+            text = str(value or "").strip()
+            if text and text not in seen:
+                seen.add(text)
+                values.append(text)
+    return values
+
+
+def _definition_review_residual(
+    value: object,
+    candidate: dict,
+    review: dict,
+    *,
+    strip_review_values: bool = False,
+) -> str:
+    normalized = _normalise_review_text(value)
+    dynamic = [
+        candidate.get("candidate_id"),
+        candidate.get("guid"),
+        candidate.get("word"),
+        candidate.get("semantic_sense_id"),
+        candidate.get("source_fingerprint"),
+        (candidate.get("current") or {}).get("definition_en"),
+        *_definition_grounding_values(candidate),
+    ]
+    for source in (candidate.get("evidence") or {}).get("source_senses") or []:
+        dynamic.append(source.get("source_sense_id"))
+    if strip_review_values:
+        dynamic.extend(
+            [
+                review.get("shorter_en_considered"),
+                review.get("preserved_distinction"),
+            ]
+        )
+    for item in sorted(
+        {_normalise_review_text(item) for item in dynamic if str(item or "").strip()},
+        key=len,
+        reverse=True,
+    ):
+        if len(item) >= 2:
+            normalized = normalized.replace(item, " ")
+    for label in (
+        "current en",
+        "final en",
+        "shorter en considered",
+        "shorter en",
+        "preserved distinction",
+        "source definition",
+        "learner example",
+        "example",
+    ):
+        normalized = normalized.replace(label, " ")
+    return _lexical_review_text(normalized)
+
+
+def _has_suspicious_review_token(
+    value: object,
+    candidate: dict,
+    review: dict,
+    *,
+    strip_review_values: bool = False,
+) -> bool:
+    return bool(
+        _SUSPICIOUS_TOKEN_RE.search(
+            _definition_review_residual(
+                value,
+                candidate,
+                review,
+                strip_review_values=strip_review_values,
+            )
+        )
+    )
+
+
+def validate_definition_review(
+    summary: dict,
+    candidates: list[dict],
+    review_summary: dict,
+    review_rows: list[dict],
+) -> list[str]:
+    """Validate exact coverage, immutable context, and row-specific evidence."""
+    errors = validate_definition_audit(summary, candidates)
+    if review_summary.get("record_type") != "review_summary":
+        errors.append("definition_review_missing_summary")
+    if review_summary.get("schema_version") != DEFINITION_AUDIT_SCHEMA_VERSION:
+        errors.append("definition_review_invalid_schema_version")
+    if review_summary.get("candidate_count") != len(candidates):
+        errors.append("definition_review_candidate_count_mismatch")
+    if review_summary.get("candidate_set_sha256") != summary.get(
+        "candidate_set_sha256"
+    ):
+        errors.append("definition_review_stale_candidate_set")
+
+    candidates_by_id = {row["candidate_id"]: row for row in candidates}
+    seen: set[str] = set()
+    seen_reasons: set[str] = set()
+    seen_evidence: set[str] = set()
+    seen_distinctions: set[str] = set()
+    for review in review_rows:
+        candidate_id = str(review.get("candidate_id") or "")
+        if not candidate_id or candidate_id in seen:
+            errors.append(f"definition_review_duplicate_or_empty:{candidate_id}")
+            continue
+        seen.add(candidate_id)
+        candidate = candidates_by_id.get(candidate_id)
+        if candidate is None:
+            errors.append(f"definition_review_extra_candidate:{candidate_id}")
+            continue
+        identity = f"{candidate['guid']}:{candidate['semantic_sense_id']}"
+        if review.get("record_type") != "review":
+            errors.append(f"definition_review_invalid_record_type:{identity}")
+        if review.get("schema_version") != DEFINITION_AUDIT_SCHEMA_VERSION:
+            errors.append(f"definition_review_invalid_row_schema_version:{identity}")
+        if review.get("candidate_fingerprint") != candidate["candidate_fingerprint"]:
+            errors.append(f"definition_review_stale_candidate:{identity}")
+        if (
+            review.get("guid") != candidate["guid"]
+            or review.get("semantic_sense_id") != candidate["semantic_sense_id"]
+        ):
+            errors.append(f"definition_review_identity_mismatch:{identity}")
+        if review.get("word") != candidate["word"] or review.get("order") != candidate[
+            "order"
+        ]:
+            errors.append(f"definition_review_display_identity_mismatch:{identity}")
+        expected = str(candidate["current"]["definition_en"])
+        if review.get("expected_definition_en") != expected:
+            errors.append(f"definition_review_stale_definition_en:{identity}")
+
+        decision = review.get("decision")
+        if decision not in DEFINITION_REVIEW_DECISIONS:
+            errors.append(f"definition_review_invalid_decision:{identity}:{decision}")
+            continue
+        approval = review.get("approval", "")
+        if approval not in DEFINITION_REVIEW_APPROVALS:
+            errors.append(f"definition_review_invalid_approval:{identity}:{approval}")
+        alternative = str(review.get("shorter_en_considered") or "").strip()
+        distinction = str(review.get("preserved_distinction") or "").strip()
+        evidence = str(review.get("semantic_evidence") or "").strip()
+        reason = str(review.get("reason") or "").strip()
+        reviewer = str(review.get("reviewer") or "").strip()
+        reviewed_at = str(review.get("reviewed_at") or "").strip()
+
+        if decision == "keep_explanatory":
+            if not alternative:
+                errors.append(f"definition_review_missing_shorter_en:{identity}")
+            elif not _is_conciser_definition(expected, alternative):
+                errors.append(f"definition_review_non_conciser_alternative:{identity}")
+            if len(_lexical_review_text(alternative).replace(" ", "")) < 3:
+                errors.append(
+                    f"definition_review_non_substantive_alternative:{identity}"
+                )
+            if not distinction:
+                errors.append(f"definition_review_missing_preserved_distinction:{identity}")
+            elif not _is_specific_distinction(distinction):
+                errors.append(f"definition_review_generic_preserved_distinction:{identity}")
+            residual_distinction = _definition_review_residual(
+                distinction,
+                candidate,
+                review,
+            )
+            if residual_distinction in seen_distinctions:
+                errors.append(f"definition_review_duplicate_preserved_distinction:{identity}")
+            if residual_distinction:
+                seen_distinctions.add(residual_distinction)
+            if _has_suspicious_review_token(distinction, candidate, review):
+                errors.append(f"definition_review_suspicious_token:{identity}")
+            normalized_reason = _normalise_review_text(reason)
+            if (
+                not reason
+                or normalized_reason in _GENERIC_REVIEW_TEXT
+                or len(re.findall(r"\w+", normalized_reason, flags=re.UNICODE)) < 4
+            ):
+                errors.append(f"definition_review_generic_reason:{identity}")
+            residual_reason = _definition_review_residual(
+                reason,
+                candidate,
+                review,
+                strip_review_values=True,
+            )
+            if residual_reason in seen_reasons:
+                errors.append(f"definition_review_duplicate_reason:{identity}")
+            if residual_reason:
+                seen_reasons.add(residual_reason)
+            if _has_suspicious_review_token(
+                reason,
+                candidate,
+                review,
+                strip_review_values=True,
+            ):
+                errors.append(f"definition_review_suspicious_token:{identity}")
+            if len(re.findall(r"\w", reviewer, flags=re.UNICODE)) < 3:
+                errors.append(f"definition_review_invalid_reviewer:{identity}")
+            try:
+                date.fromisoformat(reviewed_at)
+            except ValueError:
+                errors.append(f"definition_review_invalid_reviewed_at:{identity}")
+            if not evidence:
+                errors.append(f"definition_review_missing_semantic_evidence:{identity}")
+            else:
+                normalized_evidence = _normalise_review_text(evidence)
+                if normalized_evidence in _GENERIC_REVIEW_TEXT:
+                    errors.append(
+                        f"definition_review_generic_semantic_evidence:{identity}"
+                    )
+                residual_evidence = _definition_review_residual(
+                    evidence,
+                    candidate,
+                    review,
+                    strip_review_values=True,
+                )
+                if residual_evidence in seen_evidence:
+                    errors.append(f"definition_review_duplicate_semantic_evidence:{identity}")
+                if residual_evidence:
+                    seen_evidence.add(residual_evidence)
+                if _has_suspicious_review_token(
+                    evidence,
+                    candidate,
+                    review,
+                    strip_review_values=True,
+                ):
+                    errors.append(f"definition_review_suspicious_token:{identity}")
+                for label, required in (
+                    ("current_en", expected),
+                    ("shorter_en", alternative),
+                    ("distinction", distinction),
+                ):
+                    if required and _normalise_review_text(required) not in normalized_evidence:
+                        errors.append(
+                            f"definition_review_evidence_missing_{label}:{identity}"
+                        )
+                grounding = _definition_grounding_values(candidate)
+                if not grounding or not any(
+                    _contains_exact_review_text(evidence, value)
+                    for value in grounding
+                ):
+                    errors.append(f"definition_review_missing_grounding:{identity}")
+        elif any((alternative, distinction, evidence)):
+            errors.append(f"definition_review_unexpected_keep_evidence:{identity}")
+
+    for candidate_id in sorted(set(candidates_by_id) - seen):
+        errors.append(f"definition_review_missing_candidate:{candidate_id}")
+    return errors
+
+
+def validate_definition_review_for_promotion(
+    summary: dict,
+    candidates: list[dict],
+    review_summary: dict,
+    review_rows: list[dict],
+) -> list[str]:
+    """Fail closed until every current candidate is an approved justified keep."""
+    errors = validate_definition_review(
+        summary,
+        candidates,
+        review_summary,
+        review_rows,
+    )
+    candidates_by_id = {row["candidate_id"]: row for row in candidates}
+    seen: set[str] = set()
+    for review in review_rows:
+        candidate_id = str(review.get("candidate_id") or "")
+        if not candidate_id or candidate_id in seen or candidate_id not in candidates_by_id:
+            continue
+        seen.add(candidate_id)
+        candidate = candidates_by_id[candidate_id]
+        identity = f"{candidate['guid']}:{candidate['semantic_sense_id']}"
+        decision = review.get("decision")
+        if decision != "keep_explanatory":
+            errors.append(f"definition_promotion_open_decision:{identity}:{decision}")
+        if review.get("approval") != "approved":
+            errors.append(f"definition_promotion_not_approved:{identity}")
+        for field in ("reason", "reviewer", "reviewed_at"):
+            if not str(review.get(field) or "").strip():
+                errors.append(f"definition_promotion_missing_{field}:{identity}")
+    return errors
+
+
+def serialize_definition_review(review_summary: dict, review_rows: list[dict]) -> str:
+    """Serialize the canonical Definition EN review deterministically."""
+    ordered_rows = sorted(
+        review_rows,
+        key=lambda row: str(row.get("candidate_id") or ""),
+    )
+    return "".join(
+        json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+        for row in [review_summary, *ordered_rows]
     )
 
 

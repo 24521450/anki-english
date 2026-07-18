@@ -36,6 +36,39 @@ def _patch_production_templates(tmp_path: Path, monkeypatch) -> tuple[Path, Path
 @pytest.fixture(autouse=True)
 def _production_design_paths(tmp_path: Path, monkeypatch):
     _patch_production_templates(tmp_path, monkeypatch)
+    fixture_paths = ProjectPaths(tmp_path)
+    monkeypatch.setattr(update_anki_deck, "paths", fixture_paths)
+    monkeypatch.setattr(
+        update_anki_deck,
+        "validate_canonical_release_state",
+        lambda project_paths: None,
+    )
+    for path in (
+        fixture_paths.anki_notes_txt,
+        fixture_paths.card_registry,
+        fixture_paths.semantic_registry,
+        fixture_paths.bilingual_semantic_audit,
+        fixture_paths.bilingual_idiom_audit,
+        fixture_paths.vietnamese_naturalness_review,
+        fixture_paths.semantic_policy_locks,
+        fixture_paths.definition_concision_review,
+        fixture_paths.semantic_sense_merge_review,
+    ):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("fixture\n", encoding="utf-8")
+
+
+def test_packager_stops_before_inputs_when_canonical_guard_fails(
+    monkeypatch, capsys,
+):
+    def reject(_project_paths):
+        raise ValueError("stale Semantic Registry")
+
+    monkeypatch.setattr(update_anki_deck, "check_design_sync", lambda: True)
+    monkeypatch.setattr(update_anki_deck, "validate_canonical_release_state", reject)
+
+    assert update_anki_deck.main(["--dry-run"]) == 1
+    assert "Canonical release guard failed" in capsys.readouterr().err
 
 def test_generate_deterministic_id():
     name = "Test Deck"
@@ -191,11 +224,51 @@ def test_update_anki_deck_success(tmp_path, monkeypatch):
     monkeypatch.setattr(update_anki_deck, "OUTPUT_APKG", output_apkg)
 
     monkeypatch.setattr(update_anki_deck, "check_design_sync", lambda: True)
+    old_receipt = update_anki_deck.verified_receipt_path_for(output_apkg)
+    old_receipt.parent.mkdir(parents=True)
+    old_receipt.write_text("stale", encoding="utf-8")
 
     # Run deck generator
     exit_code = update_anki_deck.main([])
     assert exit_code == 0
     assert output_apkg.exists()
+    assert update_anki_deck.provenance_path_for(output_apkg).is_file()
+    assert not old_receipt.exists()
+
+
+def test_update_anki_deck_dry_run_does_not_write_release_artifacts(
+    tmp_path: Path, monkeypatch,
+):
+    front_file = tmp_path / "front_template.txt"
+    front_file.write_text("{{Word}}", encoding="utf-8")
+    back_file = tmp_path / "back_template.txt"
+    back_file.write_text("{{Definition}}", encoding="utf-8")
+    styling_file = tmp_path / "styling.txt"
+    styling_file.write_text("body {}", encoding="utf-8")
+    notes_file = tmp_path / "anki_notes.jsonl"
+    notes_file.write_text(
+        json.dumps({
+            "word": "conquer", "definition": "win", "deck": "Deck",
+            "guid": "dry-run-guid",
+        }) + "\n",
+        encoding="utf-8",
+    )
+    output_apkg = tmp_path / "output_deck.apkg"
+    monkeypatch.setattr(update_anki_deck, "NOTES_JSONL", notes_file)
+    monkeypatch.setattr(update_anki_deck, "FRONT_TEMPLATE", front_file)
+    monkeypatch.setattr(update_anki_deck, "BACK_TEMPLATE", back_file)
+    monkeypatch.setattr(update_anki_deck, "STYLING_TXT", styling_file)
+    monkeypatch.setattr(update_anki_deck, "AUDIO_DIR", tmp_path / "audio")
+    monkeypatch.setattr(update_anki_deck, "OUTPUT_APKG", output_apkg)
+    monkeypatch.setattr(update_anki_deck, "check_design_sync", lambda: True)
+    receipt = update_anki_deck.verified_receipt_path_for(output_apkg)
+    receipt.parent.mkdir(parents=True)
+    receipt.write_text("existing receipt", encoding="utf-8")
+
+    assert update_anki_deck.main(["--dry-run"]) == 0
+    assert not output_apkg.exists()
+    assert not update_anki_deck.provenance_path_for(output_apkg).exists()
+    assert receipt.read_text(encoding="utf-8") == "existing receipt"
 
 def test_update_anki_deck_missing_guid(tmp_path, monkeypatch):
     # Setup mock templates

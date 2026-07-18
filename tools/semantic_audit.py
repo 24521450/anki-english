@@ -9,14 +9,18 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from src.config import ProjectPaths
+from src.deck_builder.canonical_io import canonical_jsonl_bytes
 from src.deck_builder.definition_audit import (
     DEFAULT_MIN_TOKENS as DEFAULT_DEFINITION_MIN_TOKENS,
     apply_definition_review_overrides,
     build_definition_audit,
     load_jsonl_bytes as load_definition_jsonl_bytes,
     render_definition_audit_markdown,
+    scaffold_definition_review,
     serialize_definition_audit,
+    serialize_definition_review,
     sha256_bytes as definition_sha256_bytes,
+    validate_definition_review_for_promotion,
 )
 from src.deck_builder.idiom_audit import (
     audit_summary as idiom_audit_summary,
@@ -39,9 +43,15 @@ from src.deck_builder.semantic_audit_manifests import (
     validate_artifacts,
 )
 from src.deck_builder.semantic_registry import (
-    promote_audit_rows,
+    build_promotion_gate_candidates,
+    promote_reviewed_semantics,
     serialize_semantic_registry,
     validate_semantic_registry_rows,
+)
+from src.deck_builder.semantic_policy import (
+    validate_audit_policy,
+    validate_policy_rows,
+    validate_vietnamese_user_lock_evidence,
 )
 from src.deck_builder.sense_merge_audit import (
     apply_sense_merge_reviews,
@@ -53,6 +63,7 @@ from src.deck_builder.sense_merge_audit import (
     scaffold_sense_merge_review,
     serialize_sense_merge_audit,
     serialize_sense_merge_review,
+    validate_sense_merge_review_for_promotion,
 )
 from src.deck_builder.vietnamese_audit import (
     DEFAULT_MIN_TOKENS as DEFAULT_VIETNAMESE_MIN_TOKENS,
@@ -76,6 +87,9 @@ DEFAULT_DEFINITION_AUDIT_MARKDOWN = paths.root / "scratch" / "definition_sense_a
 DEFAULT_VIETNAMESE_AUDIT = paths.root / "scratch" / "vietnamese_naturalness_audit.jsonl"
 DEFAULT_VIETNAMESE_AUDIT_MARKDOWN = paths.root / "scratch" / "vietnamese_naturalness_audit.md"
 DEFAULT_VIETNAMESE_REVIEW = paths.vietnamese_naturalness_review
+DEFAULT_SEMANTIC_POLICY = paths.semantic_policy_locks
+DEFAULT_DEFINITION_REVIEW = paths.definition_concision_review
+DEFAULT_CANONICAL_SENSE_MERGE_REVIEW = paths.semantic_sense_merge_review
 DEFAULT_SENSE_MERGE_AUDIT = paths.root / "scratch" / "semantic_sense_merge_audit.jsonl"
 DEFAULT_SENSE_MERGE_AUDIT_MARKDOWN = paths.root / "scratch" / "semantic_sense_merge_audit.md"
 DEFAULT_SENSE_MERGE_REVIEW = paths.root / "scratch" / "semantic_sense_merge_review.jsonl"
@@ -144,6 +158,47 @@ def _reject_canonical_report_output(path: Path) -> None:
         )
 
 
+def _semantic_rows_from_complete_audit(audit_rows: list[dict]) -> list[dict]:
+    rows: list[dict] = []
+    for card in audit_rows:
+        senses: list[dict] = []
+        for sense in card.get("semantic_senses") or []:
+            if sense.get("decision") == "pass":
+                content = sense.get("current") or {}
+            elif (
+                sense.get("decision") == "repair_proposed"
+                and sense.get("approval") == "approved"
+            ):
+                content = sense.get("proposed") or {}
+            else:
+                raise ValueError(
+                    "vietnamese_audit_incomplete_semantic_sense:"
+                    f"{card.get('guid')}:{sense.get('semantic_sense_id')}"
+                )
+            cambridge = sense.get("cambridge") or {}
+            senses.append({
+                "semantic_sense_id": sense.get("semantic_sense_id") or "",
+                "order": sense.get("order"),
+                "definition_en": content.get("definition_en") or "",
+                "definition_vi": content.get("definition_vi") or "",
+                "examples": list(content.get("examples") or []),
+                "source_sense_ids": list(sense.get("source_sense_ids") or []),
+                "cambridge_match": cambridge.get("match") or "",
+                "translation_provenance": (
+                    cambridge.get("translation_provenance") or ""
+                ),
+            })
+        rows.append({
+            **{
+                field: card.get(field) or ""
+                for field in ("guid", "word", "cefr", "list", "variant", "pos")
+            },
+            "source_fingerprint": card.get("source_fingerprint") or "",
+            "senses": senses,
+        })
+    return rows
+
+
 def _load_vietnamese_audit_inputs(
     *,
     semantic_registry: Path,
@@ -166,18 +221,14 @@ def _load_vietnamese_audit_inputs(
         )
 
     audit_sha256 = sha256_bytes(audit_bytes)
-    for row in semantic_rows:
-        schema_version = row.get("schema_version")
-        if schema_version not in {1, 2, 3}:
-            raise ValueError(
-                "vietnamese_audit_unsupported_semantic_registry_schema:"
-                f"{row.get('guid')}:{schema_version}"
-            )
-        if row.get("audit_sha256") != audit_sha256:
-            raise ValueError(
-                "vietnamese_audit_semantic_registry_audit_hash_mismatch:"
-                f"{row.get('guid')}"
-            )
+    registry_is_current = bool(semantic_rows) and all(
+        row.get("schema_version") == 4
+        and row.get("audit_sha256") == audit_sha256
+        for row in semantic_rows
+    )
+    if not registry_is_current:
+        semantic_rows = _semantic_rows_from_complete_audit(audit_rows)
+        semantic_bytes = canonical_jsonl_bytes(semantic_rows)
 
     input_hashes = {
         "bilingual_semantic_audit": audit_sha256,
@@ -212,7 +263,7 @@ def _scaffold(args) -> int:
 def _load_complete_vietnamese_review(
     path: Path,
     audit_rows: list[dict],
-) -> tuple[bytes, list[str]]:
+) -> tuple[bytes, list[dict], list[str]]:
     review_bytes, review_records = _load_audit_bytes(path)
     if not review_records:
         raise ValueError("vietnamese_review_empty")
@@ -223,7 +274,152 @@ def _load_complete_vietnamese_review(
         review_records[0],
         review_records[1:],
     )
-    return review_bytes, errors
+    return review_bytes, review_records, errors
+
+
+def _load_gate_document(
+    path: Path,
+    label: str,
+    *,
+    require_nonempty: bool,
+) -> tuple[bytes, list[dict]]:
+    if not path.is_file():
+        display_label = label.replace("_", " ").capitalize()
+        raise ValueError(f"{display_label} not found: {path}")
+    payload, rows = _load_audit_bytes(path)
+    if require_nonempty and not rows:
+        raise ValueError(f"{label}_empty:{path}")
+    if any(not isinstance(row, dict) for row in rows):
+        raise ValueError(f"{label}_invalid_record_type:{path}")
+    return payload, rows
+
+
+def _load_promotion_documents(
+    args, *, include_gate_reviews: bool = True
+) -> dict[str, object]:
+    named_paths = {
+        "audit": args.audit,
+        "card_registry": args.registry,
+        "idiom_audit": args.idiom_audit,
+        "vietnamese_review": args.vietnamese_review,
+        "semantic_policy": args.semantic_policy,
+        "deck_audit": args.deck_audit,
+        "overrides": args.overrides,
+    }
+    if include_gate_reviews:
+        named_paths.update({
+            "definition_review": args.definition_review,
+            "sense_merge_review": args.sense_merge_review,
+        })
+    documents: dict[str, object] = {}
+    # Alternate scratch documents are useful for isolated fixtures, but no
+    # caller may overwrite or validate canonical production state while
+    # bypassing the explicit user wording locks.
+    canonical_targets = {
+        DEFAULT_AUDIT.resolve(),
+        paths.card_registry.resolve(),
+        paths.semantic_registry.resolve(),
+    }
+    command_paths = {
+        args.audit.resolve(),
+        args.registry.resolve(),
+    }
+    output_path = getattr(args, "output", None)
+    if output_path is not None:
+        command_paths.add(output_path.resolve())
+    documents["require_user_exact_vi_locks"] = bool(
+        canonical_targets.intersection(command_paths)
+    )
+    required = {
+        "audit",
+        "card_registry",
+        "vietnamese_review",
+        "definition_review",
+        "sense_merge_review",
+    }
+    for name, path in named_paths.items():
+        payload, rows = _load_gate_document(
+            path,
+            name,
+            require_nonempty=name in required,
+        )
+        documents[f"{name}_bytes"] = payload
+        documents[f"{name}_rows"] = rows
+    return documents
+
+
+def _current_promotion_gate_candidates(args):
+    """Build both review queues without depending on the prior registry."""
+
+    documents = _load_promotion_documents(args, include_gate_reviews=False)
+    audit_rows = documents["audit_rows"]
+    card_registry_rows = documents["card_registry_rows"]
+    idiom_rows = documents["idiom_audit_rows"]
+    policy_rows = documents["semantic_policy_rows"]
+    assert isinstance(audit_rows, list)
+    assert isinstance(card_registry_rows, list)
+    assert isinstance(idiom_rows, list)
+    assert isinstance(policy_rows, list)
+    errors = validate_audit_rows(audit_rows, card_registry_rows, require_complete=True)
+    errors.extend(
+        validate_idiom_audit_rows(
+            idiom_rows,
+            card_registry_rows,
+            require_complete=True,
+        )
+    )
+    errors.extend(validate_policy_rows(policy_rows))
+    errors.extend(validate_audit_policy(audit_rows, policy_rows))
+    vietnamese_rows = documents["vietnamese_review_rows"]
+    assert isinstance(vietnamese_rows, list)
+    if vietnamese_rows:
+        errors.extend(
+            validate_vietnamese_review_for_promotion(
+                audit_rows,
+                vietnamese_rows[0],
+                vietnamese_rows[1:],
+            )
+        )
+        errors.extend(
+            validate_vietnamese_user_lock_evidence(
+                vietnamese_rows[1:],
+                policy_rows,
+            )
+        )
+    if errors:
+        raise ValueError(
+            "Promotion review scaffold requires complete canonical inputs:\n"
+            + "\n".join(errors[:100])
+        )
+
+    definition_summary, definition_candidates, merge_summary, merge_candidates = (
+        build_promotion_gate_candidates(
+            audit_rows,
+            card_registry_rows,
+            idiom_rows,
+            documents["deck_audit_rows"],
+            documents["overrides_rows"],
+            audit_sha256=sha256_bytes(documents["audit_bytes"]),
+            idiom_audit_sha256=sha256_bytes(documents["idiom_audit_bytes"]),
+            vietnamese_review_sha256=sha256_bytes(
+                documents["vietnamese_review_bytes"]
+            ),
+            semantic_policy_sha256=sha256_bytes(
+                documents["semantic_policy_bytes"]
+            ),
+            deck_audit_sha256=sha256_bytes(documents["deck_audit_bytes"]),
+            non_oxford_non_c2_override_sha256=sha256_bytes(
+                documents["overrides_bytes"]
+            ),
+        )
+    )
+    return (
+        documents,
+        definition_summary,
+        definition_candidates,
+        merge_summary,
+        merge_candidates,
+    )
 
 
 def _validate(args) -> int:
@@ -232,14 +428,11 @@ def _validate(args) -> int:
     errors = validate_audit_rows(rows, registry, require_complete=args.require_complete)
     if args.require_complete and not errors:
         try:
-            _, vietnamese_errors = _load_complete_vietnamese_review(
-                args.vietnamese_review,
-                rows,
-            )
+            documents = _load_promotion_documents(args)
+            promoted = _promote_documents(documents)
+            errors.extend(validate_semantic_registry_rows(promoted, registry))
         except (OSError, ValueError, json.JSONDecodeError) as exc:
-            print(f"Semantic audit validation blocked by Vietnamese review: {exc}", file=sys.stderr)
-            return 1
-        errors.extend(vietnamese_errors)
+            errors.append(f"promotion_gate:{exc}")
     print(json.dumps({**audit_summary(rows), "errors": len(errors)}, ensure_ascii=False, sort_keys=True))
     if errors:
         print("\n".join(errors[:100]), file=sys.stderr)
@@ -295,12 +488,45 @@ def _apply_review(args) -> int:
     return 0
 
 
+def _promote_documents(documents: dict[str, object]) -> list[dict]:
+    audit_rows = documents["audit_rows"]
+    card_registry_rows = documents["card_registry_rows"]
+    idiom_rows = documents["idiom_audit_rows"]
+    vietnamese_rows = documents["vietnamese_review_rows"]
+    definition_rows = documents["definition_review_rows"]
+    sense_merge_rows = documents["sense_merge_review_rows"]
+    return promote_reviewed_semantics(
+        audit_rows,
+        card_registry_rows,
+        idiom_rows,
+        vietnamese_rows[0],
+        vietnamese_rows[1:],
+        policy_rows=documents["semantic_policy_rows"],
+        definition_review_summary=definition_rows[0],
+        definition_review_rows=definition_rows[1:],
+        sense_merge_review_summary=sense_merge_rows[0],
+        sense_merge_review_rows=sense_merge_rows[1:],
+        deck_audit_rows=documents["deck_audit_rows"],
+        non_oxford_non_c2_override_rows=documents["overrides_rows"],
+        audit_bytes=documents["audit_bytes"],
+        idiom_audit_bytes=documents["idiom_audit_bytes"],
+        vietnamese_review_bytes=documents["vietnamese_review_bytes"],
+        policy_bytes=documents["semantic_policy_bytes"],
+        definition_review_bytes=documents["definition_review_bytes"],
+        sense_merge_review_bytes=documents["sense_merge_review_bytes"],
+        deck_audit_bytes=documents["deck_audit_bytes"],
+        non_oxford_non_c2_override_bytes=documents["overrides_bytes"],
+        require_user_exact_vi_locks=bool(
+            documents.get("require_user_exact_vi_locks", True)
+        ),
+    )
+
+
 def _promote(args) -> int:
-    audit_bytes, rows = _load_audit_bytes(args.audit)
-    idiom_audit_bytes, idiom_rows = _load_audit_bytes(args.idiom_audit)
+    audit_rows = load_jsonl(args.audit)
     card_registry_rows = load_jsonl(args.registry)
     audit_errors = validate_audit_rows(
-        rows,
+        audit_rows,
         card_registry_rows,
         require_complete=True,
     )
@@ -311,51 +537,23 @@ def _promote(args) -> int:
             file=sys.stderr,
         )
         return 1
-
-    idiom_audit_errors = validate_idiom_audit_rows(
+    idiom_rows = load_jsonl(args.idiom_audit)
+    idiom_errors = validate_idiom_audit_rows(
         idiom_rows,
         card_registry_rows,
         require_complete=True,
     )
-    if idiom_audit_errors:
+    if idiom_errors:
         print(
             "Semantic registry promotion blocked by incomplete idiom audit:\n"
-            + "\n".join(idiom_audit_errors[:100]),
+            + "\n".join(idiom_errors[:100]),
             file=sys.stderr,
         )
         return 1
-
     try:
-        vietnamese_review_bytes, vietnamese_review_errors = (
-            _load_complete_vietnamese_review(args.vietnamese_review, rows)
-        )
+        documents = _load_promotion_documents(args)
+        promoted = _promote_documents(documents)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
-        print(
-            f"Semantic registry promotion blocked by Vietnamese review: {exc}",
-            file=sys.stderr,
-        )
-        return 1
-    if vietnamese_review_errors:
-        print(
-            "Semantic registry promotion blocked by incomplete Vietnamese review:\n"
-            + "\n".join(vietnamese_review_errors[:100]),
-            file=sys.stderr,
-        )
-        return 1
-
-    audit_sha256 = sha256_bytes(audit_bytes)
-    idiom_audit_sha256 = sha256_bytes(idiom_audit_bytes)
-    vietnamese_review_sha256 = sha256_bytes(vietnamese_review_bytes)
-    try:
-        promoted = promote_audit_rows(
-            rows,
-            card_registry_rows,
-            audit_sha256=audit_sha256,
-            idiom_audit_sha256=idiom_audit_sha256,
-            vietnamese_review_sha256=vietnamese_review_sha256,
-            idiom_audit_rows=idiom_rows,
-        )
-    except ValueError as exc:
         print(f"Semantic registry promotion failed: {exc}", file=sys.stderr)
         return 1
 
@@ -370,13 +568,24 @@ def _promote(args) -> int:
 
     serialized = serialize_semantic_registry(promoted)
     summary = {
-        "audit_sha256": audit_sha256,
+        "audit_sha256": sha256_bytes(documents["audit_bytes"]),
         "cards": len(promoted),
-        "idiom_audit_sha256": idiom_audit_sha256,
+        "definition_review_sha256": sha256_bytes(
+            documents["definition_review_bytes"]
+        ),
+        "idiom_audit_sha256": sha256_bytes(documents["idiom_audit_bytes"]),
         "idioms": idiom_audit_summary(idiom_rows)["occurrences"],
+        "semantic_policy_sha256": sha256_bytes(
+            documents["semantic_policy_bytes"]
+        ),
         "semantic_registry_sha256": sha256_bytes(serialized.encode("utf-8")),
+        "sense_merge_review_sha256": sha256_bytes(
+            documents["sense_merge_review_bytes"]
+        ),
         "senses": sum(len(row.get("senses") or []) for row in promoted),
-        "vietnamese_review_sha256": vietnamese_review_sha256,
+        "vietnamese_review_sha256": sha256_bytes(
+            documents["vietnamese_review_bytes"]
+        ),
     }
     if not args.dry_run:
         _write_atomic(args.output, serialized)
@@ -491,6 +700,72 @@ def _definition_audit(args) -> int:
         "output": str(args.output),
         "markdown": str(args.markdown),
         "dry_run": args.dry_run,
+    }, ensure_ascii=False, sort_keys=True))
+    return 0
+
+
+def _definition_review_scaffold(args) -> int:
+    try:
+        existing_review_rows = None
+        if args.output.exists() and not args.replace:
+            raise ValueError(
+                f"Definition review already exists: {args.output}; use --replace"
+            )
+        if args.output.exists():
+            existing_records = load_jsonl(args.output)
+            existing_review_rows = existing_records[1:] if existing_records else []
+        _, summary, candidates, _, _ = _current_promotion_gate_candidates(args)
+        review_summary, review_rows = scaffold_definition_review(
+            summary,
+            candidates,
+            existing_review_rows=existing_review_rows,
+        )
+        if not args.dry_run:
+            _write_atomic(
+                args.output,
+                serialize_definition_review(review_summary, review_rows),
+            )
+    except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
+        print(f"Definition review scaffold failed: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps({
+        "candidates": len(candidates),
+        "candidate_set_sha256": review_summary["candidate_set_sha256"],
+        "dry_run": args.dry_run,
+        "output": str(args.output),
+    }, ensure_ascii=False, sort_keys=True))
+    return 0
+
+
+def _sense_merge_review_scaffold(args) -> int:
+    try:
+        existing_review_rows = None
+        if args.output.exists() and not args.replace:
+            raise ValueError(
+                f"Sense Merge review already exists: {args.output}; use --replace"
+            )
+        if args.output.exists():
+            existing_records = load_jsonl(args.output)
+            existing_review_rows = existing_records[1:] if existing_records else []
+        _, _, _, summary, candidates = _current_promotion_gate_candidates(args)
+        review_summary, review_rows = scaffold_sense_merge_review(
+            summary,
+            candidates,
+            existing_review_rows=existing_review_rows,
+        )
+        if not args.dry_run:
+            _write_atomic(
+                args.output,
+                serialize_sense_merge_review(review_summary, review_rows),
+            )
+    except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
+        print(f"Sense Merge review scaffold failed: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps({
+        "candidates": len(candidates),
+        "candidate_set_sha256": review_summary["candidate_set_sha256"],
+        "dry_run": args.dry_run,
+        "output": str(args.output),
     }, ensure_ascii=False, sort_keys=True))
     return 0
 
@@ -816,6 +1091,33 @@ def _sense_merge_audit(args) -> int:
     return 0
 
 
+def _add_promotion_input_arguments(
+    parser: argparse.ArgumentParser,
+    *,
+    include_gate_reviews: bool,
+) -> None:
+    parser.add_argument("--idiom-audit", type=Path, default=DEFAULT_IDIOM_AUDIT)
+    parser.add_argument(
+        "--vietnamese-review", type=Path, default=DEFAULT_VIETNAMESE_REVIEW
+    )
+    parser.add_argument(
+        "--semantic-policy", type=Path, default=DEFAULT_SEMANTIC_POLICY
+    )
+    parser.add_argument("--deck-audit", type=Path, default=paths.deck_audit_jsonl)
+    parser.add_argument(
+        "--overrides", type=Path, default=paths.non_oxford_non_c2_overrides
+    )
+    if include_gate_reviews:
+        parser.add_argument(
+            "--definition-review", type=Path, default=DEFAULT_DEFINITION_REVIEW
+        )
+        parser.add_argument(
+            "--sense-merge-review",
+            type=Path,
+            default=DEFAULT_CANONICAL_SENSE_MERGE_REVIEW,
+        )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--audit", type=Path, default=DEFAULT_AUDIT)
@@ -831,9 +1133,7 @@ def main(argv: list[str] | None = None) -> int:
 
     validate = sub.add_parser("validate")
     validate.add_argument("--require-complete", action="store_true")
-    validate.add_argument(
-        "--vietnamese-review", type=Path, default=DEFAULT_VIETNAMESE_REVIEW
-    )
+    _add_promotion_input_arguments(validate, include_gate_reviews=True)
     validate.set_defaults(handler=_validate)
 
     export = sub.add_parser("export-xlsx")
@@ -856,10 +1156,7 @@ def main(argv: list[str] | None = None) -> int:
 
     promote = sub.add_parser("promote")
     promote.add_argument("--output", type=Path, default=paths.semantic_registry)
-    promote.add_argument("--idiom-audit", type=Path, default=DEFAULT_IDIOM_AUDIT)
-    promote.add_argument(
-        "--vietnamese-review", type=Path, default=DEFAULT_VIETNAMESE_REVIEW
-    )
+    _add_promotion_input_arguments(promote, include_gate_reviews=True)
     promote.add_argument("--dry-run", action="store_true")
     promote.set_defaults(handler=_promote)
 
@@ -895,6 +1192,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     definition_audit.add_argument("--dry-run", action="store_true")
     definition_audit.set_defaults(handler=_definition_audit)
+
+    definition_review = sub.add_parser("definition-review-scaffold")
+    _add_promotion_input_arguments(
+        definition_review,
+        include_gate_reviews=False,
+    )
+    definition_review.add_argument(
+        "--output", type=Path, default=DEFAULT_DEFINITION_REVIEW
+    )
+    definition_review.add_argument("--replace", action="store_true")
+    definition_review.add_argument("--dry-run", action="store_true")
+    definition_review.set_defaults(handler=_definition_review_scaffold)
 
     vietnamese_audit = sub.add_parser("vietnamese-audit")
     vietnamese_audit.add_argument(
@@ -963,6 +1272,18 @@ def main(argv: list[str] | None = None) -> int:
     sense_merge_audit.add_argument("--replace-review", action="store_true")
     sense_merge_audit.add_argument("--dry-run", action="store_true")
     sense_merge_audit.set_defaults(handler=_sense_merge_audit)
+
+    sense_merge_review = sub.add_parser("sense-merge-review-scaffold")
+    _add_promotion_input_arguments(
+        sense_merge_review,
+        include_gate_reviews=False,
+    )
+    sense_merge_review.add_argument(
+        "--output", type=Path, default=DEFAULT_CANONICAL_SENSE_MERGE_REVIEW
+    )
+    sense_merge_review.add_argument("--replace", action="store_true")
+    sense_merge_review.add_argument("--dry-run", action="store_true")
+    sense_merge_review.set_defaults(handler=_sense_merge_review_scaffold)
 
     args = parser.parse_args(argv)
     return args.handler(args)

@@ -1,4 +1,5 @@
 import copy
+import hashlib
 
 import pytest
 
@@ -6,8 +7,11 @@ from src.deck_builder.definition_audit import (
     DEFINITION_AUDIT_SCHEMA_VERSION,
     apply_definition_review_overrides,
     build_definition_audit,
+    scaffold_definition_review,
     serialize_definition_audit,
+    serialize_definition_review,
     validate_definition_audit,
+    validate_definition_review_for_promotion,
 )
 
 
@@ -36,7 +40,7 @@ def _semantic_registry(
     examples=None,
 ):
     return [{
-        "schema_version": 2,
+        "schema_version": 4,
         "guid": guid,
         "word": word,
         "cefr": "C1",
@@ -46,6 +50,10 @@ def _semantic_registry(
         "audit_sha256": AUDIT_SHA,
         "source_fingerprint": SOURCE_SHA,
         "idiom_audit_sha256": "c" * 64,
+        "vietnamese_review_sha256": "f" * 64,
+        "semantic_policy_sha256": "1" * 64,
+        "definition_review_sha256": "2" * 64,
+        "sense_merge_review_sha256": "3" * 64,
         "idioms": [],
         "senses": [{
             "semantic_sense_id": "sem-1",
@@ -369,3 +377,200 @@ def test_stale_audit_hash_fails_closed():
     registry[0]["audit_sha256"] = "f" * 64
     with pytest.raises(ValueError, match="semantic_registry_stale_audit_sha256"):
         _build(registry)
+
+
+def _approved_definition_review(summary, candidates):
+    review_summary, reviews = scaffold_definition_review(summary, candidates)
+    review = reviews[0]
+    current = review["expected_definition_en"]
+    alternative = "support a law or principle"
+    distinction = (
+        "the separate legal-review sense in which a court confirms an earlier decision"
+    )
+    support = candidates[0]["current"]["examples"][1]
+    review.update({
+        "decision": "keep_explanatory",
+        "shorter_en_considered": alternative,
+        "preserved_distinction": distinction,
+        "reason": "Both mapped Oxford senses remain material to this learner unit.",
+        "semantic_evidence": (
+            f'Final EN "{current}"; shorter "{alternative}" omits {distinction}; '
+            f'exact learner example "{support}" verifies the legal-review use.'
+        ),
+        "reviewer": "reviewer@example",
+        "reviewed_at": "2026-07-18",
+        "approval": "approved",
+    })
+    return review_summary, reviews
+
+
+def test_definition_review_scaffold_is_deterministic_and_exact_coverage():
+    summary, candidates = _build()
+    first = scaffold_definition_review(summary, candidates)
+    second = scaffold_definition_review(summary, candidates)
+
+    assert serialize_definition_review(*first) == serialize_definition_review(*second)
+    assert first[0]["candidate_set_sha256"] == summary["candidate_set_sha256"]
+    assert first[0]["candidate_count"] == len(first[1]) == len(candidates)
+    assert first[1][0]["candidate_id"] == candidates[0]["candidate_id"]
+    assert len(first[1][0]["candidate_fingerprint"]) == 64
+
+    missing_errors = validate_definition_review_for_promotion(
+        summary, candidates, first[0], []
+    )
+    assert any(error.startswith("definition_review_missing_candidate:") for error in missing_errors)
+
+    extra = copy.deepcopy(first[1][0])
+    extra["candidate_id"] = "unknown::sense"
+    extra_errors = validate_definition_review_for_promotion(
+        summary, candidates, first[0], [*first[1], extra]
+    )
+    assert "definition_review_extra_candidate:unknown::sense" in extra_errors
+    assert serialize_definition_review(
+        first[0],
+        [
+            {"candidate_id": "b", "value": 2},
+            {"candidate_id": "a", "value": 1},
+        ],
+    ) == serialize_definition_review(
+        first[0],
+        [
+            {"candidate_id": "a", "value": 1},
+            {"candidate_id": "b", "value": 2},
+        ],
+    )
+
+
+def test_definition_review_scaffold_reuses_only_unchanged_fingerprints():
+    summary, candidates = _build()
+    _, reviews = _approved_definition_review(summary, candidates)
+
+    _, reused = scaffold_definition_review(
+        summary, candidates, existing_review_rows=reviews
+    )
+    assert reused == reviews
+
+    stale = copy.deepcopy(reviews)
+    stale[0]["candidate_fingerprint"] = "0" * 64
+    _, reset = scaffold_definition_review(
+        summary, candidates, existing_review_rows=stale
+    )
+    assert reset[0]["decision"] == "pending"
+    assert reset[0]["candidate_fingerprint"] == candidates[0][
+        "candidate_fingerprint"
+    ]
+
+
+def test_definition_review_rejects_stale_candidate_fingerprint_and_set():
+    summary, candidates = _build()
+    review_summary, reviews = _approved_definition_review(summary, candidates)
+    reviews[0]["candidate_fingerprint"] = "0" * 64
+    review_summary["candidate_set_sha256"] = "1" * 64
+
+    errors = validate_definition_review_for_promotion(
+        summary, candidates, review_summary, reviews
+    )
+
+    assert "definition_review_stale_candidate_set" in errors
+    assert any(error.startswith("definition_review_stale_candidate:") for error in errors)
+
+
+def test_definition_review_does_not_bind_downstream_artifact_hashes():
+    summary, candidates = _build()
+    review_summary, reviews = _approved_definition_review(summary, candidates)
+    rebuilt_summary = copy.deepcopy(summary)
+    rebuilt_summary["inputs"]["semantic_registry"] = "9" * 64
+    rebuilt_summary["inputs"]["build_notes"] = "8" * 64
+
+    assert "inputs" not in review_summary
+    assert validate_definition_review_for_promotion(
+        rebuilt_summary, candidates, review_summary, reviews
+    ) == []
+
+
+def test_definition_review_rejects_generic_evidence():
+    summary, candidates = _build()
+    review_summary, reviews = _approved_definition_review(summary, candidates)
+    reviews[0]["preserved_distinction"] = "loses meaning"
+    reviews[0]["semantic_evidence"] = "looks good"
+
+    errors = validate_definition_review_for_promotion(
+        summary, candidates, review_summary, reviews
+    )
+
+    assert any(
+        error.startswith("definition_review_generic_preserved_distinction:")
+        for error in errors
+    )
+    assert any(
+        error.startswith("definition_review_generic_semantic_evidence:")
+        for error in errors
+    )
+
+
+@pytest.mark.parametrize(
+    "decision",
+    ["pending", "rewrite_required", "split_required", "uncertain"],
+)
+def test_non_final_definition_review_decisions_block_promotion(decision):
+    summary, candidates = _build()
+    review_summary, reviews = scaffold_definition_review(summary, candidates)
+    reviews[0].update({
+        "decision": decision,
+        "reason": "The learner payload still needs an applied semantic change.",
+        "reviewer": "reviewer@example",
+        "reviewed_at": "2026-07-18",
+        "approval": "approved",
+    })
+
+    errors = validate_definition_review_for_promotion(
+        summary, candidates, review_summary, reviews
+    )
+
+    assert any(
+        error.endswith(f":{decision}")
+        and error.startswith("definition_promotion_open_decision:")
+        for error in errors
+    )
+
+
+def test_approved_keep_with_shorter_alternative_and_exact_loss_passes_gate():
+    summary, candidates = _build()
+    review_summary, reviews = _approved_definition_review(summary, candidates)
+
+    assert validate_definition_review_for_promotion(
+        summary, candidates, review_summary, reviews
+    ) == []
+
+
+def test_definition_gate_rejects_placeholder_and_identifier_filler():
+    summary, candidates = _build()
+    review_summary, reviews = scaffold_definition_review(summary, candidates)
+    review = reviews[0]
+    current = review["expected_definition_en"]
+    token = hashlib.sha256(review["candidate_id"].encode()).hexdigest()[:12]
+    distinction = f"unique token {token}"
+    review.update({
+        "decision": "keep_explanatory",
+        "shorter_en_considered": "x",
+        "preserved_distinction": distinction,
+        "reason": "approved",
+        "semantic_evidence": f"{current}; x; {distinction}",
+        "reviewer": "r",
+        "reviewed_at": "x",
+        "approval": "approved",
+    })
+
+    errors = validate_definition_review_for_promotion(
+        summary,
+        candidates,
+        review_summary,
+        reviews,
+    )
+
+    assert any("non_substantive_alternative" in error for error in errors)
+    assert any("invalid_reviewer" in error for error in errors)
+    assert any("invalid_reviewed_at" in error for error in errors)
+    assert any("generic_reason" in error for error in errors)
+    assert any("missing_grounding" in error for error in errors)
+    assert any("suspicious_token" in error for error in errors)

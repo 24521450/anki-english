@@ -10,27 +10,19 @@ Golden fixture: cambridge_violation.html (real cache file).
 """
 from __future__ import annotations
 
-import os
-import sys
-
-from pathlib import Path
-PROJECT_ROOT = str(Path(__file__).resolve().parents[2])
-sys.path.insert(0, PROJECT_ROOT)
-
 import pytest  # noqa: E402
+from lxml import html as lxml_html  # noqa: E402
 
-from src.scraper.cambridge import parse_cambridge  # noqa: E402
-
-CAMBRIDGE_DIR = os.path.join(PROJECT_ROOT, "data", ".cache_html", "cambridge")
-VIOLATION_FILE = os.path.join(CAMBRIDGE_DIR, "cambridge_violation.html")
+from src.scraper.cambridge import _extract_see_also, parse_cambridge  # noqa: E402
+from tools import ci_hydrate_parser_fixtures as fixture_catalog  # noqa: E402
 
 
 @pytest.fixture(scope="module")
 def violation_record():
     """Parse cambridge_violation.html — has Synonyms header + colloc+example merged."""
-    with open(VIOLATION_FILE, "rb") as f:
-        raw = f.read()
-    return parse_cambridge(raw, source_files=["cambridge_violation.html"])
+    fixture = fixture_catalog.special_fixture("cambridge-violation-cleaning")
+    raw = fixture_catalog.special_fixture_path(fixture["id"]).read_bytes()
+    return parse_cambridge(raw, source_files=[fixture["filename"]])
 
 
 # -----------------------------------------------------------------------------
@@ -54,47 +46,17 @@ def test_see_also_strips_artifacts(violation_record):
 # -----------------------------------------------------------------------------
 
 def test_see_also_drops_grammar_blob():
-    """When xref block is a grammar pattern (no real headwords), see_also should be empty for that block.
+    """Grammar xrefs are excluded while semantic xrefs remain."""
+    tree = lxml_html.fromstring(
+        b"""
+        <div>
+          <div class="xref grammar"><span class="x-h dx-h">Be about to</span></div>
+          <div class="xref synonyms"><span class="x-h dx-h">capable</span></div>
+        </div>
+        """
+    )
 
-    We scan all Cambridge files and check that .xref.grammar blocks do not
-    contribute any words to see_also. We verify by parsing + checking that none
-    of the words appearing in .xref.grammar blocks leak into see_also.
-
-    Note: words that happen to be both grammar terms AND real headwords (e.g.
-    'progressive' as a synonym) are still legitimate see_also entries when
-    they come from non-grammar blocks.
-    """
-    # Sample from 100 files to keep test fast
-    files = sorted(os.listdir(CAMBRIDGE_DIR))[:100]
-    leaked = []
-    for fn in files:
-        path = os.path.join(CAMBRIDGE_DIR, fn)
-        try:
-            with open(path, "rb") as f:
-                raw = f.read()
-        except Exception:
-            continue
-        rec = parse_cambridge(raw, source_files=[fn])
-
-        # Re-parse to find words from .xref.grammar blocks specifically
-        from lxml import html as lxml_html
-        tree = lxml_html.fromstring(raw)
-        grammar_words = set()
-        for x in tree.cssselect('.xref.grammar'):
-            for hw in x.cssselect('.x-h.dx-h'):
-                if hw.text_content().strip():
-                    grammar_words.add(hw.text_content().strip())
-
-        # Check that none of the grammar words appear in see_also
-        for w in rec.get("see_also", []):
-            if w in grammar_words:
-                leaked.append((fn, w))
-                if len(leaked) >= 5:
-                    break
-        if len(leaked) >= 5:
-            break
-
-    assert not leaked, f"Words from .xref.grammar blocks leaked into see_also: {leaked}"
+    assert _extract_see_also(tree) == ["capable"]
 
 
 # -----------------------------------------------------------------------------
