@@ -30,6 +30,8 @@ Current semantic/release guardrail decisions:
   verified-import, and read-only release boundaries.
 - [ADR 0023](./adr/0023-canonical-guid-and-live-export-proof.md) — canonical
   GUID storage, same-name media repair, and post-import export proof.
+- [ADR 0024](./adr/0024-reviewed-collocation-registry.md) — two-way reviewed
+  dictionary collocation evidence, fail-closed promotion, and source-aware chips.
 
 ## Cleanup Rules
 

@@ -146,3 +146,17 @@ dùng.
   chính xác GUID với Card Identity/card ordinal và chỉ sau đó mới ghi receipt.
 - Media cùng filename nhưng khác byte phải được xem là stale: sync ghi đè từ file
   canonical rồi verifier đọc lại độc lập. Chỉ kiểm tra filename tồn tại là chưa đủ.
+- Làm nổi bật các collocation đã được review và có bằng chứng Oxford/Cambridge;
+  marker phải ghi rõ `OXF`, `CAM`, hoặc `OXF+CAM`, còn collocation curated/default
+  giữ kiểu xám. Ví dụ `curriculum` phải xem xét cả `on the curriculum` và
+  `in the curriculum`, không chỉ giữ danh sách mặc định hiện có.
+- Audit hai chiều toàn bộ collocation của deck: review từng chip đang hiển thị và
+  từng source candidate gắn với example. Oxford Collocations Dictionary snippet,
+  Cambridge bare `.lu`, và grammar `.cl` chỉ là bằng chứng hỗ trợ, không tự động
+  trở thành candidate bắt buộc hay content production.
+- Mỗi quyết định collocation phải được duyệt ở cấp item; không bulk-pass. Tối đa
+  năm chip/card, không cắt ngầm. Source phrase phải là chip chính xác riêng biệt,
+  không nén bằng dấu `/`; item curated vẫn có thể giữ dạng slash đã review.
+- Chỉ cut over production khi toàn bộ Collocation Audit đã hoàn tất và promote
+  byte-deterministic. Sau cutover phải fail closed trên exact active-card coverage,
+  không fallback legacy theo từng card.

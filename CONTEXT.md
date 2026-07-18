@@ -167,8 +167,46 @@ A `.section-box.word-family-box` with purple theme. Contains `.word-family-conte
 _Avoid_: Word form box, derivation list
 
 **Collocation List**:
-A `.collocations-list` flex container of `.collocation-chip` elements. Plain mono chips without category color — semantic load is the chip's text, not its color. Triggers when `Collocations` field is non-empty.
+A `.collocations-list` flex container of `.collocation-chip` elements. A neutral
+chip is a reviewed curated/default item. A dictionary-backed chip keeps the same
+component but adds a visible `OXF`, `CAM`, or `OXF+CAM` Source Marker and a
+stronger verified style. The marker, not color alone, communicates provenance.
+Triggers when `Collocations` is non-empty; invalid or absent legacy provenance
+falls back to the neutral style for the whole list.
 _Avoid_: Phrase list, example list
+
+**Collocation Evidence**:
+One source-located Oxford or Cambridge occurrence considered during collocation
+review. Example-linked evidence is a mandatory review candidate: Oxford `cf`
+text attached to an example, or Cambridge `.lu` text paired with an example in
+the same block. A truncated Oxford collocations snippet, a Cambridge bare `.lu`,
+or a Cambridge grammar `.cl` is supporting evidence only. Evidence is not a
+learner-facing chip until explicitly reviewed.
+_Avoid_: scraped collocation equals approved collocation, source label
+
+**Collocation Audit**:
+The fingerprint-bound, two-way review of every currently displayed collocation
+and every mandatory Collocation Evidence candidate for every active Card
+Identity. Each item receives an explicit disposition; missing, pending,
+uncertain, stale, or unapproved coverage blocks promotion. Review also owns the
+five-chip budget, exact source phrase boundaries, ordering, exclusions, and
+curated wording.
+_Avoid_: automatic source enrichment, source-only audit, bulk approval
+
+**Collocation Registry**:
+The canonical production collocation payload promoted deterministically from a
+complete Collocation Audit. It owns the ordered learner-facing phrases and each
+phrase's `oxford`, `cambridge`, `oxford+cambridge`, or `curated` provenance.
+Source-backed phrases are exact separate chips; only curated/default phrases may
+retain slash compression. Card Identity and semantic senses remain owned by
+their existing registries.
+_Avoid_: collocation cache, Semantic Registry collocation field, mixed fallback
+
+**Collocation Source Marker**:
+The visible `OXF`, `CAM`, or `OXF+CAM` label inside a dictionary-backed
+Collocation List chip. It is paired with accessible source text and distinguishes
+reviewed dictionary evidence from a neutral curated/default chip.
+_Avoid_: color-only source badge, corpus badge
 
 **Top Bar**:
 The header strip of the card with `.top-bar-left` (POS chips + corpus badges) and `.top-bar-right` (CEFR badge). The two halves are separated by `.top-bar-sep` (1px × 14px vertical divider).

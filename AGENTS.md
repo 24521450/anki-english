@@ -70,6 +70,15 @@ user-request provenance; `data/README.md` owns artifact lifecycle;
   previous wording requires a row-specific reason that names a shorter wording
   considered and the exact material meaning it would lose, or cites an exact
   user-locked canonical pair. Never bulk-pass unchanged rows.
+- `python -m tools.collocation_audit scaffold` creates the two-way,
+  fingerprint-bound ledger at `data/review/collocation_audit.jsonl` from active
+  cards, Semantic Source Coverage, and Oxford/Cambridge Collocation Evidence.
+  `export-xlsx` / `import-xlsx` preserve immutable fingerprints;
+  `validate --require-complete` rejects every pending, uncertain, stale,
+  unapproved, over-budget, or unaccounted item; `report` produces a review view;
+  and `promote` deterministically writes
+  `data/curated/collocation_registry.jsonl`. Never treat a scraper candidate as
+  approved, bulk-pass unchanged chips, or hand-edit the promoted registry.
 - `python -m tools.semantic_audit definition-audit` creates a report-only audit
   in `scratch/` for unusually long, token-heavy, or connector-heavy Definition
   text. The default 12-token trigger is review triage, not a length cap. The
@@ -145,6 +154,7 @@ user-request provenance; `data/README.md` owns artifact lifecycle;
 | Definition EN/VI or examples | Update the fingerprint-bound review input, validate all affected ledgers, promote, rebuild, and run release validation. | Hand-edit Semantic Registry or build outputs. |
 | Remove or retain a source sense | Use the reviewed Learner Relevance Filter, account for every source ID, and add/retain stable regression evidence. | Delete by label, length, or specialist heuristic alone. |
 | User-locked VI wording | Obtain explicit user instruction, then update the matching policy/code/data contract and regenerate every downstream artifact. | Infer permission from a dictionary/source change or silently supersede the lock. |
+| Collocation text/provenance | Update the fingerprint-bound Collocation Audit, account for current chips and mandatory example-linked source evidence, promote, rebuild, and run release validation. | Hand-edit Collocation Registry/build output, auto-promote scraper labels, or mix reviewed and legacy ownership. |
 | Parser fixture | Declare it in the clean-checkout fixture manifest with semantic assertions; hydrate through the shared helper. | Read an undeclared ignored cache file from a default test. |
 | Generated artifact | Run its documented canonical writer and verify deterministic output contains no unrelated changes. | Treat an output file as an upstream authority. |
 | Release/import | Run the CI-equivalent guard, full `pytest`, pipeline validation, package provenance check, and verified AnkiConnect import when live release is in scope. | Import a stale/unverified `.apkg` or edit `collection.anki2`. |
@@ -329,6 +339,10 @@ and drives the always-visible Vietnamese Gloss Line; the established
 established `Idioms` field; each populated cell carries the reviewed Idiom
 Display Mode and Vietnamese text. Never change the existing `Idioms` or Idiom
 Example Audio delimiter grammar.
+`CollocationSources` is appended after `IdiomMeaningVI` (field 26, zero-based
+index 25) and is pipe-aligned with `Collocations`. Its tokens are `oxford`,
+`cambridge`, `oxford+cambridge`, and `curated`. Missing or invalid legacy
+metadata must render all collocation chips neutrally rather than infer a source.
 
 ### Anki package import workflow
 

@@ -15,9 +15,11 @@ authority, writer, and edit policy.
 | `review/bilingual_semantic_audit.jsonl` | Fingerprint-bound English/Vietnamese sense decisions and complete source coverage. | `python -m tools.semantic_audit scaffold/import-xlsx/apply-review` | Only through a validated review transaction. |
 | `review/vietnamese_naturalness_review.jsonl` | All-sense Vietnamese naturalness evidence with row-specific `reason_code` and EN/example-grounded `semantic_evidence`; user-locked rows also cite `lock_id`, while interpolated bulk templates are rejected. | `python -m tools.semantic_audit vietnamese-review-scaffold/apply-vietnamese-review` | Only through a complete validated review. |
 | `review/bilingual_idiom_audit.jsonl` | Phrase-level idiom meaning and display-mode decisions. | `python -m tools.idiom_audit scaffold/import-xlsx` | Only through a validated review transaction. |
+| `review/collocation_audit.jsonl` | Fingerprint-bound two-way decisions for every current collocation and mandatory example-linked Oxford/Cambridge candidate. | `python -m tools.collocation_audit scaffold/import-xlsx` | Only through a validated review transaction; every item requires an explicit decision. |
 | `review/definition_concision_review.jsonl` | Exact-coverage, fingerprint-bound promotion gate for every current English concision candidate. | `python -m tools.semantic_audit definition-review-scaffold` | Only through a complete validated review; required rewrites/splits belong in the Bilingual Semantic Audit first. |
 | `review/semantic_sense_merge_review.jsonl` | Exact-coverage, fingerprint-bound promotion gate proving why every current overlap candidate remains separate. | `python -m tools.semantic_audit sense-merge-review-scaffold` | Only through a complete validated review; apply merge/reword bundles to the Bilingual Semantic Audit first. |
 | `curated/semantic_registry.jsonl` | Sole production owner of promoted Definition, DefinitionVI, Example, and idiom semantic payload; schema v4 includes all review provenance. | `python -m tools.semantic_audit promote` | Never. |
+| `curated/collocation_registry.jsonl` | Sole production owner of ordered collocation chips and pipe-aligned Oxford/Cambridge/curated provenance after cutover. | `python -m tools.collocation_audit promote` | Never. |
 | `curated/deck_audit.jsonl` | Legacy/non-semantic curated builder overrides; cannot override Semantic Registry content. | Reviewed curated-data workflow | Reviewed changes only. |
 | `review/gamma_verdicts.json` | Cached legacy sense-simplification decisions. | Sense-simplification workflow | No ad-hoc edits. |
 | `review/manual_card_fills.json` | Reviewed manual fills preserved across rebuilds. | Manual-fill review workflow | Reviewed changes only. |
@@ -49,13 +51,13 @@ Supporting data:
 ## Lifecycle
 
 ```text
-sources + Card Registry + reviewed ledgers + policy locks
+sources + Card Registry + reviewed semantic/collocation ledgers + policy locks
                          |
                          v
-             semantic_audit promote
+        semantic_audit + collocation_audit promote
                          |
                          v
-          curated/semantic_registry.jsonl
+       curated semantic + collocation registries
                          |
                          v
                pipeline build/validate
@@ -73,12 +75,14 @@ sources + Card Registry + reviewed ledgers + policy locks
 # Rebuild source datasets from isolated local caches.
 python -m tools._run_full_cache
 
-# Validate and promote reviewed semantics.
+# Validate and promote reviewed semantics and collocations.
 python -m tools.semantic_audit definition-review-scaffold --replace
 python -m tools.semantic_audit sense-merge-review-scaffold --replace
 python -m tools.semantic_audit validate --require-complete
 python -m tools.idiom_audit validate --require-complete
 python -m tools.semantic_audit promote
+python -m tools.collocation_audit validate --require-complete
+python -m tools.collocation_audit promote
 
 # Compute notes without writing outputs, then validate production state.
 python -m tools.build_notes --dry-run
@@ -92,10 +96,13 @@ python -m tools.release_guard import
 
 ## Contracts
 
-- Same canonical inputs must produce byte-identical source, registry, and build
-  artifacts.
+- Same canonical inputs must produce byte-identical source,
+  semantic/collocation registry, and build artifacts.
 - Review state is fingerprint-bound; missing, pending, uncertain, unapproved,
   or stale coverage fails closed.
+- The Collocation Audit may be checked against either its captured pre-
+  promotion chips or the exact promoted Collocation Registry projection; no
+  other post-build collocation state is considered fresh.
 - Length, connector, label, overlap, and translation-shape signals only create
   review candidates; they never rewrite, delete, split, or merge a sense.
 - The exact user locks `compel` → `ép buộc`, `contender` → `đối thủ nặng ký`,
@@ -103,9 +110,10 @@ python -m tools.release_guard import
   invariants until the user explicitly instructs a coordinated change.
 - Source definitions are evidence. Only promoted Semantic Registry content may
   populate learner-facing Definition/Example fields.
-- Every package provenance sidecar binds both build projections, Card and
-  Semantic Registries, every semantic review/policy ledger, every EAVM
-  Recognition/Production template input, packaged styling, `design/index.html`,
+- Every package provenance sidecar binds both build projections, Card,
+  Semantic, and Collocation Registries, every semantic/collocation review and
+  policy ledger, every EAVM Recognition/Production template input, packaged
+  styling, `design/index.html`,
   the packager implementation and EAVM/genanki contract, the `.apkg`, and its
   media set. Repackaging invalidates the old import receipt.
 - Never hand-edit generated registries or build outputs to fix a card. Change
@@ -120,3 +128,9 @@ the general record shape: headword metadata plus `pos_data`, definitions,
 examples, IPA, audio, labels, idioms, and provenance. `sensenum_local` preserves
 Oxford order inside a POS section; null commonly identifies an idiom or
 phrasal-verb sense and is not by itself an error.
+
+Every definition also carries `collocation_evidence`, including an empty list
+when no evidence was found. The evidence preserves source/origin coordinates;
+only Oxford example `cf` and Cambridge example-paired `.lu` entries are
+mandatory Collocation Audit candidates. Snippets, bare `.lu`, and grammar `.cl`
+remain supporting evidence.

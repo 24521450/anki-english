@@ -12,7 +12,8 @@ or release verifier. One-shot phase commands do not remain executable in
 These are maintained entry points for current workflows:
 
 - Build / pipeline: `build_notes.py`, `_run_full_cache.py`, `_validate_jsonl.py`
-- Semantic review and promotion: `semantic_audit.py`, `idiom_audit.py`
+- Semantic/collocation review and promotion: `semantic_audit.py`,
+  `idiom_audit.py`, `collocation_audit.py`
 - Registry / corpus sync: `sync_card_registry.py`, `check_corpus_tags.py`,
   `check_sense_labels.py`, `sync_cambridge_pos_audio.py`
 - Integrity gates: `check_audio_gate.py`, `check_awl_integrity.py`,
@@ -24,7 +25,7 @@ These are maintained entry points for current workflows:
 - Review utilities with current data contracts: `import_non_oxford_review.py`,
   `tag_duplicates_for_deletion.py`
 
-### Semantic workflow
+### Semantic and collocation workflows
 
 ```bash
 python -m tools.semantic_audit scaffold
@@ -33,6 +34,12 @@ python -m tools.semantic_audit import-xlsx
 python -m tools.idiom_audit scaffold
 python -m tools.idiom_audit export-xlsx
 python -m tools.idiom_audit import-xlsx
+python -m tools.collocation_audit scaffold
+python -m tools.collocation_audit export-xlsx
+python -m tools.collocation_audit import-xlsx
+python -m tools.collocation_audit validate --require-complete
+python -m tools.collocation_audit report
+python -m tools.collocation_audit promote
 python -m tools.semantic_audit vietnamese-review-scaffold --scope all --replace
 python -m tools.semantic_audit definition-review-scaffold --replace
 python -m tools.semantic_audit sense-merge-review-scaffold --replace
@@ -62,6 +69,21 @@ final VI; generic and duplicate normalized templates fail the gate. The four exa
 instruction and coordinated code/data update. Reports and XLSX files never
 become production authority merely because a reviewer opened or edited them.
 
+### Collocation workflow
+
+The Collocation Audit is two-way: it accounts for every current displayed chip
+and every mandatory example-linked Oxford/Cambridge candidate. Supporting
+snippet, bare-label, and grammar evidence remains visible to the reviewer but
+does not become production content automatically. Every item needs an explicit
+approved disposition with a surface-specific reason (and source evidence IDs
+when the decision is source-backed); pending, uncertain, stale, unaccounted,
+over-five, or invalid source-compressed results fail promotion. `promote` writes
+the Collocation Registry deterministically; neither the XLSX view nor scraper
+output is a production authority. After promotion, the release guard accepts
+the exact registry projection in built notes as the expected post-promotion
+state; a different text/source projection or a changed source/idiom input still
+fails freshness.
+
 ### Release workflow
 
 ```bash
@@ -77,8 +99,9 @@ python -m tools.release_guard import
 
 The release guard is read-only: it does not promote, build, package, contact
 Anki, or repair files. Package provenance binds the `.apkg` and media set to
-both build projections, Card Registry, Semantic Registry, every semantic
-review/policy ledger, all Recognition/Production template inputs, EAVM styling,
+both build projections, Card Registry, Semantic Registry, Collocation Registry,
+every semantic/collocation review and policy ledger, all Recognition/Production
+template inputs, EAVM styling,
 `design/index.html`, the packager implementation, and the machine-readable EAVM
 model/field/card contract plus `genanki` version. Packaging and import first run
 the canonical guard, so mutually inconsistent authorities cannot be hidden by a
