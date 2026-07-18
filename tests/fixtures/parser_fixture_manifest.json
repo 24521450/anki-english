@@ -140,6 +140,20 @@
       }
     },
     {
+      "id": "curriculum-collocation-evidence",
+      "source": "oxford",
+      "filename": "oxford_curriculum_(noun).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "curriculum",
+        "pos_sections": [
+          {"pos": "noun", "definition_count": 1}
+        ],
+        "required_idioms": [],
+        "required_see_also": []
+      }
+    },
+    {
       "id": "cambridge-violation-cleaning",
       "source": "cambridge",
       "filename": "cambridge_violation.html",

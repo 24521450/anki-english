@@ -203,6 +203,7 @@
                 "cefr",
                 "topics",
                 "collocations",
+                "collocation_evidence",
                 "examples",
                 "is_phrase",
                 "is_idiom",
@@ -314,6 +315,168 @@
                     "items": {
                       "type": "string"
                     }
+                  }
+                },
+                "collocation_evidence": {
+                  "type": "array",
+                  "description": "Structured Oxford evidence for collocation audit. Example-linked cf frames are mandatory candidates; dictionary snippets are supporting evidence.",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "text",
+                      "source",
+                      "origin",
+                      "evidence_kind",
+                      "example_index",
+                      "example_text",
+                      "container_index",
+                      "item_index",
+                      "category",
+                      "truncated",
+                      "full_entry_url"
+                    ],
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "source": {
+                        "const": "oxford"
+                      },
+                      "origin": {
+                        "enum": [
+                          "oxford_example_cf",
+                          "oxford_collocations_snippet"
+                        ]
+                      },
+                      "evidence_kind": {
+                        "enum": [
+                          "example_linked",
+                          "supporting"
+                        ]
+                      },
+                      "example_index": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "description": "1-based index into this definition's examples array when evidence is example-linked."
+                      },
+                      "example_text": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "container_index": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "description": "1-based source-DOM example/category container coordinate."
+                      },
+                      "item_index": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1
+                      },
+                      "category": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "truncated": {
+                        "type": "boolean"
+                      },
+                      "full_entry_url": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "origin": {
+                              "const": "oxford_example_cf"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "evidence_kind": {
+                              "const": "example_linked"
+                            },
+                            "example_index": {
+                              "type": "integer",
+                              "minimum": 1
+                            },
+                            "example_text": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "container_index": {
+                              "type": "integer",
+                              "minimum": 1
+                            },
+                            "item_index": {
+                              "type": "null"
+                            },
+                            "category": {
+                              "type": "null"
+                            },
+                            "truncated": {
+                              "const": false
+                            },
+                            "full_entry_url": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "origin": {
+                              "const": "oxford_collocations_snippet"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "evidence_kind": {
+                              "const": "supporting"
+                            },
+                            "example_index": {
+                              "type": "null"
+                            },
+                            "example_text": {
+                              "type": "null"
+                            },
+                            "container_index": {
+                              "type": "integer",
+                              "minimum": 1
+                            },
+                            "item_index": {
+                              "type": "integer",
+                              "minimum": 1
+                            },
+                            "category": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 },
                 "examples": {

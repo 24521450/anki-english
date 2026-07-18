@@ -47,6 +47,86 @@
                 "over"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "linger on",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 2,
+                "example_text": "The civil war lingered on well into the 1930s.",
+                "container_index": 2,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "long",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "still",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "forever",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "on",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "over",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              }
+            ],
             "examples": [
               {
                 "text": "The faint smell of her perfume lingered in the room.",
@@ -81,6 +161,73 @@
                 "over"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "long",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "still",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "forever",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "on",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "over",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              }
+            ],
             "examples": [
               {
                 "text": "She lingered for a few minutes to talk to Nick.",
@@ -115,6 +262,73 @@
                 "over"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "long",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "still",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "forever",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "on",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "over",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              }
+            ],
             "examples": [
               {
                 "text": "His eyes lingered on the diamond ring on her finger.",
@@ -145,6 +359,73 @@
                 "over"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "long",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "still",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "forever",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "on",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              },
+              {
+                "text": "over",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/linger"
+              }
+            ],
             "examples": [
               {
                 "text": "He lingered on for several months after the heart attack.",
@@ -214,6 +495,7 @@
               }
             ],
             "collocations": {},
+            "collocation_evidence": [],
             "examples": [
               {
                 "text": "The industrial estate is 6 kilometres from the city centre.",
@@ -280,6 +562,7 @@
             "cefr": null,
             "topics": [],
             "collocations": {},
+            "collocation_evidence": [],
             "examples": [
               {
                 "text": "The visitors disposed themselves in a circle round the statue.",
@@ -300,6 +583,34 @@
             "cefr": null,
             "topics": [],
             "collocations": {},
+            "collocation_evidence": [
+              {
+                "text": "dispose somebody to/toward(s) something",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 1,
+                "example_text": "a drug that disposes the patient towards sleep",
+                "container_index": 1,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "dispose somebody to do something",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 2,
+                "example_text": "a drug that disposes the patient to sleep",
+                "container_index": 2,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              }
+            ],
             "examples": [
               {
                 "text": "a drug that disposes the patient towards sleep",
@@ -385,6 +696,112 @@
                 "from"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "remote from something",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 7,
+                "example_text": "The site is remote from major population centres.",
+                "container_index": 7,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "appear",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "be",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "feel",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "extremely",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "fairly",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "very",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 3,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "from",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 3,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              }
+            ],
             "examples": [
               {
                 "text": "a remote village/island/location/region",
@@ -449,6 +866,99 @@
                 "from"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "appear",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "be",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "feel",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "extremely",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "fairly",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "very",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 3,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "from",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 3,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              }
+            ],
             "examples": [
               {
                 "text": "in the remote past/future",
@@ -479,6 +989,7 @@
             "cefr": null,
             "topics": [],
             "collocations": {},
+            "collocation_evidence": [],
             "examples": [
               {
                 "text": "a remote cousin",
@@ -506,6 +1017,7 @@
               }
             ],
             "collocations": {},
+            "collocation_evidence": [],
             "examples": [
               {
                 "text": "Remote working has become the norm for many organizations.",
@@ -530,6 +1042,7 @@
             "cefr": null,
             "topics": [],
             "collocations": {},
+            "collocation_evidence": [],
             "examples": [
               {
                 "text": "a remote terminal/database/server",
@@ -564,6 +1077,99 @@
                 "from"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "appear",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "be",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "feel",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "extremely",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "fairly",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "very",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 3,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "from",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 3,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              }
+            ],
             "examples": [
               {
                 "text": "His theories are somewhat remote from reality.",
@@ -592,6 +1198,7 @@
             "cefr": null,
             "topics": [],
             "collocations": {},
+            "collocation_evidence": [],
             "examples": [
               {
                 "text": "When he spoke, his voice was cold and remote.",
@@ -633,6 +1240,99 @@
                 "from"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "appear",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "be",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "feel",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "verbs",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "extremely",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "fairly",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "very",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 3,
+                "category": "adverb",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              },
+              {
+                "text": "from",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 3,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/remote"
+              }
+            ],
             "examples": [
               {
                 "text": "There is still a remote chance that they will find her alive.",
@@ -728,6 +1428,229 @@
                 "much to somebody’s delight"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "with delight",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 2,
+                "example_text": "The children squealed with delight when they saw the puppy.",
+                "container_index": 2,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "to the delight of somebody",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 3,
+                "example_text": "She won the game easily, to the delight of all her fans.",
+                "container_index": 3,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "delight in doing something",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 4,
+                "example_text": "He takes (great) delight in (= enjoys) proving others wrong.",
+                "container_index": 4,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "delight in something",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 5,
+                "example_text": "She took a simple delight in joys that we could all share.",
+                "container_index": 5,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "delight at something",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 6,
+                "example_text": "She couldn't hide her delight at the news.",
+                "container_index": 6,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "delight at doing something",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 7,
+                "example_text": "He expressed his delight at seeing us all again.",
+                "container_index": 7,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "great",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "adjective",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "absolute",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "adjective",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "utter",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "adjective",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "express",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "verb + delight",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "find",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "verb + delight",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "take",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 3,
+                "category": "verb + delight",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "in delight",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 3,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "with delight",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 3,
+                "item_index": 2,
+                "category": "preposition",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "of delight",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 3,
+                "item_index": 3,
+                "category": "preposition",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "a cry, gasp, squeal, etc. of delight",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 4,
+                "item_index": 1,
+                "category": "phrases",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "much to somebody’s delight",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 4,
+                "item_index": 2,
+                "category": "phrases",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              }
+            ],
             "examples": [
               {
                 "text": "a feeling of sheer/pure delight",
@@ -788,6 +1711,112 @@
                 "delight to"
               ]
             },
+            "collocation_evidence": [
+              {
+                "text": "delight of doing something",
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": 3,
+                "example_text": "the delights of living in the country",
+                "container_index": 3,
+                "item_index": null,
+                "category": null,
+                "truncated": false,
+                "full_entry_url": null
+              },
+              {
+                "text": "real",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 1,
+                "category": "adjective",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "constant",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 2,
+                "category": "adjective",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "unexpected",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 1,
+                "item_index": 3,
+                "category": "adjective",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "explore",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 1,
+                "category": "verb + delight",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "sample",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 2,
+                "category": "verb + delight",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "enjoy",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 2,
+                "item_index": 3,
+                "category": "verb + delight",
+                "truncated": true,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              },
+              {
+                "text": "delight to",
+                "source": "oxford",
+                "origin": "oxford_collocations_snippet",
+                "evidence_kind": "supporting",
+                "example_index": null,
+                "example_text": null,
+                "container_index": 3,
+                "item_index": 1,
+                "category": "preposition",
+                "truncated": false,
+                "full_entry_url": "https://www.oxfordlearnersdictionaries.com/definition/collocations/delight_1"
+              }
+            ],
             "examples": [
               {
                 "text": "This guitar is a delight to play.",

@@ -186,26 +186,89 @@ def _extract_grammar(sense_el) -> Optional[str]:
     return _text_of(el) or None
 
 
-def _extract_examples(sense_el) -> list[dict[str, Optional[str]]]:
+def _extract_examples_collocations_and_evidence(
+    sense_el,
+) -> tuple[
+    list[dict[str, Optional[str]]],
+    dict[str, list[str]],
+    list[dict[str, Any]],
+]:
     """Cambridge .dexamp — extract only the <span class="eg deg"> (example sentence).
 
     A .dexamp block often contains BOTH a collocation phrase (<span class="lu dlu">)
     AND an example sentence (<span class="eg deg">). Bare collocations (only
     .lu, no .eg) are NOT examples — they belong in the collocations dict.
 
-    Returns one entry per .dexamp that has an .eg child, with text from .eg only.
-    cf is always None for Cambridge.
+    Each ``.dexamp`` is walked once so a ``.lu.dlu`` can be classified as
+    example-linked only when that same container has a non-empty ``.eg.deg``.
+    Bare LU and grammar ``.cl`` evidence remains supporting-only. The returned
+    collocations bucket keeps the established flat, order-preserving view.
     """
-    out = []
-    for ex in sense_el.cssselect(CAMBRIDGE["examples"]):
-        # Only consider .dexamp that has an .eg child
+    examples: list[dict[str, Optional[str]]] = []
+    collocations: list[str] = []
+    seen_collocations: set[str] = set()
+    evidence: list[dict[str, Any]] = []
+
+    for container_index, ex in enumerate(
+        sense_el.cssselect(CAMBRIDGE["examples"]),
+        start=1,
+    ):
         eg = _first(ex, ".eg.deg")
-        if eg is None:
+        example_text = _text_of(eg) if eg is not None else ""
+        example_index: int | None = None
+        if example_text:
+            examples.append({"text": example_text, "cf": None})
+            example_index = len(examples)
+
+        for item_index, lu in enumerate(ex.cssselect(".lu.dlu"), start=1):
+            phrase = _text_of(lu).strip()
+            if not phrase:
+                continue
+            if phrase not in seen_collocations:
+                seen_collocations.add(phrase)
+                collocations.append(phrase)
+            paired = example_index is not None
+            evidence.append({
+                "text": phrase,
+                "source": "cambridge",
+                "origin": "cambridge_example_lu" if paired else "cambridge_bare_lu",
+                "evidence_kind": "example_linked" if paired else "supporting",
+                "example_index": example_index,
+                "example_text": example_text or None,
+                "container_index": container_index,
+                "item_index": item_index,
+                "category": None,
+                "truncated": False,
+                "full_entry_url": None,
+            })
+
+    for container_index, cl in enumerate(sense_el.cssselect(".cl"), start=1):
+        phrase = _text_of(cl).strip()
+        if not phrase:
             continue
-        text = _text_of(eg)
-        if text:
-            out.append({"text": text, "cf": None})
-    return out
+        if phrase not in seen_collocations:
+            seen_collocations.add(phrase)
+            collocations.append(phrase)
+        evidence.append({
+            "text": phrase,
+            "source": "cambridge",
+            "origin": "cambridge_grammar_cl",
+            "evidence_kind": "supporting",
+            "example_index": None,
+            "example_text": None,
+            "container_index": container_index,
+            "item_index": None,
+            "category": None,
+            "truncated": False,
+            "full_entry_url": None,
+        })
+
+    return examples, {"collocations": collocations}, evidence
+
+
+def _extract_examples(sense_el) -> list[dict[str, Optional[str]]]:
+    """Compatibility wrapper returning the established examples field."""
+    return _extract_examples_collocations_and_evidence(sense_el)[0]
 
 
 def _extract_topics(sense_el) -> list[dict[str, str]]:
@@ -227,25 +290,7 @@ def _extract_collocations(sense_el) -> dict[str, list[str]]:
     Schema mirrors Oxford's `definitions[].collocations` shape but with one bucket
     instead of category-keyed buckets.
     """
-    collocs: list[str] = []
-    seen: set[str] = set()
-
-    # 1. <span class="lu dlu"> from <span class="dexamp">
-    for ex in sense_el.cssselect(".dexamp"):
-        for lu in ex.cssselect(".lu.dlu"):
-            t = _text_of(lu).strip()
-            if t and t not in seen:
-                seen.add(t)
-                collocs.append(t)
-
-    # 2. <span class="cl"> (grammar frame patterns)
-    for cl in sense_el.cssselect(".cl"):
-        t = _text_of(cl).strip()
-        if t and t not in seen:
-            seen.add(t)
-            collocs.append(t)
-
-    return {"collocations": collocs}
+    return _extract_examples_collocations_and_evidence(sense_el)[1]
 
 
 def _is_idiom(sense_el) -> bool:
@@ -285,6 +330,9 @@ def parse_cambridge(html_bytes: bytes, source_files: Optional[list[str]] = None)
         definitions: list[dict] = []
         for n, sense_el in enumerate(root.cssselect(CAMBRIDGE["sense"]), start=1):
             # Cambridge does not expose sensenum attribute
+            examples, collocations, collocation_evidence = (
+                _extract_examples_collocations_and_evidence(sense_el)
+            )
             definitions.append({
                 "n": n,
                 "sensenum_local": None,  # Cambridge doesn't have this attribute
@@ -292,8 +340,9 @@ def parse_cambridge(html_bytes: bytes, source_files: Optional[list[str]] = None)
                 "register_tags": _extract_register_def(sense_el),
                 "cefr": _extract_cefr(sense_el),
                 "topics": _extract_topics(sense_el),
-                "collocations": _extract_collocations(sense_el),
-                "examples": _extract_examples(sense_el),
+                "collocations": collocations,
+                "collocation_evidence": collocation_evidence,
+                "examples": examples,
                 "is_phrase": False,
                 "is_idiom": _is_idiom(sense_el),
             })

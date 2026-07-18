@@ -259,6 +259,8 @@ def merge_word_records(records: list[dict]) -> dict:
                     d["synonyms"] = []
                 if "antonyms" not in d:
                     d["antonyms"] = []
+                if "collocation_evidence" not in d:
+                    d["collocation_evidence"] = []
         # Apply skip flag rules
         _apply_skip_flags(result)
         return result
@@ -357,6 +359,8 @@ def merge_word_records(records: list[dict]) -> dict:
                         d_copy["synonyms"] = []
                     if "antonyms" not in d_copy:
                         d_copy["antonyms"] = []
+                    if "collocation_evidence" not in d_copy:
+                        d_copy["collocation_evidence"] = []
                     seen_defs[key] = d_copy
                     new_defs.append(d_copy)
                 else:
@@ -372,6 +376,16 @@ def merge_word_records(records: list[dict]) -> dict:
                     existing_ants = d_existing.get("antonyms") or []
                     new_ants = d.get("antonyms") or []
                     d_existing["antonyms"] = _dedup_preserve_order(existing_ants + new_ants)
+
+                    # Preserve every distinct evidence origin/coordinate while
+                    # removing only byte-for-byte-equivalent duplicate objects.
+                    # Equal surface text from Oxford examples and snippets is
+                    # deliberately retained as two provenance records.
+                    existing_evidence = d_existing.get("collocation_evidence") or []
+                    for item in d.get("collocation_evidence") or []:
+                        if item not in existing_evidence:
+                            existing_evidence.append(copy.deepcopy(item))
+                    d_existing["collocation_evidence"] = existing_evidence
 
                     # Union register_tags (raise on forbidden conflict)
                     existing_regs = d_existing.get("register_tags") or []

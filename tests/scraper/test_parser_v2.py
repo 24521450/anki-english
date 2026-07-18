@@ -224,7 +224,8 @@ def test_audio_has_uk_and_us(oxford_golden, cambridge_golden):
 
 def test_pos_data_definitions_have_required_fields(oxford_golden, cambridge_golden):
     required = {"n", "sensenum_local", "text", "register_tags", "cefr", "topics",
-                "collocations", "examples", "is_phrase", "is_idiom"}
+                "collocations", "collocation_evidence", "examples", "is_phrase",
+                "is_idiom"}
     for rec in oxford_golden + cambridge_golden:
         for pd in rec["pos_data"]:
             for d in pd["definitions"]:

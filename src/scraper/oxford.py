@@ -387,8 +387,10 @@ def _extract_grammar(sense_el) -> Optional[str]:
     return _text_of(el) or None
 
 
-def _extract_examples(sense_el) -> list[dict[str, Optional[str]]]:
-    """Per-sense examples: text + cf collocation frame.
+def _extract_examples_with_evidence(
+    sense_el,
+) -> tuple[list[dict[str, Optional[str]]], list[dict[str, Any]]]:
+    """Extract examples and their example-linked collocation evidence.
 
     Oxford pattern: <li class='...'><span class='cf'>frame</span> <span class='x'>example</span></li>
     Section headers (e.g. '+ adv./prep.', '+ noun', '+ adj.') are also <span class='cf'>
@@ -396,8 +398,9 @@ def _extract_examples(sense_el) -> list[dict[str, Optional[str]]]:
 
     Real cf filter: text must NOT start with '+' AND must have a <span class='x'> sibling.
     """
-    examples = []
-    for li in sense_el.cssselect(".examples li"):
+    examples: list[dict[str, Optional[str]]] = []
+    evidence: list[dict[str, Any]] = []
+    for container_index, li in enumerate(sense_el.cssselect(".examples li"), start=1):
         cf_el = _first(li, "span.cf")
         x_el = _first(li, "span.x")
         text = _text_of(x_el) or None
@@ -414,11 +417,32 @@ def _extract_examples(sense_el) -> list[dict[str, Optional[str]]]:
         else:
             cf = None
         examples.append({"text": text, "cf": cf})
-    return examples
+        if cf:
+            evidence.append({
+                "text": cf,
+                "source": "oxford",
+                "origin": "oxford_example_cf",
+                "evidence_kind": "example_linked",
+                "example_index": len(examples),
+                "example_text": text,
+                "container_index": container_index,
+                "item_index": None,
+                "category": None,
+                "truncated": False,
+                "full_entry_url": None,
+            })
+    return examples, evidence
 
 
-def _extract_collocations(sense_el) -> dict[str, list[str]]:
-    """Oxford Collocations Dictionary content for this sense.
+def _extract_examples(sense_el) -> list[dict[str, Optional[str]]]:
+    """Compatibility wrapper returning the established examples field."""
+    return _extract_examples_with_evidence(sense_el)[0]
+
+
+def _extract_collocations_with_evidence(
+    sense_el,
+) -> tuple[dict[str, list[str]], list[dict[str, Any]]]:
+    """Extract Oxford Collocations Dictionary snippets and provenance.
 
     Layout: <div class='collapse'> > <span class='unbox' unbox='snippet'>
              > <span class='box_title'>Oxford Collocations Dictionary</span>
@@ -429,11 +453,15 @@ def _extract_collocations(sense_el) -> dict[str, list[str]]:
                 <ul>...phrases...</ul>
     """
     out: dict[str, list[str]] = {}
+    evidence: list[dict[str, Any]] = []
+    container_index = 0
     # Find the "Oxford Collocations Dictionary" snippet within the sense
     for unbox in sense_el.cssselect(OXFORD["collocations"]):
         title = _text_of(_first(unbox, "span.box_title"))
         if "collocations dictionary" not in title.lower():
             continue
+        full_entry = _first(unbox, "span.xref_to_full_entry a[href]")
+        full_entry_url = full_entry.get("href") if full_entry is not None else None
         # Walk <span class='unbox'> categories, then <ul> with items
         for child in unbox.iter():
             tag = child.tag
@@ -446,16 +474,43 @@ def _extract_collocations(sense_el) -> dict[str, list[str]]:
                 # Next sibling <ul>
                 nxt = child.getnext()
                 if nxt is not None and nxt.tag == "ul":
-                    items = [_text_of(li) for li in nxt.cssselect("li")]
+                    container_index += 1
+                    raw_items = [_text_of(li) for li in nxt.cssselect("li")]
+                    truncated = any(item in COLLOC_ARTIFACTS for item in raw_items)
                     # Bug 2 fix (2026-06-13): Oxford Collocations Dictionary UI
                     # truncates long lists with "…" (or ASCII "...") as a
                     # "more items available" indicator. The scraper previously
                     # included these as real collocation items. Filter them out
                     # before returning. Affects every category, not just "adverb".
-                    items = [i for i in items if i and i not in COLLOC_ARTIFACTS]
+                    items = [
+                        item for item in raw_items
+                        if item and item not in COLLOC_ARTIFACTS
+                    ]
                     if items:
-                        out[cat] = items
-    return out
+                        existing = out.setdefault(cat, [])
+                        for item in items:
+                            if item not in existing:
+                                existing.append(item)
+                        for item_index, item in enumerate(items, start=1):
+                            evidence.append({
+                                "text": item,
+                                "source": "oxford",
+                                "origin": "oxford_collocations_snippet",
+                                "evidence_kind": "supporting",
+                                "example_index": None,
+                                "example_text": None,
+                                "container_index": container_index,
+                                "item_index": item_index,
+                                "category": cat,
+                                "truncated": truncated,
+                                "full_entry_url": full_entry_url,
+                            })
+    return out, evidence
+
+
+def _extract_collocations(sense_el) -> dict[str, list[str]]:
+    """Compatibility wrapper returning the established collocations buckets."""
+    return _extract_collocations_with_evidence(sense_el)[0]
 
 
 def _is_idiom(sense_el) -> bool:
@@ -624,6 +679,8 @@ def _find_pos_for_idiom(idm_g, fallback_pos: str = "unknown") -> str:
 def _build_definition(n: int, sense_el) -> dict:
     """Build a single Definition dict from a li.sense element."""
     labels = extract_labels_for_sense(sense_el)
+    examples, example_evidence = _extract_examples_with_evidence(sense_el)
+    collocations, snippet_evidence = _extract_collocations_with_evidence(sense_el)
     return {
         "n": n,
         "sensenum_local": _extract_sensenum(sense_el),
@@ -632,8 +689,9 @@ def _build_definition(n: int, sense_el) -> dict:
         "domain": labels["domain"],
         "cefr": _extract_cefr(sense_el),
         "topics": _extract_topics(sense_el),
-        "collocations": _extract_collocations(sense_el),
-        "examples": _extract_examples(sense_el),
+        "collocations": collocations,
+        "collocation_evidence": example_evidence + snippet_evidence,
+        "examples": examples,
         "is_phrase": False,    # not detected in v1
         "is_idiom": _is_idiom(sense_el),
         "synonyms": _extract_synonyms(sense_el),
