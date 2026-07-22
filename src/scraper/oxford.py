@@ -48,6 +48,10 @@ def _first(root, sel: str):
     return matches[0] if matches else None
 
 
+def _has_class(el, name: str) -> bool:
+    return name in (el.get("class") or "").split()
+
+
 def _dedup_preserve_order(items: list[str]) -> list[str]:
     return list(dict.fromkeys(p for p in items if p))
 
@@ -143,6 +147,73 @@ def _extract_audio_paths(root) -> dict[str, Optional[str]]:
     return out
 
 
+def _extract_entry_pronunciations(
+    root,
+    word: str | None,
+    homonym_index: int | None,
+    pos_data: list[dict],
+    source_files: Optional[list[str]],
+) -> list[dict[str, Any]]:
+    """Extract Oxford IPA/audio pairs only from the owning headword webtop."""
+    headword = _first(root, OXFORD["headword"])
+    if headword is None:
+        return []
+    webtop = next(
+        (
+            ancestor
+            for ancestor in headword.iterancestors()
+            if ancestor.tag == "div" and _has_class(ancestor, "webtop")
+        ),
+        None,
+    )
+    if webtop is None:
+        return []
+
+    def accent_payload(region_selector: str) -> dict[str, Optional[str]]:
+        region = _first(webtop, region_selector)
+        if region is None:
+            return {"ipa": None, "audio_url": None}
+        ipa_el = _first(region, ".phon")
+        audio_el = _first(region, ".sound.audio_play_button")
+        return {
+            "ipa": _text_of(ipa_el) or None,
+            "audio_url": audio_el.get("data-src-mp3") if audio_el is not None else None,
+        }
+
+    positions = _dedup_preserve_order(
+        section.get("pos") for section in pos_data if section.get("pos")
+    )
+    if not positions:
+        positions = _dedup_preserve_order(
+            _text_of(pos_el) for pos_el in webtop.cssselect("span.pos")
+        )
+    entry = next(
+        (
+            ancestor
+            for ancestor in headword.iterancestors()
+            if _has_class(ancestor, "entry")
+        ),
+        None,
+    )
+    source_file = (source_files or [""])[0]
+    entry_id = (
+        (entry.get("id") if entry is not None else None)
+        or source_file
+        or f"oxford:{word or 'unknown'}:{homonym_index or 0}"
+    )
+    return [{
+        "source_file": source_file,
+        "dictionary_id": "oxford_advanced_learner",
+        "dictionary_rank": 0,
+        "entry_id": entry_id,
+        "entry_index": 1,
+        "headword": word or "",
+        "pos": positions,
+        "uk": accent_payload(".phons_br"),
+        "us": accent_payload(".phons_n_am"),
+    }]
+
+
 def _extract_oxford_lists(root) -> list[str]:
     """Oxford 3000/5000 list membership.
 
@@ -189,15 +260,68 @@ def _extract_oxford_badge(root) -> Optional[str]:
     return None
 
 
-def _extract_opal(root) -> Optional[str]:
-    """OPAL word list — look for OPAL_spoken / OPAL_written indicators.
+def _extract_opal(root, pos_data: list[dict]) -> Optional[dict[str, list[str]]]:
+    """Return page-level OPAL membership keyed by the page's canonical POS.
 
-    Implementation: look for symbols divs with class containing "OPAL".
+    Oxford exposes the same membership through headword attributes and badges.
+    Both signals are consulted because archived pages do not always contain
+    both. Badges are scoped to the headword ``webtop`` so OPAL links elsewhere
+    on the page cannot label the entry accidentally.
     """
-    # Check for ox3ksym (Oxford 3000/5000/OPAL symbol containers)
-    # OPAL is rare; only present for words on the OPAL list.
-    # We don't have a dedicated selector — set null and flag.
-    return None
+    memberships: set[str] = set()
+    headword = _first(root, OXFORD["headword"])
+    webtop = None
+    if headword is not None:
+        if (headword.get("opal_written") or "").casefold() == "y":
+            memberships.add("W")
+        if (headword.get("opal_spoken") or "").casefold() == "y":
+            memberships.add("S")
+        webtop = next(
+            (
+                ancestor
+                for ancestor in headword.iterancestors()
+                if ancestor.tag == "div" and _has_class(ancestor, "webtop")
+            ),
+            None,
+        )
+
+    badges = []
+    if webtop is not None:
+        for child in webtop:
+            if child.tag == "div" and _has_class(child, "symbols"):
+                badges.extend(child.cssselect(OXFORD["opal_badge"]))
+
+    for badge in badges:
+        hrefs = [badge.get("href") or ""]
+        parent = badge.getparent()
+        if parent is not None and parent.tag == "a":
+            hrefs.append(parent.get("href") or "")
+        href = " ".join(hrefs).casefold()
+        text = _text_of(badge).upper()
+        if "opal_written" in href or text == "OPAL W":
+            memberships.add("W")
+        if "opal_spoken" in href or text == "OPAL S":
+            memberships.add("S")
+
+    ordered_memberships = [kind for kind in ("W", "S") if kind in memberships]
+    if not ordered_memberships:
+        return None
+
+    positions = _dedup_preserve_order(
+        section.get("pos") for section in pos_data if section.get("pos")
+    )
+    if not positions:
+        for pos_el in webtop.cssselect(OXFORD["webtop_pos"]) if webtop is not None else []:
+            if pos_el.getparent() is not webtop:
+                continue
+            pos = _text_of(pos_el)
+            if pos:
+                positions = [pos]
+                break
+    if not positions:
+        return None
+
+    return {pos: list(ordered_memberships) for pos in positions}
 
 
 def _extract_awl(root) -> Optional[str]:
@@ -735,13 +859,20 @@ def parse_oxford(html_bytes: bytes, source_files: Optional[list[str]] = None) ->
     audio = _extract_audio_paths(root)
     lists = _extract_oxford_lists(root)
     badge = _extract_oxford_badge(root)
-    opal = _extract_opal(root)
     awl = _extract_awl(root)
     register_top = _extract_register_tags_top(root)
     see_also = _extract_see_also(root)
 
     # Phase 7a: scope sense extraction to actual POS section boundaries
     pos_data = _extract_pos_sections(root)
+    pronunciations = _extract_entry_pronunciations(
+        root,
+        word,
+        homonym_index,
+        pos_data,
+        source_files,
+    )
+    opal = _extract_opal(root, pos_data)
     canonical_url = _extract_canonical_url(root)
     for section in pos_data:
         section["source_url"] = canonical_url
@@ -837,6 +968,7 @@ def parse_oxford(html_bytes: bytes, source_files: Optional[list[str]] = None) ->
         "uk_ipa": uk_ipa,
         "us_ipa": us_ipa,
         "audio": audio,
+        "pronunciations": pronunciations,
         "see_also": see_also,
         "pos_data": pos_data,
         "verb_forms": verb_forms,

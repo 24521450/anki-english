@@ -59,6 +59,22 @@ def test_parse_label_compound_grammar_notes_ignored():
     assert res["domain"] is None
 
 
+def test_parse_label_compound_recognizes_frequency_qualified_register():
+    res = parse_label_compound("(often disapproving)")
+    assert res["register_tags"] == ["disapproving"]
+    assert res["domain"] is None
+
+
+@pytest.mark.parametrize(
+    "label",
+    ["(often passive)", "(very disapproving)", "(not disapproving)"],
+)
+def test_parse_label_compound_does_not_substring_match_registers(label):
+    res = parse_label_compound(label)
+    assert res["register_tags"] == []
+    assert res["domain"] is None
+
+
 # ---------------------------------------------------------------------------
 # CONFLICT_PAIRS — canonical location sanity check
 # ---------------------------------------------------------------------------
@@ -181,6 +197,15 @@ def test_extract_labels_slash_sense_2():
     res = extract_labels_for_sense(s)
     assert res["register_tags"] == ["informal"]
     assert res["domain"] is None
+
+
+def test_extract_labels_alien_often_disapproving_sense():
+    html = """<li class="sense" sensenum="2">
+        <span class="labels">(often disapproving)</span>
+        <span class="def">from a different country, race, or group</span>
+    </li>"""
+    sense = lxml_html.fromstring(html)
+    assert extract_labels_for_sense(sense)["register_tags"] == ["disapproving"]
 
 
 def test_extract_labels_spectacle_sense_1():

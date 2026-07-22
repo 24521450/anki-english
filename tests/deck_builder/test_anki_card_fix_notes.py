@@ -332,9 +332,11 @@ def test_anki_card_fix_notes_are_applied_to_generated_cards():
             "definition": "holy or exceptionally good person (vị thánh/người đức hạnh)",
             "example": "St John<br><br>She's a saint to go on living with that man.",
         },
-        ("extract", "noun", "B2"): {
-            "ipa": "UK: /ˈekstrækt/ | US: /ˈekstrækt/",
-        },
+            ("extract", "noun", "B2"): {
+                # Cambridge is the pronunciation authority for generated
+                # cards; the noun entry uses the syllabified Cambridge form.
+                "ipa": "/ˈek.strækt/",
+            },
         ("domain", "noun", "C1"): {
             "definition": "field or area (lĩnh vực)",
             "example": "Financial matters are her domain.",

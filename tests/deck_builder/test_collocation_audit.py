@@ -11,6 +11,7 @@ from src.deck_builder.collocation_audit import (
     apply_collocation_registry,
     build_audit_rows,
     collocation_final_item_id,
+    collocation_text_matches_evidence,
     export_workbook,
     import_workbook,
     promote_audit_rows,
@@ -20,6 +21,7 @@ from src.deck_builder.collocation_audit import (
     validate_audit_rows,
     validate_current_audit,
     validate_registry_rows,
+    _validate_final_items,
 )
 from src.deck_builder.build_contracts import BuiltCard
 from src.deck_builder.simplify_senses import _flatten_senses
@@ -418,6 +420,84 @@ def test_source_backed_final_must_be_exact_separate_and_evidence_bound():
         error.startswith("source_item_without_evidence:")
         for error in validate_audit_rows(bad, _registry(), require_complete=True)
     )
+
+
+def test_source_evidence_binding_allows_only_headword_number_inflection():
+    assert collocation_text_matches_evidence(
+        "generous portion",
+        "generous portions",
+        headword="portion",
+    )
+    assert not collocation_text_matches_evidence(
+        "individual portion",
+        "individual portions served",
+        headword="portion",
+    )
+    assert not collocation_text_matches_evidence(
+        "generous serving",
+        "generous servings",
+        headword="portion",
+    )
+
+
+def test_source_binding_prefers_exact_same_source_evidence_before_inflection():
+    row = {
+        "guid": "g1",
+        "word": "loyalty",
+        "source_evidence": [
+            {
+                "evidence_id": "cambridge-singular",
+                "text": "loyalty to",
+                "source": "cambridge",
+            },
+            {
+                "evidence_id": "cambridge-plural",
+                "text": "loyalties to",
+                "source": "cambridge",
+            },
+            {
+                "evidence_id": "oxford-singular",
+                "text": "loyalty to",
+                "source": "oxford",
+            },
+        ],
+        "current_items": [],
+        "mandatory_candidates": [],
+        "final_items": [{
+            "final_item_id": collocation_final_item_id("g1", "loyalty to"),
+            "text": "loyalty to",
+            "order": 1,
+            "source": "cambridge",
+            "evidence_ids": ["cambridge-singular"],
+            "current_item_ids": [],
+        }],
+    }
+
+    assert _validate_final_items(row, require_complete=False) == []
+
+
+def test_source_binding_uses_headword_inflection_when_no_exact_surface_exists():
+    row = {
+        "guid": "g1",
+        "word": "portion",
+        "source_evidence": [{
+            "evidence_id": "cambridge-plural",
+            "text": "generous portions",
+            "source": "cambridge",
+        }],
+        "current_items": [],
+        "mandatory_candidates": [],
+        "final_items": [{
+            "final_item_id": collocation_final_item_id("g1", "generous portion"),
+            "text": "generous portion",
+            "order": 1,
+            "source": "cambridge",
+            "evidence_ids": ["cambridge-plural"],
+            "current_item_ids": [],
+        }],
+    }
+
+    assert _validate_final_items(row, require_complete=False) == []
 
 
 def test_final_order_numbers_must_match_serialized_list_order():

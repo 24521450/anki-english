@@ -252,5 +252,15 @@ def main() -> int:
     print(f"Sync complete. Success count: {success_count}/{len(download_plan)}")
     return 0
 
+_legacy_scoped_main = main
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Compatibility entry point for the canonical global pronunciation sync."""
+    from tools.sync_pronunciation_audio import main as sync_all_pronunciations
+
+    return sync_all_pronunciations(argv)
+
+
 if __name__ == "__main__":
     sys.exit(main())

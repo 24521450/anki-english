@@ -80,6 +80,7 @@ class ExistingCollectionSnapshot:
     card_ids: frozenset[int]
     schedules: dict[int, tuple[Any, ...]]
     had_production_template: bool
+    note_identities: dict[int, tuple[str, ...]] | None = None
 
 
 class AnkiConnectError(RuntimeError):
@@ -402,10 +403,9 @@ def snapshot_existing_collection(
         )
 
     note_ids = client.call("findNotes", query=f'note:"{EAVM_MODEL_NAME}"') or []
-    if len(note_ids) != len(expected) or len(set(note_ids)) != len(note_ids):
+    if len(set(note_ids)) != len(note_ids):
         raise AnkiConnectError(
-            f"Existing EAVM model expected {len(expected)} canonical notes, "
-            f"found {len(note_ids)}"
+            "Existing EAVM model returned duplicate note IDs"
         )
     try:
         requested_note_ids = {int(note_id) for note_id in note_ids}
@@ -417,6 +417,7 @@ def snapshot_existing_collection(
     matched: set[tuple[str, ...]] = set()
     card_ids: list[int] = []
     note_targets: dict[int, dict[str, Any]] = {}
+    note_identities: dict[int, tuple[str, ...]] = {}
     note_live_eligibility: dict[int, bool] = {}
     for batch in _chunks(note_ids):
         for note in client.call("notesInfo", notes=batch) or []:
@@ -456,6 +457,7 @@ def snapshot_existing_collection(
                 raise AnkiConnectError(f"GUID mismatch on existing note {identity!r}")
             matched.add(identity)
             note_targets[note_id] = target
+            note_identities[note_id] = identity
             note_live_eligibility[note_id] = production_eligible(
                 _field_value(fields, "DefinitionVI"),
                 _field_value(fields, "Example"),
@@ -477,7 +479,6 @@ def snapshot_existing_collection(
             card_ids.extend(note_cards)
     if (
         set(note_targets) != requested_note_ids
-        or matched != set(expected)
         or len(card_ids) != len(set(card_ids))
     ):
         raise AnkiConnectError("Existing EAVM notes/cards are not a canonical one-to-one set")
@@ -525,9 +526,14 @@ def snapshot_existing_collection(
             raise AnkiConnectError(
                 f"Unexpected card ordinals on note {note_id}: {sorted(ords)!r}"
             )
-        if len({str(card.get("deckName") or "") for card in note_cards}) != 1:
+        live_decks = {str(card.get("deckName") or "") for card in note_cards}
+        if len(live_decks) != 1:
             raise AnkiConnectError(
                 f"Sibling EAVM cards do not share one deck on note {note_id}"
+            )
+        if live_decks != {target["deck"]}:
+            raise AnkiConnectError(
+                f"Existing card deck mismatch on note {note_id}: {sorted(live_decks)!r}"
             )
 
     return ExistingCollectionSnapshot(
@@ -535,6 +541,7 @@ def snapshot_existing_collection(
         card_ids=frozenset(card_ids),
         schedules={card_id: _card_schedule(card) for card_id, card in cards.items()},
         had_production_template=template_state == "canonical",
+        note_identities=note_identities,
     )
 
 
@@ -779,13 +786,15 @@ def _verify_live_media_bytes(
 def sync_existing_notes(
     client: AnkiConnectClient,
     notes_jsonl: Path,
+    *,
+    require_complete: bool = True,
 ) -> int:
     """Update an established deck directly without invoking APKG model import."""
     expected = load_expected_records(notes_jsonl)
     note_ids = client.call(
         "findNotes", query=f'note:"{EAVM_MODEL_NAME}"'
     ) or []
-    if len(note_ids) != len(expected):
+    if require_complete and len(note_ids) != len(expected):
         raise AnkiConnectError(
             f"Direct sync expected {len(expected)} established notes, found {len(note_ids)}"
         )
@@ -847,7 +856,7 @@ def sync_existing_notes(
                     f"Cannot synchronize note {note.get('noteId')!r} with malformed card IDs"
                 ) from exc
             deck_moves.setdefault(target["deck"], []).extend(note_cards)
-    if len(matched) != len(expected):
+    if require_complete and len(matched) != len(expected):
         raise AnkiConnectError("Not every canonical Card Identity matched an established note")
     for start in range(0, len(actions), 100):
         _require_not_false(
@@ -951,7 +960,7 @@ def verify_import(
             f"Anki returned malformed live note IDs: {note_ids!r}"
         ) from exc
     live_note_info_ids: set[int] = set()
-    if prior is not None and requested_note_ids != prior.note_ids:
+    if prior is not None and not prior.note_ids.issubset(requested_note_ids):
         raise AnkiConnectError(
             "Established note IDs changed during migration; GUID preservation is not proven"
         )
@@ -1034,6 +1043,30 @@ def verify_import(
     if expected_records is not None:
         if set(live_records) != set(expected_records):
             raise AnkiConnectError("Not every canonical Card Identity resolved after import")
+        if prior is not None and prior.note_identities is not None:
+            if set(prior.note_identities) != set(prior.note_ids):
+                raise AnkiConnectError("Existing collection snapshot has incomplete identities")
+            live_identity_by_note = {
+                note_id: identity
+                for identity, (note_id, _note, _target) in live_records.items()
+            }
+            for note_id, identity in prior.note_identities.items():
+                if live_identity_by_note.get(note_id) != identity:
+                    raise AnkiConnectError(
+                        f"Established note identity changed during migration: {note_id}"
+                    )
+            expected_added_identities = (
+                set(expected_records) - set(prior.note_identities.values())
+            )
+            actual_added_identities = {
+                identity
+                for identity, (note_id, _note, _target) in live_records.items()
+                if note_id not in prior.note_ids
+            }
+            if actual_added_identities != expected_added_identities:
+                raise AnkiConnectError(
+                    "Added notes do not exactly match the missing canonical Card Identities"
+                )
         if len(card_ids) != len(set(card_ids)):
             raise AnkiConnectError("Duplicate or stray card IDs returned by canonical notes")
         root_cards = set(
@@ -1102,10 +1135,16 @@ def verify_import(
                     raise AnkiConnectError(
                         f"Schedule changed on established card {card_id}"
                     )
-            new_production_ids = production_ids - prior.card_ids
-            if prior.had_production_template and new_production_ids:
-                raise AnkiConnectError("Idempotent migration created unexpected Production cards")
             new_card_ids = set(cards) - prior.card_ids
+            unexpected_existing_note_cards = {
+                card_id
+                for card_id in new_card_ids
+                if int(cards[card_id]["note"]) in prior.note_ids
+            }
+            if prior.had_production_template and unexpected_existing_note_cards:
+                raise AnkiConnectError(
+                    "Idempotent migration created unexpected cards on established notes"
+                )
         else:
             new_card_ids = set(cards)
         for card_id in new_card_ids:
@@ -1395,10 +1434,23 @@ def import_and_verify(
         prior = snapshot_existing_collection(
             client, expected_records, template_state, current_fields
         )
+        has_missing_identities = len(prior.note_ids) < len(expected_records)
         migrate_established_eavm_fields(client)
         # Populate the eligibility-driving fields before modelTemplateAdd creates ord1.
-        sync_existing_notes(client, notes_jsonl)
+        sync_existing_notes(
+            client,
+            notes_jsonl,
+            require_complete=not has_missing_identities,
+        )
         sync_model_design(client)
+        if has_missing_identities:
+            # Direct sync cannot create canonical GUIDs.  After the live subset
+            # and model contract are proven, let Anki merge the validated APKG.
+            imported = client.call(
+                "importPackage", path=package_path.resolve().as_posix()
+            )
+            if imported is False:
+                raise AnkiConnectError("AnkiConnect importPackage returned false")
         # Route both ordinals after template creation; Anki may place a new
         # ordinal in the model's default deck rather than its sibling deck.
         sync_existing_notes(client, notes_jsonl)

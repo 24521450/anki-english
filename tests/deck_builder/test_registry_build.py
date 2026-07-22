@@ -1,15 +1,23 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 
 import pytest
 
 from src.deck_builder.build_issues import BuildValidationError
-from src.deck_builder.build_contracts import BuildNotesPaths
+from src.deck_builder.build_contracts import BuildNotesPaths, BuiltCard
 from src.deck_builder.build_notes import build_notes
-from src.deck_builder.registry_build import load_registry_build_inputs
+from src.deck_builder.registry_build import (
+    _apply_pronunciation_authorities,
+    load_registry_build_inputs,
+)
 from src.deck_builder.idiom_audit import idiom_source_fingerprint
+from src.deck_builder.pronunciation_resolution import (
+    pronunciation_media_fingerprint,
+    selection_fingerprint,
+)
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -151,6 +159,244 @@ def _build_fixture_paths(tmp_path: Path) -> BuildNotesPaths:
         audio_dir=audio,
         card_registry_path=registry,
         manual_cards_path=manual,
+        allow_legacy_pronunciation_for_tests=True,
+    )
+
+
+def test_pronunciation_authorities_replace_manual_ipa_audio_and_bind_media(
+    tmp_path: Path,
+):
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    media = b"authoritative pronunciation bytes"
+    filename = "cambridge_uk_word.mp3"
+    (audio_dir / filename).write_bytes(media)
+    fingerprint = selection_fingerprint(
+        "cambridge",
+        "word",
+        "uk",
+        "wɜːd",
+        "/media/uk.mp3",
+        dictionary_id="word",
+        entry_id="entry-1",
+        headword="word",
+        pos=["noun"],
+    )
+    source_records = [{
+        "schema_version": 3,
+        "source": "cambridge",
+        "word": "word",
+        "pronunciations": [{
+            "source_file": "cambridge_word.html",
+            "dictionary_id": "word",
+            "dictionary_rank": 0,
+            "entry_id": "entry-1",
+            "entry_index": 1,
+            "headword": "word",
+            "pos": ["noun"],
+            "uk": {"ipa": "wɜːd", "audio_url": "/media/uk.mp3"},
+            "us": {"ipa": "wɝːd", "audio_url": "/media/us.mp3"},
+        }],
+    }]
+    us_fingerprint = selection_fingerprint(
+        "cambridge",
+        "word",
+        "us",
+        "wɝːd",
+        "/media/us.mp3",
+        dictionary_id="word",
+        entry_id="entry-1",
+        headword="word",
+        pos=["noun"],
+    )
+    us_filename = "cambridge_us_word.mp3"
+    (audio_dir / us_filename).write_bytes(media)
+    manifest = tmp_path / "manifest.jsonl"
+    _write_jsonl(manifest, [
+        {
+            "schema_version": 2,
+            "selection_fingerprint": fingerprint,
+            "media_fingerprint": pronunciation_media_fingerprint(
+                "cambridge", "word", "uk", "wɜːd", "/media/uk.mp3"
+            ),
+            "source": "cambridge",
+            "parent_word": "word",
+            "dictionary_id": "word",
+            "entry_id": "entry-1",
+            "headword": "word",
+            "pos": ["noun"],
+            "accent": "uk",
+            "ipa": "wɜːd",
+            "audio_url": "/media/uk.mp3",
+            "filename": filename,
+            "sha256": hashlib.sha256(media).hexdigest(),
+            "byte_count": len(media),
+        },
+        {
+            "schema_version": 2,
+            "selection_fingerprint": us_fingerprint,
+            "media_fingerprint": pronunciation_media_fingerprint(
+                "cambridge", "word", "us", "wɝːd", "/media/us.mp3"
+            ),
+            "source": "cambridge",
+            "parent_word": "word",
+            "dictionary_id": "word",
+            "entry_id": "entry-1",
+            "headword": "word",
+            "pos": ["noun"],
+            "accent": "us",
+            "ipa": "wɝːd",
+            "audio_url": "/media/us.mp3",
+            "filename": us_filename,
+            "sha256": hashlib.sha256(media).hexdigest(),
+            "byte_count": len(media),
+        },
+    ])
+    locks = tmp_path / "locks.jsonl"
+    locks.write_text("", encoding="utf-8")
+    card = BuiltCard(
+        guid="guid-word",
+        notetype="English Academic Vocabulary Model",
+        deck="Deck",
+        word="word",
+        pos="noun",
+        ipa="/legacy/",
+        definition="definition",
+        example="example",
+        collocations="",
+        wordfamily="",
+        uk_audio="[sound:legacy_uk.mp3]",
+        us_audio="[sound:legacy_us.mp3]",
+        source1="Oxford",
+        source2="Oxford",
+        cefr="A1",
+        idioms="",
+        tags="Source::Oxford Audio::Legacy",
+        synonyms="",
+        antonyms="",
+    )
+
+    [resolved] = _apply_pronunciation_authorities(
+        [card],
+        source_records=source_records,
+        locks_path=locks,
+        manifest_path=manifest,
+        audio_dir=audio_dir,
+    )
+
+    assert resolved.ipa == "UK: /wɜːd/ | US: /wɝːd/"
+    assert resolved.uk_audio == f"[sound:{filename}]"
+    assert resolved.us_audio == f"[sound:{us_filename}]"
+    assert "Audio::Legacy" not in resolved.tags
+    assert resolved.tags.endswith("Audio::Cambridge")
+
+
+def test_registry_builder_fails_closed_without_pronunciation_authorities(
+    tmp_path: Path,
+):
+    paths = _build_fixture_paths(tmp_path)._replace(
+        allow_legacy_pronunciation_for_tests=False,
+    )
+
+    with pytest.raises(BuildValidationError) as excinfo:
+        build_notes(paths)
+
+    assert any(
+        issue.code == "pronunciation_authority_incomplete"
+        for issue in excinfo.value.issues
+    )
+
+
+def test_pronunciation_authorities_reject_lock_for_inactive_guid(tmp_path: Path):
+    locks = tmp_path / "locks.jsonl"
+    manifest = tmp_path / "manifest.jsonl"
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    _write_jsonl(locks, [{
+        "schema_version": 2,
+        "guid": "retired-guid",
+        "word": "retired",
+        "card_pos": "noun",
+        "accent": "uk",
+        "decision": "no_pronunciation",
+        "candidate_set_fingerprint": "0" * 64,
+        "review_reason": "The retired fixture had no complete candidate.",
+        "reviewer": "pytest",
+        "reviewed_at": "2026-07-22",
+    }])
+    manifest.write_text("", encoding="utf-8")
+
+    with pytest.raises(BuildValidationError) as excinfo:
+        _apply_pronunciation_authorities(
+            [],
+            source_records=[],
+            locks_path=locks,
+            manifest_path=manifest,
+            audio_dir=audio_dir,
+        )
+
+    assert any(
+        issue.code == "pronunciation_authority_invalid"
+        and "inactive GUID/accent" in issue.message
+        for issue in excinfo.value.issues
+    )
+
+
+def test_pronunciation_authorities_reject_unselected_manifest_row(
+    tmp_path: Path,
+):
+    locks = tmp_path / "locks.jsonl"
+    manifest = tmp_path / "manifest.jsonl"
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    locks.write_text("", encoding="utf-8")
+    media = b"manifest bytes"
+    filename = "cambridge_uk_unused.mp3"
+    (audio_dir / filename).write_bytes(media)
+    fingerprint = selection_fingerprint(
+        "cambridge",
+        "unused",
+        "uk",
+        "ipa",
+        "/media/unused.mp3",
+        dictionary_id="cald4",
+        entry_id="cald4-1",
+        headword="unused",
+        pos=["noun"],
+    )
+    _write_jsonl(manifest, [{
+        "schema_version": 2,
+        "selection_fingerprint": fingerprint,
+        "media_fingerprint": pronunciation_media_fingerprint(
+            "cambridge", "unused", "uk", "ipa", "/media/unused.mp3"
+        ),
+        "source": "cambridge",
+        "parent_word": "unused",
+        "dictionary_id": "cald4",
+        "entry_id": "cald4-1",
+        "headword": "unused",
+        "pos": ["noun"],
+        "accent": "uk",
+        "ipa": "ipa",
+        "audio_url": "/media/unused.mp3",
+        "filename": filename,
+        "sha256": hashlib.sha256(media).hexdigest(),
+        "byte_count": len(media),
+    }])
+
+    with pytest.raises(BuildValidationError) as excinfo:
+        _apply_pronunciation_authorities(
+            [],
+            source_records=[],
+            locks_path=locks,
+            manifest_path=manifest,
+            audio_dir=audio_dir,
+        )
+
+    assert any(
+        issue.code == "pronunciation_authority_invalid"
+        and "unselected rows" in issue.message
+        for issue in excinfo.value.issues
     )
 
 
@@ -219,10 +465,43 @@ def test_public_build_notes_uses_registry_without_txt(tmp_path: Path):
         audio_dir=audio,
         card_registry_path=registry,
         manual_cards_path=manual,
+        allow_legacy_pronunciation_for_tests=True,
     ))
 
     assert result.built_cards_count == 1
     assert result.built_cards[0].definition == "definition"
+
+
+def test_registry_build_serializes_accordingly_opal_written_tag(tmp_path: Path):
+    paths = _build_fixture_paths(tmp_path)
+    registry_row = _registry_row("accordingly")
+    registry_row.update({"cefr": "C1", "pos": "adverb", "guid": "guid-accordingly"})
+    manual_row = _manual_row("accordingly")
+    manual_row.update({
+        "cefr": "C1",
+        "provenance": {
+            "source": "build_contract_source_gap",
+            "ledger_pos": "adverb",
+        },
+    })
+    source_row = {
+        "word": "accordingly",
+        "source": "oxford",
+        "source_files": ["oxford_accordingly_(adv).html"],
+        "pos": ["adverb"],
+        "pos_data": [{"pos": "adverb", "definitions": []}],
+        "opal": {"adverb": ["W"]},
+    }
+    _write_jsonl(paths.card_registry_path, [registry_row])
+    _write_jsonl(paths.manual_cards_path, [manual_row])
+    _write_jsonl(paths.oxford_jsonl_path, [source_row])
+
+    result = build_notes(paths)
+    serialized = json.loads(result.jsonl_text)
+
+    assert result.built_cards[0].tags.endswith("OPAL_W")
+    assert serialized["word"] == "accordingly"
+    assert serialized["tags"].endswith("OPAL_W")
 
 
 def test_semantic_registry_overlays_content_before_audio_and_preserves_metadata(

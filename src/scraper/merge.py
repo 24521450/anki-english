@@ -81,6 +81,45 @@ def _stable_pos_order(pos_list: list[str]) -> list[str]:
     return sorted(pos_list, key=sort_key)
 
 
+def _merge_opal_membership(records: list[dict]) -> dict[str, list[str]] | None:
+    """Union OPAL memberships by POS and return deterministic W-before-S data."""
+    by_pos: dict[str, set[str]] = {}
+    for record in records:
+        opal = record.get("opal")
+        if opal is None:
+            continue
+        if not isinstance(opal, dict) or not opal:
+            raise ValueError(f"OPAL membership must be POS-scoped, got {opal!r}")
+        for pos, memberships in opal.items():
+            if (
+                not isinstance(pos, str)
+                or not pos
+                or not isinstance(memberships, list)
+                or not memberships
+            ):
+                raise ValueError(
+                    f"Invalid OPAL membership for POS {pos!r}: {memberships!r}"
+                )
+            invalid = [kind for kind in memberships if kind not in ("W", "S")]
+            if invalid:
+                raise ValueError(
+                    f"Invalid OPAL membership for POS {pos!r}: {memberships!r}"
+                )
+            by_pos.setdefault(pos, set()).update(memberships)
+
+    if not by_pos:
+        return None
+
+    ordered_positions = sorted(
+        by_pos,
+        key=lambda pos: (_POS_RANK.get(pos, len(POS_ORDER)), pos),
+    )
+    return {
+        pos: [kind for kind in ("W", "S") if kind in by_pos[pos]]
+        for pos in ordered_positions
+    }
+
+
 # ===========================================================================
 # Phrasal Verb Folding (Issue A, option β)
 # ===========================================================================
@@ -197,9 +236,17 @@ def fold_phrasal_verb_records(records: list[dict]) -> list[dict]:
                 if f not in main_rec.get("source_files", []):
                     main_rec.setdefault("source_files", []).append(f)
 
+            # Preserve entry-scoped pronunciation evidence from folded pages.
+            for pronunciation in pv.get("pronunciations", []):
+                if pronunciation not in main_rec.setdefault("pronunciations", []):
+                    main_rec["pronunciations"].append(copy.deepcopy(pronunciation))
+
             # Update pos top-level array to include "phrasal verb"
             if "phrasal verb" not in main_rec.get("pos", []):
                 main_rec.setdefault("pos", []).append("phrasal verb")
+
+            # Preserve memberships from both the base entry and folded phrase.
+            main_rec["opal"] = _merge_opal_membership([main_rec, pv])
 
             # Mark the phrasal-verb record as folded
             pv["_skip"] = True
@@ -226,7 +273,8 @@ def merge_word_records(records: list[dict]) -> dict:
         - pos_data: concatenate from all records, dedupe by (pos, sensenum_local, text)
         - oxford_lists: union
         - oxford_badge: first non-null (per Q6: badge is display metadata, not identity)
-        - opal, awl: first non-null
+        - opal: union by POS, with canonical POS and W-before-S ordering
+        - awl: first non-null
         - uk_ipa, us_ipa: first non-null (display metadata, not identity)
         - audio.uk, audio.us: first non-null
         - see_also: union, dedup
@@ -252,6 +300,8 @@ def merge_word_records(records: list[dict]) -> dict:
         #   2. Hand-crafted test fixtures that omit the field.
         #   3. Old parser outputs preserved in audit JSONL.
         result = copy.deepcopy(records[0])
+        result["opal"] = _merge_opal_membership([result])
+        result.setdefault("pronunciations", [])
         for pd in result.get("pos_data", []):
             pd.setdefault("source_url", None)
             for d in pd.get("definitions", []):
@@ -281,6 +331,14 @@ def merge_word_records(records: list[dict]) -> dict:
                 seen_files.append(f)
     base["source_files"] = seen_files
 
+    # Entry-scoped pronunciation evidence is unioned without collapsing POS or
+    # homograph ownership. Parser order is already deterministic at this layer.
+    base["pronunciations"] = []
+    for record in records:
+        for pronunciation in record.get("pronunciations", []):
+            if pronunciation not in base["pronunciations"]:
+                base["pronunciations"].append(copy.deepcopy(pronunciation))
+
     # pos: union, sort by canonical order
     pos_set = []
     for r in records:
@@ -289,12 +347,15 @@ def merge_word_records(records: list[dict]) -> dict:
                 pos_set.append(p)
     base["pos"] = _stable_pos_order(pos_set)
 
-    # oxford_lists, opal, awl: union / first-non-null
+    # oxford_lists and OPAL: union; AWL: first-non-null
     base["oxford_lists"] = _dedup_preserve_order(
         [p for r in records for p in r.get("oxford_lists", [])]
     )
-    for f in ("opal", "awl"):
-        base[f] = next((r.get(f) for r in records if r.get(f) is not None), base.get(f))
+    base["opal"] = _merge_opal_membership(records)
+    base["awl"] = next(
+        (r.get("awl") for r in records if r.get("awl") is not None),
+        base.get("awl"),
+    )
 
     # oxford_badge: first non-null (display metadata, not identity)
     base["oxford_badge"] = next(

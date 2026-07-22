@@ -3,6 +3,13 @@ from __future__ import annotations
 
 import secrets
 
+from src.deck_builder.card_identity import is_reviewed_semantic_identity_variant
+
+
+SECONDARY_SENSE_DECK = (
+    "English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses"
+)
+
 
 def source_label(source_files: list[str] | None) -> str:
     if not source_files:
@@ -25,7 +32,6 @@ def regenerate_tags(
     audio_source: str,
     has_idioms: bool,
     oxford_lists: list[str],
-    opal: str | None,
     awl_flag: bool,
     is_in_vocab_3000: bool,
     is_in_vocab_5000: bool,
@@ -40,8 +46,6 @@ def regenerate_tags(
         tags.append("Oxford_3000")
     if is_in_vocab_5000:
         tags.append("Oxford_5000")
-    if opal in ("W", "S"):
-        tags.append(f"OPAL_{opal}")
     if has_idioms:
         tags.append("idioms")
     return " ".join(tags)
@@ -52,6 +56,29 @@ def sync_idioms_feature_tag(tags: str | None, idioms: str | None) -> str:
     tokens = [token for token in (tags or "").split() if token != "idioms"]
     if (idioms or "").strip():
         tokens.append("idioms")
+    return " ".join(tokens)
+
+
+def sync_semantic_identity_tag(tags: str | None, registry_row: dict) -> str:
+    """Derive semantic-variant routing tags from the Card Registry identity."""
+    tokens = [
+        token
+        for token in (tags or "").split()
+        if token != "SecondarySense" and not token.startswith("SenseVariant::")
+    ]
+    variant = str(registry_row.get("variant") or "").strip()
+    if not is_reviewed_semantic_identity_variant(
+        registry_row.get("word"),
+        registry_row.get("cefr"),
+        registry_row.get("list"),
+        registry_row.get("pos"),
+        variant,
+    ) or variant == "primary":
+        return " ".join(tokens)
+    if registry_row.get("deck_override") == SECONDARY_SENSE_DECK:
+        tokens.append("SecondarySense")
+    else:
+        tokens.append(f"SenseVariant::{variant}")
     return " ".join(tokens)
 
 

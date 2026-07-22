@@ -15,6 +15,13 @@ SEMANTIC_GROUPING_STATUS = "semantic_overload_grouped_20260711"
 SENSE_GROUPING_STATUS = "sense_grouping_review_20260711"
 VIETNAMESE_PRECISION_STATUS = "vietnamese_gloss_precision_review_20260711"
 
+# A historical sense-grouping row predates the reviewed semantic Card
+# Identity split.  Its combined `(denial, noun, C1)` key now has two explicit
+# successors; keep the archived row useful by checking both canonical owners.
+LEGACY_OWNER_SUCCESSORS = {
+    ("denial", "noun", "C1"): ("$|_`hdAC|%", "Jhp@WXA!ga"),
+}
+
 
 def _load(path):
     return [
@@ -54,6 +61,20 @@ def _card_for_owner(owner: dict, cards: list[dict]) -> dict:
     ]
     assert len(matches) == 1, owner["word"]
     return matches[0]
+
+
+def _cards_for_owner(owner: dict, cards: list[dict]) -> list[dict]:
+    """Resolve one historical owner, including reviewed split successors."""
+    if owner.get("guid"):
+        return [_card_for_owner(owner, cards)]
+    key = (owner["word"], owner["pos"].strip(), owner["cefr"])
+    successor_guids = LEGACY_OWNER_SUCCESSORS.get(key)
+    if successor_guids:
+        by_guid = {card["guid"]: card for card in cards}
+        resolved = [by_guid[guid] for guid in successor_guids if guid in by_guid]
+        assert len(resolved) == len(successor_guids), owner["word"]
+        return resolved
+    return [_card_for_owner(owner, cards)]
 
 
 def _definition_without_labels(definition: str) -> str:
@@ -235,12 +256,13 @@ def test_sense_grouping_review_matches_canonical_owner_payloads():
         "review": 13,
     }
     for owner in owners:
-        _assert_owner_payload(
-            owner,
-            _card_for_owner(owner, rows["cards"]),
-            rows["semantic_registry"],
-            rows["collocation_registry"],
-        )
+        for card in _cards_for_owner(owner, rows["cards"]):
+            _assert_owner_payload(
+                owner,
+                card,
+                rows["semantic_registry"],
+                rows["collocation_registry"],
+            )
 
     registry = {_manual_key(row): row for row in rows["registry"]}
     cards = {row["guid"]: row for row in rows["cards"]}

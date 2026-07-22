@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ielts-deck.local/schemas/cambridge_record.v2.json",
-  "title": "Cambridge Dictionary Record (Schema v2)",
+  "$id": "https://ielts-deck.local/schemas/cambridge_record.v3.json",
+  "title": "Cambridge Dictionary Record (Schema v3)",
   "description": "Schema for a single word record produced by the ielts-deck Cambridge parser. One record per (word) at the JSONL top level. Multi-POS is nested under pos_data.",
   "type": "object",
   "additionalProperties": false,
@@ -17,6 +17,7 @@
     "opal",
     "awl",
     "audio",
+    "pronunciations",
     "see_also",
     "pos_data",
     "verb_forms",
@@ -131,6 +132,40 @@
             "null"
           ],
           "description": "US pronunciation audio URL. Same selector logic as uk."
+        }
+      }
+    },
+    "pronunciations": {
+      "type": "array",
+      "description": "Entry-scoped pronunciation evidence. Each accent keeps its IPA and audio URL in the same owning dictionary entry.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_file",
+          "dictionary_id",
+          "dictionary_rank",
+          "entry_id",
+          "entry_index",
+          "headword",
+          "pos",
+          "uk",
+          "us"
+        ],
+        "properties": {
+          "source_file": {"type": "string"},
+          "dictionary_id": {"type": "string", "minLength": 1},
+          "dictionary_rank": {"type": "integer", "minimum": 0},
+          "entry_id": {"type": "string", "minLength": 1},
+          "entry_index": {"type": "integer", "minimum": 1},
+          "headword": {"type": "string"},
+          "pos": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string"}
+          },
+          "uk": {"$ref": "#/$defs/accent_pronunciation"},
+          "us": {"$ref": "#/$defs/accent_pronunciation"}
         }
       }
     },
@@ -619,6 +654,17 @@
     "_skip_reason": {
       "type": "string",
       "description": "Human-readable explanation of why _skip was set (e.g. 'phrasal-verb-redirect: no extractable senses')."
+    }
+  },
+  "$defs": {
+    "accent_pronunciation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ipa", "audio_url"],
+      "properties": {
+        "ipa": {"type": ["string", "null"]},
+        "audio_url": {"type": ["string", "null"]}
+      }
     }
   }
 }

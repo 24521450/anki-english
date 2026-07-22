@@ -18,6 +18,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 
 from src.deck_builder.card_identity import primary_list_from_tags
+from src.deck_builder.text_integrity import has_suspected_lossy_unicode
 
 
 AUDIT_SCHEMA_VERSION = 1
@@ -86,6 +87,13 @@ EDITABLE_COLUMNS = (
     "translation_provenance",
 )
 REVIEW_COLUMNS = IMMUTABLE_COLUMNS + EDITABLE_COLUMNS
+
+_LOSSY_UNICODE_REVIEW_FIELDS = (
+    "explanation_en_simple",
+    "explanation_vi",
+    "review_reason",
+    "translation_provenance",
+)
 
 
 def _canonical_json(value: object) -> str:
@@ -379,6 +387,10 @@ def _validate_review(row: dict, idiom_id: str, require_complete: bool) -> list[s
     ):
         if _invalid_text(row.get(field, ""), reject_example_pipe=True):
             errors.append(f"invalid_review_text:{idiom_id}:{field}")
+
+    for field in _LOSSY_UNICODE_REVIEW_FIELDS:
+        if has_suspected_lossy_unicode(row.get(field, "")):
+            errors.append(f"suspected_lossy_unicode:{idiom_id}:{field}")
 
     if mode == "vi_equivalent":
         if kind not in {"proverb", "idiom", "saying"}:

@@ -16,8 +16,10 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 
 from src.deck_builder.card_identity import primary_list_from_tags
+from src.deck_builder.example_policy import main_example_pos_shortfall
 from src.deck_builder.simplify_senses import _flatten_senses
 from src.deck_builder.source_sense_identity import source_sense_id
+from src.deck_builder.text_integrity import has_suspected_lossy_unicode
 from src.deck_builder.word_lookup import get_word_candidates
 
 
@@ -372,13 +374,24 @@ def flatten_coverage_rows(audit_rows: list[dict]) -> list[dict]:
 def validate_audit_rows(rows: list[dict], registry_rows: list[dict] | None = None, *, require_complete: bool = False) -> list[str]:
     errors: list[str] = []
     seen_guid: set[str] = set()
+    seen_semantic_ids: set[str] = set()
     mapped_source_owners: dict[str, str] = {}
-    active_guids = {row.get("guid") for row in registry_rows or [] if row.get("status") == "active"}
+    active_by_guid = {
+        row.get("guid"): row
+        for row in registry_rows or []
+        if row.get("status") == "active"
+    }
+    active_guids = set(active_by_guid)
     for card in rows:
         guid = card.get("guid") or ""
         if not guid or guid in seen_guid:
             errors.append(f"duplicate_or_empty_guid:{guid}")
         seen_guid.add(guid)
+        expected_identity = active_by_guid.get(guid)
+        if expected_identity is not None:
+            for field in ("word", "cefr", "list", "variant", "pos"):
+                if (card.get(field) or "") != (expected_identity.get(field) or ""):
+                    errors.append(f"identity_mismatch:{guid}:{field}")
         source_ids = [item.get("source_sense_id") for item in card.get("source_senses") or []]
         if len(source_ids) != len(set(source_ids)):
             errors.append(f"duplicate_source_sense_id:{guid}")
@@ -396,6 +409,12 @@ def validate_audit_rows(rows: list[dict], registry_rows: list[dict] | None = Non
         semantic_id_list = [sense.get("semantic_sense_id") for sense in semantic_senses]
         if not all(semantic_id_list) or len(semantic_id_list) != len(set(semantic_id_list)):
             errors.append(f"duplicate_or_empty_semantic_sense_id:{guid}")
+        for semantic_id in semantic_id_list:
+            if not semantic_id:
+                continue
+            if semantic_id in seen_semantic_ids:
+                errors.append(f"duplicate_semantic_sense_id:{semantic_id}")
+            seen_semantic_ids.add(semantic_id)
         orders = [sense.get("order") for sense in semantic_senses]
         if any(not isinstance(order, int) or order < 1 for order in orders) or len(orders) != len(set(orders)):
             errors.append(f"invalid_semantic_sense_order:{guid}")
@@ -421,7 +440,7 @@ def validate_audit_rows(rows: list[dict], registry_rows: list[dict] | None = Non
                 errors.append(f"uncertain_without_uncertain_check:{guid}:{sense.get('semantic_sense_id')}")
             for location in ("current", "proposed"):
                 vietnamese = str((sense.get(location) or {}).get("definition_vi") or "")
-                if "?" in vietnamese or "\ufffd" in vietnamese:
+                if has_suspected_lossy_unicode(vietnamese):
                     errors.append(
                         f"corrupt_vietnamese_text:{guid}:{sense.get('semantic_sense_id')}:{location}"
                     )
@@ -443,6 +462,23 @@ def validate_audit_rows(rows: list[dict], registry_rows: list[dict] | None = Non
                 errors.append(f"open_cambridge_match:{guid}:{sense.get('semantic_sense_id')}")
             if require_complete and not cambridge.get("translation_provenance"):
                 errors.append(f"missing_translation_provenance:{guid}:{sense.get('semantic_sense_id')}")
+        if semantic_senses:
+            effective_examples = [
+                example
+                for sense in semantic_senses
+                for example in (
+                    (
+                        sense.get("proposed")
+                        if sense.get("decision") == "repair_proposed"
+                        else sense.get("current")
+                    )
+                    or {}
+                ).get("examples") or []
+            ]
+            shortfall = main_example_pos_shortfall(card.get("pos"), effective_examples)
+            if shortfall is not None:
+                actual, required = shortfall
+                errors.append(f"main_example_pos_shortfall:{guid}:{actual}<{required}")
         unknown = set(mapped) - known
         if unknown:
             errors.append(f"unknown_source_sense_id:{guid}:{','.join(sorted(unknown))}")

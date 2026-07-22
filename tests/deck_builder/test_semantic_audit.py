@@ -127,6 +127,74 @@ def test_validator_rejects_invalid_review_shape_and_corrupt_vietnamese():
     assert f"invalid_cambridge_match:guid-1:{sense['semantic_sense_id']}" in errors
 
 
+def test_validator_allows_terminal_question_punctuation_in_vietnamese():
+    rows = _audit()
+    sense = rows[0]["semantic_senses"][0]
+    sense["current"]["definition_vi"] = "Tại sao?"
+
+    errors = validate_audit_rows(rows, [_registry()])
+
+    assert not any(error.startswith("corrupt_vietnamese_text:") for error in errors)
+
+
+def test_validator_rejects_replacement_character_in_vietnamese():
+    rows = _audit()
+    sense = rows[0]["semantic_senses"][0]
+    sense["current"]["definition_vi"] = "nghĩa bị \ufffd lỗi"
+
+    errors = validate_audit_rows(rows, [_registry()])
+
+    assert (
+        f"corrupt_vietnamese_text:guid-1:{sense['semantic_sense_id']}:current"
+        in errors
+    )
+
+
+def test_validator_requires_one_main_example_per_distinct_card_pos():
+    rows = build_audit_rows(
+        [_card(pos="noun, verb", example="Only one example.")],
+        [_registry(pos="noun, verb")],
+        _oxford(),
+    )
+
+    assert "main_example_pos_shortfall:guid-1:1<2" in validate_audit_rows(
+        rows, [_registry(pos="noun, verb")]
+    )
+
+
+def test_validator_counts_effective_repair_examples_across_one_merged_sense():
+    rows = build_audit_rows(
+        [_card(pos="noun, verb", example="Only one example.")],
+        [_registry(pos="noun, verb")],
+        _oxford(),
+    )
+    sense = rows[0]["semantic_senses"][0]
+    sense["decision"] = "repair_proposed"
+    sense["checks"]["example_pos_alignment"] = "repair"
+    sense["proposed"] = {
+        "definition_en": sense["current"]["definition_en"],
+        "definition_vi": sense["current"]["definition_vi"],
+        "examples": ["First example.", "Second example."],
+    }
+
+    errors = validate_audit_rows(rows, [_registry(pos="noun, verb")])
+
+    assert not any(error.startswith("main_example_pos_shortfall:") for error in errors)
+
+
+def test_validator_ignores_blank_main_examples_for_pos_cardinality():
+    rows = build_audit_rows(
+        [_card(pos="noun, verb", example="Only one example.")],
+        [_registry(pos="noun, verb")],
+        _oxford(),
+    )
+    rows[0]["semantic_senses"][0]["current"]["examples"].append("   ")
+
+    assert "main_example_pos_shortfall:guid-1:1<2" in validate_audit_rows(
+        rows, [_registry(pos="noun, verb")]
+    )
+
+
 def test_complete_gate_rejects_pending_cambridge_review():
     rows = _audit()
     card = rows[0]
@@ -166,6 +234,21 @@ def test_only_real_idiom_only_card_can_be_not_applicable():
     assert "invalid_empty_card:guid-1" in validate_audit_rows(rows, [_registry()])
 
 
+def test_multi_pos_idiom_only_card_is_exempt_from_main_example_cardinality():
+    card = _card(
+        pos="noun, verb",
+        definition="",
+        example="",
+        idioms="in accordance with :: as required :: example",
+    )
+    registry = _registry(pos="noun, verb")
+    rows = build_audit_rows([card], [registry], _oxford())
+
+    errors = validate_audit_rows(rows, [registry])
+
+    assert not any(error.startswith("main_example_pos_shortfall:") for error in errors)
+
+
 def test_idiom_only_card_rejects_added_standalone_semantic_sense():
     card = _card(definition="", example="", idioms="in accordance with :: as required :: example")
     rows = build_audit_rows([card], [_registry()], _oxford())
@@ -199,6 +282,26 @@ def test_same_source_sense_cannot_be_mapped_to_multiple_cards():
 
     errors = validate_audit_rows([first, second], registry)
     assert f"source_mapped_to_multiple_cards:{source_id}:guid-1:guid-2" in errors
+
+
+def test_semantic_sense_id_must_be_unique_across_audit_cards():
+    first = _audit()[0]
+    second = deepcopy(first)
+    second["guid"] = "guid-2"
+
+    errors = validate_audit_rows(
+        [first, second],
+        [_registry(), _registry(guid="guid-2")],
+    )
+
+    semantic_id = first["semantic_senses"][0]["semantic_sense_id"]
+    assert f"duplicate_semantic_sense_id:{semantic_id}" in errors
+
+
+def test_audit_identity_must_match_active_card_registry():
+    errors = validate_audit_rows(_audit(), [_registry(pos="noun")])
+
+    assert "identity_mismatch:guid-1:pos" in errors
 
 
 def test_duplicate_source_wording_needs_explicit_reason_for_mixed_disposition():

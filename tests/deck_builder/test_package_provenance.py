@@ -20,13 +20,15 @@ from src.deck_builder.package_provenance import (
 )
 
 
-REVIEW_AUTHORITY_LABELS = (
+CANONICAL_AUTHORITY_LABELS = (
     "bilingual_semantic_audit",
     "bilingual_idiom_audit",
     "collocation_audit",
     "collocation_registry",
     "vietnamese_naturalness_review",
     "semantic_policy_locks",
+    "pronunciation_selection_locks",
+    "headword_audio_manifest",
     "definition_concision_review",
     "semantic_sense_merge_review",
 )
@@ -97,11 +99,13 @@ def test_shared_input_mapping_binds_every_release_authority(tmp_path: Path):
         "card_registry": paths.card_registry,
         "semantic_registry": paths.semantic_registry,
         "collocation_registry": paths.collocation_registry,
+        "headword_audio_manifest": paths.headword_audio_manifest,
         "bilingual_semantic_audit": paths.bilingual_semantic_audit,
         "bilingual_idiom_audit": paths.bilingual_idiom_audit,
         "collocation_audit": paths.collocation_audit,
         "vietnamese_naturalness_review": paths.vietnamese_naturalness_review,
         "semantic_policy_locks": paths.semantic_policy_locks,
+        "pronunciation_selection_locks": paths.pronunciation_selection_locks,
         "definition_concision_review": paths.definition_concision_review,
         "semantic_sense_merge_review": paths.semantic_sense_merge_review,
         "recognition_front": paths.root / "design/EAVM/front_template.txt",
@@ -136,8 +140,8 @@ def test_packager_contract_change_invalidates_an_existing_sidecar(
         validate_package_provenance(sidecar, package, inputs, media)
 
 
-@pytest.mark.parametrize("ledger_label", REVIEW_AUTHORITY_LABELS)
-def test_changing_any_canonical_review_authority_invalidates_provenance(
+@pytest.mark.parametrize("ledger_label", CANONICAL_AUTHORITY_LABELS)
+def test_changing_any_canonical_authority_invalidates_provenance(
     tmp_path: Path,
     ledger_label: str,
 ):

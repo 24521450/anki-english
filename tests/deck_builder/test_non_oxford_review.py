@@ -48,6 +48,11 @@ def _build_paths(paths_reg: ProjectPaths, *, with_overrides: bool) -> BuildNotes
         synonym_example_overrides_path=paths_reg.synonym_example_overrides,
         antonym_example_overrides_path=paths_reg.antonym_example_overrides,
         sense_label_overrides_path=paths_reg.sense_label_overrides,
+        semantic_registry_path=paths_reg.semantic_registry,
+        collocation_registry_path=paths_reg.collocation_registry,
+        cambridge_jsonl_path=paths_reg.cambridge_jsonl,
+        pronunciation_selection_locks_path=paths_reg.pronunciation_selection_locks,
+        headword_audio_manifest_path=paths_reg.headword_audio_manifest,
     )
 
 
@@ -80,7 +85,7 @@ def test_non_oxford_review_in_memory_metrics_and_scope():
     cards = get_cards_with_overrides()
     by_guid = {card.guid: card for card in cards}
 
-    assert len(cards) == 2461
+    assert len(cards) == 2464
     assert set(overrides).issubset(by_guid)
     assert _override_guids(paths_reg.synonym_example_overrides).issubset(by_guid)
     assert _override_guids(paths_reg.antonym_example_overrides).issubset(by_guid)
@@ -92,7 +97,9 @@ def test_manual_override_specifics():
     harness_cards = [c for c in cards if c.word == "harness" and c.pos == "verb" and c.cefr == "UNCLASSIFIED"]
     assert len(harness_cards) == 1
     harness = harness_cards[0]
-    assert harness.definition == "control and use power or resources (khai thác/tận dụng)"
+    # Semantic Registry owns the final payload; the reviewed wording uses a
+    # slash and the concise Vietnamese gloss.
+    assert harness.definition == "control and use power / resources (khai thác)"
     assert harness.example == "attempts to harness the sun’s rays as a source of energy"
     assert harness.collocations == "harness energy/power/resources|harness the sun/wind|harness sth to do sth"
 
@@ -101,7 +108,7 @@ def test_manual_override_specifics():
     assert len(nursing_cards) == 1
     nursing = nursing_cards[0]
     assert nursing.pos == "noun"
-    assert nursing.definition == "care of sick people (nghề điều dưỡng/chăm sóc bệnh nhân)"
+    assert nursing.definition == "care of sick people (nghề điều dưỡng)"
     assert nursing.example == "a career in nursing"
     assert nursing.collocations == "nursing care/profession/career|career in nursing"
 

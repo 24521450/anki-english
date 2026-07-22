@@ -139,6 +139,40 @@ def test_fresh_oxford_parser_output_validates():
     jsonschema.Draft202012Validator(OXFORD_SCHEMA).validate(rec)  # raises if invalid
 
 
+@pytest.mark.parametrize(
+    "value",
+    [
+        None,
+        {"adverb": ["W"]},
+        {"noun": ["S"]},
+        {"verb": ["W", "S"]},
+        {"noun": ["W"], "verb": ["S"]},
+    ],
+)
+def test_oxford_schema_accepts_pos_scoped_opal_membership(value):
+    jsonschema.Draft202012Validator(
+        OXFORD_SCHEMA["properties"]["opal"]
+    ).validate(value)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "W",
+        {},
+        {"adverb": []},
+        {"adverb": ["W", "W"]},
+        {"adverb": ["S", "W"]},
+        {"adverb": ["WRITTEN"]},
+    ],
+)
+def test_oxford_schema_rejects_noncanonical_opal_membership(value):
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.Draft202012Validator(
+            OXFORD_SCHEMA["properties"]["opal"]
+        ).validate(value)
+
+
 def test_fresh_cambridge_parser_output_validates():
     """Build a Cambridge record via the parser and validate against the schema."""
     import sys

@@ -26,6 +26,10 @@ class ProjectPaths:
         return self.root / "data" / "sources" / "cambridge.jsonl"
 
     @property
+    def headword_audio_manifest(self) -> Path:
+        return self.root / "data" / "sources" / "headword_audio_manifest.jsonl"
+
+    @property
     def deck_audit_jsonl(self) -> Path:
         return self.root / "data" / "curated" / "deck_audit.jsonl"
 
@@ -68,6 +72,15 @@ class ProjectPaths:
     @property
     def semantic_policy_locks(self) -> Path:
         return self.root / "data" / "curated" / "semantic_policy_locks.jsonl"
+
+    @property
+    def pronunciation_selection_locks(self) -> Path:
+        return (
+            self.root
+            / "data"
+            / "curated"
+            / "pronunciation_selection_locks.jsonl"
+        )
 
     @property
     def definition_concision_review(self) -> Path:

@@ -133,17 +133,17 @@ def test_definition_sync_accepts_exact_semantic_registry_payload():
 
 def test_build_output_parser():
     mock_stdout = """
-      existing cards: 2461
+      existing cards: 2464
       audit glosses loaded: 2487
       Dup emit skipped: 0
-      built cards: 2461
+      built cards: 2464
       missing in jsonl: 0
     """
 
     metrics = parse_build_output(mock_stdout)
 
-    assert metrics["existing_cards"] == 2461
-    assert metrics["built_cards"] == 2461
+    assert metrics["existing_cards"] == 2464
+    assert metrics["built_cards"] == 2464
     assert metrics["missing_in_jsonl"] == 0
     assert metrics["dup_emit_skipped"] == 0
     assert metrics["audit_glosses"] == 2487

@@ -103,6 +103,8 @@ def _build_paths(paths: ProjectPaths) -> BuildNotesPaths:
         semantic_registry_path=paths.semantic_registry,
         collocation_registry_path=paths.collocation_registry,
         cambridge_jsonl_path=paths.cambridge_jsonl,
+        pronunciation_selection_locks_path=paths.pronunciation_selection_locks,
+        headword_audio_manifest_path=paths.headword_audio_manifest,
     )
 
 

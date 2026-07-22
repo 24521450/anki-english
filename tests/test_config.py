@@ -16,6 +16,7 @@ def test_project_paths_resolve_canonical_artifacts(tmp_path):
 
     assert paths.oxford_jsonl == tmp_path / "data" / "sources" / "oxford.jsonl"
     assert paths.cambridge_jsonl == tmp_path / "data" / "sources" / "cambridge.jsonl"
+    assert paths.headword_audio_manifest == tmp_path / "data" / "sources" / "headword_audio_manifest.jsonl"
     assert paths.deck_audit_jsonl == tmp_path / "data" / "curated" / "deck_audit.jsonl"
     assert paths.card_registry == tmp_path / "data" / "curated" / "card_registry.jsonl"
     assert paths.bilingual_semantic_audit == tmp_path / "data" / "review" / "bilingual_semantic_audit.jsonl"
@@ -26,6 +27,7 @@ def test_project_paths_resolve_canonical_artifacts(tmp_path):
     assert paths.semantic_registry == tmp_path / "data" / "curated" / "semantic_registry.jsonl"
     assert paths.collocation_registry == tmp_path / "data" / "curated" / "collocation_registry.jsonl"
     assert paths.collocation_registry_jsonl == paths.collocation_registry
+    assert paths.pronunciation_selection_locks == tmp_path / "data" / "curated" / "pronunciation_selection_locks.jsonl"
     assert paths.gamma_verdicts == tmp_path / "data" / "review" / "gamma_verdicts.json"
     assert paths.manual_card_fills == tmp_path / "data" / "review" / "manual_card_fills.json"
     assert paths.manual_cards == tmp_path / "data" / "review" / "manual_cards.jsonl"

@@ -327,6 +327,110 @@ def test_empty_existing_model_is_aligned_before_native_import(tmp_path: Path, mo
     ]
 
 
+@pytest.mark.parametrize("has_added_identity", [True, False])
+def test_existing_collection_imports_only_when_canonical_identities_are_missing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    has_added_identity: bool,
+) -> None:
+    package = tmp_path / "deck.apkg"
+    package.write_bytes(b"package")
+    notes = tmp_path / "notes.jsonl"
+    existing = _row(word="alien", pos="noun", guid="existing-guid")
+    added = _row(
+        word="alien",
+        pos="adjective",
+        tags="SecondarySense",
+        guid="added-guid",
+    )
+    rows = [existing, added] if has_added_identity else [existing]
+    _write_jsonl(notes, rows)
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    for filename in load_expected_media(notes):
+        (audio_dir / filename).write_bytes(filename.encode("utf-8"))
+    provenance_path, provenance_inputs, receipt_path = _write_test_provenance(
+        tmp_path, package, notes, audio_dir
+    )
+    calls: list[object] = []
+    prior = ExistingCollectionSnapshot(
+        note_ids=frozenset({1}),
+        card_ids=frozenset({10, 11}),
+        schedules={10: (2, 2), 11: (2, 2)},
+        had_production_template=True,
+        note_identities={1: ("alien", "noun", "C1")},
+    )
+
+    monkeypatch.setattr(
+        import_module,
+        "_model_contract",
+        lambda _: (True, tuple(EAVM_FIELDS), "canonical"),
+    )
+    monkeypatch.setattr(import_module, "preflight_and_backup", lambda *args: None)
+    monkeypatch.setattr(
+        import_module,
+        "snapshot_existing_collection",
+        lambda *args: calls.append("snapshot") or prior,
+    )
+    monkeypatch.setattr(
+        import_module,
+        "migrate_established_eavm_fields",
+        lambda _: calls.append("migrate"),
+    )
+    monkeypatch.setattr(
+        import_module,
+        "sync_existing_notes",
+        lambda *args, **kwargs: calls.append(
+            ("sync", kwargs.get("require_complete", True))
+        ) or 0,
+    )
+    monkeypatch.setattr(
+        import_module, "sync_model_design", lambda _: calls.append("design")
+    )
+    monkeypatch.setattr(
+        import_module, "sync_missing_media", lambda *args: calls.append("media") or 0
+    )
+    monkeypatch.setattr(
+        import_module,
+        "verify_import",
+        lambda *args: calls.append("verify") or len(rows),
+    )
+    monkeypatch.setattr(
+        import_module,
+        "export_and_verify_live_guid_map",
+        lambda *args, **kwargs: LiveGuidProof(
+            "fixture.apkg", "a" * 64, "b" * 64, "collection.anki2", 2, 4
+        ),
+    )
+    monkeypatch.setattr(
+        import_module,
+        "write_verified_import_receipt",
+        lambda *args, **kwargs: calls.append("receipt"),
+    )
+
+    class Client:
+        def call(self, action, **params):
+            if action == "findNotes": return [1]
+            if action == "importPackage":
+                calls.append("importPackage")
+                return None
+            raise AssertionError(action)
+
+    assert import_and_verify(
+        Client(), package, notes, tmp_path / "scratch", audio_dir,
+        provenance_path=provenance_path,
+        provenance_inputs=provenance_inputs,
+        receipt_path=receipt_path,
+    ) == len(rows)
+    expected_calls: list[object] = [
+        "snapshot", "migrate", ("sync", not has_added_identity), "design"
+    ]
+    if has_added_identity:
+        expected_calls.append("importPackage")
+    expected_calls.extend([("sync", True), "media", "verify", "receipt"])
+    assert calls == expected_calls
+
+
 @pytest.mark.parametrize("field_count", [15, 19, 20, 21, 22])
 def test_preflight_allows_canonical_field_prefixes(tmp_path: Path, field_count: int):
     class Client:
@@ -488,6 +592,79 @@ def test_snapshot_accepts_legacy_prefix_before_field_migration(tmp_path: Path):
     assert snapshot.note_ids == frozenset({123})
     assert snapshot.card_ids == frozenset({456})
     assert snapshot.schedules[456][:2] == (2, 2)
+
+
+def test_snapshot_accepts_unique_canonical_identity_subset(tmp_path: Path):
+    existing = _row(
+        word="alien",
+        pos="noun",
+        deck="English Academic Vocabulary::Oxford",
+    )
+    added = _row(
+        word="alien",
+        pos="adjective",
+        tags="SecondarySense",
+        deck="English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses",
+    )
+    notes = tmp_path / "notes.jsonl"
+    _write_jsonl(notes, [existing, added])
+    live = _live_note(existing)
+    live.update({"noteId": 123, "cards": [456, 457], "tags": []})
+
+    class Client:
+        def call(self, action, **params):
+            if action == "findNotes": return [123]
+            if action == "notesInfo": return [live]
+            if action == "findCards": return [456, 457]
+            if action == "cardsInfo":
+                return [
+                    {
+                        "cardId": card_id,
+                        "note": 123,
+                        "ord": ordinal,
+                        "deckName": existing["deck"],
+                        "modelName": EAVM_MODEL_NAME,
+                        "type": 2,
+                        "queue": 2,
+                        "due": 10 + ordinal,
+                        "interval": 3,
+                        "factor": 2500,
+                        "reps": 4,
+                        "lapses": 0,
+                        "left": 0,
+                    }
+                    for card_id, ordinal in ((456, 0), (457, 1))
+                ]
+            raise AssertionError(action)
+
+    snapshot = snapshot_existing_collection(
+        Client(), load_expected_records(notes), "canonical"
+    )
+
+    assert snapshot.note_ids == frozenset({123})
+    assert snapshot.card_ids == frozenset({456, 457})
+    assert snapshot.note_identities == {123: ("alien", "noun", "C1")}
+
+
+def test_snapshot_rejects_identity_outside_canonical_set(tmp_path: Path):
+    notes = tmp_path / "notes.jsonl"
+    _write_jsonl(notes, [_row(word="alien", pos="noun")])
+    live = _live_note(_row(word="intruder", pos="noun"))
+    live.update({"noteId": 123, "cards": [456], "tags": []})
+
+    class Client:
+        def call(self, action, **params):
+            if action == "findNotes": return [123]
+            if action == "notesInfo": return [live]
+            raise AssertionError(action)
+
+    with pytest.raises(
+        AnkiConnectError,
+        match="did not resolve to one canonical Card Identity",
+    ):
+        snapshot_existing_collection(
+            Client(), load_expected_records(notes), "canonical"
+        )
 
 
 def test_sync_model_design_updates_existing_template_name_and_css(tmp_path: Path):
@@ -976,6 +1153,117 @@ def test_verify_import_preserves_prior_schedule_and_checks_only_new_card_state(
         prior,
         audio_dir=tmp_path,
     ) == 1
+
+
+@pytest.mark.parametrize(
+    ("mutation", "error"),
+    [
+        (None, None),
+        ("schedule", "Schedule changed on established card 10"),
+        ("note_id", "Established note IDs changed during migration"),
+    ],
+)
+def test_verify_import_allows_only_missing_identity_with_pristine_cards(
+    tmp_path: Path, mutation: str | None, error: str | None,
+) -> None:
+    existing = _row(
+        word="alien",
+        pos="noun",
+        guid="existing-guid",
+        deck="English Academic Vocabulary::Oxford",
+    )
+    added = _row(
+        word="alien",
+        pos="adjective",
+        tags="SecondarySense",
+        guid="added-guid",
+        deck="English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses",
+    )
+    notes = tmp_path / "notes.jsonl"
+    _write_jsonl(notes, [existing, added])
+    live_notes = []
+    for note_id, card_ids, row in (
+        (1, [10, 11], existing),
+        (2, [20, 21], added),
+    ):
+        note = _live_note(row)
+        note.update({
+            "noteId": note_id,
+            "guid": row["guid"],
+            "cards": card_ids,
+            "tags": str(row.get("tags") or "").split(),
+        })
+        live_notes.append(note)
+    prior_schedule = (2, 2, 10, 3, 2500, 4, 0, 0)
+    cards = [
+        {
+            "cardId": card_id,
+            "note": note_id,
+            "ord": ordinal,
+            "deckName": row["deck"],
+            "modelName": EAVM_MODEL_NAME,
+            "type": prior_schedule[0] if note_id == 1 else 0,
+            "queue": prior_schedule[1] if note_id == 1 else 0,
+            "due": prior_schedule[2] if note_id == 1 else 0,
+            "interval": prior_schedule[3] if note_id == 1 else 0,
+            "factor": prior_schedule[4] if note_id == 1 else 0,
+            "reps": prior_schedule[5] if note_id == 1 else 0,
+            "lapses": prior_schedule[6] if note_id == 1 else 0,
+            "left": prior_schedule[7] if note_id == 1 else 0,
+        }
+        for note_id, row, pairs in (
+            (1, existing, ((10, 0), (11, 1))),
+            (2, added, ((20, 0), (21, 1))),
+        )
+        for card_id, ordinal in pairs
+    ]
+    if mutation == "schedule":
+        cards[0]["interval"] = 4
+    elif mutation == "note_id":
+        live_notes[0]["noteId"] = 3
+        for card in cards:
+            if card["note"] == 1:
+                card["note"] = 3
+    prior = ExistingCollectionSnapshot(
+        note_ids=frozenset({1}),
+        card_ids=frozenset({10, 11}),
+        schedules={10: prior_schedule, 11: prior_schedule},
+        had_production_template=True,
+        note_identities={1: ("alien", "noun", "C1")},
+    )
+
+    class Client:
+        def call(self, action, **params):
+            if action == "modelNamesAndIds":
+                return {EAVM_MODEL_NAME: EAVM_MODEL_ID}
+            if action == "modelFieldNames": return list(EAVM_FIELDS)
+            if action == "modelTemplates": return _canonical_templates()
+            if action == "modelStyling":
+                return {"css": load_production_css(Path("design/EAVM/styling.txt"))}
+            if action == "findNotes":
+                return [note["noteId"] for note in live_notes]
+            if action == "notesInfo":
+                requested = set(params["notes"])
+                return [note for note in live_notes if note["noteId"] in requested]
+            if action == "findCards": return [card["cardId"] for card in cards]
+            if action == "cardsInfo":
+                requested = set(params["cards"])
+                return [card for card in cards if card["cardId"] in requested]
+            if action == "getMediaFilesNames": return []
+            raise AssertionError(action)
+
+    args = (
+        Client(),
+        load_expected_signatures(notes),
+        set(),
+        load_expected_records(notes),
+        prior,
+    )
+    if error is None:
+        assert verify_import(*args, audio_dir=tmp_path) == 2
+    else:
+        with pytest.raises(AnkiConnectError, match=error):
+            verify_import(*args, audio_dir=tmp_path)
 
 
 def test_sync_example_audio_fields_matches_established_signature_and_batches_update():

@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from src.deck_builder.build_contracts import BuildNotesResult, BuiltCard
 from src.deck_builder.build_validation import (
     CANONICAL_TXT_HEADER,
@@ -120,6 +122,52 @@ def test_validate_build_result_rejects_single_example_break(tmp_path: Path):
 
 def test_validate_build_result_accepts_double_example_break(tmp_path: Path):
     card = _card()._replace(example="first example<br><br>second example")
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert report.ok
+
+
+def test_validate_build_result_requires_one_main_example_per_distinct_pos(
+    tmp_path: Path,
+):
+    card = _card()._replace(
+        pos="noun, verb",
+        definition_vi="nghĩa",
+        example="Only one example.",
+        sense_pos="noun, verb",
+        production_answer="word",
+        oxford_pos_urls="|",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert any(
+        issue.code == "main_example_pos_shortfall" for issue in report.issues
+    )
+
+
+def test_validate_build_result_counts_multiple_examples_in_one_merged_sense(
+    tmp_path: Path,
+):
+    card = _card()._replace(
+        pos="noun, verb",
+        definition_vi="nghĩa",
+        example="First example.<br><br>Second example.",
+        sense_pos="noun, verb",
+        production_answer="word",
+        oxford_pos_urls="|",
+    )
     registry = tmp_path / "card_registry.jsonl"
     manual = tmp_path / "manual_cards.jsonl"
     _write_registry(registry, [card])
@@ -327,6 +375,54 @@ def test_validate_build_result_accepts_idiom_only_card(tmp_path: Path):
     assert report.ok
 
 
+def test_multi_pos_idiom_only_card_is_exempt_from_main_example_cardinality(
+    tmp_path: Path,
+):
+    card = _card()._replace(
+        pos="noun, verb",
+        definition="",
+        definition_vi="",
+        example="",
+        sense_pos="",
+        idioms="phrase :: meaning :: example",
+        idiom_meaning_vi="bilingual_gloss :: nghĩa",
+        oxford_pos_urls="|",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert report.ok
+
+
+def test_idiom_example_does_not_satisfy_main_example_cardinality(tmp_path: Path):
+    card = _card()._replace(
+        pos="noun, verb",
+        definition_vi="nghĩa",
+        example="Only one main example.",
+        sense_pos="noun, verb",
+        production_answer="word",
+        idioms="phrase :: meaning :: An idiom example.",
+        idiom_meaning_vi="bilingual_gloss :: nghĩa",
+        oxford_pos_urls="|",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert any(
+        issue.code == "main_example_pos_shortfall" for issue in report.issues
+    )
+
+
 def test_validate_build_result_rejects_invalid_idiom_vi_contract(tmp_path: Path):
     registry = tmp_path / "card_registry.jsonl"
     manual = tmp_path / "manual_cards.jsonl"
@@ -348,6 +444,57 @@ def test_validate_build_result_rejects_invalid_idiom_vi_contract(tmp_path: Path)
             tmp_path,
         )
         assert any(issue.code == expected_code for issue in report.issues)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("definition_vi", "ngh?a bị lỗi"),
+        ("definition_vi", "nghĩa bị \ufffd lỗi"),
+        ("idiom_meaning_vi", "bilingual_gloss :: ho?n toàn"),
+    ],
+)
+def test_validate_build_result_rejects_suspected_lossy_unicode(
+    tmp_path: Path, field: str, value: str
+):
+    replacements = {field: value}
+    if field == "definition_vi":
+        replacements.update(sense_pos="noun", production_answer="word")
+    else:
+        replacements["idioms"] = "phrase :: meaning"
+    card = _card()._replace(**replacements)
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert any(issue.code == "suspected_lossy_unicode" for issue in report.issues)
+
+
+def test_validate_build_result_allows_terminal_question_punctuation(
+    tmp_path: Path,
+):
+    card = _card()._replace(
+        definition_vi="Tại sao?",
+        sense_pos="noun",
+        production_answer="word",
+        idioms="phrase :: meaning",
+        idiom_meaning_vi="bilingual_gloss :: Ai biết?",
+    )
+    registry = tmp_path / "card_registry.jsonl"
+    manual = tmp_path / "manual_cards.jsonl"
+    _write_registry(registry, [card])
+    _write_jsonl(manual, [])
+
+    inputs = load_registry_build_inputs(registry, manual)
+    report = validate_build_result(_result_with_audio([card], tmp_path), inputs, tmp_path)
+
+    assert not any(
+        issue.code == "suspected_lossy_unicode" for issue in report.issues
+    )
 
 
 def test_validate_build_result_rejects_misaligned_oxford_pos_urls(tmp_path: Path):

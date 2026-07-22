@@ -174,6 +174,34 @@ def test_oxford_badge_first_non_null():
     assert merged["oxford_badge"] == "C1"  # first record's badge
 
 
+def test_opal_membership_merges_by_part_of_speech_in_canonical_order():
+    verb = _rec("need", "verb", opal={"verb": ["S"]})
+    noun = _rec("need", "noun", opal={"noun": ["W"]})
+
+    merged = merge_word_records([verb, noun])
+
+    assert merged["opal"] == {"noun": ["W"], "verb": ["S"]}
+
+
+def test_single_record_opal_membership_is_canonicalized():
+    rec = _rec(
+        "analysis",
+        "noun",
+        opal={"verb": ["S", "W", "S"], "noun": ["S", "W"]},
+    )
+
+    assert merge_word_records([rec])["opal"] == {
+        "noun": ["W", "S"],
+        "verb": ["W", "S"],
+    }
+
+
+@pytest.mark.parametrize("opal", [{}, {"verb": []}])
+def test_merge_rejects_empty_opal_membership(opal):
+    with pytest.raises(ValueError, match="OPAL membership"):
+        merge_word_records([_rec("adapt", "verb", opal=opal)])
+
+
 def test_verb_forms_first_non_null():
     """verb_forms: only 1 file has it; first non-null wins."""
     r1 = _rec("go", "verb", verb_forms=None)
@@ -544,6 +572,25 @@ def test_fold_phrasal_verb_preserves_existing_main_pos_data():
     pos_list = [pd["pos"] for pd in main_out["pos_data"]]
     assert "verb" in pos_list
     assert "phrasal verb" in pos_list
+
+
+def test_fold_phrasal_verb_unions_pos_scoped_opal_membership():
+    main = _main_rec("derive", "oxford_derive.html", pos_data=[])
+    main["opal"] = {"verb": ["S", "W"]}
+    pv = _pv_rec(
+        "derive from",
+        [_def(text="to come from something")],
+        "oxford_derive-from_(phrasal_verb).html",
+    )
+    pv["opal"] = {"phrasal verb": ["W"]}
+
+    out = fold_phrasal_verb_records([main, pv])
+    main_out = next(record for record in out if record["word"] == "derive")
+
+    assert main_out["opal"] == {
+        "verb": ["W", "S"],
+        "phrasal verb": ["W"],
+    }
 
 
 def test_fold_phrasal_verb_no_main_record_leaves_pv_alone():

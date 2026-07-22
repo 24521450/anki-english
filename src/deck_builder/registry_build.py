@@ -29,6 +29,7 @@ from src.deck_builder.build_metadata import (
     regenerate_tags as _regenerate_tags,
     source_label as _source_label,
     sync_idioms_feature_tag,
+    sync_semantic_identity_tag,
 )
 from src.deck_builder.build_issues import BuildIssue, BuildValidationError
 from src.deck_builder.example_audio import plan_cards_example_audio
@@ -69,6 +70,17 @@ from src.deck_builder.card_registry import (
 from src.deck_builder.manual_cards import (
     load_jsonl as load_manual_cards_jsonl,
     validate_manual_cards_rows,
+)
+from src.deck_builder.opal_tags import apply_opal_tags, build_opal_index
+from src.deck_builder.pronunciation_resolution import (
+    PronunciationRequest,
+    PronunciationResolutionError,
+    bind_headword_audio_manifest,
+    index_headword_audio_manifest,
+    index_pronunciation_records,
+    index_pronunciation_locks,
+    normalize_source_word,
+    select_pronunciation,
 )
 
 
@@ -271,16 +283,198 @@ def _load_source_indexes(paths, gamma: dict):
                     pos_set.add(pos)
         word_pos_set[word_lower] = pos_set
 
+    try:
+        opal_index = build_opal_index(
+            record
+            for records in by_word.values()
+            for record in records
+        )
+    except (TypeError, ValueError) as exc:
+        issues.append(BuildIssue(
+            severity="error",
+            code="opal_source_index_failed",
+            message=str(exc),
+            source=paths.oxford_jsonl_path,
+        ))
+        opal_index = {}
+
     return {
         "issues": issues,
+        "source_records": source_records,
         "by_word": by_word,
         "idioms_db": idioms_db,
         "senses_index": senses_index,
         "sense_source_record": sense_source_record,
         "word_pos_set": word_pos_set,
+        "opal_index": opal_index,
         "source_label_specs_index": _build_source_label_specs_index(by_word),
         "source_sense_pos_index": source_sense_pos_index,
     }
+
+
+def _sync_audio_source_tags(
+    tags: str,
+    source1: str,
+    selected_sources: list[str],
+) -> str:
+    tokens = [token for token in tags.split() if not token.startswith("Audio::")]
+    source1_key = source1.casefold()
+    seen: set[str] = set()
+    for source in selected_sources:
+        label = source.capitalize()
+        if source.casefold() == source1_key or label in seen:
+            continue
+        seen.add(label)
+        tokens.append(f"Audio::{label}")
+    return " ".join(tokens)
+
+
+def _apply_pronunciation_authorities(
+    cards: list[BuiltCard],
+    *,
+    source_records: list[dict],
+    locks_path: Path,
+    manifest_path: Path,
+    audio_dir: Path,
+) -> list[BuiltCard]:
+    """Resolve IPA/media only from entry-scoped evidence and bound media."""
+    try:
+        locks = index_pronunciation_locks(load_registry_jsonl(locks_path))
+        manifest = index_headword_audio_manifest(
+            load_registry_jsonl(manifest_path),
+            audio_dir=audio_dir,
+        )
+        records_by_word = index_pronunciation_records(source_records)
+    except (OSError, json.JSONDecodeError, PronunciationResolutionError) as exc:
+        raise BuildValidationError([
+            BuildIssue(
+                severity="error",
+                code="pronunciation_authority_invalid",
+                message=str(exc),
+                source=manifest_path if manifest_path.exists() else locks_path,
+            )
+        ]) from exc
+
+    # Authorities are release inputs, not an append-only cache.  Reject rows
+    # that cannot be reached from the active Card Registry before resolving
+    # cards; otherwise a retired GUID or stale media row could silently remain
+    # trusted forever.  The same exact-coverage check is repeated for selected
+    # fingerprints below so a manifest cannot contain an unreferenced entry.
+    active_keys = {
+        (card.guid, accent)
+        for card in cards
+        for accent in ("uk", "us")
+    }
+    extra_lock_keys = sorted(set(locks) - active_keys)
+    if extra_lock_keys:
+        raise BuildValidationError([
+            BuildIssue(
+                severity="error",
+                code="pronunciation_authority_invalid",
+                message=(
+                    "pronunciation locks contain inactive GUID/accent rows: "
+                    + ", ".join(f"{guid}:{accent}" for guid, accent in extra_lock_keys[:20])
+                ),
+                source=locks_path,
+            )
+        ])
+
+    resolved_cards: list[BuiltCard] = []
+    issues: list[BuildIssue] = []
+    used_lock_keys: set[tuple[str, str]] = set()
+    used_manifest_fingerprints: set[str] = set()
+    for card in cards:
+        request = PronunciationRequest(
+            guid=card.guid,
+            word=card.word,
+            pos=card.pos,
+        )
+        resolved = {}
+        try:
+            for accent in ("uk", "us"):
+                lock_key = (card.guid, accent)
+                lock = locks.get(lock_key)
+                if lock is not None:
+                    used_lock_keys.add(lock_key)
+                lookup_word = (
+                    str(lock.get("source_word") or "")
+                    if lock is not None and "source_word" in lock
+                    else card.word
+                )
+                selection = select_pronunciation(
+                    request,
+                    accent,
+                    records_by_word.get(normalize_source_word(lookup_word), ()),
+                    lock,
+                )
+                resolved[accent] = bind_headword_audio_manifest(selection, manifest)
+                if not selection.no_pronunciation:
+                    candidate = selection.candidate
+                    if candidate is None:
+                        raise PronunciationResolutionError(
+                            "selected pronunciation has no candidate"
+                        )
+                    used_manifest_fingerprints.add(candidate.fingerprint)
+        except PronunciationResolutionError as exc:
+            issues.append(BuildIssue(
+                severity="error",
+                code="pronunciation_resolution_failed",
+                message=f"{card.guid} ({card.word}): {exc}",
+            ))
+            continue
+
+        uk = resolved["uk"]
+        us = resolved["us"]
+        selected_sources = [
+            item.source for item in (uk, us) if not item.no_pronunciation
+        ]
+        resolved_cards.append(card._replace(
+            ipa=_format_ipa_field(uk.ipa, us.ipa),
+            uk_audio=(f"[sound:{uk.media_filename}]" if uk.media_filename else ""),
+            us_audio=(f"[sound:{us.media_filename}]" if us.media_filename else ""),
+            tags=_sync_audio_source_tags(card.tags, card.source1, selected_sources),
+        ))
+
+    if issues:
+        raise BuildValidationError(issues)
+
+    # Every manifest row must be consumed by one of the active requests.  A
+    # candidate may legitimately be shared by several cards, so this compares
+    # fingerprints rather than card counts.  Keep this check after resolution
+    # to avoid masking the more actionable stale-lock error above.
+    extra_manifest_fingerprints = sorted(
+        set(manifest) - used_manifest_fingerprints
+    )
+    if extra_manifest_fingerprints:
+        raise BuildValidationError([
+            BuildIssue(
+                severity="error",
+                code="pronunciation_authority_invalid",
+                message=(
+                    "headword audio manifest contains unselected rows: "
+                    + ", ".join(extra_manifest_fingerprints[:20])
+                ),
+                source=manifest_path,
+            )
+        ])
+
+    # This is intentionally an assertion-like guard rather than a count
+    # comparison: a lock row is consumed only when its exact GUID/accent was
+    # resolved, and duplicate rows are already rejected by the indexer.
+    if used_lock_keys != set(locks):
+        missing_lock_keys = sorted(set(locks) - used_lock_keys)
+        raise BuildValidationError([
+            BuildIssue(
+                severity="error",
+                code="pronunciation_authority_invalid",
+                message=(
+                    "pronunciation lock rows were not resolved: "
+                    + ", ".join(f"{guid}:{accent}" for guid, accent in missing_lock_keys[:20])
+                ),
+                source=locks_path,
+            )
+        ])
+    return resolved_cards
 
 
 def _serialize_result(cards, *, counters: dict[str, int]):
@@ -386,7 +580,35 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
                 )
                 for message in semantic_errors
             ])
-    audio_files = _audio_dir_filenames(paths.audio_dir)
+    pronunciation_locks_path = getattr(
+        paths, "pronunciation_selection_locks_path", None
+    )
+    headword_audio_manifest_path = getattr(
+        paths, "headword_audio_manifest_path", None
+    )
+    allow_legacy_pronunciation = bool(getattr(
+        paths, "allow_legacy_pronunciation_for_tests", False
+    ))
+    has_pronunciation_authorities = (
+        pronunciation_locks_path is not None
+        and headword_audio_manifest_path is not None
+    )
+    if not has_pronunciation_authorities and not allow_legacy_pronunciation:
+        raise BuildValidationError([
+            BuildIssue(
+                severity="error",
+                code="pronunciation_authority_incomplete",
+                message=(
+                    "pronunciation_selection_locks_path and "
+                    "headword_audio_manifest_path are required"
+                ),
+            )
+        ])
+    audio_files = (
+        _audio_dir_filenames(paths.audio_dir)
+        if allow_legacy_pronunciation
+        else set()
+    )
     review_overrides = load_review_overrides(getattr(paths, "review_overrides_path", None))
     vocab_3000 = _parse_vocab_list(paths.oxford_3000_md)
     vocab_5000 = _parse_vocab_list(paths.oxford_5000_md)
@@ -398,10 +620,12 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
     indexes = _load_source_indexes(paths, gamma)
     issues: list[BuildIssue] = list(indexes["issues"])
     by_word = indexes["by_word"]
+    source_records = indexes["source_records"]
     idioms_db = indexes["idioms_db"]
     senses_index = indexes["senses_index"]
     sense_source_record = indexes["sense_source_record"]
     word_pos_set = indexes["word_pos_set"]
+    opal_index = indexes["opal_index"]
     source_label_specs_index = indexes["source_label_specs_index"]
     source_sense_pos_index = indexes["source_sense_pos_index"]
     oxford_link_index = OxfordLinkIndex(by_word)
@@ -468,13 +692,13 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
                 deck=_default_deck_for_registry(row),
                 word=identity.word,
                 pos=row_pos,
-                ipa=manual.get("ipa") or "",
+                ipa=(manual.get("ipa") or "") if allow_legacy_pronunciation else "",
                 definition=manual.get("definition") or "",
                 example=manual.get("example") or "",
                 collocations=manual.get("collocations") or "",
                 wordfamily=manual.get("wordfamily") or "",
-                uk_audio=manual.get("uk_audio") or "",
-                us_audio=manual.get("us_audio") or "",
+                uk_audio=(manual.get("uk_audio") or "") if allow_legacy_pronunciation else "",
+                us_audio=(manual.get("us_audio") or "") if allow_legacy_pronunciation else "",
                 source1=manual.get("source1") or "",
                 source2=manual.get("source2") or "",
                 cefr=identity.cefr,
@@ -634,8 +858,12 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         if coll_override is not None:
             collocations = coll_override
 
-        ipa = _format_ipa_field(record.get("uk_ipa"), record.get("us_ipa"))
-        if not ipa:
+        ipa = (
+            _format_ipa_field(record.get("uk_ipa"), record.get("us_ipa"))
+            if allow_legacy_pronunciation
+            else ""
+        )
+        if allow_legacy_pronunciation and not ipa:
             for candidate_record in by_word.get(resolved_word, []):
                 if candidate_record is record:
                     continue
@@ -645,8 +873,16 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
                     ipa = _format_ipa_field(uk_ipa, us_ipa)
                     break
 
-        uk_audio = _resolve_audio_filename(resolved_word, row_pos, "uk", audio_files)
-        us_audio = _resolve_audio_filename(resolved_word, row_pos, "us", audio_files)
+        uk_audio = (
+            _resolve_audio_filename(resolved_word, row_pos, "uk", audio_files)
+            if allow_legacy_pronunciation
+            else ""
+        )
+        us_audio = (
+            _resolve_audio_filename(resolved_word, row_pos, "us", audio_files)
+            if allow_legacy_pronunciation
+            else ""
+        )
         source1 = _source_label(record.get("source_files") or [])
         resolved_pos = resolved_pos_parts[0] if resolved_pos_parts else pos_parts[0]
         is_in_3000 = (resolved_word, resolved_pos, new_cefr) in vocab_3000
@@ -661,11 +897,12 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         )
 
         audio_source = source1
-        for accent in ("uk", "us"):
-            url = (record.get("audio") or {}).get(accent) or ""
-            if "cambridge" in str(url).lower():
-                audio_source = "Cambridge"
-                break
+        if allow_legacy_pronunciation:
+            for accent in ("uk", "us"):
+                url = (record.get("audio") or {}).get(accent) or ""
+                if "cambridge" in str(url).lower():
+                    audio_source = "Cambridge"
+                    break
 
         formatted_idioms = _format_idioms(
             record.get("idioms") or [],
@@ -679,7 +916,6 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
             audio_source=audio_source,
             has_idioms=bool(formatted_idioms),
             oxford_lists=record.get("oxford_lists") or [],
-            opal=record.get("opal"),
             awl_flag=is_in_awl,
             is_in_vocab_3000=is_in_3000,
             is_in_vocab_5000=is_in_5000,
@@ -760,9 +996,9 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
                 example=manual.get("example") or "",
                 collocations=manual.get("collocations") or "",
                 wordfamily=manual.get("wordfamily") or "",
-                ipa=manual.get("ipa") or "",
-                uk_audio=manual.get("uk_audio") or "",
-                us_audio=manual.get("us_audio") or "",
+                ipa=(manual.get("ipa") or "") if allow_legacy_pronunciation else "",
+                uk_audio=(manual.get("uk_audio") or "") if allow_legacy_pronunciation else "",
+                us_audio=(manual.get("us_audio") or "") if allow_legacy_pronunciation else "",
                 source1=manual.get("source1") or "",
                 source2=manual.get("source2") or "",
                 idioms=manual.get("idioms") or "",
@@ -848,6 +1084,17 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
         ])
 
     cards = apply_corpus_routing_and_tags(annotated_cards, vocab_3000, vocab_5000, vocab_awl)
+    try:
+        cards = apply_opal_tags(cards, opal_index)
+    except ValueError as exc:
+        raise BuildValidationError([
+            BuildIssue(
+                severity="error",
+                code="opal_tag_resolution_failed",
+                message=str(exc),
+                source=paths.oxford_jsonl_path,
+            )
+        ]) from exc
     if collocation_registry_rows is not None:
         try:
             cards = apply_collocation_registry(cards, collocation_registry_rows)
@@ -860,8 +1107,30 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
                     source=collocation_registry_path,
                 )
             ]) from exc
+    if has_pronunciation_authorities:
+        assert pronunciation_locks_path is not None
+        assert headword_audio_manifest_path is not None
+        cards = _apply_pronunciation_authorities(
+            cards,
+            source_records=source_records,
+            locks_path=pronunciation_locks_path,
+            manifest_path=headword_audio_manifest_path,
+            audio_dir=paths.audio_dir,
+        )
+    registry_by_guid = {
+        str(target.row.get("guid") or ""): target.row
+        for target in inputs.targets
+    }
     cards = [
-        card._replace(tags=sync_idioms_feature_tag(card.tags, card.idioms))
+        card._replace(
+            tags=sync_idioms_feature_tag(
+                sync_semantic_identity_tag(
+                    card.tags,
+                    registry_by_guid[card.guid],
+                ),
+                card.idioms,
+            )
+        )
         for card in cards
     ]
     cards, _ = plan_cards_example_audio(cards)

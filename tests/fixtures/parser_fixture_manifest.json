@@ -16,6 +16,21 @@
   ],
   "special_fixtures": [
     {
+      "id": "accordingly-opal-written",
+      "source": "oxford",
+      "filename": "oxford_accordingly_(adv).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "accordingly",
+        "pos_sections": [
+          {"pos": "adverb", "definition_count": 2}
+        ],
+        "required_idioms": [],
+        "required_see_also": [],
+        "opal": {"adverb": ["W"]}
+      }
+    },
+    {
       "id": "sick-adjective-boundary",
       "source": "oxford",
       "filename": "oxford_sick_1_(adj).html",

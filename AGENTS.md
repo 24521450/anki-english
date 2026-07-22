@@ -147,6 +147,29 @@ user-request provenance; `data/README.md` owns artifact lifecycle;
   metadata during the remaining decoupling; they must not override the promoted
   final semantic payload.
 
+### Atomic Card Identity split
+
+When one active identity must become a reviewed primary/secondary pair, prepare
+a fingerprint-bound split bundle that names the existing GUID, new GUID,
+variants, secondary deck, complete sense transformation, source ownership,
+collocations, and idioms. Then exercise the maintained transaction twice:
+
+```bash
+python -m tools.card_identity_split apply-review --input scratch/<bundle>.jsonl --dry-run
+python -m tools.card_identity_split apply-review --input scratch/<bundle>.jsonl
+```
+
+The command validates current source/card fingerprints and allowlisted variant
+shapes, publishes Card Registry and Bilingual Semantic Audit through a durable
+journal with old-value backups, and writes only a scratch build projection. An
+ordinary failure rolls back immediately; the next non-dry-run invocation
+recovers a hard-interrupted transaction before reading the authorities. Re-run
+the dry-run after apply to prove idempotency, then regenerate every canonical
+review queue, Semantic/Collocation Registry, and build projection. Never
+hand-add a secondary registry row or publish only one side of the identity
+split. Current exact variants and GUIDs are documented under Card Identity in
+`CONTEXT.md`.
+
 ### Change-impact matrix
 
 | Change | Required path | Forbidden shortcut |
@@ -252,11 +275,38 @@ full `pytest` before commit/release or after cross-layer changes.
 
 ## Domain-specific notes
 
-### Audio TTS fallback chain
-For each `(word, accent ∈ {UK, US})` pair, try in order:
-1. Cambridge dictionary audio URL
-2. Oxford Learner's audio URL
-3. no audio
+### Headword pronunciation resolution
+
+- Oxford and Cambridge source schema v3 preserves a `pronunciations` list with
+  entry identity, headword, POS, and same-entry UK/US IPA plus audio URL.
+- Resolve each active `(GUID, accent)` from an exact normalized source headword.
+  Cambridge ranks before Oxford, then dictionary/headword/POS specificity.
+  Never combine IPA from one entry with audio from another or choose a source
+  candidate from an existing filename.
+- Learning-Pattern Headwords and other aliases use `source_word` only through an
+  explicit row in `data/curated/pronunciation_selection_locks.jsonl`; there is no
+  implicit stemming or lemmatization fallback.
+- Ambiguous best candidates require a fingerprint-bound `select` lock. A
+  reviewed genuine absence requires `no_pronunciation`. Source drift makes the
+  lock stale and fails closed.
+- `data/sources/headword_audio_manifest.jsonl` binds every selected candidate to
+  its full dictionary-entry identity, media fingerprint, IPA, URL, filename,
+  byte count, and SHA-256. Distinct entry identities may share one file only
+  when the media fingerprint and byte attestation are exact. Production build
+  requires exact active-selection coverage from locks and manifest, rejects
+  unused rows, and verifies the local media bytes.
+
+After a source rebuild, run the dry-run plan and then the canonical writer:
+
+```bash
+python -m tools.sync_pronunciation_audio
+python -m tools.sync_pronunciation_audio --apply
+```
+
+Commit the regenerated manifest and selected headword MP3 changes before the
+build/release guard. `--attest-existing` is migration-only and may adopt an
+existing base-name MP3 only when its selected URL exactly matches the source
+record's legacy top-level audio; it never selects a pronunciation candidate.
 
 ### Example Audio generation
 
@@ -271,6 +321,11 @@ For each `(word, accent ∈ {UK, US})` pair, try in order:
 - Oxford HTML uses `hclass` ATTRIBUTE (not `class`) on most elements: e.g. `<li class="sense" hclass="sense" cefr="c2">`. CSS selectors using `hclass=` (e.g. `[hclass='sense']`) often work, but `li.sense` also works for top-level. Some elements use both `class` and `hclass`.
 - **pos-g element is a TRAP**: `<pos-g hclass="pos">` markers appear ALL OVER the page (12+ on `sick_1_(adj).html`) — most are in `<span class="arl1">`/`<span class="arl2">` (related-entries links at top of page), NOT in sense blocks. The TRUE POS section boundary is `pos-g` followed by `<ol class="senses_multiple">` or `<ol class="sense_single">` as next sibling (anhe pattern (b) from Phase 7 grill).
 - Word-level CEFR badge: `<span class="ox3ksym_c1">` (Oxford 3000) or `<span class="ox5ksym_c1">` (Oxford 5000) at top of page. Distinct from per-sense `def.cefr`. Extracted via regex on class name → field `oxford_badge` in schema v2.
+- OPAL membership is POS-scoped. Read `opal_written="y"` / `opal_spoken="y"`
+  on the entry `h1.headword` and the matching badge only under
+  `.webtop > .symbols`; page furniture is not evidence. `OxfordRecord.opal` is
+  `null` or a POS-keyed W/S map, and merge unions each POS independently. Run
+  `python -m tools.check_oxford_opal` after an Oxford cache rebuild.
 - See `docs/adr/0001-lxml-parser-backend.md` for the lxml-vs-BS4 decision and `docs/adr/0002-multi-pos-merge-bug.md` for the pos-g pitfall.
 
 ### Oxford "phrasal verb hub" pages (learned 2026-06-19) — missing def trap
@@ -440,9 +495,24 @@ notes into Anki-ready rows. The scraper keeps all senses / all CEFR entries.
    `absent` = adjective/verb/preposition) live in a single card per CEFR, with
    all POS chips listed in the top-bar. Same word with different CEFR levels
    produces multiple cards. Reviewed identity variants currently cover the
-   `converse|UNCLASSIFIED` homonyms plus the reviewed noun/verb split for
-   `trail|C1`; `torture|C1` is a reviewed POS merge and is not a precedent for
-   new splits. See `CONTEXT.md`.
+   exact allowlist in `CONTEXT.md`, including `converse`, `trail`, `bow`,
+   `hint`, `rally`, `proposition`, `denial`, `alien`, and `sensitivity`;
+   `torture|C1` is a reviewed POS merge and is not a precedent for new splits.
+
+The independent **Card Example Floor** also applies: a card with `N` distinct
+POS values must have at least `N` non-empty main Examples across all senses.
+This is a card-level coverage check; Idiom Examples do not count and no
+per-sense POS/example equality is implied.
+
+All reviewed and learner-facing text passes the shared Unicode integrity gate.
+Reject `U+FFFD` and an ASCII `?` embedded before a letter; a legitimate terminal
+question mark remains valid. Keep Vietnamese review payloads in UTF-8 files.
+
+Collocation evidence matching is exact-surface first. Only when no exact source
+row exists may a regular singular/plural change of the card headword satisfy
+the evidence (for example `generous portion` ↔ `generous portions`). Provenance
+is per chip: never slash-compress a Cambridge/Oxford-backed phrase with a
+curated phrase or let the curated half erase the source marker.
 
 See `design/README.md § Card design rules` for the full rationale.
 

@@ -41,6 +41,7 @@ def _parse_oxford_record(filename: str) -> dict:
     # Canonical POS provenance was added after the frozen v2 golden fixture.
     for pos_data in record["pos_data"]:
         pos_data.pop("source_url", None)
+    record.pop("pronunciations", None)  # frozen v2 golden compatibility
     return record
 
 
@@ -48,6 +49,7 @@ def _parse_cambridge_record(filename: str) -> dict:
     raw = fixture_catalog.fixture_path("cambridge", filename).read_bytes()
     record = parse_cambridge(raw, source_files=[filename])
     record["source_url"] = None
+    record.pop("pronunciations", None)  # frozen v2 golden compatibility
     return record
 
 
@@ -130,6 +132,83 @@ def test_oxford_parser_rejects_conflicting_valid_canonical_urls():
     </div></body></html>
     """
     assert parse_oxford(raw)["pos_data"][0]["source_url"] is None
+
+
+def _opal_html(
+    *,
+    headword_attrs: str = "",
+    symbols: str = "",
+    senses: bool = True,
+) -> bytes:
+    senses_html = """
+      <ol class="sense_single">
+        <li class="sense"><span class="def">in the stated manner</span></li>
+      </ol>
+    """ if senses else ""
+    return f"""
+    <html><body>
+      <div class="top-container"><div class="top-g"><div class="webtop">
+        <h1 class="headword" {headword_attrs}>fixture</h1>
+        <span class="pos">adverb</span>
+        <div class="symbols">{symbols}</div>
+      </div></div>{senses_html}</div>
+    </body></html>
+    """.encode()
+
+
+@pytest.mark.parametrize(
+    ("headword_attrs", "expected"),
+    [
+        ('opal_written="y"', {"adverb": ["W"]}),
+        ('opal_spoken="y"', {"adverb": ["S"]}),
+        ('opal_spoken="y" opal_written="y"', {"adverb": ["W", "S"]}),
+    ],
+)
+def test_oxford_parser_extracts_pos_scoped_opal_headword_attributes(
+    headword_attrs,
+    expected,
+):
+    assert parse_oxford(_opal_html(headword_attrs=headword_attrs))["opal"] == expected
+
+
+def test_oxford_parser_uses_scoped_opal_badge_fallback():
+    symbols = '<span class="opal_symbol" href="OPAL_Spoken::Sublist_2">OPAL S</span>'
+    assert parse_oxford(_opal_html(symbols=symbols))["opal"] == {"adverb": ["S"]}
+
+
+def test_oxford_parser_ignores_opal_badges_outside_the_headword_webtop():
+    raw = _opal_html().replace(
+        b"</body>",
+        b'<div class="symbols"><span class="opal_symbol" '
+        b'href="OPAL_Written::Sublist_1">OPAL W</span></div></body>',
+    )
+    assert parse_oxford(raw)["opal"] is None
+
+
+def test_oxford_parser_ignores_opal_badge_in_a_later_webtop():
+    later_entry = (
+        '<div class="webtop"><h1 class="headword" opal_written="y">other</h1>'
+        '<span class="pos">noun</span><div class="symbols">'
+        '<span class="opal_symbol" href="OPAL_Written::Sublist_1">OPAL W</span>'
+        '</div></div>'
+    )
+    raw = _opal_html().replace(b"</body>", f"{later_entry}</body>".encode())
+
+    assert parse_oxford(raw)["opal"] is None
+
+
+def test_oxford_parser_uses_direct_webtop_pos_when_page_has_no_senses():
+    parsed = parse_oxford(_opal_html(headword_attrs='opal_written="y"', senses=False))
+    assert parsed["pos_data"] == []
+    assert parsed["opal"] == {"adverb": ["W"]}
+
+
+def test_accordingly_fixture_has_written_opal_membership():
+    fixture = fixture_catalog.special_fixture("accordingly-opal-written")
+    raw = fixture_catalog.fixture_path("oxford", fixture["filename"]).read_bytes()
+    assert parse_oxford(raw, source_files=[fixture["filename"]])["opal"] == {
+        "adverb": ["W"]
+    }
 
 
 # -----------------------------------------------------------------------------

@@ -10,9 +10,11 @@ authority, writer, and edit policy.
 | --- | --- | --- | --- |
 | `sources/oxford.jsonl` | Canonical Oxford parser output; raw senses remain auditable. | `python -m tools._run_full_cache` | No; fix parser/cache inputs or use an explicitly reviewed source repair. |
 | `sources/cambridge.jsonl` | Canonical Cambridge parser output. | `python -m tools._run_full_cache` | No. |
-| `curated/card_registry.jsonl` | Canonical card identity, GUID, status, and routing inventory. | `python -m tools.sync_card_registry` | No. |
+| `sources/headword_audio_manifest.jsonl` | Byte-attested media projection for every selected entry-scoped UK/US pronunciation. | `python -m tools.sync_pronunciation_audio --apply` | Never. |
+| `curated/card_registry.jsonl` | Canonical card identity, GUID, status, and routing inventory. | `python -m tools.sync_card_registry`; reviewed splits use `python -m tools.card_identity_split apply-review` | No. |
+| `curated/pronunciation_selection_locks.jsonl` | Fingerprint-bound selected/absent pronunciation decisions for ambiguous or explicitly aliased `(GUID, accent)` requests. | Reviewed pronunciation-selection workflow | Only through an explicit candidate-level review; never infer from filenames. |
 | `curated/semantic_policy_locks.jsonl` | Machine-readable exact-VI and absent/retain/exclude release invariants. | Reviewed semantic-policy workflow | Append reviewed history for ordinary locks. The four required user exact-VI locks need explicit user instruction plus a coordinated code/data change and cannot be silently deleted or superseded. |
-| `review/bilingual_semantic_audit.jsonl` | Fingerprint-bound English/Vietnamese sense decisions and complete source coverage. | `python -m tools.semantic_audit scaffold/import-xlsx/apply-review` | Only through a validated review transaction. |
+| `review/bilingual_semantic_audit.jsonl` | Fingerprint-bound English/Vietnamese sense decisions and complete source coverage. | `python -m tools.semantic_audit scaffold/import-xlsx/apply-review`; reviewed identity splits use `python -m tools.card_identity_split apply-review` | Only through a validated review transaction. |
 | `review/vietnamese_naturalness_review.jsonl` | All-sense Vietnamese naturalness evidence with row-specific `reason_code` and EN/example-grounded `semantic_evidence`; user-locked rows also cite `lock_id`, while interpolated bulk templates are rejected. | `python -m tools.semantic_audit vietnamese-review-scaffold/apply-vietnamese-review` | Only through a complete validated review. |
 | `review/bilingual_idiom_audit.jsonl` | Phrase-level idiom meaning and display-mode decisions. | `python -m tools.idiom_audit scaffold/import-xlsx` | Only through a validated review transaction. |
 | `review/collocation_audit.jsonl` | Fingerprint-bound two-way decisions for every current collocation and mandatory example-linked Oxford/Cambridge candidate. | `python -m tools.collocation_audit scaffold/import-xlsx` | Only through a validated review transaction; every item requires an explicit decision. |
@@ -51,7 +53,8 @@ Supporting data:
 ## Lifecycle
 
 ```text
-sources + Card Registry + reviewed semantic/collocation ledgers + policy locks
+sources + pronunciation locks/manifest + Card Registry
+              + reviewed semantic/collocation ledgers + policy locks
                          |
                          v
         semantic_audit + collocation_audit promote
@@ -74,6 +77,13 @@ sources + Card Registry + reviewed semantic/collocation ledgers + policy locks
 ```bash
 # Rebuild source datasets from isolated local caches.
 python -m tools._run_full_cache
+python -m tools.check_oxford_opal
+python -m tools.sync_pronunciation_audio
+python -m tools.sync_pronunciation_audio --apply
+
+# Apply an explicitly reviewed Card Identity split bundle transactionally.
+python -m tools.card_identity_split apply-review --input scratch/<bundle>.jsonl --dry-run
+python -m tools.card_identity_split apply-review --input scratch/<bundle>.jsonl
 
 # Validate and promote reviewed semantics and collocations.
 python -m tools.semantic_audit definition-review-scaffold --replace
@@ -98,6 +108,15 @@ python -m tools.release_guard import
 
 - Same canonical inputs must produce byte-identical source,
   semantic/collocation registry, and build artifacts.
+- Production pronunciation resolves exact entry-scoped IPA/audio pairs and
+  fails closed unless selection locks, exact manifest coverage, and local
+  media bytes agree. The manifest binds full entry selection identity plus a
+  media fingerprint; multiple entry identities share a filename only for the
+  same exact byte attestation. A filename or top-level legacy IPA/audio field
+  is not an authority.
+- A reviewed Card Identity split updates Card Registry and Bilingual Semantic
+  Audit as one journaled, crash-recoverable transaction; downstream
+  registries/builds are regenerated and never hand-patched.
 - Review state is fingerprint-bound; missing, pending, uncertain, unapproved,
   or stale coverage fails closed.
 - The Collocation Audit may be checked against either its captured pre-
@@ -129,8 +148,18 @@ examples, IPA, audio, labels, idioms, and provenance. `sensenum_local` preserves
 Oxford order inside a POS section; null commonly identifies an idiom or
 phrasal-verb sense and is not by itself an error.
 
+Schema v3 also carries `pronunciations`: entry identity, entry headword/POS,
+and accent payloads whose IPA and audio URL come from that same dictionary
+entry. The legacy top-level IPA/audio fields remain source compatibility data,
+not production selection authority.
+
 Every definition also carries `collocation_evidence`, including an empty list
 when no evidence was found. The evidence preserves source/origin coordinates;
 only Oxford example `cf` and Cambridge example-paired `.lu` entries are
 mandatory Collocation Audit candidates. Snippets, bare `.lu`, and grammar `.cl`
 remain supporting evidence.
+
+Oxford `opal` is `null` or a POS-keyed object. Each value is exactly `['W']`,
+`['S']`, or `['W', 'S']`; W-before-S ordering is canonical. The OPAL cache
+guard is read-only and requires the ignored local Oxford cache, so it is a
+post-rebuild workstation check rather than a clean-checkout pytest dependency.

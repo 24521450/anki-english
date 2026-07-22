@@ -15,6 +15,10 @@ from src.deck_builder.build_support import (
 import tools.build_notes
 from src.deck_builder import build_command
 from src.deck_builder.example_audio import referenced_example_audio_names
+from src.deck_builder.pronunciation_resolution import (
+    PronunciationRequest,
+    build_candidate_set,
+)
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -137,6 +141,7 @@ def _setup_canonical_fixture(tmp_path: Path) -> BuildNotesPaths:
         audio_dir=audio,
         card_registry_path=registry,
         manual_cards_path=manual,
+        allow_legacy_pronunciation_for_tests=True,
     )
 
 
@@ -213,6 +218,29 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
     _write_jsonl(collocation_registry, [_collocation_registry_row()])
     out_jsonl = tmp_path / "anki_notes.jsonl"
     out_txt = tmp_path / "anki_notes.txt"
+    pronunciation_locks = tmp_path / "pronunciation_selection_locks.jsonl"
+    request = PronunciationRequest(guid="guid_conq", word="conquer", pos="verb")
+    _write_jsonl(pronunciation_locks, [
+        {
+            "schema_version": 2,
+            "guid": "guid_conq",
+            "word": "conquer",
+            "card_pos": "verb",
+            "accent": accent,
+            "decision": "no_pronunciation",
+            "candidate_set_fingerprint": build_candidate_set(
+                request, accent, []
+            ).fingerprint,
+            "review_reason": "Fixture has no source pronunciation evidence.",
+            "reviewer": "pytest",
+            "reviewed_at": "2026-07-22",
+        }
+        for accent in ("uk", "us")
+    ])
+    headword_audio_manifest = tmp_path / "headword_audio_manifest.jsonl"
+    headword_audio_manifest.write_text("", encoding="utf-8")
+    cambridge_jsonl = tmp_path / "cambridge.jsonl"
+    cambridge_jsonl.write_text("", encoding="utf-8")
 
     monkeypatch.setattr(build_command, "paths_registry", ProjectPaths(tmp_path))
     monkeypatch.setattr(build_command, "OXFORD_3000_MD", paths.oxford_3000_md)
@@ -225,6 +253,7 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
         "build_notes.py",
         "--dry-run",
         "--jsonl", str(paths.oxford_jsonl_path),
+        "--cambridge-jsonl", str(cambridge_jsonl),
         "--out-jsonl", str(out_jsonl),
         "--out-txt", str(out_txt),
         "--gamma", str(paths.gamma_verdicts_path),
@@ -235,6 +264,8 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
         "--antonym-overrides", str(ant_overrides),
         "--semantic-registry", str(semantic_registry),
         "--collocation-registry", str(collocation_registry),
+        "--pronunciation-locks", str(pronunciation_locks),
+        "--headword-audio-manifest", str(headword_audio_manifest),
     ])
     assert tools.build_notes.main() == 0
     assert not out_jsonl.exists()
@@ -249,6 +280,7 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(sys, "argv", [
         "build_notes.py",
         "--jsonl", str(paths.oxford_jsonl_path),
+        "--cambridge-jsonl", str(cambridge_jsonl),
         "--out-jsonl", str(out_jsonl),
         "--out-txt", str(out_txt),
         "--gamma", str(paths.gamma_verdicts_path),
@@ -259,6 +291,8 @@ def test_tools_build_notes_cli_dry_run_and_publish(tmp_path: Path, monkeypatch):
         "--antonym-overrides", str(ant_overrides),
         "--semantic-registry", str(semantic_registry),
         "--collocation-registry", str(collocation_registry),
+        "--pronunciation-locks", str(pronunciation_locks),
+        "--headword-audio-manifest", str(headword_audio_manifest),
     ])
     assert tools.build_notes.main() == 0
     assert out_jsonl.exists()

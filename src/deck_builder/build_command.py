@@ -55,6 +55,16 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=paths_registry.collocation_registry,
     )
+    ap.add_argument(
+        "--pronunciation-locks",
+        type=Path,
+        default=paths_registry.pronunciation_selection_locks,
+    )
+    ap.add_argument(
+        "--headword-audio-manifest",
+        type=Path,
+        default=paths_registry.headword_audio_manifest,
+    )
     args = ap.parse_args(argv)
 
     out_txt = args.txt if args.txt is not None else args.out_txt
@@ -76,6 +86,18 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 1
+    if not args.pronunciation_locks.is_file():
+        print(
+            f"Error: Pronunciation selection locks missing: {args.pronunciation_locks}",
+            file=sys.stderr,
+        )
+        return 1
+    if not args.headword_audio_manifest.is_file():
+        print(
+            f"Error: Headword audio manifest missing: {args.headword_audio_manifest}",
+            file=sys.stderr,
+        )
+        return 1
 
     paths = BuildNotesPaths(
         oxford_jsonl_path=args.jsonl,
@@ -94,6 +116,8 @@ def main(argv: list[str] | None = None) -> int:
         semantic_registry_path=args.semantic_registry,
         collocation_registry_path=args.collocation_registry,
         cambridge_jsonl_path=args.cambridge_jsonl,
+        pronunciation_selection_locks_path=args.pronunciation_locks,
+        headword_audio_manifest_path=args.headword_audio_manifest,
     )
 
     print("=== Loading inputs ===", file=sys.stderr)

@@ -207,6 +207,44 @@ def test_multipos_fixture_predicate_checks_idiom_owner_pos():
     assert not hydrator.matches_semantic_assertions(record, assertions)
 
 
+def test_fixture_predicate_checks_exact_optional_opal_membership():
+    assertions = {
+        "word": "accordingly",
+        "pos_sections": [{"pos": "adverb", "definition_count": 2}],
+        "required_idioms": [],
+        "required_see_also": [],
+        "opal": {"adverb": ["W"]},
+    }
+    record = {
+        "word": "accordingly",
+        "pos_data": [{"pos": "adverb", "definitions": [{}, {}]}],
+        "idioms": [],
+        "see_also": [],
+        "opal": {"adverb": ["W"]},
+    }
+
+    assert hydrator.matches_semantic_assertions(record, assertions)
+    record["opal"] = {"adverb": ["S"]}
+    assert not hydrator.matches_semantic_assertions(record, assertions)
+
+
+def test_manifest_rejects_noncanonical_opal_assertion(tmp_path, monkeypatch):
+    fixture = _special_fixture("opal", "oxford_opal_(adv).html")
+    fixture["assertions"]["opal"] = {"adverb": ["S", "W"]}
+    manifest_path = _write_manifest(
+        tmp_path,
+        monkeypatch,
+        golden_sets=[],
+        special_fixtures=[fixture],
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="assertions.opal must use canonical POS membership",
+    ):
+        hydrator.load_manifest(manifest_path)
+
+
 def test_default_tests_only_reference_declared_ignored_cache_fixtures():
     declared = {
         source: hydrator.declared_fixture_filenames(source)

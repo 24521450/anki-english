@@ -611,6 +611,7 @@ def test_unknown_guid_fails_on_single_card_build(tmp_path):
         manual_cards_path=manual,
         synonym_example_overrides_path=overrides_file,
         antonym_example_overrides_path=tmp_path / "antonym_overrides.jsonl",
+        allow_legacy_pronunciation_for_tests=True,
     )
 
     # Write empty files for dependencies
@@ -651,10 +652,15 @@ def test_production_overrides_loaded_and_used_once():
         antonym_example_overrides_path=proj.antonym_example_overrides,
         review_overrides_path=proj.non_oxford_non_c2_overrides,
         sense_label_overrides_path=proj.sense_label_overrides,
+        semantic_registry_path=proj.semantic_registry,
+        collocation_registry_path=proj.collocation_registry,
+        cambridge_jsonl_path=proj.cambridge_jsonl,
+        pronunciation_selection_locks_path=proj.pronunciation_selection_locks,
+        headword_audio_manifest_path=proj.headword_audio_manifest,
     )
 
     res = build_notes(paths)
-    assert res.built_cards_count == 2461
+    assert res.built_cards_count == 2464
 
     # Every built card has synonyms and antonyms fields (possibly empty strings).
     for c in res.built_cards:

@@ -160,3 +160,54 @@ dùng.
 - Chỉ cut over production khi toàn bộ Collocation Audit đã hoàn tất và promote
   byte-deterministic. Sau cutover phải fail closed trên exact active-card coverage,
   không fallback legacy theo từng card.
+
+## 2026-07-19
+
+- Oxford xác nhận `accordingly` (adverb, C1) có nhãn `OPAL W`; sửa parser và
+  ingestion để bảo toàn OPAL W/S theo đúng POS, rebuild source/card tags, audit
+  toàn bộ Oxford JSONL, và thêm regression cho source lẫn build output.
+- Tag production giữ contract hiện có `OPAL_W` / `OPAL_S`; không đổi sang
+  namespace `Corpus::`. Không được union OPAL ở cấp headword nếu các POS hoặc
+  homonym có membership khác nhau.
+
+## 2026-07-22
+
+- Áp dụng toàn bộ ghi chú trong `scratch/takenote.md` qua các authority review,
+  promotion và build hiện hành; không sửa tay Semantic/Collocation Registry hay
+  build output.
+- Chốt quy tắc Example/POS ở cấp card: card có `N` POS khác nhau phải có ít
+  nhất `N` main Example trên toàn bộ senses. Idiom Example không được tính và
+  không bắt buộc từng sense riêng lẻ phải có số Example bằng số POS.
+- Sửa payload semantic đã review: `abuse` sense 3 → `sỉ nhục`; thêm noun Example
+  cho `reform`; `militant` → `quá khích/cực đoan` và thêm noun Example; gộp
+  `mature` thành `fully developed physically or emotionally` / `trưởng thành;
+  chín chắn`; sửa `trace` C1, `thesis`, `inspiration`, `confine`, `cooperate`,
+  `drown`, và `discretion`; loại các sense đã chỉ định của `exclusive`,
+  `cooperate`, và `dairy` với source coverage được ghi rõ.
+- Tách atomically ba Card Identity C1 đã review, mỗi từ chỉ tạo một card
+  secondary: `denial` (sense 1 | senses 2+3), `alien` adjective (senses 1+2 |
+  senses 3+4), và `sensitivity` (social/emotional | art/physical). Card
+  secondary đi vào `Oxford 5000::Secondary Senses`, có GUID/variant ổn định và
+  tag `SecondarySense`; card primary giữ GUID cũ.
+- Sửa Idiom Vietnamese Gloss `squeeze somebody dry` thành `vắt kiệt`; phục hồi
+  Unicode cho `(as) sound as a bell` thành `hoàn toàn khỏe mạnh/nguyên vẹn`.
+  Review/build phải chặn `U+FFFD` và dấu `?` kiểu mất dấu đứng trước chữ, nhưng
+  vẫn cho phép dấu hỏi kết thúc câu hợp lệ.
+- IPA và headword audio phải được chọn theo cùng một entry Oxford/Cambridge cho
+  từng accent. Cambridge được ưu tiên, nhưng tên file cũ không phải authority;
+  ambiguity/alias/absence đi qua Pronunciation Selection Lock và mọi media được
+  ràng buộc byte bằng Headword Audio Manifest.
+- Tách fingerprint của entry selection khỏi fingerprint của media payload.
+  Nhiều entry identity chỉ được dùng chung filename khi media fingerprint và
+  byte attestation trùng chính xác; lock/manifest thừa ngoài active selection
+  phải làm production fail closed. Migration schema v2 giữ nguyên byte audio,
+  attest rõ các ambiguity cùng payload, rồi loại bỏ command one-shot khỏi HEAD.
+- Transaction tách Card Identity phải có durable journal và old-value backups;
+  lỗi thường rollback ngay, còn lần non-dry-run kế tiếp phải recover một hard
+  interruption trước khi đọc hoặc ghi authority mới.
+- Sửa provenance collocation `incur`: `anger`, `wrath`, `costs`, `expenses` có
+  marker CAM; nhóm `losses/damage/penalties` giữ curated. Với `portion`, tách
+  `generous portion` thành chip Cambridge riêng và giữ `individual portion`
+  neutral curated. Matching evidence phải exact-first; chỉ cho phép biến thể
+  số ít/số nhiều đều đặn của chính headword khi không có exact evidence, và
+  provenance luôn thuộc từng chip thay vì cả cụm slash-compressed.

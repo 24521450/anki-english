@@ -29,8 +29,17 @@ REVIEWED_IDENTITY_VARIANTS: Final[dict[tuple[str, str, str], frozenset[str]]] = 
 # Semantic variants split two cards that keep the same displayed word/POS/CEFR
 # but intentionally carry different reviewed sense groups.
 REVIEWED_SEMANTIC_IDENTITY_VARIANTS: Final[dict[tuple[str, str, str, str], frozenset[str]]] = {
+    ("alien", "C1", "Oxford_5000", "adjective"): frozenset(
+        {"primary", "secondary_disapproving_space"}
+    ),
+    ("denial", "C1", "Oxford_5000", "noun"): frozenset(
+        {"primary", "secondary_entitlement_psychological"}
+    ),
     ("proposition", "C1", "Oxford_5000", "noun"): frozenset(
         {"primary", "secondary_law_formal"}
+    ),
+    ("sensitivity", "C1", "Oxford_5000", "noun"): frozenset(
+        {"primary", "secondary_art_physical"}
     ),
     ("temporal", "UNCLASSIFIED", "NO_LIST", "adjective"): frozenset(
         {"general_formal", "anatomy"}
@@ -149,7 +158,7 @@ def is_reviewed_semantic_identity_variant(
     allowed = REVIEWED_SEMANTIC_IDENTITY_VARIANTS.get(
         (word_key, cefr_key, list_key, pos_key)
     )
-    return bool(allowed and variant_key in allowed)
+    return bool(variant_key and allowed and variant_key in allowed)
 
 
 def reviewed_homonym_variant(

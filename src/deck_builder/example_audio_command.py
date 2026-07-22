@@ -52,6 +52,8 @@ def main(argv: list[str] | None = None) -> int:
             semantic_registry_path=paths.semantic_registry,
             collocation_registry_path=paths.collocation_registry,
             cambridge_jsonl_path=args.cambridge_jsonl,
+            pronunciation_selection_locks_path=paths.pronunciation_selection_locks,
+            headword_audio_manifest_path=paths.headword_audio_manifest,
         )
         cards = build_notes_from_registry(build_paths).built_cards
         report = asyncio.run(generate_example_audio(

@@ -354,6 +354,72 @@ def test_validator_rejects_embedded_render_separators(field, value, error_prefix
     assert any(error.startswith(error_prefix) for error in errors)
 
 
+def test_validator_requires_one_main_example_per_distinct_card_pos():
+    row = _promoted(
+        pos="noun, verb",
+        senses=[_promoted_sense(examples=["Only one example."])],
+    )
+
+    errors = validate_semantic_registry_rows(
+        [row], [_registry(pos="noun, verb")]
+    )
+
+    assert "main_example_pos_shortfall:guid-1:1<2" in errors
+
+
+def test_validator_counts_multiple_examples_in_one_merged_sense():
+    row = _promoted(
+        pos="noun, verb",
+        senses=[_promoted_sense(examples=["First example.", "Second example."])],
+    )
+
+    assert validate_semantic_registry_rows(
+        [row], [_registry(pos="noun, verb")]
+    ) == []
+
+
+def test_validator_exempts_true_idiom_only_registry_row():
+    row = _promoted(
+        pos="noun, verb",
+        senses=[],
+        idioms=[_promoted_idiom()],
+    )
+
+    assert validate_semantic_registry_rows(
+        [row], [_registry(pos="noun, verb")]
+    ) == []
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "location"),
+    [
+        ("definition_vi", "ngh?a bị lỗi", "sem-1:definition_vi"),
+        ("definition_vi", "nghĩa bị \ufffd lỗi", "sem-1:definition_vi"),
+        ("explanation_vi", "ho?n toàn", "idm_" + "1" * 24 + ":explanation_vi"),
+    ],
+)
+def test_validator_rejects_suspected_lossy_unicode(field, value, location):
+    if field == "explanation_vi":
+        row = _promoted(idioms=[_promoted_idiom(**{field: value})])
+    else:
+        row = _promoted(senses=[_promoted_sense(**{field: value})])
+
+    errors = validate_semantic_registry_rows([row], [_registry()])
+
+    assert f"suspected_lossy_unicode:guid-1:{location}" in errors
+
+
+def test_validator_allows_terminal_question_punctuation_in_vietnamese():
+    row = _promoted(
+        senses=[_promoted_sense(definition_vi="Tại sao?")],
+        idioms=[_promoted_idiom(explanation_vi="Ai biết?")],
+    )
+
+    errors = validate_semantic_registry_rows([row], [_registry()])
+
+    assert not any(error.startswith("suspected_lossy_unicode:") for error in errors)
+
+
 def test_apply_formats_senses_and_preserves_every_other_card_field():
     row = _promoted(senses=[
         _promoted_sense(examples=["First.", "Second."]),

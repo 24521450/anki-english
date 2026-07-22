@@ -25,6 +25,8 @@ Oxford (oxford_full.jsonl schema v2):
 - verb_forms_table : VERIFIED — table.verb_forms_table (1 in stay_(verb).html, 0 in nouns)
 - oxford3000       : VERIFIED — [ox3000] attribute (4 in stay_(verb).html)
 - oxford5000       : VERIFIED — [ox5000] attribute (3 in texture_(noun).html)
+- opal_badge       : VERIFIED — span.opal_symbol, scoped by parser to direct .symbols child
+- webtop_pos       : VERIFIED — direct span.pos child, scoped by parser to entry .webtop
 - see_also         : VERIFIED — link "see also" in run-in text
 
 Cambridge (sources/cambridge.jsonl schema v2):
@@ -71,6 +73,8 @@ OXFORD = {
     "ox3000_attr":      "[ox3000]",
     "ox5000_attr":      "[ox5000]",
     "oxford_badge":     'span[class*="ox3ksym_"], span[class*="ox5ksym_"]',
+    "opal_badge":       "span.opal_symbol",
+    "webtop_pos":       "span.pos",
     "see_also":         "a[href*='definition/english/'][class*='Ref']",
 }
 

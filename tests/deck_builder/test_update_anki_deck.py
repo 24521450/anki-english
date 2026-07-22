@@ -48,11 +48,13 @@ def _production_design_paths(tmp_path: Path, monkeypatch):
         fixture_paths.card_registry,
         fixture_paths.semantic_registry,
         fixture_paths.collocation_registry,
+        fixture_paths.headword_audio_manifest,
         fixture_paths.bilingual_semantic_audit,
         fixture_paths.bilingual_idiom_audit,
         fixture_paths.collocation_audit,
         fixture_paths.vietnamese_naturalness_review,
         fixture_paths.semantic_policy_locks,
+        fixture_paths.pronunciation_selection_locks,
         fixture_paths.definition_concision_review,
         fixture_paths.semantic_sense_merge_review,
     ):

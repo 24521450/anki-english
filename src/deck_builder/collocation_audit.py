@@ -272,6 +272,32 @@ def normalize_collocation(value: object) -> str:
     return _display_text(value).casefold()
 
 
+def collocation_text_matches_evidence(
+    final_text: object,
+    evidence_text: object,
+    *,
+    headword: object,
+) -> bool:
+    """Allow only a reviewed singular/plural change of the card headword."""
+    final = normalize_collocation(final_text)
+    evidence = normalize_collocation(evidence_text)
+    if final == evidence:
+        return True
+
+    word = normalize_collocation(headword)
+    if not word or " " in word:
+        return False
+    if word.endswith("y") and len(word) > 1 and word[-2] not in "aeiou":
+        plural = word[:-1] + "ies"
+    elif word.endswith(("s", "x", "z", "ch", "sh")):
+        plural = word + "es"
+    else:
+        plural = word + "s"
+
+    pattern = re.compile(rf"(?<!\w)(?:{re.escape(word)}|{re.escape(plural)})(?!\w)")
+    return pattern.sub(word, final) == pattern.sub(word, evidence)
+
+
 def _normalize_reason(value: object) -> str:
     return _REASON_SPACE_RE.sub(" ", _trim(value).casefold())
 
@@ -1014,6 +1040,7 @@ def _final_source_set(token: str) -> set[str]:
 
 def _validate_final_items(row: dict, *, require_complete: bool) -> list[str]:
     guid = _trim(row.get("guid"))
+    headword = row.get("word")
     errors: list[str] = []
     evidence = row.get("source_evidence") or []
     evidence_by_id = {item.get("evidence_id"): item for item in evidence if isinstance(item, dict)}
@@ -1072,11 +1099,36 @@ def _validate_final_items(row: dict, *, require_complete: bool) -> list[str]:
             errors.append(f"unknown_final_evidence:{guid}:{item_id}")
         if set(current_ids) - set(current_by_id):
             errors.append(f"unknown_final_current_item:{guid}:{item_id}")
-        exact_evidence = [
-            evidence_item["evidence_id"]
+        allowed_sources = _final_source_set(source)
+        source_evidence = [
+            evidence_item
             for evidence_item in evidence
             if isinstance(evidence_item, dict)
-            and normalize_collocation(evidence_item.get("text")) == normalized
+            and evidence_item.get("source") in allowed_sources
+        ]
+        # Prefer exact surface evidence whenever it exists.  The reviewed
+        # singular/plural fallback is only for a surface that has no exact
+        # dictionary row (for example ``generous portion`` backed by
+        # ``generous portions``); otherwise two separately reviewed chips
+        # such as ``loyalty to``/``loyalties to`` would claim the same
+        # evidence through morphology.
+        exact_surface = normalize_collocation(text)
+        exact_surface_evidence = [
+            evidence_item
+            for evidence_item in source_evidence
+            if normalize_collocation(evidence_item.get("text")) == exact_surface
+        ]
+        matching_evidence = exact_surface_evidence or [
+            evidence_item
+            for evidence_item in source_evidence
+            if collocation_text_matches_evidence(
+                text,
+                evidence_item.get("text"),
+                headword=headword,
+            )
+        ]
+        exact_evidence = [
+            evidence_item["evidence_id"] for evidence_item in matching_evidence
         ]
         if source == "curated":
             if evidence_ids:

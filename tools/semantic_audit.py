@@ -893,7 +893,38 @@ def _apply_vietnamese_review(args) -> int:
         review_records = load_jsonl(args.input)
         if not review_records:
             raise ValueError("vietnamese_review_empty")
-        review_summary, review_rows = review_records[0], review_records[1:]
+        # Permit a small, fingerprint-bound patch file containing only review
+        # rows.  This keeps long-running all-sense ledgers easy to review while
+        # preserving the canonical summary and untouched decisions.  A patch
+        # can never add a candidate: exact coverage is still enforced below.
+        first_is_summary = review_records[0].get("record_type") == "review_summary"
+        declared_count = review_records[0].get("candidate_count")
+        is_partial_patch = (
+            first_is_summary
+            and isinstance(declared_count, int)
+            and len(review_records) - 1 < declared_count
+        )
+        patch_input = review_records[0].get("record_type") == "review" or is_partial_patch
+        if patch_input:
+            canonical_records = load_jsonl(DEFAULT_VIETNAMESE_REVIEW)
+            if not canonical_records:
+                raise ValueError("vietnamese_review_canonical_empty")
+            review_summary = canonical_records[0]
+            existing_rows = {
+                str(row.get("candidate_id") or ""): row
+                for row in canonical_records[1:]
+            }
+            patch_rows = review_records[1:] if is_partial_patch else review_records
+            for row in patch_rows:
+                candidate_id = str(row.get("candidate_id") or "")
+                if not candidate_id or candidate_id not in existing_rows:
+                    raise ValueError(
+                        f"vietnamese_review_patch_unknown_candidate:{candidate_id}"
+                    )
+                existing_rows[candidate_id] = row
+            review_rows = list(existing_rows.values())
+        else:
+            review_summary, review_rows = review_records[0], review_records[1:]
         min_tokens = review_summary.get("min_tokens")
         scope = review_summary.get("scope", "long")
         (
@@ -934,6 +965,11 @@ def _apply_vietnamese_review(args) -> int:
                     "bilingual semantic audit changed while applying Vietnamese review"
                 )
             _write_atomic(args.audit, serialize_jsonl(updated))
+            if patch_input and args.persist_review:
+                _write_atomic(
+                    DEFAULT_VIETNAMESE_REVIEW,
+                    serialize_vietnamese_review(review_summary, review_rows),
+                )
     except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
         print(f"Vietnamese review apply failed: {exc}", file=sys.stderr)
         return 1
@@ -943,6 +979,9 @@ def _apply_vietnamese_review(args) -> int:
         **audit_summary(updated),
         "dry_run": args.dry_run,
         "review": str(args.input),
+        "persisted_review": bool(
+            not args.dry_run and patch_input and args.persist_review
+        ),
         "rewrites": rewrites,
     }, ensure_ascii=False, sort_keys=True))
     return 0
@@ -1243,6 +1282,11 @@ def main(argv: list[str] | None = None) -> int:
         "--input", type=Path, default=DEFAULT_VIETNAMESE_REVIEW
     )
     apply_vietnamese_review_parser.add_argument("--dry-run", action="store_true")
+    apply_vietnamese_review_parser.add_argument(
+        "--persist-review",
+        action="store_true",
+        help="Persist a partial/row-only patch into the canonical VI review ledger.",
+    )
     apply_vietnamese_review_parser.set_defaults(handler=_apply_vietnamese_review)
 
     sense_merge_audit = sub.add_parser("sense-merge-audit")

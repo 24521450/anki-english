@@ -30,6 +30,10 @@ from src.deck_builder.formatting import (
 )
 from src.deck_builder.audio_gate import validate_audio_gate
 from src.deck_builder.example_audio import validate_example_audio_alignment
+from src.deck_builder.example_policy import (
+    main_example_pos_shortfall,
+    rendered_main_examples,
+)
 from src.deck_builder.card_identity import (
     CardIdentity,
     primary_list_from_tags,
@@ -46,6 +50,7 @@ from src.deck_builder.production import (
     production_eligible,
 )
 from src.deck_builder.sense_pos import fallback_sense_pos, valid_sense_pos_cell
+from src.deck_builder.text_integrity import has_suspected_lossy_unicode
 
 
 @dataclass(frozen=True, slots=True)
@@ -260,6 +265,15 @@ def _validate_cards(
             if not getattr(card, field).strip():
                 issues.append(BuildIssue("error", "required_field_empty", f"row {idx} field {field!r} is empty", identity=identity))
 
+        for field in ("definition_vi", "idiom_meaning_vi"):
+            if has_suspected_lossy_unicode(getattr(card, field)):
+                issues.append(BuildIssue(
+                    "error",
+                    "suspected_lossy_unicode",
+                    f"row {idx} field {field!r} contains suspected lossy Unicode",
+                    identity=identity,
+                ))
+
         pos_cells = [part.strip() for part in card.pos.split(",") if part.strip()]
         oxford_url_cells = card.oxford_pos_urls.split("|")
         if len(oxford_url_cells) != len(pos_cells):
@@ -298,6 +312,23 @@ def _validate_cards(
                 f"row {idx} Example must use <br><br> between examples of one sense",
                 identity=identity,
             ))
+
+        if card.definition_vi.strip():
+            shortfall = main_example_pos_shortfall(
+                card.pos,
+                rendered_main_examples(card.example),
+            )
+            if shortfall is not None:
+                actual, required = shortfall
+                issues.append(BuildIssue(
+                    "error",
+                    "main_example_pos_shortfall",
+                    (
+                        f"row {idx} has {actual} nonblank main Examples for "
+                        f"{required} distinct POS values"
+                    ),
+                    identity=identity,
+                ))
 
         for relation_issue in validate_lexical_relation_metadata(
             card.example,

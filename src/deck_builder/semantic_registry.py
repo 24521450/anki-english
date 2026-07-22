@@ -11,9 +11,11 @@ from src.deck_builder.build_contracts import (
     MAX_IDIOMS_PER_CARD,
     BuiltCard,
 )
+from src.deck_builder.example_policy import main_example_pos_shortfall
 from src.deck_builder.sense_pos import derive_sense_pos_cell
 from src.deck_builder.semantic_audit import validate_audit_rows
 from src.deck_builder.canonical_io import canonical_text_bytes, canonical_text_sha256
+from src.deck_builder.text_integrity import has_suspected_lossy_unicode
 
 
 SEMANTIC_REGISTRY_SCHEMA_VERSION = 4
@@ -143,6 +145,10 @@ def _validate_structure(rows: list[dict]) -> list[str]:
             for field in ("definition_en", "definition_vi", "translation_provenance"):
                 if _invalid_text(sense.get(field), required=True):
                     errors.append(f"invalid_scalar:{guid}:{semantic_id}:{field}")
+            if has_suspected_lossy_unicode(sense.get("definition_vi")):
+                errors.append(
+                    f"suspected_lossy_unicode:{guid}:{semantic_id}:definition_vi"
+                )
             if sense.get("cambridge_match") not in _PROMOTED_CAMBRIDGE_MATCHES:
                 errors.append(f"invalid_cambridge_match:{guid}:{semantic_id}")
 
@@ -160,6 +166,20 @@ def _validate_structure(rows: list[dict]) -> list[str]:
                 or any(_invalid_text(source_id, required=True) for source_id in source_ids)
             ):
                 errors.append(f"invalid_source_sense_ids:{guid}:{semantic_id}")
+
+        if senses:
+            shortfall = main_example_pos_shortfall(
+                row.get("pos"),
+                (
+                    example
+                    for sense in senses
+                    if isinstance(sense, dict)
+                    for example in (sense.get("examples") or [])
+                ),
+            )
+            if shortfall is not None:
+                actual, required = shortfall
+                errors.append(f"main_example_pos_shortfall:{guid}:{actual}<{required}")
 
         idioms = row.get("idioms")
         if not isinstance(idioms, list):
@@ -214,6 +234,10 @@ def _validate_structure(rows: list[dict]) -> list[str]:
                     or (isinstance(value, str) and ("::" in value or "$$" in value))
                 ):
                     errors.append(f"invalid_idiom_scalar:{guid}:{idiom_id}:{field}")
+            if has_suspected_lossy_unicode(idiom.get("explanation_vi")):
+                errors.append(
+                    f"suspected_lossy_unicode:{guid}:{idiom_id}:explanation_vi"
+                )
 
             idiom_examples = idiom.get("examples")
             if not isinstance(idiom_examples, list):

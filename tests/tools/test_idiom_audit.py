@@ -180,6 +180,60 @@ def test_validation_fails_closed_for_fingerprints_modes_and_approval():
     )
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("explanation_en_simple", "someone?s condition"),
+        ("explanation_vi", "ho?n to?n kh?e m?nh/nguy?n v?n"),
+        ("review_reason", "?Ph?n meaning was retained."),
+        ("translation_provenance", "manual\ufffdreview"),
+    ],
+)
+def test_validation_rejects_suspected_lossy_unicode_in_review_text(field, value):
+    rows = build_audit_rows(
+        [_card("g1", "sound as a bell :: completely healthy or undamaged")],
+        _registry("g1"),
+    )
+    _complete(rows[0])
+    rows[0][field] = value
+
+    assert (
+        f"suspected_lossy_unicode:{rows[0]['idiom_id']}:{field}"
+        in validate_audit_rows(rows, _registry("g1"), require_complete=True)
+    )
+
+
+def test_validation_allows_unicode_and_terminal_question_punctuation():
+    rows = build_audit_rows(
+        [_card("g1", "sound as a bell :: completely healthy or undamaged")],
+        _registry("g1"),
+    )
+    _complete(rows[0])
+    rows[0]["explanation_vi"] = "hoàn toàn khỏe mạnh/nguyên vẹn"
+    rows[0]["review_reason"] = "Ai trả giá nào?"
+    rows[0]["translation_provenance"] = "rà_soát_thủ_công"
+
+    assert validate_audit_rows(rows, _registry("g1"), require_complete=True) == []
+    assert promoted_idioms_by_guid(rows)["g1"][0]["explanation_vi"] == (
+        "hoàn toàn khỏe mạnh/nguyên vẹn"
+    )
+
+
+def test_promotion_rejects_suspected_lossy_unicode():
+    rows = build_audit_rows(
+        [_card("g1", "sound as a bell :: completely healthy or undamaged")],
+        _registry("g1"),
+    )
+    _complete(rows[0])
+    rows[0]["explanation_vi"] = "ho?n to?n kh?e m?nh/nguy?n v?n"
+
+    with pytest.raises(
+        ValueError,
+        match=rf"suspected_lossy_unicode:{rows[0]['idiom_id']}:explanation_vi",
+    ):
+        promoted_idioms_by_guid(rows)
+
+
 def test_promotion_uses_source_fallback_for_vi_equivalent_and_simple_english_for_gloss():
     registry = _registry("g1", "g2")
     rows = build_audit_rows(

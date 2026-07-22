@@ -143,6 +143,16 @@ def load_manifest(path: Path = MANIFEST_PATH) -> dict:
             raise ValueError(f"{fixture['id']}: assertions require required_idioms")
         if not isinstance(assertions.get("required_see_also"), list):
             raise ValueError(f"{fixture['id']}: assertions require required_see_also")
+        opal = assertions.get("opal")
+        if "opal" in assertions and (
+            not isinstance(opal, dict)
+            or not opal
+            or any(not isinstance(pos, str) or not pos for pos in opal)
+            or any(value not in (["W"], ["S"], ["W", "S"]) for value in opal.values())
+        ):
+            raise ValueError(
+                f"{fixture['id']}: assertions.opal must use canonical POS membership"
+            )
 
     return manifest
 
@@ -361,6 +371,7 @@ def matches_semantic_assertions(record: dict, assertions: dict) -> bool:
         and actual_sections == assertions["pos_sections"]
         and required_idioms <= actual_idioms
         and set(assertions["required_see_also"]) <= actual_see_also
+        and ("opal" not in assertions or record.get("opal") == assertions["opal"])
     )
 
 

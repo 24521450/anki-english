@@ -57,6 +57,9 @@ class BuildNotesPaths(NamedTuple):
     semantic_registry_path: Path | None = None
     collocation_registry_path: Path | None = None
     cambridge_jsonl_path: Path | None = None
+    pronunciation_selection_locks_path: Path | None = None
+    headword_audio_manifest_path: Path | None = None
+    allow_legacy_pronunciation_for_tests: bool = False
 
 
 class BuiltCard(NamedTuple):

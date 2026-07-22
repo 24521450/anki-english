@@ -41,6 +41,10 @@ def _dedup_preserve_order(items: list[str]) -> list[str]:
     return list(dict.fromkeys(p for p in items if p))
 
 
+def _has_class(el, name: str) -> bool:
+    return name in (el.get("class") or "").split()
+
+
 # -----------------------------------------------------------------------------
 # Per-field extractors
 # -----------------------------------------------------------------------------
@@ -113,6 +117,77 @@ def _extract_audio_paths(root) -> dict[str, Optional[str]]:
     if us is not None:
         out["us"] = us.get("src")
     return out
+
+
+def _entry_id(entry_el, entry_index: int) -> str:
+    for child in entry_el:
+        if _has_class(child, "cid") and child.get("id"):
+            return child.get("id")
+    cid = _first(entry_el, ".cid[id]")
+    if cid is not None and cid.get("id"):
+        return cid.get("id")
+    return f"entry-{entry_index}"
+
+
+def _dictionary_id(entry_id: str) -> str:
+    match = re.match(r"([A-Za-z][A-Za-z0-9_]*)", entry_id)
+    return match.group(1) if match else "unknown"
+
+
+def _entry_accent(header_el, accent: str) -> dict[str, Optional[str]]:
+    regions = header_el.cssselect(f"span.{accent}.dpron-i")
+    if not regions:
+        return {"ipa": None, "audio_url": None}
+    region = regions[0]
+    ipa_el = _first(region, ".dipa")
+    audio_url = None
+    for source in region.cssselect("audio source[type='audio/mpeg']"):
+        candidate = source.get("src")
+        if candidate and f"{accent}_pron" in candidate:
+            audio_url = candidate
+            break
+    return {
+        "ipa": _text_of(ipa_el) or None,
+        "audio_url": audio_url,
+    }
+
+
+def extract_entry_pronunciations(
+    root,
+    source_files: Optional[list[str]] = None,
+) -> list[dict[str, Any]]:
+    """Extract pronunciation pairs from their owning Cambridge entry headers."""
+    source_file = (source_files or [""])[0]
+    dictionary_ranks: dict[str, int] = {}
+    pronunciations: list[dict[str, Any]] = []
+    for entry_index, entry_el in enumerate(
+        root.cssselect(".entry-body__el"),
+        start=1,
+    ):
+        header = _first(entry_el, ".pos-header.dpos-h")
+        if header is None:
+            continue
+        entry_id = _entry_id(entry_el, entry_index)
+        dictionary_id = _dictionary_id(entry_id)
+        if dictionary_id not in dictionary_ranks:
+            dictionary_ranks[dictionary_id] = len(dictionary_ranks)
+        headword_el = _first(header, ".headword")
+        positions = _dedup_preserve_order(
+            _text_of(pos_el)
+            for pos_el in header.cssselect(".posgram.dpos-g .pos.dpos")
+        )
+        pronunciations.append({
+            "source_file": source_file,
+            "dictionary_id": dictionary_id,
+            "dictionary_rank": dictionary_ranks[dictionary_id],
+            "entry_id": entry_id,
+            "entry_index": entry_index,
+            "headword": _text_of(headword_el),
+            "pos": positions,
+            "uk": _entry_accent(header, "uk"),
+            "us": _entry_accent(header, "us"),
+        })
+    return pronunciations
 
 
 def _extract_oxford_lists(root) -> list[str]:
@@ -320,6 +395,7 @@ def parse_cambridge(html_bytes: bytes, source_files: Optional[list[str]] = None)
     uk_ipa = _extract_ipa_uk(root)
     us_ipa = _extract_ipa_us(root)
     audio = _extract_audio_paths(root)
+    pronunciations = extract_entry_pronunciations(root, source_files)
     lists = _extract_oxford_lists(root)
     awl = _extract_awl(root)
     register_top = _extract_register_top(root)
@@ -372,6 +448,7 @@ def parse_cambridge(html_bytes: bytes, source_files: Optional[list[str]] = None)
         "uk_ipa": uk_ipa,
         "us_ipa": us_ipa,
         "audio": audio,
+        "pronunciations": pronunciations,
         "see_also": see_also,
         "pos_data": pos_data,
         "verb_forms": None,  # Cambridge has no verb_forms section

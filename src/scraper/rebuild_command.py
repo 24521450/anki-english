@@ -200,12 +200,40 @@ def run_source(
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
     oxford_only = "--oxford-only" in argv
+    cambridge_only = "--cambridge-only" in argv
+
+    if oxford_only and cambridge_only:
+        print("Error: --oxford-only and --cambridge-only are mutually exclusive")
+        return 2
 
     if os.path.exists(LOG_PATH):
         os.unlink(LOG_PATH)
     print(f"Log: {LOG_PATH}")
     if oxford_only:
         print("[mode] Oxford only (--oxford-only)")
+    if cambridge_only:
+        print("[mode] Cambridge only (--cambridge-only)")
+        cam_stats = run_source(
+            CAMBRIDGE_DIR,
+            _parse_one_cambridge,
+            CAMBRIDGE_OUT,
+            "Cambridge",
+        )
+        if cam_stats["error_rate"] > ERROR_THRESHOLD:
+            print(
+                f"\n*** ABORT: Cambridge error rate "
+                f"{100*cam_stats['error_rate']:.2f}% exceeds "
+                f"{100*ERROR_THRESHOLD:.2f}% threshold ***"
+            )
+            print("Check log for error patterns.")
+            return 1
+        print("\n=== FINAL (Cambridge only) ===")
+        print(
+            f"Cambridge: {cam_stats['records']} records, "
+            f"{cam_stats['skipped']} skipped, {cam_stats['errors']} errors"
+        )
+        print(f"Output: {CAMBRIDGE_OUT}")
+        return 0
 
     # v3.1: Oxford records go parser → merge in-memory (no intermediate file).
     # We use a temp path for run_source's contract (it writes a JSONL), but

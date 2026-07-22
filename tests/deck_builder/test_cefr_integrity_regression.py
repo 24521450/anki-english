@@ -76,9 +76,9 @@ def test_corrected_cards_preserve_guids_and_homonym_metadata():
 
     sake = by_key[("sake", "noun", "C1")]
     assert sake["guid"] == "cU3J}]?X.%"
-    assert sake["ipa"] == "/ˈsɑːki/"
-    assert sake["uk_audio"] == "[sound:cambridge_uk_sake_noun_2.mp3]"
-    assert sake["us_audio"] == "[sound:cambridge_us_sake_noun_2.mp3]"
+    assert sake["ipa"] == "/ˈsɑː.ki/"
+    assert sake["uk_audio"] == "[sound:cambridge_uk_sake.mp3]"
+    assert sake["us_audio"] == "[sound:cambridge_us_sake.mp3]"
     assert sake["idioms"] == ""
     _assert_semantic_registry_owns_card(sake, registry)
 
@@ -106,19 +106,19 @@ def test_converse_homonyms_are_separate_cards():
 
     verb = converse[("verb", "UNCLASSIFIED")]
     assert verb["guid"] == "hu-nITV:EB"
-    assert verb["ipa"] == "UK: /kənˈvɜːs/ | US: /kənˈvɜːrs/"
+    assert verb["ipa"] == "UK: /kənˈvɜːs/ | US: /kənˈvɝːs/"
     _assert_semantic_registry_owns_card(verb, registry)
     assert verb["source2"] == "AWL"
-    assert verb["uk_audio"] == "[sound:cambridge_uk_converse_verb.mp3]"
-    assert verb["us_audio"] == "[sound:cambridge_us_converse_verb.mp3]"
+    assert verb["uk_audio"] == "[sound:cambridge_uk_converse.mp3]"
+    assert verb["us_audio"] == "[sound:cambridge_us_converse_f11c8f9dca1b.mp3]"
 
     nominal = converse[("adjective, noun", "UNCLASSIFIED")]
     assert nominal["guid"] == "dI;xOQZ.Jd"
-    assert nominal["ipa"] == "UK: /ˈkɒnvɜːs/ | US: /ˈkɑːnvɜːrs/"
+    assert nominal["ipa"] == "UK: /ˈkɒn.vɜːs/ | US: /ˈkɑːn.vɝːs/"
     _assert_semantic_registry_owns_card(nominal, registry)
     assert nominal["source2"] == "AWL"
-    assert nominal["uk_audio"] == "[sound:cambridge_uk_converse_adjective_noun.mp3]"
-    assert nominal["us_audio"] == "[sound:cambridge_us_converse_adjective_noun.mp3]"
+    assert nominal["uk_audio"] == "[sound:cambridge_uk_converse_d030e806f55c.mp3]"
+    assert nominal["us_audio"] == "[sound:cambridge_us_converse.mp3]"
 
 
 def test_manual_fills_only_cover_missing_oxford_rows():

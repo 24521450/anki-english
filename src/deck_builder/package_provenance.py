@@ -49,6 +49,7 @@ def package_provenance_inputs(
         "card_registry": project_paths.card_registry,
         "semantic_registry": project_paths.semantic_registry,
         "collocation_registry": project_paths.collocation_registry,
+        "headword_audio_manifest": project_paths.headword_audio_manifest,
         "bilingual_semantic_audit": project_paths.bilingual_semantic_audit,
         "bilingual_idiom_audit": project_paths.bilingual_idiom_audit,
         "collocation_audit": project_paths.collocation_audit,
@@ -56,6 +57,9 @@ def package_provenance_inputs(
             project_paths.vietnamese_naturalness_review
         ),
         "semantic_policy_locks": project_paths.semantic_policy_locks,
+        "pronunciation_selection_locks": (
+            project_paths.pronunciation_selection_locks
+        ),
         "definition_concision_review": project_paths.definition_concision_review,
         "semantic_sense_merge_review": (
             project_paths.semantic_sense_merge_review

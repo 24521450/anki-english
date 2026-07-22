@@ -58,6 +58,8 @@ SUBJECT_LABELS: frozenset[str] = frozenset({
     "statistics",
 })
 
+REGISTER_FREQUENCY_PREFIXES: frozenset[str] = frozenset({"often"})
+
 _LABEL_SPLIT_RE = re.compile(r"\s*,\s*")
 _PAREN_STRIP_RE = re.compile(r"^\(|\)$")
 
@@ -94,8 +96,17 @@ def parse_label_compound(label_text: str) -> dict[str, list[str] | str | None]:
         p = part.strip().lower()
         if not p:
             continue
-        if p in REGISTER_LABELS and p not in reg_tags:
-            reg_tags.append(p)
+        register = p if p in REGISTER_LABELS else None
+        if register is None:
+            words = p.split()
+            if (
+                len(words) == 2
+                and words[0] in REGISTER_FREQUENCY_PREFIXES
+                and words[1] in REGISTER_LABELS
+            ):
+                register = words[1]
+        if register is not None and register not in reg_tags:
+            reg_tags.append(register)
         if p in SUBJECT_LABELS and dom is None:
             dom = p
 
