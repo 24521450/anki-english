@@ -16,6 +16,7 @@ from src.deck_builder.corpus_tag_sync import (
     get_vocab_membership,
     route_deck,
 )
+from src.deck_builder.deck_names import AWL_DECK, LEGACY_AWL_DECK
 
 HEADER = [
     '#separator:tab',
@@ -266,6 +267,7 @@ class TestNewRoutingAndTagContracts:
             ('deprive', 'verb', 'C1'),
             ('derive', 'verb', 'B2'),
             ('devote', 'verb', 'B2'),
+            ('contend', 'verb', 'C1'),
         }
 
         # meantime: pos = "adverb, noun" (noun is second)
@@ -295,6 +297,9 @@ class TestNewRoutingAndTagContracts:
 
         # Learning-Pattern Headword resolves to the Oxford verb lemma.
         in_3000, in_5000 = get_vocab_membership('devote sth to sth', 'phrasal verb', 'B2', v3000, v5000)
+        assert in_5000 is True
+
+        in_3000, in_5000 = get_vocab_membership('contend with sb/sth', 'phrasal verb', 'C1', v3000, v5000)
         assert in_5000 is True
 
     def test_mainland_manual_fill_branch_gets_tag(self):
@@ -341,13 +346,13 @@ class TestNewRoutingAndTagContracts:
 
         # AWL Coxhead routing
         deck = route_deck("English Academic Vocabulary::TED YT", is_in_3000=False, is_in_5000=False, word="criterion", pos_str="noun", cefr="UNCLASSIFIED", is_in_awl_coxhead=True)
-        assert deck == "English Academic Vocabulary::AWL 50 Academic Words"
+        assert deck == AWL_DECK
 
         # Not in either list -> keep current deck (unless in AWL deck -> move to Oxford)
         deck = route_deck("English Academic Vocabulary::TED YT", is_in_3000=False, is_in_5000=False, word="test", pos_str="noun", cefr="C1")
         assert deck == "English Academic Vocabulary::TED YT"
 
-        deck = route_deck("English Academic Vocabulary::AWL 50 Academic Words", is_in_3000=False, is_in_5000=False, word="rover", pos_str="noun", cefr="C2")
+        deck = route_deck(LEGACY_AWL_DECK, is_in_3000=False, is_in_5000=False, word="rover", pos_str="noun", cefr="C2")
         assert deck == "English Academic Vocabulary::Oxford"
 
     def test_awl_coxhead_membership_rules_and_routing(self):
@@ -382,7 +387,7 @@ class TestNewRoutingAndTagContracts:
         )
         assert any('AWL_Coxhead' in c.tags for c in by_word['labor'])
         for c in by_word['labor']:
-            assert c.deck == 'English Academic Vocabulary::AWL 50 Academic Words'
+            assert c.deck == AWL_DECK
 
         # 2. trigger|verb|C2 gets NO AWL_Coxhead tag because headword trigger belongs to Oxford 5000
         for c in by_word['trigger']:

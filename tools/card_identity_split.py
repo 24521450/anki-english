@@ -22,7 +22,7 @@ def _already_applied_candidate(registry_rows: list[dict], reviews: list[dict]) -
     by_guid = {str(row.get("guid") or ""): row for row in registry_rows}
     return bool(reviews) and all(
         (by_guid.get(str(review.get("source_guid") or "")) or {}).get("variant")
-        == "primary"
+        == str((review.get("primary") or {}).get("variant") or "")
         and str((review.get("secondary") or {}).get("guid") or "") in by_guid
         for review in reviews
     )

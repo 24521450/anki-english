@@ -23,6 +23,7 @@ from src.deck_builder.anki_import_command import (
     load_expected_media,
     load_expected_records,
     load_expected_signatures,
+    migrate_legacy_awl_deck,
     migrate_established_eavm_fields,
     preflight_and_backup,
     snapshot_existing_collection,
@@ -33,6 +34,7 @@ from src.deck_builder.anki_import_command import (
     validate_local_inputs,
     verify_import,
 )
+from src.deck_builder.deck_names import AWL_DECK, LEGACY_AWL_DECK
 from src.deck_builder.package_command import load_eavm_templates
 from src.deck_builder.live_guid_proof import LiveGuidProof
 from src.deck_builder.package_archive import (
@@ -644,6 +646,179 @@ def test_snapshot_accepts_unique_canonical_identity_subset(tmp_path: Path):
     assert snapshot.note_ids == frozenset({123})
     assert snapshot.card_ids == frozenset({456, 457})
     assert snapshot.note_identities == {123: ("alien", "noun", "C1")}
+
+
+def test_snapshot_accepts_only_exact_legacy_awl_deck_mismatch(tmp_path: Path):
+    row = _row(deck=AWL_DECK, tags="AWL_Coxhead")
+    notes = tmp_path / "notes.jsonl"
+    _write_jsonl(notes, [row])
+    live = _live_note(row)
+    live.update({"noteId": 123, "cards": [456, 457], "tags": ["AWL_Coxhead"]})
+
+    class Client:
+        def call(self, action, **params):
+            if action == "findNotes": return [123]
+            if action == "notesInfo": return [live]
+            if action == "findCards": return [456, 457]
+            if action == "cardsInfo":
+                return [
+                    {
+                        "cardId": card_id,
+                        "note": 123,
+                        "ord": ordinal,
+                        "deckName": LEGACY_AWL_DECK,
+                        "modelName": EAVM_MODEL_NAME,
+                        "type": 2,
+                        "queue": 2,
+                        "due": 10 + ordinal,
+                        "interval": 3,
+                        "factor": 2500,
+                        "reps": 4,
+                        "lapses": 0,
+                        "left": 0,
+                    }
+                    for card_id, ordinal in ((456, 0), (457, 1))
+                ]
+            raise AssertionError(action)
+
+    snapshot = snapshot_existing_collection(
+        Client(), load_expected_records(notes), "canonical"
+    )
+
+    assert snapshot.card_ids == frozenset({456, 457})
+    assert snapshot.legacy_awl_card_ids == frozenset({456, 457})
+
+
+def test_snapshot_rejects_legacy_awl_deck_for_non_awl_target(tmp_path: Path):
+    row = _row(deck=AWL_DECK, tags="CEFR::C1")
+    notes = tmp_path / "notes.jsonl"
+    _write_jsonl(notes, [row])
+    live = _live_note(row)
+    live.update({"noteId": 123, "cards": [456, 457], "tags": ["CEFR::C1"]})
+
+    class Client:
+        def call(self, action, **params):
+            if action == "findNotes": return [123]
+            if action == "notesInfo": return [live]
+            if action == "findCards": return [456, 457]
+            if action == "cardsInfo":
+                return [
+                    {
+                        "cardId": card_id,
+                        "note": 123,
+                        "ord": ordinal,
+                        "deckName": LEGACY_AWL_DECK,
+                        "modelName": EAVM_MODEL_NAME,
+                    }
+                    for card_id, ordinal in ((456, 0), (457, 1))
+                ]
+            raise AssertionError(action)
+
+    with pytest.raises(AnkiConnectError, match="deck mismatch"):
+        snapshot_existing_collection(
+            Client(), load_expected_records(notes), "canonical"
+        )
+
+
+def test_migrate_legacy_awl_deck_moves_both_ordinals_and_preserves_config():
+    calls = []
+    deleted = False
+    cards = {
+        456: {"cardId": 456, "deckName": LEGACY_AWL_DECK},
+        457: {"cardId": 457, "deckName": LEGACY_AWL_DECK},
+    }
+
+    class Client:
+        def call(self, action, **params):
+            nonlocal deleted
+            calls.append((action, params))
+            if action == "deckNames":
+                return [ROOT_DECK, AWL_DECK] if deleted else [ROOT_DECK, LEGACY_AWL_DECK]
+            if action == "getDeckConfig": return {"id": 42, "name": "AWL settings"}
+            if action == "changeDeck":
+                for card_id in params["cards"]:
+                    cards[card_id]["deckName"] = params["deck"]
+                return None
+            if action == "setDeckConfigId": return None
+            if action == "cardsInfo": return [cards[card_id] for card_id in params["cards"]]
+            if action == "findCards":
+                return [
+                    card_id
+                    for card_id, card in cards.items()
+                    if card["deckName"] == LEGACY_AWL_DECK
+                ]
+            if action == "deleteDecks":
+                deleted = True
+                return None
+            raise AssertionError(action)
+
+    migrate_legacy_awl_deck(Client(), [457, 456])
+
+    assert ("changeDeck", {"cards": [456, 457], "deck": AWL_DECK}) in calls
+    assert ("setDeckConfigId", {"decks": [AWL_DECK], "configId": 42}) in calls
+    assert (
+        "deleteDecks",
+        {"decks": [LEGACY_AWL_DECK], "cardsToo": True},
+    ) in calls
+
+
+def test_migrate_legacy_awl_deck_rejects_child_before_mutation():
+    calls = []
+
+    class Client:
+        def call(self, action, **params):
+            calls.append((action, params))
+            if action == "deckNames":
+                return [LEGACY_AWL_DECK, LEGACY_AWL_DECK + "::child"]
+            raise AssertionError(action)
+
+    with pytest.raises(AnkiConnectError, match="with children"):
+        migrate_legacy_awl_deck(Client(), [456, 457])
+
+    assert [action for action, _params in calls] == ["deckNames"]
+
+
+def test_migrate_legacy_awl_deck_rejects_unexpected_card_before_change_deck():
+    calls = []
+
+    class Client:
+        def call(self, action, **params):
+            calls.append((action, params))
+            if action == "deckNames": return [LEGACY_AWL_DECK]
+            if action == "findCards": return [456, 457, 999]
+            raise AssertionError(action)
+
+    with pytest.raises(AnkiConnectError, match="does not exactly match"):
+        migrate_legacy_awl_deck(Client(), [456, 457])
+
+    assert "changeDeck" not in [action for action, _params in calls]
+
+
+def test_migrate_legacy_awl_deck_rejects_nonempty_old_deck_before_delete():
+    calls = []
+    find_cards_calls = 0
+    cards = {
+        card_id: {"cardId": card_id, "deckName": AWL_DECK}
+        for card_id in (456, 457)
+    }
+
+    class Client:
+        def call(self, action, **params):
+            nonlocal find_cards_calls
+            calls.append((action, params))
+            if action == "deckNames": return [LEGACY_AWL_DECK]
+            if action == "getDeckConfig": return {"id": 42}
+            if action in {"changeDeck", "setDeckConfigId"}: return None
+            if action == "cardsInfo": return list(cards.values())
+            if action == "findCards":
+                find_cards_calls += 1
+                return [456, 457] if find_cards_calls == 1 else [999]
+            raise AssertionError(action)
+
+    with pytest.raises(AnkiConnectError, match="not empty"):
+        migrate_legacy_awl_deck(Client(), [456, 457])
+
+    assert "deleteDecks" not in [action for action, _params in calls]
 
 
 def test_snapshot_rejects_identity_outside_canonical_set(tmp_path: Path):

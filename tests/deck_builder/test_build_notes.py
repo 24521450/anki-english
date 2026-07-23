@@ -1,8 +1,10 @@
 from pathlib import Path
+from typing import NamedTuple
 
 from src.deck_builder.build_contracts import DEF_SEPARATOR, EX_SEP
 from src.deck_builder.build_support import _format_examples, get_word_candidates, lookup_gloss
 from src.deck_builder.build_validation import _parse_txt_cards
+from src.deck_builder.registry_build import _semantic_cefr_fallback_senses
 
 
 def test_separators_match_template_contract():
@@ -95,6 +97,30 @@ def test_get_word_candidates_strips_parenthetical_for_source_lookup():
 
 def test_get_word_candidates_resolves_learning_pattern_to_source_lemma():
     assert get_word_candidates("devote sth to sth")[0] == "devote"
+    assert get_word_candidates("contend with sb/sth")[0] == "contend with"
+
+
+def test_reviewed_semantic_source_can_inherit_cefr_for_unbadged_exact_sense():
+    class Sense(NamedTuple):
+        cefr: str
+        text: str
+
+    owned = Sense("UNCLASSIFIED", "deal with a difficult person or problem")
+    unrelated = Sense("UNCLASSIFIED", "an unrelated sense")
+
+    selected = _semantic_cefr_fallback_senses(
+        [owned, unrelated],
+        semantic_source_ids={"ox_owned"},
+        source_ids_by_sense={
+            id(owned): {"ox_owned"},
+            id(unrelated): {"ox_other"},
+        },
+        reviewed_cefr="C1",
+    )
+
+    assert selected == [
+        Sense("C1", "deal with a difficult person or problem")
+    ]
 
 
 def test_lookup_gloss_prefers_exact_parenthetical_key():

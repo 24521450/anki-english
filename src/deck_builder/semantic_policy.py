@@ -31,6 +31,12 @@ REQUIRED_USER_EXACT_VI_LOCKS = {
         "semantic_sense_id": "sem_73bc855ad768af184e76094a",
         "expected_vi": "đối thủ nặng ký",
     },
+    "exact_vi-contend-with-d1cc03bcff6977280e280a23": {
+        "guid": ";hj(dC?}9D",
+        "word": "contend with sb/sth",
+        "semantic_sense_id": "sem_d1cc03bcff6977280e280a23",
+        "expected_vi": "đối phó",
+    },
     "exact_vi-transcribe-75c277bcdafac903c8006c74": {
         "guid": "LD:NA=zzJA",
         "word": "transcribe",

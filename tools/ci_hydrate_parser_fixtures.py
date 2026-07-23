@@ -143,6 +143,14 @@ def load_manifest(path: Path = MANIFEST_PATH) -> dict:
             raise ValueError(f"{fixture['id']}: assertions require required_idioms")
         if not isinstance(assertions.get("required_see_also"), list):
             raise ValueError(f"{fixture['id']}: assertions require required_see_also")
+        if not isinstance(assertions.get("required_sense_frames", []), list):
+            raise ValueError(
+                f"{fixture['id']}: assertions.required_sense_frames must be a list"
+            )
+        if not isinstance(assertions.get("required_phrasal_verb_links", []), list):
+            raise ValueError(
+                f"{fixture['id']}: assertions.required_phrasal_verb_links must be a list"
+            )
         opal = assertions.get("opal")
         if "opal" in assertions and (
             not isinstance(opal, dict)
@@ -207,8 +215,22 @@ def _normalize_oxford(record: dict) -> dict:
     out["source_url"] = None
     out.pop("file", None)
     out.pop("polymorphic_form", None)
+    out.pop("pronunciations", None)  # frozen v2 golden compatibility
+    out.pop("phrasal_verb_links", None)  # frozen v2 golden compatibility
     for pos_data in out.get("pos_data") or []:
         pos_data.pop("source_url", None)
+        for definition in pos_data.get("definitions") or []:
+            sense_frames = definition.get("sense_frames") or []
+            if len(sense_frames) == 1:
+                for example in definition.get("examples") or []:
+                    if example.get("cf") == sense_frames[0]:
+                        example["cf"] = None
+            definition.pop("sense_frames", None)
+            definition["collocation_evidence"] = [
+                item
+                for item in definition.get("collocation_evidence") or []
+                if item.get("origin") != "oxford_sense_cf"
+            ]
     return out
 
 
@@ -216,6 +238,7 @@ def _normalize_cambridge(record: dict) -> dict:
     out = copy.deepcopy(record)
     out["source_url"] = None
     out.pop("file", None)
+    out.pop("pronunciations", None)  # frozen v2 golden compatibility
     return out
 
 
@@ -366,12 +389,30 @@ def matches_semantic_assertions(record: dict, assertions: dict) -> bool:
         for item in assertions["required_idioms"]
     }
     actual_see_also = set(record.get("see_also") or [])
+    definitions = {
+        (section.get("pos"), definition.get("sensenum_local")): definition
+        for section in record.get("pos_data") or []
+        for definition in section.get("definitions") or []
+    }
+    required_frames_match = all(
+        definitions.get((item.get("pos"), item.get("sensenum_local")), {}).get(
+            "sense_frames"
+        ) == item.get("sense_frames")
+        for item in assertions.get("required_sense_frames", [])
+    )
+    actual_phrasal_links = record.get("phrasal_verb_links") or []
+    required_phrasal_links_match = all(
+        item in actual_phrasal_links
+        for item in assertions.get("required_phrasal_verb_links", [])
+    )
     return (
         record.get("word") == assertions["word"]
         and actual_sections == assertions["pos_sections"]
         and required_idioms <= actual_idioms
         and set(assertions["required_see_also"]) <= actual_see_also
         and ("opal" not in assertions or record.get("opal") == assertions["opal"])
+        and required_frames_match
+        and required_phrasal_links_match
     )
 
 

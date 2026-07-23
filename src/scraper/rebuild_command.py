@@ -46,7 +46,7 @@ paths = ProjectPaths(Path(PROJECT_ROOT))
 
 from src.scraper.oxford import parse_oxford  # noqa: E402
 from src.scraper.cambridge import parse_cambridge  # noqa: E402
-from src.scraper.merge import merge_word_records, fold_phrasal_verb_records  # noqa: E402
+from src.scraper.merge import merge_word_records  # noqa: E402
 
 OXFORD_DIR = os.path.join(PROJECT_ROOT, "data", ".cache_html", "oxford")
 CAMBRIDGE_DIR = os.path.join(PROJECT_ROOT, "data", ".cache_html", "cambridge")
@@ -292,18 +292,7 @@ def merge_oxford_records_from_file(in_path: str, out_path: str) -> dict:
         records = [json.loads(line) for line in f if line.strip()]
 
     in_count = len(records)
-    print(f"[Oxford merge] {in_count} per-file records, folding phrasal verbs then grouping by (word, homonym_index)...")
-
-    # Pre-merge step: fold phrasal-verb records (e.g. "deprive of") into their
-    # main-word records ("deprive"). The phrasal-verb record itself is flagged
-    # _skip=true so the builder doesn't render a duplicate card.
-    records = fold_phrasal_verb_records(records)
-    folded_count = sum(
-        1 for r in records
-        if (r.get("_skip_reason") or "").startswith("folded-into-main-word")
-    )
-    if folded_count:
-        print(f"[Oxford merge] {folded_count} phrasal-verb records folded into main words")
+    print(f"[Oxford merge] {in_count} per-file records, grouping by (word, homonym_index)...")
 
     # Group by (word, homonym_index) — bass1 and bass2 are SEPARATE records.
     # Phase 7b homonym fix: previously grouped by word only, which would

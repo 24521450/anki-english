@@ -211,3 +211,20 @@ dùng.
   neutral curated. Matching evidence phải exact-first; chỉ cho phép biến thể
   số ít/số nhiều đều đặn của chính headword khi không có exact evidence, và
   provenance luôn thuộc từng chip thay vì cả cụm slash-compressed.
+- Trước mọi lần push, phải đọc workflow CI tại revision hiện tại và
+  chạy đúng tất cả blocking command liên quan; full `pytest` xanh không tự
+  nó cho phép push. Thay đổi parser/schema/fixture bắt buộc chạy
+  `python -m tools.ci_hydrate_parser_fixtures` theo đường clean-checkout và
+  không được để cache local che lấp lỗi. Không push hoặc báo "ready"
+  khi còn lệnh bắt buộc chưa chạy hay đang fail.
+- Đổi deck `English Academic Vocabulary::AWL 50 Academic Words` thành
+  `English Academic Vocabulary::AWL_Coxhead`, giữ nguyên 57 GUID/identity,
+  card IDs, lịch học và deck config khi migrate qua AnkiConnect; chỉ xóa shell
+  cũ sau khi chứng minh nó rỗng và không có deck con.
+- Rà soát lại toàn bộ collocation. Cambridge `.cl` nằm trong example phải giữ
+  tọa độ example; ordinary example chỉ được sinh pattern có kiểm soát và vẫn
+  phải review từng item. Riêng `portion` dùng chip chính xác `portion of`, không
+  dùng `portion of sth`, với provenance Oxford + Cambridge.
+- Tách `contend with sb/sth` thành Secondary Sense Card riêng và khóa chính xác
+  Vietnamese Gloss là `đối phó`; card chính `contend` chỉ giữ `contend that`,
+  `contend for sth`, và `contend against sb` theo provenance đã chỉ định.

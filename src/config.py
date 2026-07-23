@@ -58,6 +58,10 @@ class ProjectPaths:
         return self.collocation_audit
 
     @property
+    def phrasal_verb_routing_audit(self) -> Path:
+        return self.root / "data" / "review" / "phrasal_verb_routing_audit.jsonl"
+
+    @property
     def semantic_registry(self) -> Path:
         return self.root / "data" / "curated" / "semantic_registry.jsonl"
 

@@ -21,7 +21,7 @@ from src.deck_builder.simplify_senses import _flatten_senses
 from src.deck_builder.source_sense_identity import source_sense_id
 
 
-AUDIT_SCHEMA_VERSION = 2
+AUDIT_SCHEMA_VERSION = 3
 REGISTRY_SCHEMA_VERSION = 2
 MAX_FINAL_ITEMS = 5
 
@@ -36,14 +36,22 @@ FINAL_SOURCES = tuple(FINAL_SOURCE_ORDER)
 EVIDENCE_KINDS = {"example_linked", "supporting"}
 EVIDENCE_ORIGINS = {
     "oxford_example_cf",
+    "oxford_sense_cf",
     "cambridge_example_lu",
+    "cambridge_example_cl",
+    "cambridge_example_pattern",
     "oxford_collocations_snippet",
     "cambridge_bare_lu",
     "cambridge_grammar_cl",
 }
 ORIGIN_CONTRACT = {
     "oxford_example_cf": ("oxford", "example_linked"),
+    # A frame attached directly to the sense is authoritative structural
+    # evidence, but it is not linked to any one example.
+    "oxford_sense_cf": ("oxford", "supporting"),
     "cambridge_example_lu": ("cambridge", "example_linked"),
+    "cambridge_example_cl": ("cambridge", "example_linked"),
+    "cambridge_example_pattern": ("cambridge", "example_linked"),
     "oxford_collocations_snippet": ("oxford", "supporting"),
     "cambridge_bare_lu": ("cambridge", "supporting"),
     "cambridge_grammar_cl": ("cambridge", "supporting"),
@@ -240,6 +248,8 @@ EVIDENCE_COLUMNS = (
 
 _HTML_RE = re.compile(r"<\s*/?\s*[a-zA-Z][^>]*>")
 _REASON_SPACE_RE = re.compile(r"\s+")
+_LEARNER_SLOTS = {"sth", "sb", "something", "somebody"}
+_TOKEN_RE = re.compile(r"[^\W_]+(?:['’][^\W_]+)?", re.UNICODE)
 
 
 def _canonical_json(value: object) -> str:
@@ -272,16 +282,49 @@ def normalize_collocation(value: object) -> str:
     return _display_text(value).casefold()
 
 
+def normalize_collocation_learner_surface(value: object, origin: object) -> str:
+    """Convert only source-owned Oxford grammar notation to learner slots."""
+    text = _display_text(value)
+    if _trim(origin) != "oxford_sense_cf":
+        return text
+    def replace_parenthetical(match: re.Match[str]) -> str:
+        words = match.group(1).strip().split()
+        converted = [
+            "sth" if word.casefold() == "something"
+            else "sb" if word.casefold() == "somebody"
+            else word
+            for word in words
+        ]
+        return " " + " ".join(converted)
+
+    text = _display_text(re.sub(r"\s*\(([^()]*)\)", replace_parenthetical, text))
+    return re.sub(r"\s*(?:\u2026|\.{3})$", "", text).strip()
+
+
 def collocation_text_matches_evidence(
     final_text: object,
     evidence_text: object,
     *,
     headword: object,
+    evidence_origin: object = "",
 ) -> bool:
     """Allow only a reviewed singular/plural change of the card headword."""
     final = normalize_collocation(final_text)
     evidence = normalize_collocation(evidence_text)
     if final == evidence:
+        return True
+
+    final_tokens = final.split()
+    if (
+        final_tokens
+        and final_tokens[-1] in _LEARNER_SLOTS
+        and " ".join(final_tokens[:-1]) == evidence
+        and normalize_collocation(evidence_origin) in {
+            "cambridge_example_lu",
+            "cambridge_example_cl",
+            "cambridge_example_pattern",
+        }
+    ):
         return True
 
     word = normalize_collocation(headword)
@@ -298,8 +341,63 @@ def collocation_text_matches_evidence(
     return pattern.sub(word, final) == pattern.sub(word, evidence)
 
 
+def _headword_forms(headword: object) -> tuple[str, ...]:
+    word = normalize_collocation(headword)
+    if not word or " " in word:
+        return ()
+    if word.endswith("y") and len(word) > 1 and word[-2] not in "aeiou":
+        plural = word[:-1] + "ies"
+    elif word.endswith(("s", "x", "z", "ch", "sh")):
+        plural = word + "es"
+    else:
+        plural = word + "s"
+    return (word, plural)
+
+
+def _contains_headword_surface(text: object, headword: object) -> bool:
+    tokens = _TOKEN_RE.findall(normalize_collocation(text))
+    return any(form in tokens for form in _headword_forms(headword))
+
+
+def _ordinary_example_patterns(surface: object, headword: object) -> list[str]:
+    """Expand only explicit slash tokens and one trailing learner slot."""
+    raw_tokens = _display_text(surface).split()
+    if raw_tokens and normalize_collocation(raw_tokens[-1]) in _LEARNER_SLOTS:
+        raw_tokens = raw_tokens[:-1]
+    if not raw_tokens:
+        return []
+    choices: list[list[str]] = []
+    for token in raw_tokens:
+        alternatives = [part for part in token.split("/") if part]
+        if not alternatives:
+            return []
+        choices.append(alternatives)
+    patterns = [""]
+    for alternatives in choices:
+        patterns = [f"{prefix} {part}".strip() for prefix in patterns for part in alternatives]
+    return [pattern for pattern in patterns if _contains_headword_surface(pattern, headword)]
+
+
+def _whole_word_contiguous(haystack: object, needle: object) -> bool:
+    phrase = normalize_collocation(needle)
+    if not phrase:
+        return False
+    return re.search(rf"(?<!\w){re.escape(phrase)}(?!\w)", normalize_collocation(haystack)) is not None
+
+
 def _normalize_reason(value: object) -> str:
     return _REASON_SPACE_RE.sub(" ", _trim(value).casefold())
+
+
+def _review_reason_template(
+    reason: object, surface: object, evidence_ids: Sequence[str]
+) -> str:
+    """Expose bulk prose that varies only by interpolated row identifiers."""
+    normalized = _normalize_reason(reason)
+    replacements = [normalize_collocation(surface), *map(str, evidence_ids)]
+    for value in sorted((item for item in replacements if item), key=len, reverse=True):
+        normalized = normalized.replace(value.casefold(), " <row> ")
+    return _REASON_SPACE_RE.sub(" ", normalized).strip()
 
 
 def _optional_text(value: object) -> str | None:
@@ -429,7 +527,7 @@ def _normalize_source_evidence(
         raise ValueError(
             f"Collocation evidence is missing fields for {source_sense}: {sorted(missing)}"
         )
-    text = _trim(raw.get("text"))
+    text = normalize_collocation_learner_surface(raw.get("text"), raw.get("origin"))
     source = _trim(raw.get("source")).casefold()
     headword = _display_text(source_headword)
     origin = _trim(raw.get("origin"))
@@ -562,7 +660,7 @@ def _source_mappings(semantic_row: dict, source_index: Mapping[str, dict]) -> li
 
 
 def _build_evidence(
-    mappings: Sequence[dict], source_index: Mapping[str, dict]
+    mappings: Sequence[dict], source_index: Mapping[str, dict], current_surfaces: Sequence[str]
 ) -> list[dict]:
     semantic_by_source: dict[str, list[tuple[int, str]]] = defaultdict(list)
     for mapping in mappings:
@@ -599,6 +697,52 @@ def _build_evidence(
                 continue
             seen_ids.add(item["evidence_id"])
             evidence.append(item)
+        if meta["source"] != "cambridge":
+            continue
+        examples = meta["definition"].get("examples") or []
+        patterns = sorted({
+            pattern
+            for surface in current_surfaces
+            for pattern in _ordinary_example_patterns(surface, meta["source_headword"])
+        }, key=lambda value: (normalize_collocation(value), value))
+        explicit_surfaces = {
+            normalize_collocation(item.get("text"))
+            for item in meta["raw_evidence"]
+            if isinstance(item, dict)
+        }
+        for example_index, raw_example in enumerate(examples, 1):
+            example_text = _trim(
+                raw_example.get("text") if isinstance(raw_example, dict) else raw_example
+            )
+            for item_index, pattern in enumerate(patterns, 1):
+                if normalize_collocation(pattern) in explicit_surfaces:
+                    continue
+                if not _whole_word_contiguous(example_text, pattern):
+                    continue
+                raw = {
+                    "text": pattern,
+                    "source": "cambridge",
+                    "origin": "cambridge_example_pattern",
+                    "evidence_kind": "example_linked",
+                    "example_index": example_index,
+                    "example_text": example_text,
+                    "container_index": example_index,
+                    "item_index": item_index,
+                    "category": None,
+                    "truncated": False,
+                    "full_entry_url": None,
+                }
+                item = _normalize_source_evidence(
+                    raw,
+                    record_source="cambridge",
+                    source_headword=meta["source_headword"],
+                    source_sense=source_id,
+                    semantic_ids=semantic_ids,
+                    definition_examples=examples,
+                )
+                if item["evidence_id"] not in seen_ids:
+                    seen_ids.add(item["evidence_id"])
+                    evidence.append(item)
     return evidence
 
 
@@ -615,7 +759,18 @@ def _candidate_immutable(item: dict) -> dict:
 def _build_candidates(guid: str, evidence: Sequence[dict]) -> list[dict]:
     grouped: dict[str, dict] = {}
     for item in evidence:
-        if item.get("evidence_kind") != "example_linked":
+        candidate_eligible = item.get("evidence_kind") == "example_linked"
+        if item.get("origin") == "oxford_sense_cf":
+            candidate_eligible = True
+        if item.get("origin") in {"cambridge_bare_lu", "cambridge_grammar_cl"}:
+            candidate_eligible = True
+        if (
+            item.get("origin") == "oxford_collocations_snippet"
+            and item.get("truncated") is False
+            and _contains_headword_surface(item.get("text"), item.get("source_headword"))
+        ):
+            candidate_eligible = True
+        if not candidate_eligible:
             continue
         normalized = normalize_collocation(item.get("text"))
         if not normalized:
@@ -708,6 +863,10 @@ def _input_fingerprint(row: Mapping[str, object]) -> str:
 
 
 def _reuse_review_state(fresh: dict, existing: dict) -> None:
+    # v3 deliberately resets v2 review state, whose bulk-template approvals do
+    # not satisfy the row-specific evidence contract.
+    if existing.get("schema_version") != AUDIT_SCHEMA_VERSION:
+        return
     identity_fields = ("guid", "word", "cefr", "list", "variant", "pos")
     if any(_trim(fresh.get(field)) != _trim(existing.get(field)) for field in identity_fields):
         return
@@ -796,11 +955,12 @@ def build_audit_rows(
                     raise ValueError(
                         f"Source sense mapped to multiple cards: {source_id}:{previous}:{guid}"
                     )
-        evidence = _build_evidence(mappings, source_index)
-        candidates = _build_candidates(guid, evidence)
         current_value = card.get("collocations")
         if current_value is None:
             current_value = card.get("Collocations", "")
+        current_surfaces = parse_serialized_collocations(current_value)
+        evidence = _build_evidence(mappings, source_index, current_surfaces)
+        candidates = _build_candidates(guid, evidence)
         current = _build_current_items(guid, current_value, evidence)
         idiom_value = card.get("idioms")
         if idiom_value is None:
@@ -915,6 +1075,25 @@ def _matches_promoted_projection(
     return True
 
 
+def _audit_baseline_cards(
+    audit_rows: Sequence[dict], cards: Sequence[dict]
+) -> list[dict]:
+    by_guid = {str(row.get("guid") or ""): row for row in audit_rows}
+    baseline: list[dict] = []
+    for card in cards:
+        copy_card = dict(card)
+        guid = str(card.get("guid") or card.get("GUID") or "")
+        row = by_guid.get(guid)
+        if row is not None:
+            value = "|".join(str(item.get("text") or "") for item in row.get("current_items") or [])
+            if "collocations" in copy_card:
+                copy_card["collocations"] = value
+            else:
+                copy_card["Collocations"] = value
+        baseline.append(copy_card)
+    return baseline
+
+
 def validate_current_audit(
     audit_rows: Sequence[dict],
     cards: Sequence[dict],
@@ -955,7 +1134,15 @@ def validate_current_audit(
     if refreshed_errors:
         errors.extend(f"refreshed:{error}" for error in refreshed_errors)
     elif serialize_audit_rows(refreshed) != serialize_audit_rows(audit_rows):
-        if not _matches_promoted_projection(audit_rows, refreshed, cards):
+        baseline_refreshed = refresh_audit_rows(
+            audit_rows,
+            _audit_baseline_cards(audit_rows, cards),
+            registry_rows,
+            semantic_registry_rows,
+            oxford_records,
+            cambridge_records,
+        )
+        if not _matches_promoted_projection(audit_rows, baseline_refreshed, cards):
             errors.append("stale_collocation_audit_projection")
     return errors
 
@@ -1100,33 +1287,36 @@ def _validate_final_items(row: dict, *, require_complete: bool) -> list[str]:
         if set(current_ids) - set(current_by_id):
             errors.append(f"unknown_final_current_item:{guid}:{item_id}")
         allowed_sources = _final_source_set(source)
-        source_evidence = [
-            evidence_item
-            for evidence_item in evidence
-            if isinstance(evidence_item, dict)
-            and evidence_item.get("source") in allowed_sources
-        ]
         # Prefer exact surface evidence whenever it exists.  The reviewed
         # singular/plural fallback is only for a surface that has no exact
         # dictionary row (for example ``generous portion`` backed by
-        # ``generous portions``); otherwise two separately reviewed chips
-        # such as ``loyalty to``/``loyalties to`` would claim the same
-        # evidence through morphology.
+        # ``generous portions``).  Apply that preference independently per
+        # claimed source: one dictionary's exact learner surface must not hide
+        # a compatible terminal-slot pattern from the other dictionary.
         exact_surface = normalize_collocation(text)
-        exact_surface_evidence = [
-            evidence_item
-            for evidence_item in source_evidence
-            if normalize_collocation(evidence_item.get("text")) == exact_surface
-        ]
-        matching_evidence = exact_surface_evidence or [
-            evidence_item
-            for evidence_item in source_evidence
-            if collocation_text_matches_evidence(
-                text,
-                evidence_item.get("text"),
-                headword=headword,
-            )
-        ]
+        matching_evidence = []
+        for claimed_source in sorted(allowed_sources):
+            source_evidence = [
+                evidence_item
+                for evidence_item in evidence
+                if isinstance(evidence_item, dict)
+                and evidence_item.get("source") == claimed_source
+            ]
+            exact_surface_evidence = [
+                evidence_item
+                for evidence_item in source_evidence
+                if normalize_collocation(evidence_item.get("text")) == exact_surface
+            ]
+            matching_evidence.extend(exact_surface_evidence or [
+                evidence_item
+                for evidence_item in source_evidence
+                if collocation_text_matches_evidence(
+                    text,
+                    evidence_item.get("text"),
+                    headword=headword,
+                    evidence_origin=evidence_item.get("origin"),
+                )
+            ])
         exact_evidence = [
             evidence_item["evidence_id"] for evidence_item in matching_evidence
         ]
@@ -1205,6 +1395,7 @@ def validate_audit_rows(
         errors.append("non_deterministic_audit_row_order")
     seen_guids: set[str] = set()
     reason_owners: dict[str, str] = {}
+    reason_template_owners: dict[str, str] = {}
     for row in rows:
         if not isinstance(row, dict):
             errors.append("invalid_audit_row_type")
@@ -1406,6 +1597,14 @@ def validate_audit_rows(
                 owner = reason_owners.setdefault(normalized_reason, prefix)
                 if owner != prefix:
                     errors.append(f"duplicate_bulk_review_reason:{owner}:{prefix}")
+                template = _review_reason_template(
+                    item.get("reason"), text, item.get("evidence_ids") or []
+                )
+                template_owner = reason_template_owners.setdefault(template, prefix)
+                if template and template_owner != prefix:
+                    errors.append(
+                        f"duplicate_bulk_review_template:{template_owner}:{prefix}"
+                    )
         if sorted(current_orders) != list(range(1, len(current) + 1)) or len(current_orders) != len(current):
             errors.append(f"non_contiguous_current_order:{guid}")
         if row.get("current_fingerprint") != _current_fingerprint(current):
@@ -1471,6 +1670,16 @@ def validate_audit_rows(
                 owner = reason_owners.setdefault(normalized_reason, prefix)
                 if owner != prefix:
                     errors.append(f"duplicate_bulk_review_reason:{owner}:{prefix}")
+            if require_complete and decision in {"included", "covered", "excluded"}:
+                template = _review_reason_template(
+                    candidate.get("reason"), candidate.get("text"),
+                    candidate.get("evidence_ids") or [],
+                )
+                template_owner = reason_template_owners.setdefault(template, prefix)
+                if template and template_owner != prefix:
+                    errors.append(
+                        f"duplicate_bulk_review_template:{template_owner}:{prefix}"
+                    )
         if set(candidate_ids) != set(expected_candidate_by_id):
             errors.append(f"mandatory_candidate_set_mismatch:{guid}")
         if row.get("source_fingerprint") != _source_fingerprint(mappings, evidence, candidates):
@@ -2014,7 +2223,7 @@ def export_workbook(audit_rows: Sequence[dict], path: Path) -> None:
 
     instructions.append(["Collocation Audit"])
     instructions.append(["Review every row in Current Items and Source Candidates; no item is approved automatically."])
-    instructions.append(["Only evidence_kind=example_linked creates a mandatory source candidate. Supporting evidence may substantiate a source-backed current item but does not require inclusion."])
+    instructions.append(["Mandatory candidates include example-linked evidence, Cambridge bare LU/standalone CL, and non-truncated Oxford snippets that contain the headword or its regular plural. Other supporting evidence may substantiate a source-backed current item but does not require inclusion."])
     instructions.append(["Add the reviewed output in Final Items. Use exact separate source phrases; source-backed rows must not compress alternatives with '/'."])
     instructions.append(["Order Oxford and Oxford+Cambridge items first, Cambridge items next, then curated items in their existing order. Maximum five final items per card."])
     instructions.append(["Use covered when an exact current item already accounts for a mandatory candidate; use included when adding the missing exact phrase; exclusions need a row-specific reason."])

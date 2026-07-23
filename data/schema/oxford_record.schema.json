@@ -20,6 +20,7 @@
     "audio",
     "pronunciations",
     "see_also",
+    "phrasal_verb_links",
     "pos_data",
     "verb_forms",
     "idioms"
@@ -210,6 +211,22 @@
       },
       "description": "Related headwords from SEE ALSO section. Oxford: span.xrefs + span.xh. Cambridge: .xref."
     },
+    "phrasal_verb_links": {
+      "type": "array",
+      "description": "Authoritative phrase-page identities from aside.phrasal_verb_links.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["phrase", "url"],
+        "properties": {
+          "phrase": {"type": "string", "minLength": 1},
+          "url": {
+            "type": "string",
+            "pattern": "^https://www\\.oxfordlearnersdictionaries\\.com/definition/english/[^?#]+$"
+          }
+        }
+      }
+    },
     "pos_data": {
       "type": "array",
       "items": {
@@ -255,6 +272,7 @@
                 "topics",
                 "collocations",
                 "collocation_evidence",
+                "sense_frames",
                 "examples",
                 "is_phrase",
                 "is_idiom",
@@ -397,6 +415,7 @@
                       },
                       "origin": {
                         "enum": [
+                          "oxford_sense_cf",
                           "oxford_example_cf",
                           "oxford_collocations_snippet"
                         ]
@@ -453,6 +472,25 @@
                       }
                     },
                     "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "origin": {"const": "oxford_sense_cf"}
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "evidence_kind": {"const": "supporting"},
+                            "example_index": {"type": "null"},
+                            "example_text": {"type": "null"},
+                            "container_index": {"type": "integer", "minimum": 1},
+                            "item_index": {"type": "null"},
+                            "category": {"type": "null"},
+                            "truncated": {"const": false},
+                            "full_entry_url": {"type": "null"}
+                          }
+                        }
+                      },
                       {
                         "if": {
                           "properties": {
@@ -529,6 +567,12 @@
                       }
                     ]
                   }
+                },
+                "sense_frames": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1},
+                  "description": "Eligible direct sense-level Oxford cf strings, whitespace-normalized only."
                 },
                 "examples": {
                   "type": "array",

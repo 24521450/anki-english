@@ -8,12 +8,14 @@ from src.deck_builder.collocation_audit import (
     CARD_COLUMNS,
     CURRENT_REVIEW_COLUMNS,
     EVIDENCE_COLUMNS,
+    ORIGIN_CONTRACT,
     apply_collocation_registry,
     build_audit_rows,
     collocation_final_item_id,
     collocation_text_matches_evidence,
     export_workbook,
     import_workbook,
+    normalize_collocation_learner_surface,
     promote_audit_rows,
     registry_payload_by_guid,
     serialize_audit_rows,
@@ -21,6 +23,7 @@ from src.deck_builder.collocation_audit import (
     validate_audit_rows,
     validate_current_audit,
     validate_registry_rows,
+    _build_candidates,
     _validate_final_items,
 )
 from src.deck_builder.build_contracts import BuiltCard
@@ -179,6 +182,7 @@ def _complete(row):
     final_specs = [
         ("on the curriculum", "oxford+cambridge", candidates["on the curriculum"]["evidence_ids"], [by_text["on the curriculum"]["current_item_id"]]),
         ("in the curriculum", "oxford", candidates["in the curriculum"]["evidence_ids"], []),
+        ("curriculum for schools", "cambridge", candidates["curriculum for schools"]["evidence_ids"], []),
         ("school/national curriculum", "curated", [], [by_text["school/national curriculum"]["current_item_id"]]),
         ("curriculum development", "curated", [], [by_text["curriculum development"]["current_item_id"]]),
     ]
@@ -201,9 +205,12 @@ def _complete(row):
                 "Retain exact source-backed surface on the curriculum; evidence "
                 + ", ".join(item["evidence_ids"])
             )
+        elif item["text"] == "school/national curriculum":
+            item["decision"] = "keep_curated"
+            item["reason"] = "Keep school/national curriculum because the slash teaches two curriculum types compactly."
         else:
             item["decision"] = "keep_curated"
-            item["reason"] = f"Retain reviewed learner pattern: {item['text']}"
+            item["reason"] = "Keep curriculum development because it names the established curriculum-design process."
         item["target_final_item_ids"] = [final_by_text[item["text"]]["final_item_id"]]
         item["reviewer"] = "reviewer"
         item["reviewed_at"] = "2026-07-18"
@@ -212,10 +219,12 @@ def _complete(row):
         candidate["decision"] = (
             "covered" if candidate["text"] == "on the curriculum" else "included"
         )
-        candidate["reason"] = (
-            f"Review exact candidate {candidate['text']}; evidence "
-            + ", ".join(candidate["evidence_ids"])
-        )
+        rationale = {
+            "on the curriculum": "the idiomatic preposition used for subjects offered",
+            "in the curriculum": "the contrasting attested containment preposition",
+            "curriculum for schools": "the Cambridge LU identifies the intended institution",
+        }[candidate["text"]]
+        candidate["reason"] = f"Include {candidate['text']} because {rationale}; evidence " + ", ".join(candidate["evidence_ids"])
         candidate["target_final_item_ids"] = [
             final_by_text[candidate["text"]]["final_item_id"]
         ]
@@ -225,7 +234,7 @@ def _complete(row):
     return row
 
 
-def test_scaffold_accounts_for_current_items_and_only_example_linked_candidates():
+def test_scaffold_accounts_for_current_items_and_expanded_candidate_universe():
     oxford, cambridge, semantic = _inputs()
 
     rows = build_audit_rows(
@@ -242,6 +251,7 @@ def test_scaffold_accounts_for_current_items_and_only_example_linked_candidates(
     assert [item["text"] for item in row["mandatory_candidates"]] == [
         "on the curriculum",
         "in the curriculum",
+        "curriculum for schools",
     ]
     on = row["mandatory_candidates"][0]
     assert on["sources"] == ["oxford", "cambridge"]
@@ -289,6 +299,75 @@ def test_scaffold_reuses_reviews_only_when_both_input_fingerprints_match():
     assert {item["decision"] for item in changed_idioms[0]["current_items"]} == {
         "pending"
     }
+
+
+def test_v3_scaffold_explicitly_resets_v2_review_state():
+    oxford, cambridge, semantic = _inputs()
+    existing = build_audit_rows([_note()], _registry(), semantic, oxford, cambridge)
+    _complete(existing[0])
+    existing[0]["schema_version"] = 2
+
+    refreshed = build_audit_rows(
+        [_note()], _registry(), semantic, oxford, cambridge, existing_rows=existing
+    )
+
+    assert refreshed[0]["schema_version"] == 3
+    assert {item["decision"] for item in refreshed[0]["current_items"]} == {"pending"}
+    assert refreshed[0]["final_items"] == []
+
+
+def test_cambridge_ordinary_example_derives_exact_portion_pattern_only():
+    cambridge, _ = _source("cambridge", [])
+    cambridge["word"] = "portion"
+    definition = cambridge["pos_data"][0]["definitions"][0]
+    definition["examples"] = [
+        {"text": "A large portion of the budget funds schools.", "cf": None},
+        {"text": "This proportion of funding is separate.", "cf": None},
+    ]
+    cambridge_id = source_sense_id(cambridge, _flatten_senses(cambridge)[0])
+    registry = [{**_registry()[0], "word": "portion"}]
+    note = {**_note(collocations="portion of sth"), "word": "portion"}
+    semantic = [{
+        "schema_version": 4, "guid": "g1", "word": "portion", "cefr": "B2",
+        "list": "Oxford_5000", "variant": "", "pos": "noun",
+        "senses": [{"semantic_sense_id": "sem_portion", "order": 1,
+                    "source_sense_ids": [cambridge_id]}],
+    }]
+
+    row = build_audit_rows([note], registry, semantic, [], [cambridge])[0]
+
+    assert [item["text"] for item in row["mandatory_candidates"]] == ["portion of"]
+    assert len(row["source_evidence"]) == 1
+    assert row["source_evidence"][0]["origin"] == "cambridge_example_pattern"
+
+
+def test_candidate_universe_includes_new_source_provenance_contracts():
+    oxford, cambridge, semantic = _inputs()
+    oxford[0]["pos_data"][0]["definitions"][0]["collocation_evidence"][2]["truncated"] = False
+    cambridge_evidence = cambridge[0]["pos_data"][0]["definitions"][0]["collocation_evidence"]
+    cambridge_evidence.extend([
+        {
+            "text": "school curriculum", "source": "cambridge",
+            "origin": "cambridge_example_cl", "evidence_kind": "example_linked",
+            "example_index": 1, "example_text": "Spanish is on the curriculum.",
+            "container_index": 3, "item_index": 1, "category": None,
+            "truncated": False, "full_entry_url": None,
+        },
+        {
+            "text": "curriculum planning", "source": "cambridge",
+            "origin": "cambridge_grammar_cl", "evidence_kind": "supporting",
+            "example_index": None, "example_text": None,
+            "container_index": 4, "item_index": 1, "category": None,
+            "truncated": False, "full_entry_url": None,
+        },
+    ])
+
+    row = build_audit_rows([_note()], _registry(), semantic, oxford, cambridge)[0]
+    candidates = {item["text"]: item for item in row["mandatory_candidates"]}
+
+    assert candidates["across the curriculum"]["sources"] == ["oxford"]
+    assert candidates["school curriculum"]["sources"] == ["cambridge"]
+    assert candidates["curriculum planning"]["sources"] == ["cambridge"]
 
 
 def test_live_idiom_change_makes_completed_audit_stale():
@@ -382,23 +461,34 @@ def test_complete_validation_and_promotion_are_fail_closed_and_deterministic():
     )
     payload = registry_payload_by_guid(promoted)["g1"]
     assert payload == {
-        "collocations": "on the curriculum|in the curriculum|school/national curriculum|curriculum development",
-        "collocation_sources": "oxford+cambridge|oxford|curated|curated",
+        "collocations": "on the curriculum|in the curriculum|curriculum for schools|school/national curriculum|curriculum development",
+        "collocation_sources": "oxford+cambridge|oxford|cambridge|curated|curated",
     }
 
     oversized = copy.deepcopy(rows)
     extra = copy.deepcopy(oversized[0]["final_items"][-1])
     extra["text"] = "curriculum reform"
     extra["final_item_id"] = collocation_final_item_id("g1", extra["text"])
-    extra["order"] = 5
+    extra["order"] = 6
     extra["current_item_ids"] = []
     oversized[0]["final_items"].append(extra)
-    another = copy.deepcopy(extra)
-    another["text"] = "curriculum policy"
-    another["final_item_id"] = collocation_final_item_id("g1", another["text"])
-    another["order"] = 6
-    oversized[0]["final_items"].append(another)
     assert "too_many_final_items:g1:6" in validate_audit_rows(oversized, _registry())
+
+
+def test_complete_validation_rejects_surface_interpolated_reason_templates():
+    oxford, cambridge, semantic = _inputs()
+    rows = build_audit_rows([_note()], _registry(), semantic, oxford, cambridge)
+    _complete(rows[0])
+    curated = [
+        item for item in rows[0]["current_items"]
+        if item["decision"] == "keep_curated"
+    ]
+    for item in curated:
+        item["reason"] = f"Keep {item['text']} because this is useful for learners."
+
+    errors = validate_audit_rows(rows, _registry(), require_complete=True)
+
+    assert any(error.startswith("duplicate_bulk_review_template:") for error in errors)
 
 
 def test_source_backed_final_must_be_exact_separate_and_evidence_bound():
@@ -440,6 +530,51 @@ def test_source_evidence_binding_allows_only_headword_number_inflection():
     )
 
 
+def test_origin_aware_oxford_sense_cf_normalizes_learner_surface_only():
+    assert ORIGIN_CONTRACT["oxford_sense_cf"] == ("oxford", "supporting")
+    assert normalize_collocation_learner_surface(
+        "contend that…", "oxford_sense_cf"
+    ) == "contend that"
+    assert normalize_collocation_learner_surface(
+        "contend (for something)", "oxford_sense_cf"
+    ) == "contend for sth"
+    normalized = normalize_collocation_learner_surface(
+        "contention (that…)", "oxford_sense_cf"
+    )
+    assert normalized == "contention that"
+    assert normalize_collocation_learner_surface(
+        normalized, "oxford_sense_cf"
+    ) == normalized
+
+
+def test_oxford_sense_cf_is_a_mandatory_candidate_without_an_example_link():
+    candidates = _build_candidates("g1", [{
+        "evidence_id": "ev_frame",
+        "text": "contend that",
+        "source": "oxford",
+        "origin": "oxford_sense_cf",
+        "evidence_kind": "supporting",
+    }])
+
+    assert [(row["text"], row["sources"], row["evidence_ids"]) for row in candidates] == [
+        ("contend that", ["oxford"], ["ev_frame"])
+    ]
+    assert normalize_collocation_learner_surface(
+        "contend (for something)", "oxford_example_cf"
+    ) == "contend (for something)"
+
+
+def test_terminal_learner_slot_equivalence_requires_example_linked_cambridge_origin():
+    assert collocation_text_matches_evidence(
+        "contend for sth", "contend for", headword="contend",
+        evidence_origin="cambridge_example_cl",
+    )
+    assert not collocation_text_matches_evidence(
+        "contend for sth", "contend for", headword="contend",
+        evidence_origin="cambridge_bare_lu",
+    )
+
+
 def test_source_binding_prefers_exact_same_source_evidence_before_inflection():
     row = {
         "guid": "g1",
@@ -469,6 +604,39 @@ def test_source_binding_prefers_exact_same_source_evidence_before_inflection():
             "order": 1,
             "source": "cambridge",
             "evidence_ids": ["cambridge-singular"],
+            "current_item_ids": [],
+        }],
+    }
+
+    assert _validate_final_items(row, require_complete=False) == []
+
+
+def test_source_binding_resolves_exact_surface_independently_per_claimed_source():
+    row = {
+        "guid": "g1",
+        "word": "contend",
+        "source_evidence": [
+            {
+                "evidence_id": "oxford-frame",
+                "text": "contend for sth",
+                "source": "oxford",
+                "origin": "oxford_sense_cf",
+            },
+            {
+                "evidence_id": "cambridge-pattern",
+                "text": "contend for",
+                "source": "cambridge",
+                "origin": "cambridge_example_lu",
+            },
+        ],
+        "current_items": [],
+        "mandatory_candidates": [],
+        "final_items": [{
+            "final_item_id": collocation_final_item_id("g1", "contend for sth"),
+            "text": "contend for sth",
+            "order": 1,
+            "source": "oxford+cambridge",
+            "evidence_ids": ["oxford-frame", "cambridge-pattern"],
             "current_item_ids": [],
         }],
     }
@@ -662,7 +830,7 @@ def test_apply_registry_updates_dicts_and_built_cards_with_exact_guid_coverage()
 
     updated_card = apply_collocation_registry([card], promoted)[0]
     assert updated_card.collocations.startswith("on the curriculum|in the curriculum")
-    assert updated_card.collocation_sources == "oxford+cambridge|oxford|curated|curated"
+    assert updated_card.collocation_sources == "oxford+cambridge|oxford|cambridge|curated|curated"
     updated_dict = apply_collocation_registry([{"guid": "g1"}], promoted)[0]
     assert updated_dict["collocation_sources"] == updated_card.collocation_sources
 

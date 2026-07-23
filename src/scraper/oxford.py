@@ -7,7 +7,7 @@ Schema v2: see `tests/fixtures/golden_oxford_v2.json` (5 records, generated 2026
 from __future__ import annotations
 
 import re
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlunsplit
 from typing import Any, Optional
 
 from lxml import html as lxml_html
@@ -367,6 +367,36 @@ def _extract_see_also(root) -> list[str]:
     return _dedup_preserve_order(out)
 
 
+def _extract_phrasal_verb_links(root) -> list[dict[str, str]]:
+    """Extract Oxford's authoritative phrasal-verb target links."""
+    links: list[dict[str, str]] = []
+    for anchor in root.cssselect(
+        "aside.phrasal_verb_links > ul.pvrefs a[href]"
+    ):
+        phrase = _text_of(anchor)
+        href = (anchor.get("href") or "").strip()
+        try:
+            parsed = urlsplit(href)
+        except ValueError:
+            continue
+        if (
+            not phrase
+            or parsed.scheme != "https"
+            or parsed.hostname != "www.oxfordlearnersdictionaries.com"
+            or not parsed.path.startswith("/definition/english/")
+            or parsed.path == "/definition/english/"
+            or parsed.query
+        ):
+            continue
+        item = {
+            "phrase": phrase,
+            "url": urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", "")),
+        }
+        if item not in links:
+            links.append(item)
+    return links
+
+
 # Per-sense extractors ----------------------------------------------------
 
 def _extract_synonyms(sense_el) -> list[str]:
@@ -511,8 +541,48 @@ def _extract_grammar(sense_el) -> Optional[str]:
     return _text_of(el) or None
 
 
+def _eligible_frame_text(frame_el) -> Optional[str]:
+    """Return a raw Oxford frame unless it is an empty/structural header."""
+    text = _text_of(frame_el)
+    if not text or re.match(r"^\(?\s*\+", text):
+        return None
+    return text
+
+
+def _extract_direct_sense_frames(sense_el) -> tuple[list[str], list[dict[str, Any]]]:
+    """Extract only ``.cf`` nodes owned directly by this sense."""
+    frames: list[str] = []
+    evidence: list[dict[str, Any]] = []
+    direct_index = 0
+    for child in sense_el:
+        classes = (child.get("class") or "").split()
+        if "cf" not in classes and child.get("hclass") != "cf":
+            continue
+        text = _eligible_frame_text(child)
+        if not text:
+            continue
+        direct_index += 1
+        if text not in frames:
+            frames.append(text)
+        evidence.append({
+            "text": text,
+            "source": "oxford",
+            "origin": "oxford_sense_cf",
+            "evidence_kind": "supporting",
+            "example_index": None,
+            "example_text": None,
+            "container_index": direct_index,
+            "item_index": None,
+            "category": None,
+            "truncated": False,
+            "full_entry_url": None,
+        })
+    return frames, evidence
+
+
 def _extract_examples_with_evidence(
     sense_el,
+    sense_frames: Optional[list[str]] = None,
 ) -> tuple[list[dict[str, Optional[str]]], list[dict[str, Any]]]:
     """Extract examples and their example-linked collocation evidence.
 
@@ -532,18 +602,14 @@ def _extract_examples_with_evidence(
             continue
         # Section header: cf starts with '+' (e.g. '+ adv./prep.', '+ noun')
         # Real cf: no '+' prefix; if cf absent, that's fine
-        if cf_el is not None:
-            cf_text = _text_of(cf_el)
-            if cf_text.startswith("+"):
-                cf = None  # treat section header as no cf
-            else:
-                cf = cf_text or None
-        else:
-            cf = None
+        nested_cf = _eligible_frame_text(cf_el) if cf_el is not None else None
+        cf = nested_cf
+        if cf is None and len(sense_frames or []) == 1:
+            cf = sense_frames[0]
         examples.append({"text": text, "cf": cf})
-        if cf:
+        if nested_cf:
             evidence.append({
-                "text": cf,
+                "text": nested_cf,
                 "source": "oxford",
                 "origin": "oxford_example_cf",
                 "evidence_kind": "example_linked",
@@ -803,7 +869,10 @@ def _find_pos_for_idiom(idm_g, fallback_pos: str = "unknown") -> str:
 def _build_definition(n: int, sense_el) -> dict:
     """Build a single Definition dict from a li.sense element."""
     labels = extract_labels_for_sense(sense_el)
-    examples, example_evidence = _extract_examples_with_evidence(sense_el)
+    sense_frames, sense_frame_evidence = _extract_direct_sense_frames(sense_el)
+    examples, example_evidence = _extract_examples_with_evidence(
+        sense_el, sense_frames
+    )
     collocations, snippet_evidence = _extract_collocations_with_evidence(sense_el)
     return {
         "n": n,
@@ -814,7 +883,10 @@ def _build_definition(n: int, sense_el) -> dict:
         "cefr": _extract_cefr(sense_el),
         "topics": _extract_topics(sense_el),
         "collocations": collocations,
-        "collocation_evidence": example_evidence + snippet_evidence,
+        "collocation_evidence": (
+            sense_frame_evidence + example_evidence + snippet_evidence
+        ),
+        "sense_frames": sense_frames,
         "examples": examples,
         "is_phrase": False,    # not detected in v1
         "is_idiom": _is_idiom(sense_el),
@@ -862,6 +934,7 @@ def parse_oxford(html_bytes: bytes, source_files: Optional[list[str]] = None) ->
     awl = _extract_awl(root)
     register_top = _extract_register_tags_top(root)
     see_also = _extract_see_also(root)
+    phrasal_verb_links = _extract_phrasal_verb_links(root)
 
     # Phase 7a: scope sense extraction to actual POS section boundaries
     pos_data = _extract_pos_sections(root)
@@ -970,6 +1043,7 @@ def parse_oxford(html_bytes: bytes, source_files: Optional[list[str]] = None) ->
         "audio": audio,
         "pronunciations": pronunciations,
         "see_also": see_also,
+        "phrasal_verb_links": phrasal_verb_links,
         "pos_data": pos_data,
         "verb_forms": verb_forms,
         "idioms": idioms,

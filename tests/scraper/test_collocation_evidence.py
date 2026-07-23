@@ -217,6 +217,57 @@ def test_cambridge_dexamp_pairing_distinguishes_example_bare_and_grammar_evidenc
     ]
 
 
+def test_cambridge_cl_inside_example_keeps_example_context_and_coordinates():
+    html = b"""
+        <html><body>
+          <span class="headword">portion</span><span class="pos dpos">noun</span>
+          <div class="dsense_b">
+            <div class="ddef_d">a part or share of something larger</div>
+            <span class="dexamp">
+              <span class="eg deg">Only a small part remained.</span>
+            </span>
+            <span class="dexamp">
+              <span class="eg deg">A large <span class="cl">portion of</span>
+                the profits funds new projects.</span>
+            </span>
+            <span class="cl">portion something out</span>
+          </div>
+        </body></html>
+    """
+
+    first = parse_cambridge(html)
+    second = parse_cambridge(html)
+    definition = _definition(first)
+
+    assert first == second
+    assert definition["examples"] == [
+        {"text": "Only a small part remained.", "cf": None},
+        {
+            "text": "A large portion of the profits funds new projects.",
+            "cf": None,
+        },
+    ]
+    assert definition["collocation_evidence"] == [
+        _evidence(
+            "portion of",
+            source="cambridge",
+            origin="cambridge_example_cl",
+            evidence_kind="example_linked",
+            example_index=2,
+            example_text="A large portion of the profits funds new projects.",
+            container_index=2,
+            item_index=1,
+        ),
+        _evidence(
+            "portion something out",
+            source="cambridge",
+            origin="cambridge_grammar_cl",
+            evidence_kind="supporting",
+            container_index=1,
+        ),
+    ]
+
+
 def test_merge_unions_distinct_evidence_without_losing_same_surface_origins():
     shared = _evidence(
         "on the curriculum",
@@ -324,6 +375,19 @@ def test_source_schemas_reject_downgrading_example_linked_origins_to_supporting(
                 evidence_kind="supporting",
                 example_index=1,
                 example_text="This was a flagrant violation of the treaty.",
+                container_index=1,
+                item_index=1,
+            ),
+        ),
+        (
+            "cambridge_record.schema.json",
+            _evidence(
+                "portion of",
+                source="cambridge",
+                origin="cambridge_example_cl",
+                evidence_kind="supporting",
+                example_index=1,
+                example_text="A large portion of the profits funds new projects.",
                 container_index=1,
                 item_index=1,
             ),

@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from src.config import ProjectPaths
@@ -22,11 +23,16 @@ from src.deck_builder.collocation_audit import (
     validate_current_audit,
     validate_registry_rows,
 )
+from src.deck_builder.collocation_audit_manifests import (
+    build_artifacts as build_manifest_artifacts,
+    validate_artifacts as validate_manifest_artifacts,
+)
 
 
 paths = ProjectPaths()
 DEFAULT_AUDIT = paths.collocation_audit
 DEFAULT_XLSX = paths.root / "scratch" / "collocation_audit.xlsx"
+DEFAULT_MANIFEST_DIR = paths.root / "scratch" / "parallel" / "collocation_manifests"
 
 
 def _write_atomic(path: Path, text: str) -> None:
@@ -191,6 +197,31 @@ def _report(args) -> int:
             )
             escaped = [str(value).replace("|", "\\|").replace("\n", " ") for value in values]
             lines.append("| " + " | ".join(escaped) + " |")
+    deltas = []
+    exclusions = []
+    for row in sorted(rows, key=lambda item: str(item.get("guid") or "")):
+        current = {str(item.get("text") or "") for item in row.get("current_items") or []}
+        final = {str(item.get("text") or "") for item in row.get("final_items") or []}
+        if current != final:
+            deltas.append((row.get("guid", ""), row.get("word", ""), sorted(final - current), sorted(current - final)))
+        for item in row.get("mandatory_candidates") or []:
+            if item.get("decision") == "excluded":
+                exclusions.append((row.get("guid", ""), row.get("word", ""), item.get("text", ""), item.get("reason", "")))
+    if deltas:
+        lines.extend(["", "## Final deltas", "", "| GUID | Word | Added | Removed |", "| --- | --- | --- | --- |"])
+        for values in deltas:
+            lines.append("| " + " | ".join(str(value).replace("|", "\\|") for value in values) + " |")
+    if exclusions:
+        lines.extend(["", "## Candidate exclusions", "", "| GUID | Word | Candidate | Reason |", "| --- | --- | --- | --- |"])
+        for values in exclusions:
+            lines.append("| " + " | ".join(str(value).replace("|", "\\|").replace("\n", " ") for value in values) + " |")
+    qa_rows = sorted(rows, key=lambda item: (str(item.get("word") or "").casefold(), str(item.get("guid") or "")))[:30]
+    lines.extend(["", "## Deterministic QA sample", "", "| GUID | Word | Current | Candidates | Final |", "| --- | --- | ---: | ---: | ---: |"])
+    for row in qa_rows:
+        lines.append(
+            f"| {row.get('guid', '')} | {str(row.get('word', '')).replace('|', chr(92) + '|')} | "
+            f"{len(row.get('current_items') or [])} | {len(row.get('mandatory_candidates') or [])} | {len(row.get('final_items') or [])} |"
+        )
     if errors:
         lines.extend([
             "",
@@ -209,6 +240,43 @@ def _report(args) -> int:
         sort_keys=True,
     ))
     return 1 if errors else 0
+
+
+def _create_manifests(args) -> int:
+    audit_bytes = args.audit.read_bytes()
+    rows = load_jsonl(args.audit)
+    registry = load_jsonl(args.registry)
+    created_at = args.created_at or datetime.now(timezone.utc).replace(
+        microsecond=0
+    ).isoformat().replace("+00:00", "Z")
+    outputs, summary, _ = build_manifest_artifacts(
+        audit_bytes, rows, registry, created_at=created_at
+    )
+    if args.output.exists() and not args.replace:
+        summary_path = args.output / "manifest_summary.json"
+        if not summary_path.is_file():
+            raise RuntimeError("manifest output already exists; use --replace")
+        old = json.loads(summary_path.read_text(encoding="utf-8"))
+        if old.get("ledger", {}).get("sha256") != summary["ledger"]["sha256"]:
+            raise RuntimeError("manifest output belongs to a different ledger; use --replace")
+    if not args.dry_run:
+        args.output.mkdir(parents=True, exist_ok=True)
+        for name, payload in outputs.items():
+            _write_atomic(args.output / name, payload.decode("utf-8"))
+    print(json.dumps({**summary["queue"], "dry_run": args.dry_run}, sort_keys=True))
+    return 0
+
+
+def _validate_manifests(args) -> int:
+    audit_bytes = args.audit.read_bytes()
+    errors = validate_manifest_artifacts(
+        audit_bytes, load_jsonl(args.audit), load_jsonl(args.registry), args.input
+    )
+    print(json.dumps({"errors": len(errors), "manifest_dir": str(args.input)}, sort_keys=True))
+    if errors:
+        print("\n".join(errors[:100]), file=sys.stderr)
+        return 1
+    return 0
 
 
 def _promote(args) -> int:
@@ -318,6 +386,17 @@ def main(argv: list[str] | None = None) -> int:
     promote.add_argument("--output", type=Path, default=paths.collocation_registry)
     promote.add_argument("--dry-run", action="store_true")
     promote.set_defaults(handler=_promote)
+
+    create_manifests = sub.add_parser("create-manifests")
+    create_manifests.add_argument("--output", type=Path, default=DEFAULT_MANIFEST_DIR)
+    create_manifests.add_argument("--created-at")
+    create_manifests.add_argument("--replace", action="store_true")
+    create_manifests.add_argument("--dry-run", action="store_true")
+    create_manifests.set_defaults(handler=_create_manifests)
+
+    validate_manifests = sub.add_parser("validate-manifests")
+    validate_manifests.add_argument("--input", type=Path, default=DEFAULT_MANIFEST_DIR)
+    validate_manifests.set_defaults(handler=_validate_manifests)
 
     args = parser.parse_args(argv)
     try:

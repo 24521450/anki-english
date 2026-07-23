@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import os
+import re
 import sys
 from contextlib import contextmanager
 from pathlib import Path
@@ -250,6 +252,96 @@ def _scaffold(args) -> int:
     oxford = load_jsonl(args.oxford)
     cambridge = load_jsonl(args.cambridge)
     rows = build_audit_rows(cards, registry, oxford, cambridge)
+    existing_path = args.existing_audit or (args.audit if args.audit.is_file() else None)
+    if existing_path is not None and existing_path.is_file():
+        existing_by_guid = {
+            row.get("guid"): row for row in load_jsonl(existing_path)
+            if isinstance(row, dict) and row.get("guid")
+        }
+        immutable_fields = (
+            "schema_version", "guid", "word", "cefr", "list", "variant", "pos",
+        )
+        reused_rows = []
+
+        def effective_matches_fresh(effective: dict, fresh: dict) -> bool:
+            if any(
+                effective.get(field) != fresh.get(field)
+                for field in ("definition_en", "definition_vi")
+            ):
+                return False
+            effective_examples = effective.get("examples") or []
+            fresh_examples = fresh.get("examples") or []
+            if len(effective_examples) != len(fresh_examples):
+                return False
+            return all(
+                expected == actual
+                or expected == re.sub(r"\s+\([^()]*\)", "", actual).strip()
+                for expected, actual in zip(effective_examples, fresh_examples)
+            )
+
+        for row in rows:
+            existing = existing_by_guid.get(row["guid"])
+            if existing is None or not all(
+                existing.get(field) == row.get(field) for field in immutable_fields
+            ):
+                reused_rows.append(row)
+                continue
+            existing_effective = []
+            existing_semantic = sorted(
+                existing.get("semantic_senses") or [], key=lambda item: item.get("order", 0)
+            )
+            fresh_semantic = sorted(
+                row.get("semantic_senses") or [], key=lambda item: item.get("order", 0)
+            )
+            for sense in existing_semantic:
+                proposed = sense.get("proposed") or {}
+                current = sense.get("current") or {}
+                existing_effective.append(
+                    proposed if sense.get("decision") == "repair_proposed" else current
+                )
+            fresh_current = [
+                sense.get("current") or {}
+                for sense in fresh_semantic
+            ]
+            semantic_aligned = len(existing_effective) == len(fresh_current) and all(
+                effective_matches_fresh(effective, fresh)
+                for effective, fresh in zip(existing_effective, fresh_current)
+            )
+            if existing.get("current") != row.get("current") and not semantic_aligned:
+                reused_rows.append(row)
+                continue
+            existing_sources = {
+                sense.get("source_sense_id"): sense
+                for sense in existing.get("source_senses") or []
+            }
+            fresh_sources = {
+                sense.get("source_sense_id"): sense
+                for sense in row.get("source_senses") or []
+            }
+            if existing_sources != fresh_sources:
+                if not semantic_aligned:
+                    reused_rows.append(row)
+                    continue
+                migrated = copy.deepcopy(row)
+                for old_sense, new_sense, effective in zip(
+                    existing_semantic, migrated["semantic_senses"], existing_effective
+                ):
+                    new_sense["semantic_sense_id"] = old_sense["semantic_sense_id"]
+                    new_sense["current"] = copy.deepcopy(effective)
+                reused_rows.append(migrated)
+                continue
+            reused = copy.deepcopy(existing)
+            reused["current"] = copy.deepcopy(row["current"])
+            reused["source_fingerprint"] = row["source_fingerprint"]
+            reused["source_senses"] = copy.deepcopy(row["source_senses"])
+            reused["coverage"]["candidate_source_sense_ids"] = copy.deepcopy(
+                row["coverage"]["candidate_source_sense_ids"]
+            )
+            reused["coverage"]["expected_same_cefr_source_sense_ids"] = copy.deepcopy(
+                row["coverage"]["expected_same_cefr_source_sense_ids"]
+            )
+            reused_rows.append(reused)
+        rows = reused_rows
     errors = validate_audit_rows(rows, registry)
     if errors:
         print("Scaffold validation failed:\n" + "\n".join(errors[:30]), file=sys.stderr)
@@ -854,8 +946,11 @@ def _vietnamese_review_scaffold(args) -> int:
             raise ValueError(
                 f"Vietnamese review already exists: {args.output}; use --replace"
             )
-        if args.output.exists():
-            existing_records = load_jsonl(args.output)
+        existing_path = args.existing_review or (
+            args.output if args.output.exists() else None
+        )
+        if existing_path is not None and existing_path.exists():
+            existing_records = load_jsonl(existing_path)
             existing_review_rows = existing_records[1:] if existing_records else []
         scope, min_tokens = _vietnamese_selection_args(args)
         summary, candidates, *_ = _current_vietnamese_audit(
@@ -1167,6 +1262,11 @@ def main(argv: list[str] | None = None) -> int:
     scaffold.add_argument("--notes", type=Path, default=paths.anki_notes_jsonl)
     scaffold.add_argument("--oxford", type=Path, default=paths.oxford_jsonl)
     scaffold.add_argument("--cambridge", type=Path, default=paths.cambridge_jsonl)
+    scaffold.add_argument(
+        "--existing-audit",
+        type=Path,
+        help="Reuse reviewed rows only when every immutable semantic input still matches.",
+    )
     scaffold.add_argument("--dry-run", action="store_true")
     scaffold.set_defaults(handler=_scaffold)
 
@@ -1270,6 +1370,11 @@ def main(argv: list[str] | None = None) -> int:
         "--scope", choices=("long", "all"), default="all"
     )
     vietnamese_review_scaffold.add_argument("--min-tokens", type=int)
+    vietnamese_review_scaffold.add_argument(
+        "--existing-review",
+        type=Path,
+        help="Reuse still-current decisions from this prior fingerprint-bound ledger.",
+    )
     vietnamese_review_scaffold.add_argument("--replace", action="store_true")
     vietnamese_review_scaffold.add_argument("--dry-run", action="store_true")
     vietnamese_review_scaffold.set_defaults(handler=_vietnamese_review_scaffold)

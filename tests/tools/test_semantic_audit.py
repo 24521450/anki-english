@@ -421,6 +421,42 @@ def test_cli_scaffold_validate_and_export(tmp_path):
     assert audit.exists()
     assert xlsx.exists()
 
+    reviewed = json.loads(audit.read_text(encoding="utf-8").splitlines()[0])
+    reviewed["coverage"] = {
+        **reviewed["coverage"],
+        "status": "reviewed",
+        "reason": "Exact source sense reviewed for this test.",
+    }
+    reviewed["source_coverage"][0].update({
+        "disposition": "mapped",
+        "target_semantic_sense_ids": [reviewed["semantic_senses"][0]["semantic_sense_id"]],
+        "reason": "Exact source meaning maps to the displayed sense.",
+    })
+    reviewed["semantic_senses"][0].update({
+        "decision": "pass",
+        "checks": {key: "pass" for key in reviewed["semantic_senses"][0]["checks"]},
+        "confidence": "high",
+        "review_reason": "Definition and example match the exact source sense.",
+        "reviewer": "test-reviewer",
+        "reviewed_at": "2026-07-23",
+        "approval": "approved",
+    })
+    reviewed["semantic_senses"][0]["source_sense_ids"] = [
+        reviewed["source_senses"][0]["source_sense_id"]
+    ]
+    reviewed["semantic_senses"][0]["cambridge"].update({
+        "match": "missing",
+        "summary": "No Cambridge record is present in this fixture.",
+        "translation_provenance": "reviewer_derived",
+        "accessed_at": "2026-07-23",
+    })
+    _write_jsonl(audit, [reviewed])
+    assert main([
+        "--audit", str(audit), "--registry", str(registry), "scaffold",
+        "--notes", str(notes), "--oxford", str(oxford), "--cambridge", str(cambridge),
+    ]) == 0
+    assert json.loads(audit.read_text(encoding="utf-8").splitlines()[0]) == reviewed
+
 
 def test_cli_promote_dry_run_does_not_write_output(tmp_path, capsys):
     audit, registry, idiom_audit, vietnamese_review = _promotion_fixture(
@@ -876,6 +912,49 @@ def test_cli_vietnamese_review_scaffold_is_deterministic_and_replace_guarded(
     refreshed = [
         json.loads(line)
         for line in review.read_text(encoding="utf-8").splitlines()
+    ]
+    assert refreshed[1] == records[1]
+
+
+def test_cli_vietnamese_review_scaffold_can_reuse_a_separate_prior_ledger(
+    tmp_path,
+    capsys,
+):
+    audit, card_registry, semantic_registry = _vietnamese_audit_fixture(tmp_path)
+    prior = tmp_path / "prior-review.jsonl"
+    output = tmp_path / "current-review.jsonl"
+    base = [
+        "--audit", str(audit),
+        "--registry", str(card_registry),
+        "vietnamese-review-scaffold",
+        "--semantic-registry", str(semantic_registry),
+    ]
+
+    assert main([*base, "--output", str(prior)]) == 0
+    capsys.readouterr()
+    records = [json.loads(line) for line in prior.read_text(encoding="utf-8").splitlines()]
+    records[1].update({
+        "decision": "keep_natural",
+        "reason": "The gloss directly expresses this reviewed learner meaning without source-shaped expansion.",
+        "reviewer": "test-reviewer",
+        "reviewed_at": "2026-07-23",
+        "approval": "approved",
+    })
+    _add_vietnamese_evidence(
+        records[1],
+        _vietnamese_candidate_from_registry(semantic_registry, records[1]),
+    )
+    _write_jsonl(prior, records)
+
+    assert main([
+        *base,
+        "--output", str(output),
+        "--existing-review", str(prior),
+    ]) == 0
+    capsys.readouterr()
+    refreshed = [
+        json.loads(line)
+        for line in output.read_text(encoding="utf-8").splitlines()
     ]
     assert refreshed[1] == records[1]
 

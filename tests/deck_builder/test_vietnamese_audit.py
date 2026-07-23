@@ -6,7 +6,11 @@ import hashlib
 import pytest
 
 from src.deck_builder.vietnamese_audit import (
+    GLOSS_POLICY_VERSION,
+    _candidate_fingerprint,
+    _context_fingerprint,
     _context_fingerprint_v4,
+    _context_fingerprint_v5,
     apply_vietnamese_review,
     build_vietnamese_audit,
     render_vietnamese_audit_markdown,
@@ -30,6 +34,12 @@ def _add_review_evidence(review: dict, candidate: dict) -> None:
         "keep_explanatory": "necessary_explanation",
         "rewrite": "natural_rewrite",
     }[decision]
+    if candidate.get("gloss_policy_version") == GLOSS_POLICY_VERSION:
+        review["reason_code"] = {
+            "keep_natural": "lexical_core_confirmed",
+            "keep_explanatory": "lexical_core_confirmed",
+            "rewrite": "lexical_core_rewrite",
+        }[decision]
     semantic_notes = {
         "compact": "The wording preserves both small size and practical portability.",
         "compel": "The wording names coercion without importing the separate necessity clause.",
@@ -532,7 +542,7 @@ def test_all_scope_rejects_punctuation_only_rewrite_for_short_gloss() -> None:
     assert any("review_rewrite_without_substantive_change" in error for error in errors)
 
 
-def test_scaffold_reuses_approved_verdict_only_when_context_and_final_vi_match() -> None:
+def test_scaffold_resets_review_when_nonverb_current_vi_changes_to_old_rewrite() -> None:
     old_registry, old_audit, old_card = _card(
         "compel",
         "sem-compel",
@@ -547,6 +557,32 @@ def test_scaffold_reuses_approved_verdict_only_when_context_and_final_vi_match()
         scope="all",
     )
     _, old_reviews = scaffold_vietnamese_review(old_summary, old_candidates)
+    exact_reviews = copy.deepcopy(old_reviews)
+    exact_review = exact_reviews[0]
+    exact_review.update(
+        {
+            "decision": "keep_natural",
+            "reason": "The existing wording preserves coercion and necessity explicitly.",
+            "reviewer": "reviewer",
+            "reviewed_at": "2026-07-17",
+            "approval": "approved",
+        }
+    )
+    _add_review_evidence(exact_review, old_candidates[0])
+    unchanged_review_summary, unchanged = scaffold_vietnamese_review(
+        old_summary,
+        old_candidates,
+        existing_review_rows=exact_reviews,
+    )
+    assert unchanged == exact_reviews
+    assert validate_vietnamese_review(
+        old_summary,
+        old_candidates,
+        unchanged_review_summary,
+        unchanged,
+        require_complete=True,
+    ) == []
+
     old_review = old_reviews[0]
     old_review.update(
         {
@@ -579,14 +615,16 @@ def test_scaffold_reuses_approved_verdict_only_when_context_and_final_vi_match()
         existing_review_rows=old_reviews,
     )
 
-    assert retained == old_reviews
+    assert retained[0]["decision"] == "pending"
+    assert retained[0]["approval"] == ""
+    assert retained[0]["expected_definition_vi"] == new_candidates[0]["definition_vi"]
     assert validate_vietnamese_review(
         new_summary,
         new_candidates,
         new_review_summary,
         retained,
         require_complete=True,
-    ) == []
+    )
 
     changed_registry, changed_audit, changed_card = _card(
         "compel",
@@ -609,6 +647,73 @@ def test_scaffold_reuses_approved_verdict_only_when_context_and_final_vi_match()
 
     assert invalidated[0]["decision"] == "pending"
     assert invalidated[0]["approval"] == ""
+
+
+def test_all_scope_marks_every_verb_for_lexical_core_review() -> None:
+    registry_rows, audit_rows, card_rows = _inputs()
+    summary, candidates = build_vietnamese_audit(
+        registry_rows,
+        audit_rows,
+        card_rows,
+        scope="all",
+    )
+
+    venture = next(row for row in candidates if row["word"] == "venture")
+    compact = next(row for row in candidates if row["word"] == "compact")
+
+    assert summary["gloss_policy_version"] == GLOSS_POLICY_VERSION
+    assert venture["gloss_policy_version"] == GLOSS_POLICY_VERSION
+    assert venture["style_findings"][0] == "verb_lexical_core_review"
+    assert compact["gloss_policy_version"] == ""
+    assert compact["style_findings"] == []
+
+
+def test_source_evidence_order_does_not_stale_vietnamese_fingerprints() -> None:
+    candidate = {
+        "candidate_id": "guid::sense",
+        "source_fingerprint": "old-card-source",
+        "source_sense_ids": ["ox_2", "cam_1"],
+        "source_definitions": ["Oxford definition", "Cambridge definition"],
+    }
+    reordered = copy.deepcopy(candidate)
+    reordered["source_fingerprint"] = "new-card-source"
+    reordered["source_sense_ids"].reverse()
+    reordered["source_definitions"].reverse()
+
+    assert _context_fingerprint(candidate) == _context_fingerprint(reordered)
+    assert _candidate_fingerprint(candidate) == _candidate_fingerprint(reordered)
+
+
+def test_v5_migration_reopens_verbs_but_reuses_unchanged_non_verbs() -> None:
+    registry_rows, audit_rows, card_rows = _inputs()
+    summary, candidates = build_vietnamese_audit(
+        registry_rows,
+        audit_rows,
+        card_rows,
+        scope="all",
+    )
+    _, reviews = _complete_matching_review(summary, candidates)
+    candidates_by_id = {row["candidate_id"]: row for row in candidates}
+    legacy = copy.deepcopy(reviews)
+    for review in legacy:
+        candidate = candidates_by_id[review["candidate_id"]]
+        review["schema_version"] = 5
+        review["candidate_fingerprint"] = "legacy"
+        review["context_fingerprint"] = _context_fingerprint_v5(candidate)
+        review.pop("gloss_policy_version", None)
+        review.pop("style_findings", None)
+
+    _, migrated = scaffold_vietnamese_review(
+        summary,
+        candidates,
+        existing_review_rows=legacy,
+    )
+    by_word = {row["word"]: row for row in migrated}
+
+    assert by_word["venture"]["decision"] == "pending"
+    assert by_word["venture"]["approval"] == ""
+    assert by_word["compact"]["decision"] != "pending"
+    assert by_word["compact"]["schema_version"] == 6
 
 
 def test_promotion_gate_accepts_complete_all_sense_review() -> None:
@@ -1205,13 +1310,22 @@ def test_v4_migration_enriches_and_reuses_unique_reviews() -> None:
         existing_review_rows=legacy,
     )
 
-    assert migrated_summary["schema_version"] == 5
-    assert all(row["schema_version"] == 5 for row in migrated)
-    assert all(row["decision"] != "pending" for row in migrated)
+    assert migrated_summary["schema_version"] == 6
+    assert all(row["schema_version"] == 6 for row in migrated)
+    assert next(row for row in migrated if row["word"] == "venture")[
+        "decision"
+    ] == "pending"
+    assert all(
+        row["decision"] != "pending"
+        for row in migrated
+        if row["word"] != "venture"
+    )
     assert [row["candidate_fingerprint"] for row in migrated] == [
         row["candidate_fingerprint"] for row in candidates
     ]
     for review in migrated:
+        if review["decision"] == "pending":
+            continue
         candidate = candidates_by_id[review["candidate_id"]]
         support = (candidate["examples"] or candidate["source_definitions"])[0]
         assert f'Definition EN "{candidate["definition_en"]}".' in review[

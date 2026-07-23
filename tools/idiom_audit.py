@@ -15,6 +15,7 @@ from src.deck_builder.idiom_audit import (
     build_audit_rows,
     export_workbook,
     import_workbook,
+    IMMUTABLE_COLUMNS,
     load_jsonl,
     serialize_jsonl,
     validate_audit_rows,
@@ -41,6 +42,45 @@ def _scaffold(args) -> int:
     cards = load_jsonl(args.notes)
     registry = load_jsonl(args.registry)
     rows = build_audit_rows(cards, registry)
+    existing_path = args.existing_audit or (args.audit if args.audit.is_file() else None)
+    if existing_path is not None and existing_path.is_file():
+        existing_rows = load_jsonl(existing_path)
+        existing = {row.get("idiom_id"): row for row in existing_rows}
+        by_phrase: dict[str, list[dict]] = {}
+        for old in existing_rows:
+            by_phrase.setdefault(str(old.get("phrase_en") or ""), []).append(old)
+        refreshed = []
+        editable = set(existing_rows[0]) - set(IMMUTABLE_COLUMNS) if existing_rows else set()
+        for row in rows:
+            old = existing.get(row["idiom_id"])
+            if old is not None and all(old.get(field) == row.get(field) for field in IMMUTABLE_COLUMNS):
+                refreshed.append(old)
+                continue
+            candidates = by_phrase.get(str(row.get("phrase_en") or ""), [])
+            if len(candidates) == 1:
+                candidate = candidates[0]
+                def occurrence_identity(item: dict) -> dict:
+                    return {
+                        key: value for key, value in item.items()
+                        if key not in {"source_explanation_en", "source_fingerprint"}
+                    }
+                same_occurrences = [
+                    occurrence_identity(item) for item in candidate.get("occurrences") or []
+                ] == [occurrence_identity(item) for item in row.get("occurrences") or []]
+                promoted_explanation = str(candidate.get("explanation_en_simple") or "")
+                if (
+                    candidate.get("display_mode") == "bilingual_gloss"
+                    and promoted_explanation == row.get("source_explanation_en")
+                    and candidate.get("source_examples") == row.get("source_examples")
+                    and same_occurrences
+                ):
+                    migrated = dict(row)
+                    for field in editable:
+                        migrated[field] = candidate.get(field)
+                    refreshed.append(migrated)
+                    continue
+            refreshed.append(row)
+        rows = refreshed
     errors = validate_audit_rows(rows, registry)
     if errors:
         print("Idiom Audit scaffold validation failed:\n" + "\n".join(errors[:100]), file=sys.stderr)
@@ -192,6 +232,7 @@ def main(argv: list[str] | None = None) -> int:
 
     scaffold = sub.add_parser("scaffold")
     scaffold.add_argument("--notes", type=Path, default=paths.anki_notes_jsonl)
+    scaffold.add_argument("--existing-audit", type=Path)
     scaffold.add_argument("--dry-run", action="store_true")
     scaffold.set_defaults(handler=_scaffold)
 

@@ -305,7 +305,7 @@
                 },
                 "collocation_evidence": {
                   "type": "array",
-                  "description": "Structured Cambridge evidence for collocation audit. LU phrases paired with an example are mandatory candidates; bare LU and grammar cl phrases are supporting evidence.",
+                  "description": "Structured Cambridge evidence for collocation audit. LU phrases paired with an example and cl phrases nested inside an example are mandatory candidates; bare LU and standalone grammar cl phrases are supporting evidence.",
                   "items": {
                     "type": "object",
                     "additionalProperties": false,
@@ -333,6 +333,7 @@
                       "origin": {
                         "enum": [
                           "cambridge_example_lu",
+                          "cambridge_example_cl",
                           "cambridge_bare_lu",
                           "cambridge_grammar_cl"
                         ]
@@ -394,6 +395,47 @@
                           "properties": {
                             "origin": {
                               "const": "cambridge_example_lu"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "evidence_kind": {
+                              "const": "example_linked"
+                            },
+                            "example_index": {
+                              "type": "integer",
+                              "minimum": 1
+                            },
+                            "example_text": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "container_index": {
+                              "type": "integer",
+                              "minimum": 1
+                            },
+                            "item_index": {
+                              "type": "integer",
+                              "minimum": 1
+                            },
+                            "category": {
+                              "type": "null"
+                            },
+                            "truncated": {
+                              "const": false
+                            },
+                            "full_entry_url": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "origin": {
+                              "const": "cambridge_example_cl"
                             }
                           }
                         },

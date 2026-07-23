@@ -31,6 +31,7 @@ from src.deck_builder.build_metadata import (
     sync_idioms_feature_tag,
     sync_semantic_identity_tag,
 )
+from src.deck_builder.deck_names import AWL_DECK
 from src.deck_builder.build_issues import BuildIssue, BuildValidationError
 from src.deck_builder.example_audio import plan_cards_example_audio
 from src.deck_builder.dictionary_links import OxfordLinkIndex, cambridge_url
@@ -56,6 +57,8 @@ from src.deck_builder.word_lookup import (
 )
 from src.deck_builder.production import apply_production_answers
 from src.deck_builder.sense_pos import build_source_sense_pos_index
+from src.deck_builder.simplify_senses import _flatten_senses
+from src.deck_builder.source_sense_identity import source_sense_id
 from src.deck_builder.card_identity import (
     CardIdentity,
     normalize_cefr,
@@ -166,7 +169,7 @@ def _default_deck_for_registry(row: dict) -> str:
         return row["deck_override"]
     list_name = normalize_list_name(row.get("list"), canonical=True)
     if list_name == "AWL":
-        return "English Academic Vocabulary::AWL 50 Academic Words"
+        return AWL_DECK
     return "English Academic Vocabulary::Oxford"
 
 
@@ -265,13 +268,30 @@ def _load_source_indexes(paths, gamma: dict):
 
     senses_index: dict[tuple[str, str, str], list] = {}
     sense_source_record: dict[tuple[str, str, str], dict] = {}
+    sense_source_ids: dict[int, set[str]] = {}
+    sense_source_record_by_id: dict[int, dict] = {}
     for word_lower, items in by_word_simplified.items():
         for record, senses in items:
+            source_id_by_location = {
+                (flat_sense.pd_idx, flat_sense.def_idx): source_sense_id(
+                    record, flat_sense
+                )
+                for flat_sense in _flatten_senses(record)
+            }
             for merged_sense in senses:
                 cefr = merged_sense.cefr or "UNCLASSIFIED"
                 key = (word_lower, merged_sense.pos, cefr)
                 senses_index.setdefault(key, []).append(merged_sense)
                 sense_source_record.setdefault(key, record)
+                sense_source_ids[id(merged_sense)] = {
+                    source_id_by_location[location]
+                    for location in zip(
+                        merged_sense.source_pdd_idx,
+                        merged_sense.source_def_idx,
+                    )
+                    if location in source_id_by_location
+                }
+                sense_source_record_by_id[id(merged_sense)] = record
 
     word_pos_set: dict[str, set[str]] = {}
     for word_lower, records in by_word.items():
@@ -305,11 +325,28 @@ def _load_source_indexes(paths, gamma: dict):
         "idioms_db": idioms_db,
         "senses_index": senses_index,
         "sense_source_record": sense_source_record,
+        "sense_source_ids": sense_source_ids,
+        "sense_source_record_by_id": sense_source_record_by_id,
         "word_pos_set": word_pos_set,
         "opal_index": opal_index,
         "source_label_specs_index": _build_source_label_specs_index(by_word),
         "source_sense_pos_index": source_sense_pos_index,
     }
+
+
+def _semantic_cefr_fallback_senses(
+    senses: list,
+    *,
+    semantic_source_ids: set[str],
+    source_ids_by_sense: dict[int, set[str]],
+    reviewed_cefr: str,
+) -> list:
+    """Use an unbadged exact source sense only when Semantic Registry owns it."""
+    return [
+        sense._replace(cefr=reviewed_cefr)
+        for sense in senses
+        if semantic_source_ids & source_ids_by_sense.get(id(sense), set())
+    ]
 
 
 def _sync_audio_source_tags(
@@ -624,6 +661,8 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
     idioms_db = indexes["idioms_db"]
     senses_index = indexes["senses_index"]
     sense_source_record = indexes["sense_source_record"]
+    sense_source_ids = indexes["sense_source_ids"]
+    sense_source_record_by_id = indexes["sense_source_record_by_id"]
     word_pos_set = indexes["word_pos_set"]
     opal_index = indexes["opal_index"]
     source_label_specs_index = indexes["source_label_specs_index"]
@@ -763,11 +802,30 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
 
         all_senses_for_row: list = []
         contributing_records: list[dict] = []
+        reviewed_source_ids = semantic_source_ids_by_guid.get(
+            (row.get("guid") or "").strip(), set()
+        )
         for pos in resolved_pos_parts:
             sense_key = (resolved_word, pos, identity.cefr)
             if sense_key in senses_index:
                 all_senses_for_row.extend(senses_index[sense_key])
                 contributing_records.append(sense_source_record[sense_key])
+                continue
+            fallback_candidates = senses_index.get(
+                (resolved_word, pos, "UNCLASSIFIED"), []
+            )
+            fallback_senses = _semantic_cefr_fallback_senses(
+                fallback_candidates,
+                semantic_source_ids=reviewed_source_ids,
+                source_ids_by_sense=sense_source_ids,
+                reviewed_cefr=identity.cefr,
+            )
+            all_senses_for_row.extend(fallback_senses)
+            contributing_records.extend(
+                sense_source_record_by_id[id(sense)]
+                for sense in fallback_candidates
+                if reviewed_source_ids & sense_source_ids.get(id(sense), set())
+            )
 
         primary_record: dict | None = None
         if all_senses_for_row:

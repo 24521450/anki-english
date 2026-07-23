@@ -19,6 +19,7 @@ from src.deck_builder.card_registry import (
     guid_validation_error,
     validate_registry_or_raise,
 )
+from src.deck_builder.production import derive_production_answer
 from src.deck_builder.semantic_audit import (
     build_audit_rows,
     semantic_sense_id,
@@ -26,7 +27,7 @@ from src.deck_builder.semantic_audit import (
 )
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 _CHECK_FIELDS = {
     "english_semantics",
@@ -47,6 +48,10 @@ _TOP_LEVEL_FIELDS = {
     "source_ownership",
     "review",
 }
+_V2_TOP_LEVEL_FIELDS = _TOP_LEVEL_FIELDS | {
+    "operation",
+    "expected_target_source_fingerprint",
+}
 _PRIMARY_FIELDS = {"variant", "senses", "collocations", "idioms"}
 _SECONDARY_FIELDS = {
     "guid",
@@ -56,6 +61,13 @@ _SECONDARY_FIELDS = {
     "collocations",
     "idioms",
 }
+_V2_SECONDARY_FIELDS = _SECONDARY_FIELDS | {
+    "word",
+    "pos",
+    "cefr",
+    "list",
+    "source_word",
+}
 _SOURCE_OWNERSHIP_FIELDS = {"source_sense_id", "primary", "secondary"}
 _SOURCE_SIDE_FIELDS = {
     "disposition",
@@ -63,6 +75,13 @@ _SOURCE_SIDE_FIELDS = {
     "reason",
 }
 _EFFECTIVE_FIELDS = {"definition_en", "definition_vi", "examples"}
+_CAMBRIDGE_FIELDS = {
+    "url",
+    "match",
+    "summary",
+    "translation_provenance",
+    "accessed_at",
+}
 
 
 class CardIdentitySplitError(ValueError):
@@ -195,9 +214,15 @@ def _validate_review(review: object) -> dict:
 
 
 def _validate_bundle_shape(review_row: object) -> dict:
-    row = _require_fields(review_row, _TOP_LEVEL_FIELDS, "split_review")
-    if row.get("schema_version") != SCHEMA_VERSION:
+    if not isinstance(review_row, dict):
+        raise CardIdentitySplitError("invalid_split_review_fields")
+    schema_version = review_row.get("schema_version")
+    fields = _V2_TOP_LEVEL_FIELDS if schema_version == 2 else _TOP_LEVEL_FIELDS
+    row = _require_fields(review_row, fields, "split_review")
+    if schema_version not in {1, SCHEMA_VERSION}:
         raise CardIdentitySplitError("invalid_split_review_schema_version")
+    if schema_version == 2 and row.get("operation") != "extract_secondary_headword":
+        raise CardIdentitySplitError("invalid_split_review_operation")
     if not isinstance(row.get("source_guid"), str) or not row["source_guid"]:
         raise CardIdentitySplitError("invalid_source_guid")
     for field in (
@@ -208,11 +233,12 @@ def _validate_bundle_shape(review_row: object) -> dict:
     ):
         _validate_hash(row.get(field), field)
     primary = _require_fields(row.get("primary"), _PRIMARY_FIELDS, "primary")
-    secondary = _require_fields(
-        row.get("secondary"), _SECONDARY_FIELDS, "secondary"
-    )
-    if primary.get("variant") != "primary":
+    secondary_fields = _V2_SECONDARY_FIELDS if schema_version == 2 else _SECONDARY_FIELDS
+    secondary = _require_fields(row.get("secondary"), secondary_fields, "secondary")
+    if schema_version == 1 and primary.get("variant") != "primary":
         raise CardIdentitySplitError("primary_variant_must_be_primary")
+    if schema_version == 2 and primary.get("variant") != "":
+        raise CardIdentitySplitError("extracted_primary_variant_must_remain_empty")
     if (
         not isinstance(secondary.get("variant"), str)
         or not secondary["variant"].startswith("secondary_")
@@ -223,6 +249,16 @@ def _validate_bundle_shape(review_row: object) -> dict:
         raise CardIdentitySplitError(f"invalid_secondary_guid:{guid_error[1]}")
     if not isinstance(secondary.get("deck_override"), str) or not secondary["deck_override"]:
         raise CardIdentitySplitError("missing_secondary_deck_override")
+    if schema_version == 2:
+        _validate_hash(
+            row.get("expected_target_source_fingerprint"),
+            "expected_target_source_fingerprint",
+        )
+        for field in ("word", "pos", "cefr", "list", "source_word"):
+            if not isinstance(secondary.get(field), str) or not secondary[field].strip():
+                raise CardIdentitySplitError(f"invalid_secondary_{field}")
+        if secondary["word"].casefold() == secondary["source_word"].casefold():
+            raise CardIdentitySplitError("secondary_source_word_must_differ_from_display_word")
     for label, side in (("primary", primary), ("secondary", secondary)):
         if not isinstance(side.get("senses"), list) or not side["senses"]:
             raise CardIdentitySplitError(
@@ -327,9 +363,42 @@ def _fresh_source_context(
     return fresh[0]
 
 
-def _group_fields(group: object, *, primary: bool, label: str) -> dict:
+def _fresh_target_source_context(
+    card: dict,
+    registry: dict,
+    source_word: str,
+    oxford_records: list[dict],
+) -> dict:
+    exact_records = [
+        record
+        for record in oxford_records
+        if str(record.get("word") or "").strip().casefold()
+        == source_word.strip().casefold()
+    ]
+    if not exact_records:
+        raise CardIdentitySplitError(f"target_oxford_page_missing:{source_word}")
+    source_registry = {**registry, "word": source_word}
+    source_card = {
+        **card,
+        "guid": registry["guid"],
+        "word": source_word,
+        "pos": registry["pos"],
+        "cefr": registry["cefr"],
+    }
+    return _fresh_source_context(source_card, source_registry, exact_records, [])
+
+
+def _group_fields(
+    group: object,
+    *,
+    primary: bool,
+    label: str,
+    allow_target_sources: bool = False,
+) -> dict:
     required = {"from_semantic_sense_ids", "effective"}
     optional = {"review_reason"}
+    if allow_target_sources and not primary:
+        optional |= {"source_sense_ids", "cambridge"}
     if primary:
         required.add("retain_semantic_sense_id")
     if not isinstance(group, dict) or not required.issubset(group) or set(group) - required - optional:
@@ -337,8 +406,19 @@ def _group_fields(group: object, *, primary: bool, label: str) -> dict:
     source_ids = group.get("from_semantic_sense_ids")
     if not isinstance(source_ids, list) or any(
         not isinstance(value, str) or not value for value in source_ids
-    ) or len(source_ids) != len(set(source_ids)) or not source_ids:
+    ) or len(source_ids) != len(set(source_ids)):
         raise CardIdentitySplitError(f"invalid_{label}_sense_origins")
+    if not source_ids and not (allow_target_sources and not primary):
+        raise CardIdentitySplitError(f"invalid_{label}_sense_origins")
+    if not source_ids:
+        target_source_ids = group.get("source_sense_ids")
+        if not isinstance(target_source_ids, list) or not target_source_ids or any(
+            not isinstance(value, str) or not value for value in target_source_ids
+        ) or len(target_source_ids) != len(set(target_source_ids)):
+            raise CardIdentitySplitError(f"invalid_{label}_target_source_sense_ids")
+        cambridge = _require_fields(group.get("cambridge"), _CAMBRIDGE_FIELDS, f"{label}_cambridge")
+        if cambridge.get("match") == "pending" or not cambridge.get("translation_provenance"):
+            raise CardIdentitySplitError(f"incomplete_{label}_cambridge_review")
     _validate_effective(group.get("effective"), f"{label}_effective")
     if primary and group.get("retain_semantic_sense_id") not in source_ids:
         raise CardIdentitySplitError(f"invalid_{label}_retained_semantic_sense_id")
@@ -351,6 +431,8 @@ def _build_final_senses(
     secondary_plan: dict,
     secondary_guid: str,
     review: dict,
+    *,
+    allow_target_sources: bool = False,
 ) -> tuple[list[dict], list[dict], dict[str, tuple[str, str]]]:
     old_by_id = {
         str(sense.get("semantic_sense_id") or ""): sense
@@ -366,7 +448,10 @@ def _build_final_senses(
         primary = owner == "primary"
         for order, raw_group in enumerate(plan["senses"], 1):
             group = _group_fields(
-                raw_group, primary=primary, label=f"{owner}_{order}"
+                raw_group,
+                primary=primary,
+                label=f"{owner}_{order}",
+                allow_target_sources=allow_target_sources,
             )
             origins = list(group["from_semantic_sense_ids"])
             unknown = set(origins) - set(old_by_id)
@@ -377,15 +462,38 @@ def _build_final_senses(
                     f"unknown={sorted(unknown)} duplicate={sorted(duplicate)}"
                 )
             seen_origins.update(origins)
-            retained = (
-                group["retain_semantic_sense_id"] if primary else origins[0]
-            )
-            sense = copy.deepcopy(old_by_id[retained])
             effective = _validate_effective(
                 group["effective"], f"{owner}_{order}_effective"
             )
-            old_effective = _effective_content(sense)
-            changed = len(origins) > 1 or effective != old_effective
+            final_id = (
+                str(group["retain_semantic_sense_id"])
+                if primary
+                else semantic_sense_id(
+                    secondary_guid, order, effective["definition_en"]
+                )
+            )
+            if origins:
+                retained = group["retain_semantic_sense_id"] if primary else origins[0]
+                sense = copy.deepcopy(old_by_id[retained])
+                old_effective = _effective_content(sense)
+            else:
+                sense = {
+                    "semantic_sense_id": final_id,
+                    "order": order,
+                    "source_sense_ids": [],
+                    "current": {"definition_en": "", "definition_vi": "", "examples": []},
+                    "checks": {field: "repair" for field in _CHECK_FIELDS},
+                    "decision": "repair_proposed",
+                    "proposed": copy.deepcopy(effective),
+                    "cambridge": copy.deepcopy(group["cambridge"]),
+                    "confidence": "high",
+                    "review_reason": "",
+                    "reviewer": review["reviewer"],
+                    "reviewed_at": review["reviewed_at"],
+                    "approval": "approved",
+                }
+                old_effective = {"definition_en": "", "definition_vi": "", "examples": []}
+            changed = not origins or len(origins) > 1 or effective != old_effective
             if changed:
                 reason = str(group.get("review_reason") or "").strip()
                 if not reason:
@@ -403,17 +511,13 @@ def _build_final_senses(
                     "approval": "approved",
                 })
             sense["order"] = order
-            if primary:
-                final_id = str(group["retain_semantic_sense_id"])
-            else:
-                final_id = semantic_sense_id(
-                    secondary_guid, order, effective["definition_en"]
-                )
             sense["semantic_sense_id"] = final_id
             sense["source_sense_ids"] = []
             output.append(sense)
             for origin in origins:
                 origin_map[origin] = (owner, final_id)
+            if not origins:
+                origin_map[final_id] = (owner, final_id)
         return output
 
     primary = build_side(primary_plan, owner="primary")
@@ -430,6 +534,8 @@ def _build_source_coverage(
     plan_rows: object,
     fresh: dict,
     origin_map: dict[str, tuple[str, str]],
+    *,
+    allow_extra_plan_sources: bool = False,
 ) -> tuple[list[dict], list[dict]]:
     if not isinstance(plan_rows, list):
         raise CardIdentitySplitError("invalid_source_ownership")
@@ -496,7 +602,7 @@ def _build_source_coverage(
     candidate_ids = list(
         fresh.get("coverage", {}).get("candidate_source_sense_ids") or []
     )
-    if set(by_source) != set(candidate_ids) or len(by_source) != len(candidate_ids):
+    if (not allow_extra_plan_sources and set(by_source) != set(candidate_ids)) or not set(candidate_ids).issubset(by_source) or len(candidate_ids) != len(set(candidate_ids)):
         raise CardIdentitySplitError(
             "invalid source ownership partition:"
             f"missing={sorted(set(candidate_ids) - set(by_source))} "
@@ -611,6 +717,15 @@ def _projection_card(
         card["guid"] = registry["guid"]
     else:
         card["GUID"] = registry["guid"]
+    _set_note_field(card, "word", "Word", registry["word"])
+    _set_note_field(card, "pos", "POS", registry["pos"])
+    _set_note_field(card, "cefr", "CEFRLevel", registry["cefr"])
+    _set_note_field(
+        card,
+        "production_answer",
+        "ProductionAnswer",
+        derive_production_answer(registry["word"]),
+    )
     definition, definition_vi, example = _render_semantic_fields(
         audit["semantic_senses"]
     )
@@ -634,6 +749,9 @@ def _registry_split_rows(old: dict, primary_plan: dict, secondary_plan: dict) ->
         "guid": secondary_plan["guid"],
         "deck_override": secondary_plan["deck_override"],
     })
+    for field in ("word", "pos", "cefr", "list"):
+        if field in secondary_plan:
+            secondary[field] = secondary_plan[field]
     for row in (primary, secondary):
         if not is_reviewed_identity_variant_allowed(
             row.get("word"),
@@ -670,8 +788,41 @@ def _side_source_coverage(
     fresh: dict,
     plan: dict,
     origin_map: dict[str, tuple[str, str]],
+    *,
+    allow_extra_plan_sources: bool = False,
 ) -> tuple[list[dict], list[dict]]:
-    return _build_source_coverage(plan["source_ownership"], fresh, origin_map)
+    return _build_source_coverage(
+        plan["source_ownership"],
+        fresh,
+        origin_map,
+        allow_extra_plan_sources=allow_extra_plan_sources,
+    )
+
+
+def _validate_target_sense_sources(
+    secondary_plan: dict,
+    secondary_senses: Sequence[dict],
+    secondary_coverage: Sequence[dict],
+) -> None:
+    mapped_by_semantic: dict[str, set[str]] = {}
+    for item in secondary_coverage:
+        if item.get("disposition") != "mapped":
+            continue
+        for semantic_id in item.get("target_semantic_sense_ids") or []:
+            mapped_by_semantic.setdefault(str(semantic_id), set()).add(
+                str(item.get("source_sense_id") or "")
+            )
+    for group, sense in zip(secondary_plan["senses"], secondary_senses):
+        if group.get("from_semantic_sense_ids"):
+            continue
+        declared = set(group.get("source_sense_ids") or [])
+        actual = mapped_by_semantic.get(str(sense.get("semantic_sense_id") or ""), set())
+        if declared != actual:
+            raise CardIdentitySplitError(
+                "target_sense_source_mapping_mismatch:"
+                f"{sense.get('semantic_sense_id')}:"
+                f"declared={sorted(declared)} mapped={sorted(actual)}"
+            )
 
 
 def _verify_applied_split(
@@ -682,6 +833,7 @@ def _verify_applied_split(
     primary_card: dict | None,
     secondary_card: dict | None,
     fresh: dict,
+    target_fresh: dict | None,
     plan: dict,
 ) -> None:
     if None in (
@@ -711,7 +863,10 @@ def _verify_applied_split(
             raise CardIdentitySplitError(f"applied_sense_count_mismatch:{owner}")
         for order, (sense, raw_group) in enumerate(zip(senses, side["senses"]), 1):
             group = _group_fields(
-                raw_group, primary=owner == "primary", label=f"{owner}_{order}"
+                raw_group,
+                primary=owner == "primary",
+                label=f"{owner}_{order}",
+                allow_target_sources=plan["schema_version"] == 2,
             )
             effective = _validate_effective(
                 group["effective"], f"{owner}_{order}_effective"
@@ -731,13 +886,34 @@ def _verify_applied_split(
                 if origin in origin_map:
                     raise CardIdentitySplitError(f"duplicate_applied_sense_origin:{origin}")
                 origin_map[origin] = (owner, expected_id)
+            if not group["from_semantic_sense_ids"]:
+                origin_map[expected_id] = (owner, expected_id)
 
-    expected_primary_coverage, expected_secondary_coverage = _side_source_coverage(
-        fresh, plan, origin_map
-    )
-    for owner, registry, audit, coverage in (
-        ("primary", primary_registry, primary_audit, expected_primary_coverage),
-        ("secondary", secondary_registry, secondary_audit, expected_secondary_coverage),
+    is_v2 = plan["schema_version"] == 2
+    if is_v2:
+        assert target_fresh is not None
+        primary_coverage, _ = _side_source_coverage(
+            fresh, plan, origin_map, allow_extra_plan_sources=True
+        )
+        _, secondary_coverage = _side_source_coverage(
+            target_fresh, plan, origin_map, allow_extra_plan_sources=True
+        )
+        _validate_target_sense_sources(
+            plan["secondary"], secondary_audit["semantic_senses"], secondary_coverage
+        )
+    else:
+        primary_coverage, secondary_coverage = _side_source_coverage(
+            fresh, plan, origin_map
+        )
+    for owner, registry, audit, coverage, side_fresh in (
+        ("primary", primary_registry, primary_audit, primary_coverage, fresh),
+        (
+            "secondary",
+            secondary_registry,
+            secondary_audit,
+            secondary_coverage,
+            target_fresh if is_v2 else fresh,
+        ),
     ):
         if any(
             str(audit.get(field) or "") != str(registry.get(field) or "")
@@ -745,8 +921,8 @@ def _verify_applied_split(
         ):
             raise CardIdentitySplitError(f"applied_audit_identity_mismatch:{owner}")
         if (
-            audit.get("source_fingerprint") != fresh.get("source_fingerprint")
-            or audit.get("source_senses") != fresh.get("source_senses")
+            audit.get("source_fingerprint") != side_fresh.get("source_fingerprint")
+            or audit.get("source_senses") != side_fresh.get("source_senses")
             or audit.get("source_coverage") != coverage
         ):
             raise CardIdentitySplitError(f"applied_source_context_mismatch:{owner}")
@@ -790,7 +966,11 @@ def prepare_card_identity_splits(
         registry_rows,
         audit_rows,
         built_cards,
-        allow_unsplit_guids={plan["source_guid"] for plan in plans},
+        allow_unsplit_guids={
+            plan["source_guid"]
+            for plan in plans
+            if plan["schema_version"] == 1
+        },
     )
 
     seen_source_guids: set[str] = set()
@@ -821,7 +1001,24 @@ def prepare_card_identity_splits(
         if fresh["source_fingerprint"] != plan["expected_source_fingerprint"]:
             raise CardIdentitySplitError(f"stale_source_context:{source_guid}")
 
-        if old_registry.get("variant") == "primary":
+        is_v2 = plan["schema_version"] == 2
+        prospective_secondary = copy.deepcopy(old_registry)
+        prospective_secondary.update(plan["secondary"])
+        target_fresh = (
+            _fresh_target_source_context(
+                old_card,
+                prospective_secondary,
+                plan["secondary"]["source_word"],
+                oxford_records,
+            )
+            if is_v2
+            else None
+        )
+        if is_v2 and target_fresh["source_fingerprint"] != plan["expected_target_source_fingerprint"]:
+            raise CardIdentitySplitError(f"stale_target_source_context:{source_guid}")
+
+        applied_variant = plan["primary"]["variant"]
+        if old_registry.get("variant") == applied_variant and secondary_guid in registry_by_guid:
             _verify_applied_split(
                 old_registry,
                 registry_by_guid.get(secondary_guid),
@@ -830,6 +1027,7 @@ def prepare_card_identity_splits(
                 old_card,
                 cards_by_guid.get(secondary_guid),
                 fresh,
+                target_fresh,
                 plan,
             )
             continue
@@ -859,10 +1057,38 @@ def prepare_card_identity_splits(
             plan["secondary"],
             secondary_guid,
             plan["review"],
+            allow_target_sources=is_v2,
         )
-        primary_coverage, secondary_coverage = _side_source_coverage(
-            fresh, plan, origin_map
-        )
+        if is_v2:
+            assert target_fresh is not None
+            planned_source_ids = {
+                str(item.get("source_sense_id") or "")
+                for item in plan["source_ownership"]
+            }
+            expected_source_ids = set(
+                fresh.get("coverage", {}).get("candidate_source_sense_ids") or []
+            ) | set(
+                target_fresh.get("coverage", {}).get("candidate_source_sense_ids") or []
+            )
+            if planned_source_ids != expected_source_ids:
+                raise CardIdentitySplitError(
+                    "invalid source ownership partition:"
+                    f"missing={sorted(expected_source_ids - planned_source_ids)} "
+                    f"extra={sorted(planned_source_ids - expected_source_ids)}"
+                )
+            primary_coverage, _ = _side_source_coverage(
+                fresh, plan, origin_map, allow_extra_plan_sources=True
+            )
+            _, secondary_coverage = _side_source_coverage(
+                target_fresh, plan, origin_map, allow_extra_plan_sources=True
+            )
+            _validate_target_sense_sources(
+                plan["secondary"], secondary_senses, secondary_coverage
+            )
+        else:
+            primary_coverage, secondary_coverage = _side_source_coverage(
+                fresh, plan, origin_map
+            )
         _attach_source_ids(primary_senses, primary_coverage)
         _attach_source_ids(secondary_senses, secondary_coverage)
         primary_audit = _build_audit_card(
@@ -874,7 +1100,7 @@ def prepare_card_identity_splits(
         )
         secondary_audit = _build_audit_card(
             secondary_registry,
-            fresh,
+            target_fresh if is_v2 else fresh,
             secondary_senses,
             secondary_coverage,
             plan["secondary"]["idioms"],

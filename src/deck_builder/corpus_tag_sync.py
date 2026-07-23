@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import NamedTuple
 
 from src.deck_builder.build_contracts import POS_NORM
+from src.deck_builder.deck_names import AWL_DECK, LEGACY_AWL_DECK
 from src.deck_builder.vocab_lists import parse_vocab_list as _parse_vocab_list
 
 HEADER_LINES = 6
@@ -32,6 +33,7 @@ HEADWORD_ALIASES = {
 
 LEARNING_PATTERN_ALIASES = {
     "adhere to": "adhere",
+    "contend with sb/sth": "contend",
     "derive from": "derive",
     "deprive of": "deprive",
     "devote sth to sth": "devote",
@@ -42,7 +44,7 @@ DECK_OXFORD_3000_ADVANCED = (
     "English Academic Vocabulary::Oxford::Oxford 3000 Advanced"
 )
 DECK_OXFORD_3000_BASIC = "English Academic Vocabulary::Oxford::Oxford 3000 Basic"
-DECK_AWL = "English Academic Vocabulary::AWL 50 Academic Words"
+DECK_AWL = AWL_DECK
 DECK_OXFORD = "English Academic Vocabulary::Oxford"
 
 
@@ -166,7 +168,7 @@ def route_deck(
     1. Oxford_5000 or nursing exception -> nested Oxford 5000 deck.
     2. Oxford_3000 + B2 -> nested Oxford 3000 Advanced deck.
     3. Oxford_3000 + A1/A2/B1 -> nested Oxford 3000 Basic deck.
-    4. AWL_Coxhead -> AWL 50 Academic Words deck.
+    4. AWL_Coxhead -> AWL_Coxhead deck.
     5. Not in any list -> keep current deck (if AWL deck, move to Oxford).
     """
     word_clean = word.split(' (')[0].strip().lower()
@@ -188,7 +190,7 @@ def route_deck(
     elif is_in_awl_coxhead:
         return DECK_AWL
 
-    if current_deck == DECK_AWL:
+    if current_deck in {DECK_AWL, LEGACY_AWL_DECK}:
         return DECK_OXFORD
 
     return current_deck
@@ -208,7 +210,7 @@ def apply_corpus_routing_and_tags(
     3. AWL_Coxhead assigned ONLY to Coxhead headwords that have NO Oxford tag across all cards of the headword.
     4. Each card gets AT MOST ONE list tag (Oxford_5000 > Oxford_3000 > AWL_Coxhead > NO_LIST).
     5. Remove legacy AWL tag if present.
-    6. Card with AWL_Coxhead routes to English Academic Vocabulary::AWL 50 Academic Words.
+    6. Card with AWL_Coxhead routes to English Academic Vocabulary::AWL_Coxhead.
     7. Card without list tag in wrong deck (e.g. rover) routes to English Academic Vocabulary::Oxford.
     """
     awl_headwords = set()

@@ -672,7 +672,7 @@ def test_awl_cefr_rescue_cards_are_applied():
         row = cards[identity]
         assert row["guid"] == guid
         _assert_registry_semantics(row)
-        assert row["deck"] == "English Academic Vocabulary::AWL 50 Academic Words"
+        assert row["deck"] == "English Academic Vocabulary::AWL_Coxhead"
         assert "AWL_Coxhead" in row["tags"].split()
 
 
@@ -685,9 +685,7 @@ def _legacy_test_equate_uses_the_learner_gloss_for_equating_two_things():
     assert card["definition"] == (
         "think two things are the same or equally important (đánh đồng)"
     )
-    assert card["collocations"] == (
-        "equate A with B|equate success with money|wrongly/often equate sth with sth"
-    )
+    assert card["collocations"] == "equate something with something"
 
 
 def test_forth_keeps_only_the_two_priority_idioms():
@@ -825,6 +823,4 @@ def test_equate_uses_registry_payload_and_learner_collocations():
 
     assert card["guid"] == "Qmol/ya1&P"
     _assert_registry_semantics(card)
-    assert card["collocations"] == (
-        "equate A with B|equate success with money|wrongly/often equate sth with sth"
-    )
+    assert card["collocations"] == "equate something with something"

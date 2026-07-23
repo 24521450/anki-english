@@ -53,3 +53,16 @@ def test_temporal_reviewed_semantic_variants_are_allowed():
         "temporal", "UNCLASSIFIED", "NO_LIST", "adjective", ""
     )
     assert reviewed_identity_variant("firm", "B2", "Oxford_5000", "adjective") == ""
+
+
+def test_contend_with_reviewed_secondary_variant_is_exactly_allowlisted():
+    assert is_reviewed_identity_variant_allowed(
+        "contend with sb/sth",
+        "C1",
+        "Oxford_5000",
+        "phrasal verb",
+        "secondary_phrasal_contend_with",
+    )
+    assert not is_reviewed_identity_variant_allowed(
+        "contend with sb/sth", "C1", "Oxford_5000", "phrasal verb", ""
+    )

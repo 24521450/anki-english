@@ -169,6 +169,48 @@
       }
     },
     {
+      "id": "contend-sense-frames-and-phrasal-link",
+      "source": "oxford",
+      "filename": "oxford_contend_(verb).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "contend",
+        "pos_sections": [
+          {"pos": "verb", "definition_count": 2}
+        ],
+        "required_idioms": [],
+        "required_see_also": [],
+        "required_sense_frames": [
+          {"pos": "verb", "sensenum_local": "1", "sense_frames": ["contend that…"]},
+          {"pos": "verb", "sensenum_local": "2", "sense_frames": ["contend (for something)"]}
+        ],
+        "required_phrasal_verb_links": [
+          {
+            "phrase": "contend with",
+            "url": "https://www.oxfordlearnersdictionaries.com/definition/english/contend-with"
+          }
+        ]
+      }
+    },
+    {
+      "id": "contend-with-target-identity",
+      "source": "oxford",
+      "filename": "oxford_contend-with_(phrasal_verb).html",
+      "slug_strategy": "oxford_filename_v1",
+      "assertions": {
+        "word": "contend with",
+        "pos_sections": [
+          {"pos": "phrasal verb", "definition_count": 1}
+        ],
+        "required_idioms": [],
+        "required_see_also": [],
+        "required_sense_frames": [
+          {"pos": "phrasal verb", "sensenum_local": null, "sense_frames": []}
+        ],
+        "required_phrasal_verb_links": []
+      }
+    },
+    {
       "id": "cambridge-violation-cleaning",
       "source": "cambridge",
       "filename": "cambridge_violation.html",

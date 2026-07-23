@@ -46,6 +46,7 @@ from src.deck_builder.package_provenance import (
 )
 from src.deck_builder.live_guid_proof import export_and_verify_live_guid_map
 from src.deck_builder.production import production_eligible
+from src.deck_builder.deck_names import AWL_DECK, LEGACY_AWL_DECK, ROOT_DECK
 from src.design_css import load_production_css
 
 
@@ -61,7 +62,6 @@ LEGACY_EAVM_FIELDS = EAVM_FIELDS[:19]
 PRE_SENSE_POS_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("SensePOS")]
 PRE_IDIOM_MEANING_VI_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("IdiomMeaningVI")]
 PRE_COLLOCATION_SOURCES_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("CollocationSources")]
-ROOT_DECK = "English Academic Vocabulary"
 SOUND_RE = re.compile(r"\[sound:([^\]]+)\]")
 AUDIO_SRC_RE = re.compile(r"<audio\b[^>]*\bsrc=[\"']([^\"']+)[\"'][^>]*>", re.IGNORECASE)
 
@@ -81,6 +81,7 @@ class ExistingCollectionSnapshot:
     schedules: dict[int, tuple[Any, ...]]
     had_production_template: bool
     note_identities: dict[int, tuple[str, ...]] | None = None
+    legacy_awl_card_ids: frozenset[int] = frozenset()
 
 
 class AnkiConnectError(RuntimeError):
@@ -419,6 +420,7 @@ def snapshot_existing_collection(
     note_targets: dict[int, dict[str, Any]] = {}
     note_identities: dict[int, tuple[str, ...]] = {}
     note_live_eligibility: dict[int, bool] = {}
+    legacy_awl_card_ids: set[int] = set()
     for batch in _chunks(note_ids):
         for note in client.call("notesInfo", notes=batch) or []:
             if not isinstance(note, dict) or "noteId" not in note:
@@ -531,10 +533,18 @@ def snapshot_existing_collection(
             raise AnkiConnectError(
                 f"Sibling EAVM cards do not share one deck on note {note_id}"
             )
-        if live_decks != {target["deck"]}:
+        expected_deck = target["deck"]
+        is_exact_legacy_awl = (
+            live_decks == {LEGACY_AWL_DECK}
+            and expected_deck == AWL_DECK
+            and "AWL_Coxhead" in target["tags"]
+        )
+        if live_decks != {expected_deck} and not is_exact_legacy_awl:
             raise AnkiConnectError(
                 f"Existing card deck mismatch on note {note_id}: {sorted(live_decks)!r}"
             )
+        if is_exact_legacy_awl:
+            legacy_awl_card_ids.update(int(card["cardId"]) for card in note_cards)
 
     return ExistingCollectionSnapshot(
         note_ids=frozenset(int(note_id) for note_id in note_ids),
@@ -542,7 +552,99 @@ def snapshot_existing_collection(
         schedules={card_id: _card_schedule(card) for card_id, card in cards.items()},
         had_production_template=template_state == "canonical",
         note_identities=note_identities,
+        legacy_awl_card_ids=frozenset(legacy_awl_card_ids),
     )
+
+
+def migrate_legacy_awl_deck(
+    client: AnkiConnectClient,
+    card_ids: Iterable[int],
+) -> None:
+    """Rename the exact legacy AWL deck without replacing cards or its config."""
+
+    cards = sorted(set(card_ids))
+    if not cards:
+        return
+
+    deck_names = client.call("deckNames")
+    if not isinstance(deck_names, list) or not all(
+        isinstance(name, str) for name in deck_names
+    ):
+        raise AnkiConnectError(f"Anki returned malformed deck names: {deck_names!r}")
+    if LEGACY_AWL_DECK not in deck_names:
+        raise AnkiConnectError(f"Legacy AWL deck is missing: {LEGACY_AWL_DECK!r}")
+    legacy_children = sorted(
+        name for name in deck_names if name.startswith(LEGACY_AWL_DECK + "::")
+    )
+    if legacy_children:
+        raise AnkiConnectError(
+            f"Refusing to delete legacy AWL deck with children: {legacy_children!r}"
+        )
+
+    legacy_cards = client.call(
+        "findCards", query=f'deck:"{LEGACY_AWL_DECK}"'
+    ) or []
+    try:
+        legacy_card_ids = {int(card_id) for card_id in legacy_cards}
+    except (TypeError, ValueError) as exc:
+        raise AnkiConnectError(
+            f"Legacy AWL deck returned malformed card IDs: {legacy_cards!r}"
+        ) from exc
+    if legacy_card_ids != set(cards):
+        raise AnkiConnectError(
+            "Legacy AWL deck card set does not exactly match the migration snapshot"
+        )
+
+    config = client.call("getDeckConfig", deck=LEGACY_AWL_DECK)
+    if not isinstance(config, dict):
+        raise AnkiConnectError(f"Legacy AWL deck config is malformed: {config!r}")
+    config_id = config.get("id")
+    if isinstance(config_id, bool) or not isinstance(config_id, int):
+        raise AnkiConnectError(
+            f"Legacy AWL deck config ID is malformed: {config_id!r}"
+        )
+
+    _require_not_false(
+        client.call("changeDeck", cards=cards, deck=AWL_DECK),
+        "changeDeck",
+    )
+    _require_not_false(
+        client.call("setDeckConfigId", decks=[AWL_DECK], configId=config_id),
+        "setDeckConfigId",
+    )
+    moved = _load_cards_info(client, cards)
+    if any(str(card.get("deckName") or "") != AWL_DECK for card in moved.values()):
+        raise AnkiConnectError("Legacy AWL cards did not all move to the canonical deck")
+
+    remaining = client.call("findCards", query=f'deck:"{LEGACY_AWL_DECK}"') or []
+    if remaining:
+        raise AnkiConnectError(
+            f"Legacy AWL deck is not empty after migration: {remaining!r}"
+        )
+    post_move_names = client.call("deckNames")
+    if not isinstance(post_move_names, list) or not all(
+        isinstance(name, str) for name in post_move_names
+    ):
+        raise AnkiConnectError(
+            f"Anki returned malformed deck names after AWL migration: {post_move_names!r}"
+        )
+    post_move_children = sorted(
+        name
+        for name in post_move_names
+        if name.startswith(LEGACY_AWL_DECK + "::")
+    )
+    if post_move_children:
+        raise AnkiConnectError(
+            f"Refusing to delete legacy AWL deck with children: {post_move_children!r}"
+        )
+
+    _require_not_false(
+        client.call("deleteDecks", decks=[LEGACY_AWL_DECK], cardsToo=True),
+        "deleteDecks",
+    )
+    final_names = client.call("deckNames")
+    if not isinstance(final_names, list) or LEGACY_AWL_DECK in final_names:
+        raise AnkiConnectError("Legacy AWL deck still exists after deletion")
 
 
 def validate_local_inputs(
@@ -1434,6 +1536,7 @@ def import_and_verify(
         prior = snapshot_existing_collection(
             client, expected_records, template_state, current_fields
         )
+        migrate_legacy_awl_deck(client, prior.legacy_awl_card_ids)
         has_missing_identities = len(prior.note_ids) < len(expected_records)
         migrate_established_eavm_fields(client)
         # Populate the eligibility-driving fields before modelTemplateAdd creates ord1.

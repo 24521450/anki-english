@@ -79,6 +79,12 @@ user-request provenance; `data/README.md` owns artifact lifecycle;
   and `promote` deterministically writes
   `data/curated/collocation_registry.jsonl`. Never treat a scraper candidate as
   approved, bulk-pass unchanged chips, or hand-edit the promoted registry.
+  Schema v3 treats Cambridge example `.cl` and controlled exact ordinary-example
+  patterns as example-linked; it also queues Cambridge bare `.lu`, standalone
+  `.cl`, and non-truncated Oxford snippets containing the headword/plural.
+  `create-manifests`/`validate-manifests` partition unresolved whole GUIDs among
+  exactly three workers. A v2 ledger must reset; do not reuse its bulk-template
+  approval prose.
 - `python -m tools.semantic_audit definition-audit` creates a report-only audit
   in `scratch/` for unusually long, token-heavy, or connector-heavy Definition
   text. The default 12-token trigger is review triage, not a length cap. The
@@ -137,10 +143,10 @@ user-request provenance; `data/README.md` owns artifact lifecycle;
 - `data/curated/semantic_policy_locks.jsonl` is the machine-readable release
   policy for exact wording and retained/excluded/absent sense decisions. The
   exact user locks `compel` → `ép buộc`, `contender` → `đối thủ nặng ký`,
-  `transcribe` → `chép lại`, and `venture` → `mạo hiểm, cả gan` are release
-  invariants. Change any of them only after an explicit user instruction and a
-  coordinated code/data update; deleting or superseding a ledger row must not
-  relax them silently.
+  `contend with sb/sth` → `đối phó`, `transcribe` → `chép lại`, and `venture` →
+  `mạo hiểm, cả gan` are release invariants. Change any of them only after an
+  explicit user instruction and a coordinated code/data update; deleting or
+  superseding a ledger row must not relax them silently.
 - Since the ADR 0011 cutover on 2026-07-15, Semantic Registry owns production
   Definition/Example content and the promoted bilingual Idiom Box payload. The
   legacy β/γ/M3 and review layers still support source indexing and non-semantic
@@ -177,7 +183,7 @@ split. Current exact variants and GUIDs are documented under Card Identity in
 | Definition EN/VI or examples | Update the fingerprint-bound review input, validate all affected ledgers, promote, rebuild, and run release validation. | Hand-edit Semantic Registry or build outputs. |
 | Remove or retain a source sense | Use the reviewed Learner Relevance Filter, account for every source ID, and add/retain stable regression evidence. | Delete by label, length, or specialist heuristic alone. |
 | User-locked VI wording | Obtain explicit user instruction, then update the matching policy/code/data contract and regenerate every downstream artifact. | Infer permission from a dictionary/source change or silently supersede the lock. |
-| Collocation text/provenance | Update the fingerprint-bound Collocation Audit, account for current chips and mandatory example-linked source evidence, promote, rebuild, and run release validation. | Hand-edit Collocation Registry/build output, auto-promote scraper labels, or mix reviewed and legacy ownership. |
+| Collocation text/provenance | Update the fingerprint-bound Collocation Audit, account for current chips and every v3 mandatory source candidate, promote, rebuild, and run release validation. | Hand-edit Collocation Registry/build output, auto-promote scraper labels, reuse v2 bulk approvals, or mix reviewed and legacy ownership. |
 | Parser fixture | Declare it in the clean-checkout fixture manifest with semantic assertions; hydrate through the shared helper. | Read an undeclared ignored cache file from a default test. |
 | Generated artifact | Run its documented canonical writer and verify deterministic output contains no unrelated changes. | Treat an output file as an upstream authority. |
 | Release/import | Run the CI-equivalent guard, full `pytest`, pipeline validation, package provenance check, and verified AnkiConnect import when live release is in scope. | Import a stale/unverified `.apkg` or edit `collection.anki2`. |
@@ -253,6 +259,28 @@ fallback.
 - All tests must pass before commit
 - `pythonpath = ["."]` in pytest config → use absolute imports via `src.*`
 
+### Pre-push CI parity gate
+
+`pytest` passing is necessary but is not sufficient evidence for a push. Before
+every push:
+
+1. Read `.github/workflows/ci.yml` at the revision being pushed and run every
+   blocking command relevant to the changed layers, in workflow order. Include
+   setup commands and standalone CLI gates that `pytest` does not collect.
+2. For parser, scraper-schema, or parser-fixture changes, run
+   `python -m tools.ci_hydrate_parser_fixtures` and the relevant scraper and
+   fixture-tool test slices. Confirm the clean-checkout hydration path is
+   exercised; an ignored warm cache or passing frozen-golden parser tests must
+   not be used to infer that CI will pass.
+3. For cross-layer or release changes, also run full `pytest` and the applicable
+   canonical/package/import Release Guard described above.
+4. Check that verification produced no unexpected tracked changes. Do not
+   commit, push, or report "ready to push" while a required workflow command is
+   unrun, failing, or skipped without an explicit external-only reason.
+
+When CI adds or changes a blocking command, this gate follows the workflow at
+the current revision; do not rely on a stale copied command list.
+
 ### Test slices
 
 - Smoke: `pytest tests/test_config.py tests/test_pipeline.py tests/test_schema_validation.py tests/test_drift_guard.py tests/test_documentation_contracts.py tests/tools/test_sync_card_registry.py`
@@ -271,7 +299,8 @@ full `pytest` before commit/release or after cross-layer changes.
 - **Single-branch project** — commit directly to `main`. No feature branches, no PRs.
 - Conventional commits (`feat:` / `fix:` / `docs:` / `refactor:`)
 - One concern per commit — don't bundle scraper change with design change
-- Run `pytest` before pushing; red build = revert or fix-forward
+- Complete the Pre-push CI parity gate before pushing; any red or unrun required
+  command blocks the push.
 
 ## Domain-specific notes
 

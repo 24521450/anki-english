@@ -4,6 +4,7 @@ from __future__ import annotations
 import secrets
 
 from src.deck_builder.card_identity import is_reviewed_semantic_identity_variant
+from src.deck_builder.deck_names import AWL_DECK
 
 
 SECONDARY_SENSE_DECK = (
@@ -84,7 +85,7 @@ def sync_semantic_identity_tag(tags: str | None, registry_row: dict) -> str:
 
 def deck_for_source(source1: str, is_awl: bool) -> str:
     if is_awl or source1 == "AWL":
-        return "English Academic Vocabulary::AWL 50 Academic Words"
+        return AWL_DECK
     if source1 == "Cambridge":
         return "English Academic Vocabulary::TED YT"
     return "English Academic Vocabulary::Oxford"

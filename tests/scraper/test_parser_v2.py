@@ -42,6 +42,20 @@ def _parse_oxford_record(filename: str) -> dict:
     for pos_data in record["pos_data"]:
         pos_data.pop("source_url", None)
     record.pop("pronunciations", None)  # frozen v2 golden compatibility
+    record.pop("phrasal_verb_links", None)  # frozen v2 golden compatibility
+    for pos_data in record["pos_data"]:
+        for definition in pos_data["definitions"]:
+            sense_frames = definition.get("sense_frames") or []
+            if len(sense_frames) == 1:
+                for example in definition.get("examples") or []:
+                    if example.get("cf") == sense_frames[0]:
+                        example["cf"] = None
+            definition.pop("sense_frames", None)
+            definition["collocation_evidence"] = [
+                item
+                for item in definition.get("collocation_evidence", [])
+                if item.get("origin") != "oxford_sense_cf"
+            ]
     return record
 
 

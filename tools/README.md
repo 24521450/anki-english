@@ -132,18 +132,21 @@ Every resolved all-sense Vietnamese row requires a decision-specific
 row also requires its exact `lock_id`. Ordinary evidence cites the exact EN
 sense and one sense-specific example or source definition. A shared sentence
 does not become row-specific merely because it interpolates the headword or
-final VI; generic and duplicate normalized templates fail the gate. The four exact user locks are `compel` →
-`ép buộc`, `contender` → `đối thủ nặng ký`, `transcribe` → `chép lại`, and
-`venture` → `mạo hiểm, cả gan`; changing one requires an explicit user
-instruction and coordinated code/data update. Reports and XLSX files never
-become production authority merely because a reviewer opened or edited them.
+final VI; generic and duplicate normalized templates fail the gate. The five
+exact user locks are `compel` → `ép buộc`, `contender` → `đối thủ nặng ký`,
+`contend with sb/sth` → `đối phó`, `transcribe` → `chép lại`, and `venture` →
+`mạo hiểm, cả gan`; changing one requires an explicit user instruction and
+coordinated code/data update. Reports and XLSX files never become production
+authority merely because a reviewer opened or edited them.
 
 ### Collocation workflow
 
 The Collocation Audit is two-way: it accounts for every current displayed chip
-and every mandatory example-linked Oxford/Cambridge candidate. Supporting
-snippet, bare-label, and grammar evidence remains visible to the reviewer but
-does not become production content automatically. Every item needs an explicit
+and every mandatory Oxford/Cambridge candidate. Audit v3 includes
+example-linked evidence, Cambridge bare `.lu`/standalone `.cl`, and
+non-truncated Oxford snippets containing the headword or regular plural. Other
+supporting evidence remains visible but does not become production content
+automatically. Every item needs an explicit
 approved disposition with a surface-specific reason (and source evidence IDs
 when the decision is source-backed); pending, uncertain, stale, unaccounted,
 over-five, or invalid source-compressed results fail promotion. `promote` writes
@@ -158,6 +161,26 @@ regular singular/plural change of the card headword match (for example,
 `generous portion` backed by `generous portions`). Provenance remains per final
 chip; do not slash-compress a source-backed phrase together with a curated
 phrase or let the curated half suppress its OXF/CAM marker.
+
+After `scaffold`, use `create-manifests` to partition unresolved work by whole
+GUID across exactly three deterministic workers; `validate-manifests` rejects
+stale or modified assignments. A v2 ledger is deliberately reset to pending,
+and complete validation rejects review reasons that differ only by interpolated
+surface/evidence identifiers.
+
+### Phrasal-verb routing workflow
+
+`python -m tools.phrasal_verb_audit scaffold` reconstructs the
+fingerprint-bound routing queue from active Card Registry identities, parent
+`phrasal_verb_links`, and independently hydrated Oxford target records.
+`export-xlsx` and `import-xlsx`
+provide a protected review view; immutable target URLs, source identities,
+structural collisions, and fingerprints cannot be edited there.
+`validate --require-complete` rejects pending, uncertain, stale, unapproved, or
+structurally inconsistent routes. An approved `distinct_secondary` route also
+forbids the routed phrase from remaining as a final chip on its parent card.
+The review ledger is the routing authorization; the XLSX file and scraper data
+are evidence, not production authorities.
 
 ### Release workflow
 

@@ -246,6 +246,7 @@ def build_audit_rows(
         word = registry.get("word") or card.get("word") or ""
         raw_senses = _source_senses(oxford_records, word)
         raw_senses.extend(_source_senses(cambridge_records or [], word))
+        raw_senses.sort(key=lambda sense: sense["source_sense_id"])
         pos_parts = {part.strip().casefold() for part in (registry.get("pos") or card.get("pos") or "").split(",") if part.strip()}
         candidates = [sense for sense in raw_senses if sense["pos"].casefold() in pos_parts]
         exact_cefr = [

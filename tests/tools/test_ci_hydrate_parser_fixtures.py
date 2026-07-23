@@ -76,6 +76,7 @@ def test_hydrate_oxford_ignores_pos_source_url(tmp_path, monkeypatch):
         "https://www.oxfordlearnersdictionaries.com/definition/english/linger"
     )
     parsed["pos_data"][0]["source_url"] = parsed["source_url"]
+    parsed["pronunciations"] = [{"entry_id": "linger"}]
 
     monkeypatch.setattr(hydrator, "OXFORD_CACHE", tmp_path)
     monkeypatch.setattr(hydrator, "_fetch", lambda _url: b"valid Oxford HTML")

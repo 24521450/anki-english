@@ -16,7 +16,8 @@ from datetime import date
 from src.deck_builder.semantic_audit import CHECK_FIELDS, validate_audit_rows
 
 
-VIETNAMESE_AUDIT_SCHEMA_VERSION = 5
+VIETNAMESE_AUDIT_SCHEMA_VERSION = 6
+GLOSS_POLICY_VERSION = "verb_lexical_core_v1"
 DEFAULT_MIN_TOKENS = 8
 AUDIT_SCOPES = ("long", "all")
 REVIEW_DECISIONS = (
@@ -28,9 +29,21 @@ REVIEW_DECISIONS = (
 )
 REVIEW_APPROVALS = ("", "approved", "rejected")
 REASON_CODES_BY_DECISION = {
-    "keep_natural": {"natural_lexical_gloss", "user_lock"},
-    "keep_explanatory": {"necessary_explanation", "user_lock"},
-    "rewrite": {"natural_rewrite", "user_lock"},
+    "keep_natural": {
+        "natural_lexical_gloss",
+        "lexical_core_confirmed",
+        "lexicalized_particle_required",
+        "semantic_complement_required",
+        "user_lock",
+    },
+    "keep_explanatory": {
+        "necessary_explanation",
+        "lexical_core_confirmed",
+        "lexicalized_particle_required",
+        "semantic_complement_required",
+        "user_lock",
+    },
+    "rewrite": {"natural_rewrite", "lexical_core_rewrite", "user_lock"},
 }
 _GENERIC_EVIDENCE = {
     "already natural",
@@ -64,6 +77,16 @@ _BR_RE = re.compile(r"<br\s*/?>", re.IGNORECASE)
 _CLAUSE_MARKER_RE = re.compile(
     r"(?:^|[\s,;])(người|vật|việc|điều|nơi|khi|mà|để|nhằm|"
     r"có thể|được dùng|dùng để)(?:\s|$)",
+    re.IGNORECASE,
+)
+_GOVERNED_FRAME_RE = re.compile(
+    r"(?:^|[\s,;/])(?:với|từ|vào|đến|tới|về|khỏi|cho|của|để|rằng|theo|bởi|ở)"
+    r"(?:$|[\s,;/])",
+    re.IGNORECASE,
+)
+_GENERIC_ARGUMENT_RE = re.compile(
+    r"(?:^|[\s,;/])(?:ai|thứ gì|điều gì|cái gì|người nào|vật gì)"
+    r"(?:$|[\s,;/])",
     re.IGNORECASE,
 )
 
@@ -225,8 +248,40 @@ def _heuristic_flags(
     return flags
 
 
+def _is_verb_pos(value: object) -> bool:
+    return any(
+        part.strip().casefold() in {"verb", "phrasal verb"}
+        for part in str(value or "").split(",")
+    )
+
+
+def _gloss_policy_fields(pos: object, definition_vi: object) -> tuple[str, list[str]]:
+    if not _is_verb_pos(pos):
+        return "", []
+    text = str(definition_vi or "")
+    findings = ["verb_lexical_core_review"]
+    if _GOVERNED_FRAME_RE.search(text):
+        findings.append("governed_function_word")
+    if _GENERIC_ARGUMENT_RE.search(text):
+        findings.append("generic_argument_placeholder")
+    return GLOSS_POLICY_VERSION, findings
+
+
+def _order_insensitive_source_lists(payload: Mapping[str, object]) -> dict:
+    normalized = dict(payload)
+    for field in ("source_definitions", "source_sense_ids"):
+        value = normalized.get(field)
+        if isinstance(value, list):
+            normalized[field] = sorted(value)
+    return normalized
+
+
 def _candidate_fingerprint(candidate: dict) -> str:
-    payload = {key: value for key, value in candidate.items() if key != "candidate_fingerprint"}
+    payload = _order_insensitive_source_lists({
+        key: value
+        for key, value in candidate.items()
+        if key not in {"candidate_fingerprint", "source_fingerprint"}
+    })
     return _json_digest(payload)
 
 
@@ -245,10 +300,15 @@ _CONTEXT_FIELDS_V4 = (
     "examples",
     "source_sense_ids",
 )
-_CONTEXT_FIELDS = (
+_CONTEXT_FIELDS_V5 = (
     *_CONTEXT_FIELDS_V4[:-1],
     "source_definitions",
     _CONTEXT_FIELDS_V4[-1],
+)
+_CONTEXT_FIELDS = (
+    *(field for field in _CONTEXT_FIELDS_V5 if field != "source_fingerprint"),
+    "gloss_policy_version",
+    "style_findings",
 )
 
 
@@ -256,9 +316,9 @@ def _context_fingerprint_for_fields(
     candidate: Mapping[str, object],
     fields: Iterable[str],
 ) -> str:
-    return _json_digest(
+    return _json_digest(_order_insensitive_source_lists(
         {key: candidate.get(key) for key in fields}
-    )
+    ))
 
 
 def _context_fingerprint(candidate: Mapping[str, object]) -> str:
@@ -267,6 +327,14 @@ def _context_fingerprint(candidate: Mapping[str, object]) -> str:
 
 def _context_fingerprint_v4(candidate: Mapping[str, object]) -> str:
     return _context_fingerprint_for_fields(candidate, _CONTEXT_FIELDS_V4)
+
+
+def _context_fingerprint_v5(candidate: Mapping[str, object]) -> str:
+    return _context_fingerprint_for_fields(candidate, _CONTEXT_FIELDS_V5)
+
+
+def _context_fingerprint_v5_legacy(candidate: Mapping[str, object]) -> str:
+    return _json_digest({key: candidate.get(key) for key in _CONTEXT_FIELDS_V5})
 
 
 def _candidate_set_digest(candidates: list[dict]) -> str:
@@ -290,10 +358,12 @@ def _review_final_vi(review: Mapping[str, object]) -> str:
 
 
 def _upgrade_review_row(review: dict, candidate: Mapping[str, object]) -> dict:
-    """Rebind a v3/v4 snapshot and add immutable v5 grounding citations."""
+    """Rebind legacy snapshots while reopening every verb-policy decision."""
     upgraded = copy.deepcopy(review)
     legacy_schema = upgraded.get("schema_version")
-    if legacy_schema not in {3, 4}:
+    if legacy_schema not in {3, 4, 5}:
+        return upgraded
+    if candidate.get("gloss_policy_version") == GLOSS_POLICY_VERSION:
         return upgraded
     if legacy_schema == 3:
         decision = upgraded.get("decision")
@@ -308,7 +378,15 @@ def _upgrade_review_row(review: dict, candidate: Mapping[str, object]) -> dict:
             f'Final VI "{final_vi}": {reason}' if final_vi and reason else ""
         )
         upgraded["lock_id"] = ""
-    if upgraded.get("context_fingerprint") != _context_fingerprint_v4(candidate):
+    expected_legacy_contexts = (
+        {
+            _context_fingerprint_v5(candidate),
+            _context_fingerprint_v5_legacy(candidate),
+        }
+        if legacy_schema == 5
+        else {_context_fingerprint_v4(candidate)}
+    )
+    if upgraded.get("context_fingerprint") not in expected_legacy_contexts:
         return upgraded
     if upgraded.get("reason_code") != "user_lock":
         evidence = str(upgraded.get("semantic_evidence") or "").strip()
@@ -336,6 +414,8 @@ def _upgrade_review_row(review: dict, candidate: Mapping[str, object]) -> dict:
     upgraded["schema_version"] = VIETNAMESE_AUDIT_SCHEMA_VERSION
     upgraded["candidate_fingerprint"] = candidate["candidate_fingerprint"]
     upgraded["context_fingerprint"] = candidate["context_fingerprint"]
+    upgraded["gloss_policy_version"] = candidate.get("gloss_policy_version", "")
+    upgraded["style_findings"] = list(candidate.get("style_findings") or [])
     return upgraded
 
 
@@ -359,6 +439,24 @@ def _review_evidence_error(
     reviewed_at = str(review.get("reviewed_at") or "").strip()
     if reason_code not in REASON_CODES_BY_DECISION.get(decision, set()):
         errors.append(f"{prefix}_invalid_reason_code:{identity}")
+    if candidate.get("gloss_policy_version") == GLOSS_POLICY_VERSION:
+        policy_codes = {
+            "keep_natural": {
+                "lexical_core_confirmed",
+                "lexicalized_particle_required",
+                "semantic_complement_required",
+                "user_lock",
+            },
+            "keep_explanatory": {
+                "lexical_core_confirmed",
+                "lexicalized_particle_required",
+                "semantic_complement_required",
+                "user_lock",
+            },
+            "rewrite": {"lexical_core_rewrite", "user_lock"},
+        }
+        if reason_code not in policy_codes.get(decision, set()):
+            errors.append(f"{prefix}_invalid_verb_gloss_reason_code:{identity}")
     if reason_code == "user_lock":
         if not lock_id:
             errors.append(f"{prefix}_missing_lock_id:{identity}")
@@ -548,12 +646,17 @@ def _review_is_reusable(review: dict, candidate: dict) -> bool:
         or review.get("schema_version") != VIETNAMESE_AUDIT_SCHEMA_VERSION
         or review.get("approval") != "approved"
         or decision not in {"keep_natural", "keep_explanatory", "rewrite"}
+        or review.get("candidate_fingerprint") != candidate["candidate_fingerprint"]
         or review.get("context_fingerprint") != candidate["context_fingerprint"]
+        or review.get("expected_definition_vi") != candidate["definition_vi"]
         or _review_final_vi(review) != candidate["definition_vi"]
         or review.get("guid") != candidate["guid"]
         or review.get("semantic_sense_id") != candidate["semantic_sense_id"]
         or review.get("word") != candidate["word"]
         or review.get("order") != candidate["order"]
+        or review.get("gloss_policy_version")
+        != candidate.get("gloss_policy_version", "")
+        or review.get("style_findings") != candidate.get("style_findings", [])
         or any(
             not str(review.get(field) or "").strip()
             for field in ("reason", "reviewer", "reviewed_at")
@@ -652,6 +755,10 @@ def build_vietnamese_audit(
             )
             cambridge = audit_sense.get("cambridge") or {}
             source_sense_ids = list(sense.get("source_sense_ids") or [])
+            gloss_policy_version, style_findings = _gloss_policy_fields(
+                card.get("pos"),
+                definition_vi,
+            )
             candidate = {
                 "record_type": "candidate",
                 "schema_version": VIETNAMESE_AUDIT_SCHEMA_VERSION,
@@ -691,6 +798,8 @@ def build_vietnamese_audit(
                     or sense.get("translation_provenance")
                     or ""
                 ),
+                "gloss_policy_version": gloss_policy_version,
+                "style_findings": style_findings,
             }
             candidate["context_fingerprint"] = _context_fingerprint(candidate)
             candidate["candidate_fingerprint"] = _candidate_fingerprint(candidate)
@@ -723,6 +832,7 @@ def build_vietnamese_audit(
         "candidate_cards": len({row["guid"] for row in candidates}),
         "candidate_senses": len(candidates),
         "candidate_set_sha256": _candidate_set_digest(candidates),
+        "gloss_policy_version": GLOSS_POLICY_VERSION,
     }
     errors = validate_vietnamese_audit(summary, candidates)
     if errors:
@@ -749,6 +859,8 @@ def validate_vietnamese_audit(summary: dict, candidates: list[dict]) -> list[str
         scope = "long"
     if set(summary.get("inputs") or {}) != set(INPUT_NAMES):
         errors.append("invalid_summary_inputs")
+    if summary.get("gloss_policy_version") != GLOSS_POLICY_VERSION:
+        errors.append("invalid_summary_gloss_policy_version")
 
     seen: set[str] = set()
     for row in candidates:
@@ -760,6 +872,14 @@ def validate_vietnamese_audit(summary: dict, candidates: list[dict]) -> list[str
             errors.append(f"invalid_candidate_record_type:{candidate_id}")
         if row.get("schema_version") != VIETNAMESE_AUDIT_SCHEMA_VERSION:
             errors.append(f"invalid_candidate_schema_version:{candidate_id}")
+        expected_policy, expected_findings = _gloss_policy_fields(
+            row.get("pos"),
+            row.get("definition_vi"),
+        )
+        if row.get("gloss_policy_version") != expected_policy:
+            errors.append(f"invalid_candidate_gloss_policy_version:{candidate_id}")
+        if row.get("style_findings") != expected_findings:
+            errors.append(f"invalid_candidate_style_findings:{candidate_id}")
         definition_vi = str(row.get("definition_vi") or "")
         if _invalid_vietnamese(definition_vi):
             errors.append(f"invalid_candidate_definition_vi:{candidate_id}")
@@ -825,6 +945,7 @@ def scaffold_vietnamese_review(
         "min_tokens": summary["min_tokens"],
         "candidate_count": len(candidates),
         "candidate_set_sha256": summary["candidate_set_sha256"],
+        "gloss_policy_version": summary["gloss_policy_version"],
     }
     existing_by_id: dict[str, dict] = {}
     duplicate_ids: set[str] = set()
@@ -908,6 +1029,8 @@ def scaffold_vietnamese_review(
                 "word": candidate["word"],
                 "order": candidate["order"],
                 "expected_definition_vi": candidate["definition_vi"],
+                "gloss_policy_version": candidate["gloss_policy_version"],
+                "style_findings": list(candidate["style_findings"]),
                 "decision": "pending",
                 "proposed_vi": "",
                 "shorter_vi_considered": "",
@@ -949,6 +1072,10 @@ def validate_vietnamese_review(
         "candidate_set_sha256"
     ):
         errors.append("review_stale_candidate_set")
+    if review_summary.get("gloss_policy_version") != summary.get(
+        "gloss_policy_version"
+    ):
+        errors.append("review_stale_gloss_policy_version")
     if review_summary.get("candidate_count") != len(candidates):
         errors.append("review_candidate_count_mismatch")
 
@@ -994,6 +1121,12 @@ def validate_vietnamese_review(
             "order"
         ]:
             errors.append(f"review_display_identity_mismatch:{identity}")
+        if (
+            review.get("gloss_policy_version")
+            != candidate.get("gloss_policy_version", "")
+            or review.get("style_findings") != candidate.get("style_findings", [])
+        ):
+            errors.append(f"review_gloss_policy_mismatch:{identity}")
         if (
             review.get("expected_definition_vi") != candidate["definition_vi"]
             and not reusable_snapshot
@@ -1092,6 +1225,8 @@ def validate_vietnamese_review_for_promotion(
         errors.append("promotion_review_invalid_schema_version")
     if review_summary.get("scope") != "all":
         errors.append("promotion_review_scope_must_be_all")
+    if review_summary.get("gloss_policy_version") != GLOSS_POLICY_VERSION:
+        errors.append("promotion_review_gloss_policy_version_mismatch")
     min_tokens = review_summary.get("min_tokens", DEFAULT_MIN_TOKENS)
     if (
         not isinstance(min_tokens, int)
@@ -1144,6 +1279,12 @@ def validate_vietnamese_review_for_promotion(
                 ),
                 "source_sense_ids": list(sense.get("source_sense_ids") or []),
             }
+            policy_version, style_findings = _gloss_policy_fields(
+                card.get("pos"),
+                candidate["definition_vi"],
+            )
+            candidate["gloss_policy_version"] = policy_version
+            candidate["style_findings"] = style_findings
             candidate["context_fingerprint"] = _context_fingerprint(candidate)
             effective_by_id[candidate_id] = candidate
 
@@ -1182,6 +1323,12 @@ def validate_vietnamese_review_for_promotion(
             or review.get("order") != candidate["order"]
         ):
             errors.append(f"promotion_review_identity_mismatch:{identity}")
+        if (
+            review.get("gloss_policy_version")
+            != candidate.get("gloss_policy_version", "")
+            or review.get("style_findings") != candidate.get("style_findings", [])
+        ):
+            errors.append(f"promotion_review_gloss_policy_mismatch:{identity}")
 
         decision = review.get("decision")
         if decision not in {"keep_natural", "keep_explanatory", "rewrite"}:

@@ -510,8 +510,8 @@ def test_canonical_bilingual_gloss_quality_regressions():
             "không ảnh hưởng đến quyền / vấn đề pháp lý khác",
         ),
         "in their/our/its/your midst": (
-            "among the members of a group",
-            "giữa các thành viên trong nhóm",
+            "among a group",
+            "ở giữa một nhóm người",
         ),
     }
 

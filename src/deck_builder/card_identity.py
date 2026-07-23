@@ -41,6 +41,9 @@ REVIEWED_SEMANTIC_IDENTITY_VARIANTS: Final[dict[tuple[str, str, str, str], froze
     ("sensitivity", "C1", "Oxford_5000", "noun"): frozenset(
         {"primary", "secondary_art_physical"}
     ),
+    ("contend with sb/sth", "C1", "Oxford_5000", "phrasal verb"): frozenset(
+        {"secondary_phrasal_contend_with"}
+    ),
     ("temporal", "UNCLASSIFIED", "NO_LIST", "adjective"): frozenset(
         {"general_formal", "anatomy"}
     ),

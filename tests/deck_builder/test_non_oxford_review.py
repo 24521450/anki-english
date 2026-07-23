@@ -85,7 +85,7 @@ def test_non_oxford_review_in_memory_metrics_and_scope():
     cards = get_cards_with_overrides()
     by_guid = {card.guid: card for card in cards}
 
-    assert len(cards) == 2464
+    assert len(cards) == 2465
     assert set(overrides).issubset(by_guid)
     assert _override_guids(paths_reg.synonym_example_overrides).issubset(by_guid)
     assert _override_guids(paths_reg.antonym_example_overrides).issubset(by_guid)
@@ -101,7 +101,7 @@ def test_manual_override_specifics():
     # slash and the concise Vietnamese gloss.
     assert harness.definition == "control and use power / resources (khai thác)"
     assert harness.example == "attempts to harness the sun’s rays as a source of energy"
-    assert harness.collocations == "harness energy/power/resources|harness the sun/wind|harness sth to do sth"
+    assert harness.collocations == ""
 
     # Verify nursing
     nursing_cards = [c for c in cards if c.word == "nursing" and c.cefr == "B2"]
@@ -110,7 +110,10 @@ def test_manual_override_specifics():
     assert nursing.pos == "noun"
     assert nursing.definition == "care of sick people (nghề điều dưỡng)"
     assert nursing.example == "a career in nursing"
-    assert nursing.collocations == "nursing care/profession/career|career in nursing"
+    assert nursing.collocations == (
+        "nurse something back to health|be nursed through|nursing care|"
+        "nursing career|nursing profession"
+    )
 
 
 def test_review_override_can_replace_ipa():

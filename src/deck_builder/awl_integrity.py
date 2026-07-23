@@ -224,6 +224,28 @@ def _load_oxford_facts(path: Path) -> dict[str, _OxfordFacts]:
                         str(sense.cefr).upper()
                     )
         result[word] = _OxfordFacts(dict(assigned), raw_pos, unbadged_pos)
+
+    # Oxford owns phrasal verbs on independent target pages.  AWL rows name
+    # the lexical base (for example ``derive | phrasal verb``), so expose the
+    # target page's POS under that base without folding its senses back into
+    # the base dictionary record.  Unbadged targets inherit only the reviewed
+    # base verb level used by the AWL row.
+    for target_word, target_facts in tuple(result.items()):
+        if " " not in target_word or "phrasal verb" not in target_facts.raw_pos:
+            continue
+        base_word = target_word.split(" ", 1)[0]
+        base_facts = result.get(base_word)
+        if base_facts is None:
+            continue
+        base_facts.raw_pos.add("phrasal verb")
+        target_levels = target_facts.assigned.get("phrasal verb", set())
+        inherited_levels = base_facts.assigned.get("verb", set())
+        if target_levels or inherited_levels:
+            base_facts.assigned.setdefault("phrasal verb", set()).update(
+                target_levels or inherited_levels
+            )
+        elif "phrasal verb" in target_facts.unbadged_pos:
+            base_facts.unbadged_pos.add("phrasal verb")
     return result
 
 

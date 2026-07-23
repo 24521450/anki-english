@@ -4,8 +4,8 @@ Per Phase 7b grill decisions (Q5-Y2):
 - 1 record per unique (word, homonym_index) pair
 - Merge strategy per field is pinned (word, source, source_url: take first;
   pos_data: concatenate+dedupe; etc.)
-- Phrasal Verb Folding: phrasal-verb records (e.g. "deprive of") get folded
-  into their main-word record ("deprive") before grouping.
+- Phrase pages remain independent records in production. The legacy phrasal
+  verb folding helper remains available only for compatibility callers.
 
 See CONTEXT.md § Skip Rule and § Phrasal Verb Folding for the full contract.
 
@@ -124,10 +124,9 @@ def _merge_opal_membership(records: list[dict]) -> dict[str, list[str]] | None:
 # Phrasal Verb Folding (Issue A, option β)
 # ===========================================================================
 # Oxford's main-word page for pattern-heavy verbs (deprive, derive, devote,
-# rely) is a stub that links to a separate phrasal-verb page (e.g. "deprive of").
-# After fetching the phrasal-verb page, we want the main word to OWN the
-# phrasal-verb definitions so the Anki deck shows a single card per headword
-# (matching how OALD presents it).
+# rely) can link to a separate phrasal-verb page (e.g. "deprive of").
+# Production rebuild no longer invokes this heuristic because Oxford's
+# authoritative phrase-page links and target page identities must be retained.
 #
 # Detection: a phrasal-verb record has `pos == ["phrasal verb"]` and `word`
 # contains a space (e.g. "deprive of", "rely on"). The base word is the
@@ -278,6 +277,7 @@ def merge_word_records(records: list[dict]) -> dict:
         - uk_ipa, us_ipa: first non-null (display metadata, not identity)
         - audio.uk, audio.us: first non-null
         - see_also: union, dedup
+        - phrasal_verb_links: union exact target identities, dedup
         - register_tags (top + per-def): union
         - verb_forms: first non-null (only 1 file has it)
         - idioms: concatenate, dedupe by phrase
@@ -302,6 +302,7 @@ def merge_word_records(records: list[dict]) -> dict:
         result = copy.deepcopy(records[0])
         result["opal"] = _merge_opal_membership([result])
         result.setdefault("pronunciations", [])
+        result.setdefault("phrasal_verb_links", [])
         for pd in result.get("pos_data", []):
             pd.setdefault("source_url", None)
             for d in pd.get("definitions", []):
@@ -311,6 +312,8 @@ def merge_word_records(records: list[dict]) -> dict:
                     d["antonyms"] = []
                 if "collocation_evidence" not in d:
                     d["collocation_evidence"] = []
+                if "sense_frames" not in d:
+                    d["sense_frames"] = []
         # Apply skip flag rules
         _apply_skip_flags(result)
         return result
@@ -392,6 +395,11 @@ def merge_word_records(records: list[dict]) -> dict:
     base["see_also"] = _dedup_preserve_order(
         [w for r in records for w in r.get("see_also", [])]
     )
+    base["phrasal_verb_links"] = []
+    for record in records:
+        for link in record.get("phrasal_verb_links", []):
+            if link not in base["phrasal_verb_links"]:
+                base["phrasal_verb_links"].append(copy.deepcopy(link))
 
     # register_tags (top-level): union, raise on forbidden conflict
     base["register_tags"] = _merge_register_tags_strict(
@@ -422,6 +430,8 @@ def merge_word_records(records: list[dict]) -> dict:
                         d_copy["antonyms"] = []
                     if "collocation_evidence" not in d_copy:
                         d_copy["collocation_evidence"] = []
+                    if "sense_frames" not in d_copy:
+                        d_copy["sense_frames"] = []
                     seen_defs[key] = d_copy
                     new_defs.append(d_copy)
                 else:
@@ -447,6 +457,11 @@ def merge_word_records(records: list[dict]) -> dict:
                         if item not in existing_evidence:
                             existing_evidence.append(copy.deepcopy(item))
                     d_existing["collocation_evidence"] = existing_evidence
+
+                    d_existing["sense_frames"] = _dedup_preserve_order(
+                        (d_existing.get("sense_frames") or [])
+                        + (d.get("sense_frames") or [])
+                    )
 
                     # Union register_tags (raise on forbidden conflict)
                     existing_regs = d_existing.get("register_tags") or []

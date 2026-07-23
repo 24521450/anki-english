@@ -276,13 +276,16 @@ def _extract_examples_collocations_and_evidence(
 
     Each ``.dexamp`` is walked once so a ``.lu.dlu`` can be classified as
     example-linked only when that same container has a non-empty ``.eg.deg``.
-    Bare LU and grammar ``.cl`` evidence remains supporting-only. The returned
+    A ``.cl`` nested in the paired example is example-linked evidence; a
+    standalone grammar ``.cl`` remains supporting-only. The returned
     collocations bucket keeps the established flat, order-preserving view.
     """
     examples: list[dict[str, Optional[str]]] = []
     collocations: list[str] = []
     seen_collocations: set[str] = set()
     evidence: list[dict[str, Any]] = []
+    example_cl_elements: set[Any] = set()
+    example_cl_items: list[tuple[Any, int, str, int, int]] = []
 
     for container_index, ex in enumerate(
         sense_el.cssselect(CAMBRIDGE["examples"]),
@@ -317,7 +320,38 @@ def _extract_examples_collocations_and_evidence(
                 "full_entry_url": None,
             })
 
-    for container_index, cl in enumerate(sense_el.cssselect(".cl"), start=1):
+        if example_index is not None and eg is not None:
+            for item_index, cl in enumerate(eg.cssselect(".cl"), start=1):
+                example_cl_elements.add(cl)
+                example_cl_items.append(
+                    (cl, example_index, example_text, container_index, item_index)
+                )
+
+    for cl, example_index, example_text, container_index, item_index in example_cl_items:
+        phrase = _text_of(cl).strip()
+        if not phrase:
+            continue
+        if phrase not in seen_collocations:
+            seen_collocations.add(phrase)
+            collocations.append(phrase)
+        evidence.append({
+            "text": phrase,
+            "source": "cambridge",
+            "origin": "cambridge_example_cl",
+            "evidence_kind": "example_linked",
+            "example_index": example_index,
+            "example_text": example_text,
+            "container_index": container_index,
+            "item_index": item_index,
+            "category": None,
+            "truncated": False,
+            "full_entry_url": None,
+        })
+
+    standalone_cl = [
+        cl for cl in sense_el.cssselect(".cl") if cl not in example_cl_elements
+    ]
+    for container_index, cl in enumerate(standalone_cl, start=1):
         phrase = _text_of(cl).strip()
         if not phrase:
             continue

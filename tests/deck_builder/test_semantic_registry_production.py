@@ -49,7 +49,7 @@ def test_production_build_uses_the_complete_promoted_semantic_registry():
     registry_by_guid = {row["guid"]: row for row in registry_rows}
     cards_by_guid = {card["guid"]: card for card in cards}
 
-    assert len(registry_by_guid) == len(cards_by_guid) == 2464
+    assert len(registry_by_guid) == len(cards_by_guid) == 2465
     assert set(registry_by_guid) == set(cards_by_guid)
     audit_sha256 = hashlib.sha256(paths.bilingual_semantic_audit.read_bytes()).hexdigest()
     assert {row["audit_sha256"] for row in registry_rows} == {audit_sha256}
@@ -74,28 +74,28 @@ def test_production_inventory_matches_all_canonical_authorities():
     pronunciation_locks = _jsonl(paths.pronunciation_selection_locks)
     headword_audio_manifest = _jsonl(paths.headword_audio_manifest)
 
-    assert len(card_registry) == 2466
-    assert sum(row["status"] == "active" for row in card_registry) == 2464
+    assert len(card_registry) == 2467
+    assert sum(row["status"] == "active" for row in card_registry) == 2465
     assert sum(row["status"] == "retired" for row in card_registry) == 2
-    assert len(semantic_audit) == 2464
-    assert len(semantic_registry) == 2464
-    assert len(collocation_registry) == 2464
-    assert len(cards) == 2464
-    assert sum(len(row["senses"]) for row in semantic_registry) == 3478
+    assert len(semantic_audit) == 2465
+    assert len(semantic_registry) == 2465
+    assert len(collocation_registry) == 2465
+    assert len(cards) == 2465
+    assert sum(len(row["senses"]) for row in semantic_registry) == 3479
 
     vietnamese_summary = vietnamese_review[0]
     assert vietnamese_summary["record_type"] == "review_summary"
-    assert vietnamese_summary["candidate_count"] == 3478
-    assert len(vietnamese_review) == 3479
+    assert vietnamese_summary["candidate_count"] == 3479
+    assert len(vietnamese_review) == 3480
     assert sum(
         bool(card["definition_vi"])
         and bool(card["example"])
         and bool(card["production_answer"])
         for card in cards
-    ) == 2462
-    assert len(pronunciation_locks) == 275
+    ) == 2463
+    assert len(pronunciation_locks) == 277
     assert {row["schema_version"] for row in pronunciation_locks} == {2}
-    assert sum(row["decision"] == "select" for row in pronunciation_locks) == 271
+    assert sum(row["decision"] == "select" for row in pronunciation_locks) == 273
     assert sum(
         row["decision"] == "no_pronunciation" for row in pronunciation_locks
     ) == 4
@@ -176,17 +176,17 @@ def test_takenote_collocation_provenance_repairs_reach_production():
     incur = cards["ms38IO?OC2"]
     assert incur["collocations"] == (
         "incur someone's anger|incur someone's wrath|incur costs|"
-        "incur expenses|incur losses/damage/penalties"
+        "incur expenses|loss incurred"
     )
     assert incur["collocation_sources"] == (
-        "cambridge|cambridge|cambridge|cambridge|curated"
+        "cambridge|cambridge|cambridge|cambridge|cambridge"
     )
 
     portion = cards["[ZF5/z3)vs"]
     assert portion["collocations"] == (
-        "generous portion|large/small/significant portion|portion of sth|"
-        "individual portion"
+        "portion of|large portion|small portion|generous portions|"
+        "portion control"
     )
     assert portion["collocation_sources"] == (
-        "cambridge|curated|curated|curated"
+        "oxford+cambridge|cambridge|cambridge|cambridge|cambridge"
     )

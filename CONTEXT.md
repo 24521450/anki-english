@@ -217,11 +217,16 @@ _Avoid_: Phrase list, example list
 
 **Collocation Evidence**:
 One source-located Oxford or Cambridge occurrence considered during collocation
-review. Example-linked evidence is a mandatory review candidate: Oxford `cf`
-text attached to an example, or Cambridge `.lu` text paired with an example in
-the same block. A truncated Oxford collocations snippet, a Cambridge bare `.lu`,
-or a Cambridge grammar `.cl` is supporting evidence only. Evidence is not a
-learner-facing chip until explicitly reviewed. Matching is exact-surface first;
+review. An Oxford `cf` attached directly to a sense is authoritative structural
+evidence and a mandatory candidate, but is not mislabeled as example-linked.
+Example-linked evidence is also mandatory: Oxford `cf` text attached to an
+example, Cambridge `.lu` text paired with an example in the same block, or
+Cambridge `.cl` text nested in that example. A controlled
+Cambridge Example Pattern may also be derived from an existing chip only by
+expanding explicit slash tokens and removing at most one trailing learner slot;
+the exact contiguous phrase must occur in the example and contain the headword
+or its regular plural. Evidence is not a learner-facing chip until explicitly
+reviewed. Matching is exact-surface first;
 only when no exact row exists may the regular singular/plural form of the card
 headword match (for example, `generous portion` to `generous portions`).
 _Avoid_: scraped collocation equals approved collocation, source label
@@ -235,6 +240,11 @@ five-chip budget, exact source phrase boundaries, ordering, exclusions, and
 curated wording. Provenance belongs to each final chip: a source-backed phrase
 must not be slash-compressed with a curated phrase or lose its Source Marker.
 _Avoid_: automatic source enrichment, source-only audit, bulk approval
+
+Schema v3 also makes Cambridge bare `.lu`, standalone `.cl`, and a non-truncated
+Oxford collocations snippet containing the headword or regular plural mandatory
+review candidates. Migrating from v2 resets every approval: interpolated or
+duplicate review prose is not accepted as an item-level linguistic decision.
 
 **Collocation Registry**:
 The canonical production collocation payload promoted deterministically from a
@@ -452,7 +462,9 @@ Corpus-list cards are routed under the nested `English Academic Vocabulary::Oxfo
 deck. `Oxford_5000` has highest priority and routes to `Oxford::Oxford 5000`.
 Otherwise, `Oxford_3000` cards route to `Oxford::Oxford 3000 Advanced` at B2
 or `Oxford::Oxford 3000 Basic` at A1/A2/B1. Cards without either corpus tag
-keep their existing TED YT, AWL, or plain Oxford deck.
+keep their existing TED YT, AWL, or plain Oxford deck. Coxhead AWL cards route
+to `English Academic Vocabulary::AWL_Coxhead`; `AWL 50 Academic Words` is a
+migration-only legacy alias and never a new build target.
 _Avoid_: flat Oxford 5000 deck, flat Oxford 3000 deck
 
 **Learner Relevance Filter**:
@@ -590,9 +602,10 @@ A machine-readable release invariant for an explicit semantic decision. Locks
 cover exact Vietnamese wording, absent Semantic Senses, and retained or
 excluded source mappings; validation checks them against the Bilingual Semantic
 Audit, promoted Semantic Registry, and built notes. The user-locked exact pairs
-`compel` → `ép buộc`, `contender` → `đối thủ nặng ký`, `transcribe` →
-`chép lại`, and `venture` → `mạo hiểm, cả gan` may change only after an explicit
-user instruction and the matching coordinated code/data update.
+`compel` → `ép buộc`, `contender` → `đối thủ nặng ký`, `contend with sb/sth` →
+`đối phó`, `transcribe` → `chép lại`, and `venture` → `mạo hiểm, cả gan` may
+change only after an explicit user instruction and the matching coordinated
+code/data update.
 _Avoid_: optional regression row, silent lock supersession, inferred user preference
 
 **Bilingual Idiom Audit**:

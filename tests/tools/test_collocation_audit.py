@@ -275,3 +275,24 @@ def test_cli_validate_and_promote_fail_when_source_evidence_changes(tmp_path, ca
         "--output", str(output),
     ]) == 1
     assert not output.exists()
+
+
+def test_cli_create_and_validate_whole_guid_manifests(tmp_path):
+    fixture_paths = _fixture_files(tmp_path)
+    audit = tmp_path / "audit.jsonl"
+    manifests = tmp_path / "manifests"
+    assert main(_scaffold_args(audit, fixture_paths)) == 0
+
+    assert main([
+        "--audit", str(audit),
+        "--registry", str(fixture_paths[0]),
+        "create-manifests",
+        "--output", str(manifests),
+        "--created-at", "2026-07-22T00:00:00Z",
+    ]) == 0
+    assert main([
+        "--audit", str(audit),
+        "--registry", str(fixture_paths[0]),
+        "validate-manifests",
+        "--input", str(manifests),
+    ]) == 0

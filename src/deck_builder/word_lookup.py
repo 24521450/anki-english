@@ -7,9 +7,17 @@ from src.deck_builder.build_contracts import BuiltCard
 from src.deck_builder.corpus_tag_sync import LEARNING_PATTERN_ALIASES
 
 
+SOURCE_HEADWORD_ALIASES = {
+    "contend with sb/sth": "contend with",
+}
+
+
 def get_word_candidates(word: str) -> list[str]:
     display_word = re.sub(r"\s*\(.*?\)\s*", "", word.lower()).strip()
-    word_clean = LEARNING_PATTERN_ALIASES.get(display_word, display_word)
+    word_clean = SOURCE_HEADWORD_ALIASES.get(
+        display_word,
+        LEARNING_PATTERN_ALIASES.get(display_word, display_word),
+    )
     cands = [word_clean]
     suffixes = [
         ("ies", "y"), ("ied", "y"), ("ying", "y"),
