@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "9214289c9eedb4d0a70969dcecea53e35ab7fa93",
-  "generatedAt": "2026-07-22T14:21:08.712Z",
+  "gitCommitHash": "2d783c7fd01bcdb006b93a27e49f93a4878e4a10",
+  "generatedAt": "2026-07-24T16:26:23.743Z",
   "files": {
     ".gitattributes": {
       "filePath": ".gitattributes",
@@ -35,22 +35,22 @@
     },
     "AGENTS.md": {
       "filePath": "AGENTS.md",
-      "contentHash": "faa021fa113f4e207066353448fca9556f5ca51c3226a02d4c918605ac88a330",
+      "contentHash": "736d84782ce90477b5d449112ea908fa79e1eed50dec5af3d67e588b17146953",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 570,
+      "totalLines": 604,
       "hasStructuralAnalysis": true
     },
     "CONTEXT.md": {
       "filePath": "CONTEXT.md",
-      "contentHash": "64fac96fd0558f1ae39858efe9aaf6306e66e04f8c1e1d1058ac1f69a14a26fc",
+      "contentHash": "de3e61def2b217ec03db8afcd2c001492ced92ef8dce55fc6ff88bcc9315f145",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1070,
+      "totalLines": 1166,
       "hasStructuralAnalysis": true
     },
     "README.md": {
@@ -65,12 +65,12 @@
     },
     "USER_NOTES.md": {
       "filePath": "USER_NOTES.md",
-      "contentHash": "e3ded32ad2841f221dea0c31a179f3ef039fae1a8add1b77e9750f763c68729c",
+      "contentHash": "c276405e75541729d21b3f335079824995aac995a5ee7fa6b45ed849d7458a41",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 214,
+      "totalLines": 256,
       "hasStructuralAnalysis": true
     },
     "conftest.py": {
@@ -97,22 +97,22 @@
     },
     "design/EAVM/README.md": {
       "filePath": "design/EAVM/README.md",
-      "contentHash": "bf741692bcc346913ca162762296a09b620893ab6a8c6917f647dc6b5e99282c",
+      "contentHash": "96327e48f47c9fc47b16de511f1eac017cdf918d50a63383b8943a498353b6c0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 117,
+      "totalLines": 128,
       "hasStructuralAnalysis": true
     },
     "design/EAVM/back_template.txt": {
       "filePath": "design/EAVM/back_template.txt",
-      "contentHash": "47396052254bf2602b955cb3cae8581abbd0ff16d84f2a923b685c942dbff959",
+      "contentHash": "b112977ce7e946d8373d3859dcd67903c3ddb119fd202169987208644db02aa0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 837,
+      "totalLines": 915,
       "hasStructuralAnalysis": false
     },
     "design/EAVM/front_template.txt": {
@@ -147,12 +147,12 @@
     },
     "design/EAVM/styling.txt": {
       "filePath": "design/EAVM/styling.txt",
-      "contentHash": "07b267a515f1ba688a4f8792876dcaa6c296e07d4bc66901cda5a79b3602d183",
+      "contentHash": "3eb8e85942c632369f5d798f73f3c5ad886f0136b3912787ab75a736edafc21b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 826,
+      "totalLines": 853,
       "hasStructuralAnalysis": false
     },
     "design/README.md": {
@@ -187,12 +187,12 @@
     },
     "design/index.html": {
       "filePath": "design/index.html",
-      "contentHash": "f5bc16ab0d77adfa27332dbfd4f9a77a2b1c3605c9a897678f882fffd4acff94",
+      "contentHash": "a558f73526593cefe2eb0769e1b18fb4234f80ca2dc72e37bbf9814df3098547",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1958,
+      "totalLines": 1997,
       "hasStructuralAnalysis": false
     },
     "design/reference/oxford_labels.html": {
@@ -217,12 +217,12 @@
     },
     "docs/README.md": {
       "filePath": "docs/README.md",
-      "contentHash": "e4e6c8ee1143b579d19006f8c73856630e7f0fdf6f346fac2fb2136972e55c9d",
+      "contentHash": "b423a2081bfd8b0876e894545d2da8e3d555f846bae87197ca12dbc613724555",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 52,
+      "totalLines": 54,
       "hasStructuralAnalysis": true
     },
     "docs/adr/0001-lxml-parser-backend.md": {
@@ -485,6 +485,56 @@
       "totalLines": 91,
       "hasStructuralAnalysis": true
     },
+    "docs/adr/0028-controlled-cambridge-example-collocation-evidence.md": {
+      "filePath": "docs/adr/0028-controlled-cambridge-example-collocation-evidence.md",
+      "contentHash": "b912729067fd47e725556819592c4616df5190ed9f619f374766dd4304bd5faf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "docs/adr/0029-cambridge-english-vietnamese-evidence-snapshot.md": {
+      "filePath": "docs/adr/0029-cambridge-english-vietnamese-evidence-snapshot.md",
+      "contentHash": "3829bab0a6026ed6e90436c2fce233601b5464d47ca43c740f8f9263190dbc3a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "docs/adr/0030-all-sense-definition-concision-review.md": {
+      "filePath": "docs/adr/0030-all-sense-definition-concision-review.md",
+      "contentHash": "de669b31233f559fcedc3c2077ce36822d5cf9c447449f0f87dd77aee39c3676",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 62,
+      "hasStructuralAnalysis": true
+    },
+    "docs/adr/0031-collocation-source-id-migration.md": {
+      "filePath": "docs/adr/0031-collocation-source-id-migration.md",
+      "contentHash": "645ed79816a35ece38e565696a84f89998c91f007f98f3ca3fd429f25d078698",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 49,
+      "hasStructuralAnalysis": true
+    },
+    "docs/adr/0032-headword-pronunciation-playback-controller.md": {
+      "filePath": "docs/adr/0032-headword-pronunciation-playback-controller.md",
+      "contentHash": "ab8d2fd08ea16d6bb2aefae8533f16116ab1fd71acc4e85a713ccee85ea555ee",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
     "pyproject.toml": {
       "filePath": "pyproject.toml",
       "contentHash": "08d1d3202f7d1a7e058dbcd2f7e50f9948501055f352088d25b327452e8955d7",
@@ -507,7 +557,7 @@
     },
     "src/config.py": {
       "filePath": "src/config.py",
-      "contentHash": "85b5c88ac62fecdcd7734fb2f8a8c1ee89c5875e6c773243b3c8fadcb89030fe",
+      "contentHash": "6e64a4f2e383a6ea214d338b3f14251b57a94b2a2288c582ebc34cf9af9c6f6a",
       "functions": [],
       "classes": [
         {
@@ -516,6 +566,7 @@
             "__post_init__",
             "oxford_jsonl",
             "cambridge_jsonl",
+            "cambridge_english_vietnamese_jsonl",
             "headword_audio_manifest",
             "deck_audit_jsonl",
             "card_registry",
@@ -524,6 +575,7 @@
             "bilingual_idiom_audit",
             "collocation_audit",
             "collocation_audit_jsonl",
+            "phrasal_verb_routing_audit",
             "semantic_registry",
             "collocation_registry",
             "collocation_registry_jsonl",
@@ -546,6 +598,7 @@
             "oxford_5000_md",
             "awl_md",
             "cambridge_cache_dir",
+            "cambridge_english_vietnamese_cache_dir",
             "awl_cambridge_fallbacks",
             "audio_dir"
           ],
@@ -553,7 +606,7 @@
             "root"
           ],
           "exported": true,
-          "lineCount": 151
+          "lineCount": 173
         }
       ],
       "imports": [
@@ -573,7 +626,7 @@
       "exports": [
         "ProjectPaths"
       ],
-      "totalLines": 160,
+      "totalLines": 182,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/__init__.py": {
@@ -729,7 +782,7 @@
     },
     "src/deck_builder/anki_import_command.py": {
       "filePath": "src/deck_builder/anki_import_command.py",
-      "contentHash": "24a6d7f527138e558d9024e1eba1efe6daeda0efa1ec7ebcb1de00f96030915c",
+      "contentHash": "6b105fbb460eeb18c3f5190c6cabe4058ede78e213ebf1cb725943fa47ca5764",
       "functions": [
         {
           "name": "_chunks",
@@ -767,7 +820,7 @@
           ],
           "returnType": "tuple[bool, tuple[str, ...], str | None]",
           "exported": true,
-          "lineCount": 82
+          "lineCount": 84
         },
         {
           "name": "load_expected_signatures",
@@ -776,7 +829,7 @@
           ],
           "returnType": "Counter[tuple[str, ...]]",
           "exported": true,
-          "lineCount": 15
+          "lineCount": 17
         },
         {
           "name": "load_expected_media",
@@ -847,7 +900,17 @@
           ],
           "returnType": "ExistingCollectionSnapshot",
           "exported": true,
-          "lineCount": 164
+          "lineCount": 174
+        },
+        {
+          "name": "migrate_legacy_awl_deck",
+          "params": [
+            "client",
+            "card_ids"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 89
         },
         {
           "name": "validate_local_inputs",
@@ -1006,7 +1069,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 120
+          "lineCount": 121
         },
         {
           "name": "validate_canonical_release_state",
@@ -1036,10 +1099,11 @@
             "card_ids",
             "schedules",
             "had_production_template",
-            "note_identities"
+            "note_identities",
+            "legacy_awl_card_ids"
           ],
           "exported": true,
-          "lineCount": 8
+          "lineCount": 9
         },
         {
           "name": "AnkiConnectError",
@@ -1173,6 +1237,12 @@
           ]
         },
         {
+          "source": "src.deck_builder.package_contract",
+          "specifiers": [
+            "json_value_for_key"
+          ]
+        },
+        {
           "source": "src.deck_builder.package_provenance",
           "specifiers": [
             "invalidate_verified_import_receipt",
@@ -1194,6 +1264,14 @@
           "source": "src.deck_builder.production",
           "specifiers": [
             "production_eligible"
+          ]
+        },
+        {
+          "source": "src.deck_builder.deck_names",
+          "specifiers": [
+            "AWL_DECK",
+            "LEGACY_AWL_DECK",
+            "ROOT_DECK"
           ]
         },
         {
@@ -1219,6 +1297,7 @@
         "_card_schedule",
         "_load_cards_info",
         "snapshot_existing_collection",
+        "migrate_legacy_awl_deck",
         "validate_local_inputs",
         "_live_signature",
         "sync_example_audio_fields",
@@ -1236,12 +1315,12 @@
         "validate_canonical_release_state",
         "main"
       ],
-      "totalLines": 1569,
+      "totalLines": 1679,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/audio_gate.py": {
       "filePath": "src/deck_builder/audio_gate.py",
-      "contentHash": "a471867aafddc83ec83a5616dd57694f2adb5f183d5a883c6e2a06f7cf949003",
+      "contentHash": "56e05e2c167c009856842047833e80144a89d4a58fafe0f76f22de7bcfd58990",
       "functions": [
         {
           "name": "_audio_names",
@@ -1259,7 +1338,7 @@
           ],
           "returnType": "set[str] | None",
           "exported": true,
-          "lineCount": 22
+          "lineCount": 27
         },
         {
           "name": "_ref_count",
@@ -1356,7 +1435,7 @@
         "_ref_count",
         "validate_audio_gate"
       ],
-      "totalLines": 176,
+      "totalLines": 181,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/audio_resolution.py": {
@@ -1510,7 +1589,7 @@
     },
     "src/deck_builder/awl_integrity.py": {
       "filePath": "src/deck_builder/awl_integrity.py",
-      "contentHash": "c43147306b2ce742535eaf2d3a4eae7535d81bd8666c0d7d5300f3146ed5a30d",
+      "contentHash": "0338d655a70f071f851df9cd17e97df86a62c0347d93df9705a1e6e2c20967a3",
       "functions": [
         {
           "name": "normalize_pos",
@@ -1555,7 +1634,7 @@
           ],
           "returnType": "dict[str, _OxfordFacts]",
           "exported": true,
-          "lineCount": 34
+          "lineCount": 56
         },
         {
           "name": "_load_cambridge_fallbacks",
@@ -1720,7 +1799,7 @@
         "_format_row",
         "audit_awl"
       ],
-      "totalLines": 425,
+      "totalLines": 447,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/beta_score.py": {
@@ -2154,7 +2233,7 @@
     },
     "src/deck_builder/build_metadata.py": {
       "filePath": "src/deck_builder/build_metadata.py",
-      "contentHash": "8eff0fb6b445cb59a0537d66c0a0b437ffa376545c691d469176b5c24a4cef38",
+      "contentHash": "e05cd90b709c6c6dc51d7a216d308bb047df6eeb52b45a83fc490e3e82af41cf",
       "functions": [
         {
           "name": "source_label",
@@ -2243,6 +2322,12 @@
           "specifiers": [
             "is_reviewed_semantic_identity_variant"
           ]
+        },
+        {
+          "source": "src.deck_builder.deck_names",
+          "specifiers": [
+            "AWL_DECK"
+          ]
         }
       ],
       "exports": [
@@ -2254,7 +2339,7 @@
         "new_guid",
         "merge_collocations_dicts"
       ],
-      "totalLines": 113,
+      "totalLines": 114,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/build_notes.py": {
@@ -2990,7 +3075,7 @@
     },
     "src/deck_builder/card_identity.py": {
       "filePath": "src/deck_builder/card_identity.py",
-      "contentHash": "bf9cadf447c610dbde4a3f5f1c3fa8b356ab7fc81b7e24df9b81989d5a6dd9f8",
+      "contentHash": "00a365c90b11b7295e2f54569fcc620e959210ab3f9199ca2a64d1f4e28d86e9",
       "functions": [
         {
           "name": "normalize_word",
@@ -3132,12 +3217,12 @@
         "is_reviewed_semantic_identity_variant",
         "reviewed_homonym_variant"
       ],
-      "totalLines": 172,
+      "totalLines": 184,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/card_identity_split.py": {
       "filePath": "src/deck_builder/card_identity_split.py",
-      "contentHash": "bcaca5ebfc194bf034d9d4c6eedd4a3f6885bd4cba3c1c99f827c1e532dca768",
+      "contentHash": "a35c550c3745704043458341cd27a707d5a775dac5b6b5abc618f217485b6249",
       "functions": [
         {
           "name": "row_sha256",
@@ -3261,7 +3346,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 44
+          "lineCount": 61
         },
         {
           "name": "_validate_audit_identity",
@@ -3307,15 +3392,28 @@
           "lineCount": 12
         },
         {
+          "name": "_fresh_target_source_context",
+          "params": [
+            "card",
+            "registry",
+            "source_word",
+            "oxford_records"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
           "name": "_group_fields",
           "params": [
             "group",
             "primary",
-            "label"
+            "label",
+            "allow_target_sources"
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 16
+          "lineCount": 35
         },
         {
           "name": "_build_final_senses",
@@ -3324,22 +3422,24 @@
             "primary_plan",
             "secondary_plan",
             "secondary_guid",
-            "review"
+            "review",
+            "allow_target_sources"
           ],
           "returnType": "tuple[list[dict], list[dict], dict[str, tuple[str, str]]]",
           "exported": true,
-          "lineCount": 79
+          "lineCount": 103
         },
         {
           "name": "_build_source_coverage",
           "params": [
             "plan_rows",
             "fresh",
-            "origin_map"
+            "origin_map",
+            "allow_extra_plan_sources"
           ],
           "returnType": "tuple[list[dict], list[dict]]",
           "exported": true,
-          "lineCount": 93
+          "lineCount": 95
         },
         {
           "name": "_attach_source_ids",
@@ -3405,7 +3505,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 24
+          "lineCount": 33
         },
         {
           "name": "_registry_split_rows",
@@ -3416,7 +3516,7 @@
           ],
           "returnType": "tuple[dict, dict]",
           "exported": true,
-          "lineCount": 21
+          "lineCount": 24
         },
         {
           "name": "_replace_with_pair",
@@ -3447,11 +3547,23 @@
           "params": [
             "fresh",
             "plan",
-            "origin_map"
+            "origin_map",
+            "allow_extra_plan_sources"
           ],
           "returnType": "tuple[list[dict], list[dict]]",
           "exported": true,
-          "lineCount": 6
+          "lineCount": 13
+        },
+        {
+          "name": "_validate_target_sense_sources",
+          "params": [
+            "secondary_plan",
+            "secondary_senses",
+            "secondary_coverage"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 24
         },
         {
           "name": "_verify_applied_split",
@@ -3463,11 +3575,12 @@
             "primary_card",
             "secondary_card",
             "fresh",
+            "target_fresh",
             "plan"
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 93
+          "lineCount": 118
         },
         {
           "name": "prepare_card_identity_splits",
@@ -3481,7 +3594,7 @@
           ],
           "returnType": "PreparedCardIdentitySplit",
           "exported": true,
-          "lineCount": 145
+          "lineCount": 195
         },
         {
           "name": "_write_fsynced",
@@ -3761,6 +3874,12 @@
           ]
         },
         {
+          "source": "src.deck_builder.production",
+          "specifiers": [
+            "derive_production_answer"
+          ]
+        },
+        {
           "source": "src.deck_builder.semantic_audit",
           "specifiers": [
             "build_audit_rows",
@@ -3789,6 +3908,7 @@
         "_validate_global_semantic_ids",
         "_validate_documents",
         "_fresh_source_context",
+        "_fresh_target_source_context",
         "_group_fields",
         "_build_final_senses",
         "_build_source_coverage",
@@ -3802,6 +3922,7 @@
         "_replace_with_pair",
         "_require_adjacent",
         "_side_source_coverage",
+        "_validate_target_sense_sources",
         "_verify_applied_split",
         "prepare_card_identity_splits",
         "_write_fsynced",
@@ -3821,7 +3942,7 @@
         "_parse_staged",
         "publish_card_identity_split"
       ],
-      "totalLines": 1355,
+      "totalLines": 1581,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/card_registry.py": {
@@ -3984,7 +4105,7 @@
     },
     "src/deck_builder/collocation_audit.py": {
       "filePath": "src/deck_builder/collocation_audit.py",
-      "contentHash": "5143f461516f1a35e2bec1a12ab569f4f5b24624b71ba0e39f2bffc8366c9a8f",
+      "contentHash": "409e912299681d3de7876f350bd466ac0f95de2a0580babf7d3684ece757a0c9",
       "functions": [
         {
           "name": "_canonical_json",
@@ -4032,15 +4153,65 @@
           "lineCount": 3
         },
         {
+          "name": "normalize_collocation_learner_surface",
+          "params": [
+            "value",
+            "origin"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
           "name": "collocation_text_matches_evidence",
           "params": [
             "final_text",
             "evidence_text",
+            "headword",
+            "evidence_origin"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "_headword_forms",
+          "params": [
+            "headword"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_contains_headword_surface",
+          "params": [
+            "text",
             "headword"
           ],
           "returnType": "bool",
           "exported": true,
-          "lineCount": 24
+          "lineCount": 3
+        },
+        {
+          "name": "_ordinary_example_patterns",
+          "params": [
+            "surface",
+            "headword"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_whole_word_contiguous",
+          "params": [
+            "haystack",
+            "needle"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 5
         },
         {
           "name": "_normalize_reason",
@@ -4050,6 +4221,17 @@
           "returnType": "str",
           "exported": true,
           "lineCount": 2
+        },
+        {
+          "name": "_review_reason_template",
+          "params": [
+            "reason",
+            "surface",
+            "evidence_ids"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
         },
         {
           "name": "_optional_text",
@@ -4095,6 +4277,25 @@
           "returnType": "str",
           "exported": true,
           "lineCount": 5
+        },
+        {
+          "name": "_review_row_immutable_projection",
+          "params": [
+            "row"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "apply_review_bundle",
+          "params": [
+            "audit_rows",
+            "decisions"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 38
         },
         {
           "name": "serialize_registry_rows",
@@ -4211,11 +4412,12 @@
           "name": "_build_evidence",
           "params": [
             "mappings",
-            "source_index"
+            "source_index",
+            "current_surfaces"
           ],
           "returnType": "list[dict]",
           "exported": true,
-          "lineCount": 39
+          "lineCount": 85
         },
         {
           "name": "_candidate_immutable",
@@ -4234,7 +4436,7 @@
           ],
           "returnType": "list[dict]",
           "exported": true,
-          "lineCount": 29
+          "lineCount": 40
         },
         {
           "name": "_current_immutable",
@@ -4302,7 +4504,36 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 35
+          "lineCount": 39
+        },
+        {
+          "name": "_stable_evidence_key",
+          "params": [
+            "item"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_reuse_equivalent_evidence_review_state",
+          "params": [
+            "fresh",
+            "existing"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 130
+        },
+        {
+          "name": "_migrate_equivalent_review_items",
+          "params": [
+            "fresh",
+            "existing"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 296
         },
         {
           "name": "build_audit_rows",
@@ -4316,7 +4547,21 @@
           ],
           "returnType": "list[dict]",
           "exported": true,
-          "lineCount": 91
+          "lineCount": 92
+        },
+        {
+          "name": "scaffold_audit_rows",
+          "params": [
+            "cards",
+            "registry_rows",
+            "semantic_registry_rows",
+            "oxford_records",
+            "cambridge_records",
+            "existing_rows"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 98
         },
         {
           "name": "refresh_audit_rows",
@@ -4355,6 +4600,36 @@
           "lineCount": 50
         },
         {
+          "name": "_matches_immutable_projection",
+          "params": [
+            "audit_rows",
+            "refreshed_rows"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "_matches_reviewable_card_projection",
+          "params": [
+            "audit_rows",
+            "cards"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "_audit_baseline_cards",
+          "params": [
+            "audit_rows",
+            "cards"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
           "name": "validate_current_audit",
           "params": [
             "audit_rows",
@@ -4363,11 +4638,12 @@
             "semantic_registry_rows",
             "oxford_records",
             "cambridge_records",
-            "require_complete"
+            "require_complete",
+            "allow_incomplete_projection"
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 43
+          "lineCount": 65
         },
         {
           "name": "_is_valid_string_list",
@@ -4438,7 +4714,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 144
+          "lineCount": 147
         },
         {
           "name": "validate_audit_rows",
@@ -4449,7 +4725,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 380
+          "lineCount": 399
         },
         {
           "name": "_audit_sha256",
@@ -4716,13 +4992,21 @@
         "_trim",
         "_display_text",
         "normalize_collocation",
+        "normalize_collocation_learner_surface",
         "collocation_text_matches_evidence",
+        "_headword_forms",
+        "_contains_headword_surface",
+        "_ordinary_example_patterns",
+        "_whole_word_contiguous",
         "_normalize_reason",
+        "_review_reason_template",
         "_optional_text",
         "_canonical_sources",
         "_active_registry_index",
         "load_jsonl",
         "serialize_audit_rows",
+        "_review_row_immutable_projection",
+        "apply_review_bundle",
         "serialize_registry_rows",
         "parse_serialized_collocations",
         "parse_serialized_idiom_phrases",
@@ -4744,10 +5028,17 @@
         "_source_fingerprint",
         "_input_fingerprint",
         "_reuse_review_state",
+        "_stable_evidence_key",
+        "_reuse_equivalent_evidence_review_state",
+        "_migrate_equivalent_review_items",
         "build_audit_rows",
+        "scaffold_audit_rows",
         "refresh_audit_rows",
         "_card_field",
         "_matches_promoted_projection",
+        "_matches_immutable_projection",
+        "_matches_reviewable_card_projection",
+        "_audit_baseline_cards",
         "validate_current_audit",
         "_is_valid_string_list",
         "_has_control",
@@ -4773,12 +5064,160 @@
         "_workbook_value",
         "import_workbook"
       ],
-      "totalLines": 2219,
+      "totalLines": 3102,
+      "hasStructuralAnalysis": true
+    },
+    "src/deck_builder/collocation_audit_manifests.py": {
+      "filePath": "src/deck_builder/collocation_audit_manifests.py",
+      "contentHash": "016f4e921e6812864704a259d5b680f464616e31d3f9c11907e13c69504136ff",
+      "functions": [
+        {
+          "name": "canonical_json_bytes",
+          "params": [
+            "value",
+            "newline"
+          ],
+          "returnType": "bytes",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "sha256_bytes",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "work_card",
+          "params": [
+            "row"
+          ],
+          "returnType": "WorkCard | None",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "partition_work",
+          "params": [
+            "cards",
+            "workers"
+          ],
+          "returnType": "list[list[WorkCard]]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_manifest_row",
+          "params": [
+            "card",
+            "ledger_sha256",
+            "worker"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "build_artifacts",
+          "params": [
+            "audit_bytes",
+            "rows",
+            "registry_rows",
+            "created_at",
+            "workers"
+          ],
+          "returnType": "tuple[dict[str, bytes], dict, list[str]]",
+          "exported": true,
+          "lineCount": 71
+        },
+        {
+          "name": "validate_artifacts",
+          "params": [
+            "audit_bytes",
+            "rows",
+            "registry_rows",
+            "manifest_dir"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 44
+        }
+      ],
+      "classes": [
+        {
+          "name": "WorkCard",
+          "methods": [
+            "guid"
+          ],
+          "properties": [
+            "row",
+            "open_current_ids",
+            "open_candidate_ids",
+            "weight",
+            "fingerprint"
+          ],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Iterable"
+          ]
+        },
+        {
+          "source": ".collocation_audit",
+          "specifiers": [
+            "AUDIT_SCHEMA_VERSION",
+            "validate_audit_rows"
+          ]
+        }
+      ],
+      "exports": [
+        "canonical_json_bytes",
+        "sha256_bytes",
+        "WorkCard",
+        "work_card",
+        "partition_work",
+        "_manifest_row",
+        "build_artifacts",
+        "validate_artifacts"
+      ],
+      "totalLines": 217,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/corpus_tag_sync.py": {
       "filePath": "src/deck_builder/corpus_tag_sync.py",
-      "contentHash": "39bbfa7334477178c3f5467a919e13c1e4f7d398fdb39aa0164dbaee4c1f21b0",
+      "contentHash": "db4cef15dee9706876432e4eff8fe7ab6ad570c06e27325761d592ac8e29ec77",
       "functions": [
         {
           "name": "parse_header",
@@ -4929,6 +5368,13 @@
           ]
         },
         {
+          "source": "src.deck_builder.deck_names",
+          "specifiers": [
+            "AWL_DECK",
+            "LEGACY_AWL_DECK"
+          ]
+        },
+        {
           "source": "src.deck_builder.vocab_lists",
           "specifiers": [
             "_parse_vocab_list"
@@ -4948,7 +5394,17 @@
         "compute_tag_updates",
         "apply_updates"
       ],
-      "totalLines": 348,
+      "totalLines": 350,
+      "hasStructuralAnalysis": true
+    },
+    "src/deck_builder/deck_names.py": {
+      "filePath": "src/deck_builder/deck_names.py",
+      "contentHash": "37a0b18a7a042e24c577ce31b7976d556d5678fb16bc9b07be1fd1f5e418312b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/def_before_integrity.py": {
@@ -5074,7 +5530,7 @@
     },
     "src/deck_builder/definition_audit.py": {
       "filePath": "src/deck_builder/definition_audit.py",
-      "contentHash": "2cab310d3de908c489cd14224075b7059a4c2448b0f36f49a4c471eabaae7ca6",
+      "contentHash": "1e7454011b0223ae831685b75828517da3a9e394b6953c675f3b887922390adb",
       "functions": [
         {
           "name": "sha256_bytes",
@@ -5307,11 +5763,12 @@
             "audit_rows",
             "card_registry_rows",
             "input_hashes",
-            "min_tokens"
+            "min_tokens",
+            "scope"
           ],
           "returnType": "tuple[dict, list[dict]]",
           "exported": true,
-          "lineCount": 121
+          "lineCount": 141
         },
         {
           "name": "apply_definition_review_overrides",
@@ -5334,7 +5791,18 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 75
+          "lineCount": 82
+        },
+        {
+          "name": "select_definition_audit_scope",
+          "params": [
+            "summary",
+            "candidates",
+            "scope"
+          ],
+          "returnType": "tuple[dict, list[dict]]",
+          "exported": true,
+          "lineCount": 40
         },
         {
           "name": "serialize_definition_audit",
@@ -5355,7 +5823,7 @@
           ],
           "returnType": "tuple[dict, list[dict]]",
           "exported": true,
-          "lineCount": 63
+          "lineCount": 64
         },
         {
           "name": "_normalise_review_text",
@@ -5456,7 +5924,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 168
+          "lineCount": 244
         },
         {
           "name": "validate_definition_review_for_promotion",
@@ -5468,7 +5936,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 31
+          "lineCount": 33
         },
         {
           "name": "serialize_definition_review",
@@ -5577,6 +6045,7 @@
         "build_definition_audit",
         "apply_definition_review_overrides",
         "validate_definition_audit",
+        "select_definition_audit_scope",
         "serialize_definition_audit",
         "scaffold_definition_review",
         "_normalise_review_text",
@@ -5593,7 +6062,7 @@
         "serialize_definition_review",
         "render_definition_audit_markdown"
       ],
-      "totalLines": 1196,
+      "totalLines": 1345,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/dictionary_links.py": {
@@ -7253,7 +7722,7 @@
     },
     "src/deck_builder/package_archive.py": {
       "filePath": "src/deck_builder/package_archive.py",
-      "contentHash": "bfa0c37ea056c1ed65892c11a4e0347667ef7a593069189f641a3022f450c35e",
+      "contentHash": "334e916e894568b2e7242b97f4767fb8e8ab053f6f7ffc85a343a74fc598ce24",
       "functions": [
         {
           "name": "_deterministic_deck_id",
@@ -7515,7 +7984,8 @@
             "EAVM_JSON_TO_FIELD",
             "EAVM_MODEL_ID",
             "EAVM_MODEL_NAME",
-            "EAVM_REQUIREMENTS_BY_FIELD"
+            "EAVM_REQUIREMENTS_BY_FIELD",
+            "json_value_for_key"
           ]
         }
       ],
@@ -7539,12 +8009,12 @@
         "_validate_notes_and_cards",
         "validate_package_archive"
       ],
-      "totalLines": 592,
+      "totalLines": 593,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/package_command.py": {
       "filePath": "src/deck_builder/package_command.py",
-      "contentHash": "daf04146185b80ddba4eea385bce615236e3e29f597e3862dbbac7e31ff21a11",
+      "contentHash": "e239d5f908c09bddfbdc9f6f2311b83ec7411ecdc4d785674ce797e619f62b1d",
       "functions": [
         {
           "name": "load_eavm_templates",
@@ -7626,7 +8096,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 198
+          "lineCount": 220
         }
       ],
       "classes": [
@@ -7702,7 +8172,8 @@
             "EAVM_MODEL_ID",
             "EAVM_MODEL_NAME",
             "EAVM_REQUIREMENTS_BY_FIELD",
-            "EAVM_TEMPLATE_NAMES"
+            "EAVM_TEMPLATE_NAMES",
+            "json_value_for_key"
           ]
         },
         {
@@ -7736,13 +8207,23 @@
         "is_empty_audio_layout",
         "main"
       ],
-      "totalLines": 388,
+      "totalLines": 411,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/package_contract.py": {
       "filePath": "src/deck_builder/package_contract.py",
-      "contentHash": "8946e46ccd874f06eb092bc1d228eaf9f5d27e3ab68dbf5075b8e978a565468b",
+      "contentHash": "b695bb42adee9fc8148a2410b2f99297b269ad623643a82b7219e7dcbb9b8a71",
       "functions": [
+        {
+          "name": "json_value_for_key",
+          "params": [
+            "row",
+            "key"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
         {
           "name": "packager_contract_payload",
           "params": [
@@ -7763,14 +8244,15 @@
         }
       ],
       "exports": [
+        "json_value_for_key",
         "packager_contract_payload"
       ],
-      "totalLines": 72,
+      "totalLines": 91,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/package_provenance.py": {
       "filePath": "src/deck_builder/package_provenance.py",
-      "contentHash": "2508b0c6ee344e3e2c82c1066eed5e5581928998e4011bae381b20c734cb254a",
+      "contentHash": "7cd264c2720c3fd1ca0f336908fdf47dfb69bd0cd4100354fc9321b20e2bd4ed",
       "functions": [
         {
           "name": "package_provenance_inputs",
@@ -7788,7 +8270,7 @@
           ],
           "returnType": "dict[str, Path]",
           "exported": true,
-          "lineCount": 59
+          "lineCount": 62
         },
         {
           "name": "provenance_path_for",
@@ -8022,7 +8504,280 @@
         "validate_verified_import_receipt",
         "_validate_guid_proof_payload"
       ],
-      "totalLines": 388,
+      "totalLines": 391,
+      "hasStructuralAnalysis": true
+    },
+    "src/deck_builder/phrasal_verb_audit.py": {
+      "filePath": "src/deck_builder/phrasal_verb_audit.py",
+      "contentHash": "ec2c5cca80730bc95f6e44b5149e6dc797eb43f9e971f654e481bf6c6f89b725",
+      "functions": [
+        {
+          "name": "_canonical_json",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_sha256",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_text",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_norm",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "load_jsonl",
+          "params": [
+            "path"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "serialize_rows",
+          "params": [
+            "rows"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "expand_explicit_slash_phrases",
+          "params": [
+            "surface"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "phrase_starts_learner_surface",
+          "params": [
+            "phrase",
+            "surface"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "structural_phrase_collisions",
+          "params": [
+            "phrase",
+            "registry_rows"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_source_sense_ids",
+          "params": [
+            "record"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_route_sources",
+          "params": [
+            "oxford_rows",
+            "included_routes"
+          ],
+          "returnType": "list[tuple[dict, dict]]",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "_active_cards",
+          "params": [
+            "registry_rows"
+          ],
+          "returnType": "dict[str, dict]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "build_audit_rows",
+          "params": [
+            "registry_rows",
+            "oxford_rows",
+            "existing_rows",
+            "collocation_audit_rows"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 104
+        },
+        {
+          "name": "_collocation_items_by_guid",
+          "params": [
+            "rows"
+          ],
+          "returnType": "dict[str, list[str]]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "validate_audit_rows",
+          "params": [
+            "rows",
+            "registry_rows",
+            "collocation_audit_rows",
+            "require_complete"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 64
+        },
+        {
+          "name": "validate_current_audit",
+          "params": [
+            "rows",
+            "registry_rows",
+            "oxford_rows",
+            "collocation_audit_rows",
+            "require_complete"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "export_workbook",
+          "params": [
+            "rows",
+            "path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "import_workbook",
+          "params": [
+            "rows",
+            "path"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 34
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "copy",
+          "specifiers": [
+            "copy"
+          ]
+        },
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "date"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Iterable",
+            "Mapping",
+            "Sequence"
+          ]
+        },
+        {
+          "source": "openpyxl",
+          "specifiers": [
+            "Workbook",
+            "load_workbook"
+          ]
+        },
+        {
+          "source": "openpyxl.styles",
+          "specifiers": [
+            "Font",
+            "PatternFill",
+            "Protection"
+          ]
+        },
+        {
+          "source": "openpyxl.worksheet.datavalidation",
+          "specifiers": [
+            "DataValidation"
+          ]
+        }
+      ],
+      "exports": [
+        "_canonical_json",
+        "_sha256",
+        "_text",
+        "_norm",
+        "load_jsonl",
+        "serialize_rows",
+        "expand_explicit_slash_phrases",
+        "phrase_starts_learner_surface",
+        "structural_phrase_collisions",
+        "_source_sense_ids",
+        "_route_sources",
+        "_active_cards",
+        "build_audit_rows",
+        "_collocation_items_by_guid",
+        "validate_audit_rows",
+        "validate_current_audit",
+        "export_workbook",
+        "import_workbook"
+      ],
+      "totalLines": 445,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/production.py": {
@@ -8453,7 +9208,7 @@
     },
     "src/deck_builder/registry_build.py": {
       "filePath": "src/deck_builder/registry_build.py",
-      "contentHash": "23d020ef11ad322d50b6537f19e0014ccb4c29948d0206afb3e603396198f794",
+      "contentHash": "b0b7bd49873eb2eb41b48991a7ba9ea03826009ce9e4c327bfb105b022c09d30",
       "functions": [
         {
           "name": "_row_identity",
@@ -8490,7 +9245,19 @@
             "gamma"
           ],
           "exported": true,
-          "lineCount": 140
+          "lineCount": 159
+        },
+        {
+          "name": "_semantic_cefr_fallback_senses",
+          "params": [
+            "senses",
+            "semantic_source_ids",
+            "source_ids_by_sense",
+            "reviewed_cefr"
+          ],
+          "returnType": "list",
+          "exported": true,
+          "lineCount": 13
         },
         {
           "name": "_sync_audio_source_tags",
@@ -8528,11 +9295,12 @@
         {
           "name": "build_notes_from_registry",
           "params": [
-            "paths"
+            "paths",
+            "apply_semantic_payload"
           ],
           "returnType": "BuildNotesResult",
           "exported": true,
-          "lineCount": 646
+          "lineCount": 680
         }
       ],
       "classes": [
@@ -8621,6 +9389,12 @@
           ]
         },
         {
+          "source": "src.deck_builder.deck_names",
+          "specifiers": [
+            "AWL_DECK"
+          ]
+        },
+        {
           "source": "src.deck_builder.build_issues",
           "specifiers": [
             "BuildIssue",
@@ -8690,6 +9464,18 @@
           ]
         },
         {
+          "source": "src.deck_builder.simplify_senses",
+          "specifiers": [
+            "_flatten_senses"
+          ]
+        },
+        {
+          "source": "src.deck_builder.source_sense_identity",
+          "specifiers": [
+            "source_sense_id"
+          ]
+        },
+        {
           "source": "src.deck_builder.card_identity",
           "specifiers": [
             "CardIdentity",
@@ -8741,12 +9527,13 @@
         "load_registry_build_inputs",
         "_default_deck_for_registry",
         "_load_source_indexes",
+        "_semantic_cefr_fallback_senses",
         "_sync_audio_source_tags",
         "_apply_pronunciation_authorities",
         "_serialize_result",
         "build_notes_from_registry"
       ],
-      "totalLines": 1143,
+      "totalLines": 1214,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/relation_validation.py": {
@@ -8820,7 +9607,7 @@
     },
     "src/deck_builder/release_guard.py": {
       "filePath": "src/deck_builder/release_guard.py",
-      "contentHash": "28c2b74eee8c125f38c9e5bb390f290932049ff32413785dc3e6d8916c12f149",
+      "contentHash": "ddbd175f0f9fbfdc8e4f022e80d030f167581492c1a06c47069ee6a166f4164a",
       "functions": [
         {
           "name": "_load_document",
@@ -8854,6 +9641,17 @@
           "lineCount": 9
         },
         {
+          "name": "_validate_cambridge_english_vietnamese_source",
+          "params": [
+            "paths",
+            "rows",
+            "card_registry_rows"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
           "name": "_build_paths",
           "params": [
             "paths"
@@ -8869,7 +9667,7 @@
           ],
           "returnType": "ReleaseGuardReport",
           "exported": true,
-          "lineCount": 171
+          "lineCount": 181
         },
         {
           "name": "_validate_package",
@@ -8933,6 +9731,18 @@
           "source": "pathlib",
           "specifiers": [
             "Path"
+          ]
+        },
+        {
+          "source": "jsonschema",
+          "specifiers": [
+            "Draft202012Validator"
+          ]
+        },
+        {
+          "source": "jsonschema.exceptions",
+          "specifiers": [
+            "SchemaError"
           ]
         },
         {
@@ -9035,6 +9845,13 @@
           "specifiers": [
             "load_production_css"
           ]
+        },
+        {
+          "source": "src.scraper.cambridge_english_vietnamese",
+          "specifiers": [
+            "build_lookup_plan",
+            "validate_snapshot_rows"
+          ]
         }
       ],
       "exports": [
@@ -9043,12 +9860,13 @@
         "_load_document",
         "_split_summary_document",
         "_require_exact_bytes",
+        "_validate_cambridge_english_vietnamese_source",
         "_build_paths",
         "_validate_canonical",
         "_validate_package",
         "run_release_guard"
       ],
-      "totalLines": 385,
+      "totalLines": 448,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/review_overrides.py": {
@@ -9105,7 +9923,7 @@
     },
     "src/deck_builder/semantic_audit.py": {
       "filePath": "src/deck_builder/semantic_audit.py",
-      "contentHash": "b4b15c8acf973f211c4367c5bcde83b67f67b0de4312011d132fc35d8da0bf21",
+      "contentHash": "7af213b888f55e78631d1b6dfde7ea7b942b65071762c93d7925549744d8e59b",
       "functions": [
         {
           "name": "_digest",
@@ -9212,7 +10030,7 @@
           ],
           "returnType": "list[dict]",
           "exported": true,
-          "lineCount": 52
+          "lineCount": 53
         },
         {
           "name": "flatten_review_rows",
@@ -9450,7 +10268,7 @@
         "audit_summary",
         "mark_reviewed_pass"
       ],
-      "totalLines": 928,
+      "totalLines": 929,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/semantic_audit_manifests.py": {
@@ -9698,7 +10516,7 @@
     },
     "src/deck_builder/semantic_policy.py": {
       "filePath": "src/deck_builder/semantic_policy.py",
-      "contentHash": "ae2dcc892e087e17df9ba4565481f3500b69bd2fdbac4148872f4bd49e55db8a",
+      "contentHash": "8531d42e61501ec25dce3b3bf9f4cfd08607b09cc9c06a14529fd9eef2f78da7",
       "functions": [
         {
           "name": "validate_policy_rows",
@@ -9823,12 +10641,12 @@
         "validate_built_policy",
         "serialize_policy_rows"
       ],
-      "totalLines": 359,
+      "totalLines": 365,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/semantic_registry.py": {
       "filePath": "src/deck_builder/semantic_registry.py",
-      "contentHash": "01d26b5d797192f427321b20b7b56bc76fde798d1923cf18312a964d49ecfc0a",
+      "contentHash": "d4a440bd4b4bbe02819e8392b6d90d2adaaa0bf52cad4bed6ee3e959b43b69c8",
       "functions": [
         {
           "name": "_invalid_text",
@@ -9848,7 +10666,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 211
+          "lineCount": 227
         },
         {
           "name": "validate_semantic_registry_rows",
@@ -9965,6 +10783,16 @@
           "lineCount": 14
         },
         {
+          "name": "apply_variant_idiom_ownership",
+          "params": [
+            "cards",
+            "rows"
+          ],
+          "returnType": "list[BuiltCard]",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
           "name": "apply_semantic_registry",
           "params": [
             "cards",
@@ -10048,9 +10876,10 @@
         "promote_reviewed_semantics",
         "serialize_semantic_registry",
         "render_registry_idiom_fields",
+        "apply_variant_idiom_ownership",
         "apply_semantic_registry"
       ],
-      "totalLines": 817,
+      "totalLines": 882,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/sense_labels.py": {
@@ -11375,7 +12204,7 @@
     },
     "src/deck_builder/vietnamese_audit.py": {
       "filePath": "src/deck_builder/vietnamese_audit.py",
-      "contentHash": "459fcab9622940a1a5e38907493cf13ad11918db257635978f8032f8476affbb",
+      "contentHash": "e2fc60ecc5b6142fe51f81c00931e9921a059d6d9175d8b350a1345df4e36858",
       "functions": [
         {
           "name": "_json_digest",
@@ -11498,13 +12327,41 @@
           "lineCount": 25
         },
         {
+          "name": "_is_verb_pos",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_gloss_policy_fields",
+          "params": [
+            "pos",
+            "definition_vi"
+          ],
+          "returnType": "tuple[str, list[str]]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_order_insensitive_source_lists",
+          "params": [
+            "payload"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
           "name": "_candidate_fingerprint",
           "params": [
             "candidate"
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 3
+          "lineCount": 7
         },
         {
           "name": "_context_fingerprint_for_fields",
@@ -11527,6 +12384,24 @@
         },
         {
           "name": "_context_fingerprint_v4",
+          "params": [
+            "candidate"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_context_fingerprint_v5",
+          "params": [
+            "candidate"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_context_fingerprint_v5_legacy",
           "params": [
             "candidate"
           ],
@@ -11560,7 +12435,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 48
+          "lineCount": 60
         },
         {
           "name": "_review_evidence_error",
@@ -11575,7 +12450,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 90
+          "lineCount": 108
         },
         {
           "name": "_normalised_review_text",
@@ -11648,7 +12523,7 @@
           ],
           "returnType": "bool",
           "exported": true,
-          "lineCount": 41
+          "lineCount": 46
         },
         {
           "name": "build_vietnamese_audit",
@@ -11662,7 +12537,7 @@
           ],
           "returnType": "tuple[dict, list[dict]]",
           "exported": true,
-          "lineCount": 146
+          "lineCount": 153
         },
         {
           "name": "validate_vietnamese_audit",
@@ -11672,7 +12547,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 73
+          "lineCount": 83
         },
         {
           "name": "scaffold_vietnamese_review",
@@ -11683,7 +12558,7 @@
           ],
           "returnType": "tuple[dict, list[dict]]",
           "exported": true,
-          "lineCount": 115
+          "lineCount": 119
         },
         {
           "name": "validate_vietnamese_review",
@@ -11696,7 +12571,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 153
+          "lineCount": 166
         },
         {
           "name": "validate_vietnamese_review_for_promotion",
@@ -11707,7 +12582,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 178
+          "lineCount": 192
         },
         {
           "name": "apply_vietnamese_review",
@@ -11824,10 +12699,15 @@
         "_effective_audit_payload",
         "_validate_promoted_sense_parity",
         "_heuristic_flags",
+        "_is_verb_pos",
+        "_gloss_policy_fields",
+        "_order_insensitive_source_lists",
         "_candidate_fingerprint",
         "_context_fingerprint_for_fields",
         "_context_fingerprint",
         "_context_fingerprint_v4",
+        "_context_fingerprint_v5",
+        "_context_fingerprint_v5_legacy",
         "_candidate_set_digest",
         "_review_final_vi",
         "_upgrade_review_row",
@@ -11850,7 +12730,7 @@
         "_serialize_rows",
         "render_vietnamese_audit_markdown"
       ],
-      "totalLines": 1433,
+      "totalLines": 1584,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/vocab_lists.py": {
@@ -11896,7 +12776,7 @@
     },
     "src/deck_builder/word_lookup.py": {
       "filePath": "src/deck_builder/word_lookup.py",
-      "contentHash": "95e17b59f374f25ca752053685af69ec454e2c4007daf8f75a6ac9f6c7c1935f",
+      "contentHash": "718c781756a0c81f0a3cdba70c44e0d5197dfb578bd7b6ba192d6b74f7d81aae",
       "functions": [
         {
           "name": "get_word_candidates",
@@ -11905,7 +12785,7 @@
           ],
           "returnType": "list[str]",
           "exported": true,
-          "lineCount": 42
+          "lineCount": 45
         },
         {
           "name": "resolve_primary_record",
@@ -11965,7 +12845,7 @@
         "find_idioms_for_word",
         "get_senses_for_card"
       ],
-      "totalLines": 106,
+      "totalLines": 114,
       "hasStructuralAnalysis": true
     },
     "src/design_css.py": {
@@ -12238,7 +13118,7 @@
     },
     "src/scraper/cambridge.py": {
       "filePath": "src/scraper/cambridge.py",
-      "contentHash": "ff732f8d32a992f053e2df37a54727e3fc8dd24f55722a8b6af6512b88da5a82",
+      "contentHash": "84c04e258d645fac3fe6c84c2eec63f949c161e1d91b4c7a2a2996e412fd93a1",
       "functions": [
         {
           "name": "_normalize_text",
@@ -12458,7 +13338,7 @@
           ],
           "returnType": "tuple[\n    list[dict[str, Optional[str]]],\n    dict[str, list[str]],\n    list[dict[str, Any]],\n]",
           "exported": true,
-          "lineCount": 78
+          "lineCount": 112
         },
         {
           "name": "_extract_examples",
@@ -12504,7 +13384,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 69
+          "lineCount": 85
         }
       ],
       "classes": [],
@@ -12566,7 +13446,7 @@
         "_is_idiom",
         "parse_cambridge"
       ],
-      "totalLines": 457,
+      "totalLines": 507,
       "hasStructuralAnalysis": true
     },
     "src/scraper/cambridge_audio.py": {
@@ -12666,9 +13546,326 @@
       "totalLines": 98,
       "hasStructuralAnalysis": true
     },
+    "src/scraper/cambridge_english_vietnamese.py": {
+      "filePath": "src/scraper/cambridge_english_vietnamese.py",
+      "contentHash": "891fb1e22edf78a3cf6b5a04016973e0ce17da85c3f6af3887477f31b958f74d",
+      "functions": [
+        {
+          "name": "normalize_text",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "normalize_lookup_headword",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "lookup_headword_for",
+          "params": [
+            "word"
+          ],
+          "returnType": "tuple[str, str]",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "lookup_slug",
+          "params": [
+            "headword"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "requested_url",
+          "params": [
+            "headword"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "build_lookup_plan",
+          "params": [
+            "registry_rows"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 70
+        },
+        {
+          "name": "_canonical_json",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_fingerprint",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_first",
+          "params": [
+            "root",
+            "selectors"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_text",
+          "params": [
+            "element"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_direct_dictionary_entries",
+          "params": [
+            "root"
+          ],
+          "returnType": "list[Any]",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_sense_blocks",
+          "params": [
+            "entry"
+          ],
+          "returnType": "list[Any]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_parse_examples",
+          "params": [
+            "sense"
+          ],
+          "returnType": "list[dict[str, str | None]]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_definition_translation",
+          "params": [
+            "sense"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_parse_entries",
+          "params": [
+            "root",
+            "lookup_headword"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 99
+        },
+        {
+          "name": "_is_dictionary_home_fallback",
+          "params": [
+            "root",
+            "canonical_url"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_validated_cambridge_url",
+          "params": [
+            "value",
+            "label",
+            "allow_query"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "_validate_source_url_relation",
+          "params": [
+            "lookup_headword",
+            "status",
+            "requested",
+            "response",
+            "canonical"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "parse_snapshot",
+          "params": [
+            "html_bytes",
+            "lookup_headword",
+            "coverage_requests",
+            "cache_file",
+            "response_url",
+            "http_status"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 79
+        },
+        {
+          "name": "validate_record_integrity",
+          "params": [
+            "row"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 66
+        },
+        {
+          "name": "_coverage_sort_key",
+          "params": [
+            "item"
+          ],
+          "returnType": "tuple[str, str, str, str, str]",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "validate_snapshot_rows",
+          "params": [
+            "rows",
+            "expected_plan"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "serialize_rows",
+          "params": [
+            "rows"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "CambridgeEnglishVietnameseParseError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "unicodedata",
+          "specifiers": [
+            "unicodedata"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "urllib.parse",
+          "specifiers": [
+            "parse_qs",
+            "quote",
+            "unquote",
+            "urlsplit"
+          ]
+        },
+        {
+          "source": "lxml",
+          "specifiers": [
+            "etree"
+          ]
+        },
+        {
+          "source": "lxml",
+          "specifiers": [
+            "lxml_html"
+          ]
+        }
+      ],
+      "exports": [
+        "CambridgeEnglishVietnameseParseError",
+        "normalize_text",
+        "normalize_lookup_headword",
+        "lookup_headword_for",
+        "lookup_slug",
+        "requested_url",
+        "build_lookup_plan",
+        "_canonical_json",
+        "_fingerprint",
+        "_first",
+        "_text",
+        "_direct_dictionary_entries",
+        "_sense_blocks",
+        "_parse_examples",
+        "_definition_translation",
+        "_parse_entries",
+        "_is_dictionary_home_fallback",
+        "_validated_cambridge_url",
+        "_validate_source_url_relation",
+        "parse_snapshot",
+        "validate_record_integrity",
+        "_coverage_sort_key",
+        "validate_snapshot_rows",
+        "serialize_rows"
+      ],
+      "totalLines": 621,
+      "hasStructuralAnalysis": true
+    },
     "src/scraper/merge.py": {
       "filePath": "src/scraper/merge.py",
-      "contentHash": "0934e809a681175c065efcb8a42559dfd4ae89964cd928934a31c37b8db806be",
+      "contentHash": "f8c8b5d981c371c8dee105695af83887a644b1c42d7d2a5923162369bf9d3216",
       "functions": [
         {
           "name": "_dedup_preserve_order",
@@ -12742,7 +13939,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 285
+          "lineCount": 301
         },
         {
           "name": "_has_any_def_cefr",
@@ -12807,12 +14004,12 @@
         "_all_pos_unknown",
         "_apply_skip_flags"
       ],
-      "totalLines": 616,
+      "totalLines": 631,
       "hasStructuralAnalysis": true
     },
     "src/scraper/oxford.py": {
       "filePath": "src/scraper/oxford.py",
-      "contentHash": "e66200813d60906855c08f08e07136144605328aef1f4901e2d238b3c171f0f0",
+      "contentHash": "399043d19baca296caab96f9eb3b8192c940b7778431de79b592dbe4af71282e",
       "functions": [
         {
           "name": "_normalize_text",
@@ -12992,6 +14189,15 @@
           "lineCount": 28
         },
         {
+          "name": "_extract_phrasal_verb_links",
+          "params": [
+            "root"
+          ],
+          "returnType": "list[dict[str, str]]",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
           "name": "_extract_synonyms",
           "params": [
             "sense_el"
@@ -13064,13 +14270,32 @@
           "lineCount": 4
         },
         {
-          "name": "_extract_examples_with_evidence",
+          "name": "_eligible_frame_text",
+          "params": [
+            "frame_el"
+          ],
+          "returnType": "Optional[str]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_extract_direct_sense_frames",
           "params": [
             "sense_el"
           ],
+          "returnType": "tuple[list[str], list[dict[str, Any]]]",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "_extract_examples_with_evidence",
+          "params": [
+            "sense_el",
+            "sense_frames"
+          ],
           "returnType": "tuple[list[dict[str, Optional[str]]], list[dict[str, Any]]]",
           "exported": true,
-          "lineCount": 45
+          "lineCount": 42
         },
         {
           "name": "_extract_examples",
@@ -13153,7 +14378,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 21
+          "lineCount": 27
         },
         {
           "name": "parse_oxford",
@@ -13163,7 +14388,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 147
+          "lineCount": 149
         }
       ],
       "classes": [],
@@ -13177,7 +14402,8 @@
         {
           "source": "urllib.parse",
           "specifiers": [
-            "urlsplit"
+            "urlsplit",
+            "urlunsplit"
           ]
         },
         {
@@ -13226,6 +14452,7 @@
         "_extract_awl",
         "_extract_register_tags_top",
         "_extract_see_also",
+        "_extract_phrasal_verb_links",
         "_extract_synonyms",
         "_extract_antonyms",
         "_extract_sensenum",
@@ -13234,6 +14461,8 @@
         "_extract_register_tags_def",
         "_extract_topics",
         "_extract_grammar",
+        "_eligible_frame_text",
+        "_extract_direct_sense_frames",
         "_extract_examples_with_evidence",
         "_extract_examples",
         "_extract_collocations_with_evidence",
@@ -13246,7 +14475,7 @@
         "_build_definition",
         "parse_oxford"
       ],
-      "totalLines": 977,
+      "totalLines": 1051,
       "hasStructuralAnalysis": true
     },
     "src/scraper/oxford_labels.py": {
@@ -13301,7 +14530,7 @@
     },
     "src/scraper/rebuild_command.py": {
       "filePath": "src/scraper/rebuild_command.py",
-      "contentHash": "4eeb7774add8d06df0df2128539d3bf41c78edaaf68e427a19d03fd413da471b",
+      "contentHash": "0f9199392fc2936a2f9b24bfaa71491a87db0ef7c737bff4730762f80268527b",
       "functions": [
         {
           "name": "_write_atomic",
@@ -13358,7 +14587,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 80
+          "lineCount": 69
         }
       ],
       "classes": [],
@@ -13439,8 +14668,7 @@
         {
           "source": "src.scraper.merge",
           "specifiers": [
-            "merge_word_records",
-            "fold_phrasal_verb_records"
+            "merge_word_records"
           ]
         }
       ],
@@ -13452,7 +14680,7 @@
         "main",
         "merge_oxford_records_from_file"
       ],
-      "totalLines": 374,
+      "totalLines": 363,
       "hasStructuralAnalysis": true
     },
     "tests/__init__.py": {
@@ -13477,7 +14705,7 @@
     },
     "tests/deck_builder/test_anki_card_fix_notes.py": {
       "filePath": "tests/deck_builder/test_anki_card_fix_notes.py",
-      "contentHash": "2a8a97544abce2a54e156bcdc0143ec397d247a201014e764846e295f7e1ce2c",
+      "contentHash": "748473f35b1e81a7a9166bc0591e5ed25de15d983a97bcae23ea03cdbe9e7e7b",
       "functions": [
         {
           "name": "_load_jsonl",
@@ -13652,7 +14880,7 @@
           "name": "_legacy_test_equate_uses_the_learner_gloss_for_equating_two_things",
           "params": [],
           "exported": true,
-          "lineCount": 10
+          "lineCount": 8
         },
         {
           "name": "test_forth_keeps_only_the_two_priority_idioms",
@@ -13706,7 +14934,7 @@
           "name": "test_equate_uses_registry_payload_and_learner_collocations",
           "params": [],
           "exported": true,
-          "lineCount": 8
+          "lineCount": 6
         }
       ],
       "classes": [],
@@ -13789,12 +15017,12 @@
         "test_stack_c2_verb_keeps_only_verb_owned_idiom",
         "test_equate_uses_registry_payload_and_learner_collocations"
       ],
-      "totalLines": 831,
+      "totalLines": 827,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_anki_import_command.py": {
       "filePath": "tests/deck_builder/test_anki_import_command.py",
-      "contentHash": "0b3666443c5a1b4bdb615a4c4fc4e045c6cf83a4c54aaaae11a8cc613b0bbee0",
+      "contentHash": "58c6cd2567d37a61f1f251463e2de95933d665d3815ad8923891f1dca9c65932",
       "functions": [
         {
           "name": "_isolate_archive_validation",
@@ -13860,7 +15088,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 13
+          "lineCount": 16
         },
         {
           "name": "_canonical_templates",
@@ -14002,7 +15230,7 @@
             "tmp_path"
           ],
           "exported": true,
-          "lineCount": 47
+          "lineCount": 45
         },
         {
           "name": "test_snapshot_accepts_unique_canonical_identity_subset",
@@ -14011,6 +15239,46 @@
           ],
           "exported": true,
           "lineCount": 50
+        },
+        {
+          "name": "test_snapshot_accepts_only_exact_legacy_awl_deck_mismatch",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "test_snapshot_rejects_legacy_awl_deck_for_non_awl_target",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "test_migrate_legacy_awl_deck_moves_both_ordinals_and_preserves_config",
+          "params": [],
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "test_migrate_legacy_awl_deck_rejects_child_before_mutation",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_migrate_legacy_awl_deck_rejects_unexpected_card_before_change_deck",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_migrate_legacy_awl_deck_rejects_nonempty_old_deck_before_delete",
+          "params": [],
+          "exported": true,
+          "lineCount": 25
         },
         {
           "name": "test_snapshot_rejects_identity_outside_canonical_set",
@@ -14125,7 +15393,7 @@
           "name": "test_sync_example_audio_fields_matches_established_signature_and_batches_update",
           "params": [],
           "exported": true,
-          "lineCount": 35
+          "lineCount": 37
         },
         {
           "name": "test_sync_missing_media_uses_local_paths_and_only_uploads_missing",
@@ -14255,6 +15523,7 @@
             "load_expected_media",
             "load_expected_records",
             "load_expected_signatures",
+            "migrate_legacy_awl_deck",
             "migrate_established_eavm_fields",
             "preflight_and_backup",
             "snapshot_existing_collection",
@@ -14267,9 +15536,22 @@
           ]
         },
         {
+          "source": "src.deck_builder.deck_names",
+          "specifiers": [
+            "AWL_DECK",
+            "LEGACY_AWL_DECK"
+          ]
+        },
+        {
           "source": "src.deck_builder.package_command",
           "specifiers": [
             "load_eavm_templates"
+          ]
+        },
+        {
+          "source": "src.deck_builder.package_contract",
+          "specifiers": [
+            "json_value_for_key"
           ]
         },
         {
@@ -14335,6 +15617,12 @@
         "test_migrate_partial_current_model_appends_only_missing_fields",
         "test_snapshot_accepts_legacy_prefix_before_field_migration",
         "test_snapshot_accepts_unique_canonical_identity_subset",
+        "test_snapshot_accepts_only_exact_legacy_awl_deck_mismatch",
+        "test_snapshot_rejects_legacy_awl_deck_for_non_awl_target",
+        "test_migrate_legacy_awl_deck_moves_both_ordinals_and_preserves_config",
+        "test_migrate_legacy_awl_deck_rejects_child_before_mutation",
+        "test_migrate_legacy_awl_deck_rejects_unexpected_card_before_change_deck",
+        "test_migrate_legacy_awl_deck_rejects_nonempty_old_deck_before_delete",
         "test_snapshot_rejects_identity_outside_canonical_set",
         "test_sync_model_design_updates_existing_template_name_and_css",
         "test_validate_local_inputs_requires_package_and_all_media",
@@ -14357,12 +15645,12 @@
         "test_import_main_stops_before_package_or_anki_when_canonical_guard_fails",
         "test_import_main_dry_run_rejects_archive_content"
       ],
-      "totalLines": 1547,
+      "totalLines": 1726,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_audio_gate.py": {
       "filePath": "tests/deck_builder/test_audio_gate.py",
-      "contentHash": "840925f17a775387ba104fd83e3a3f030c34d48f2ad161cb94d60a5d897655f4",
+      "contentHash": "ebae55e4cf3e5b84c203174963fe6f6b8429b88e084759b41bc3c3d5c55b36a9",
       "functions": [
         {
           "name": "_card",
@@ -14422,6 +15710,15 @@
           "lineCount": 18
         },
         {
+          "name": "test_tracked_git_audio_ignores_paths_staged_for_deletion",
+          "params": [
+            "tmp_path",
+            "monkeypatch"
+          ],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
           "name": "test_validate_audio_gate_rejects_case_mismatch",
           "params": [
             "tmp_path"
@@ -14465,6 +15762,7 @@
         {
           "source": "src.deck_builder.audio_gate",
           "specifiers": [
+            "tracked_audio_names_from_git",
             "validate_audio_gate"
           ]
         },
@@ -14483,12 +15781,13 @@
         "test_validate_audio_gate_rejects_truncated_dictionary_audio",
         "test_validate_audio_gate_rejects_untracked_audio",
         "test_validate_audio_gate_rejects_tracked_unreferenced_audio",
+        "test_tracked_git_audio_ignores_paths_staged_for_deletion",
         "test_validate_audio_gate_rejects_case_mismatch",
         "test_validate_audio_gate_rejects_tts_reference_and_file",
         "test_validate_audio_gate_accepts_tracked_html_example_audio",
         "test_validate_audio_gate_rejects_truncated_example_audio"
       ],
-      "totalLines": 166,
+      "totalLines": 189,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_audit_override_cefr.py": {
@@ -14820,7 +16119,7 @@
     },
     "tests/deck_builder/test_build_notes.py": {
       "filePath": "tests/deck_builder/test_build_notes.py",
-      "contentHash": "d2456e8314f528f27cbe102d98547d6268e27f0142458287c336f2ce0cbd0d03",
+      "contentHash": "bca5985dd756abaf585a3ce6bc27a38cf91dfbee36d9a4913cb0198bdbf5d5c8",
       "functions": [
         {
           "name": "test_separators_match_template_contract",
@@ -14870,7 +16169,13 @@
           "name": "test_get_word_candidates_resolves_learning_pattern_to_source_lemma",
           "params": [],
           "exported": true,
-          "lineCount": 2
+          "lineCount": 3
+        },
+        {
+          "name": "test_reviewed_semantic_source_can_inherit_cefr_for_unbadged_exact_sense",
+          "params": [],
+          "exported": true,
+          "lineCount": 21
         },
         {
           "name": "test_lookup_gloss_prefers_exact_parenthetical_key",
@@ -14894,6 +16199,12 @@
           ]
         },
         {
+          "source": "typing",
+          "specifiers": [
+            "NamedTuple"
+          ]
+        },
+        {
           "source": "src.deck_builder.build_contracts",
           "specifiers": [
             "DEF_SEPARATOR",
@@ -14913,6 +16224,12 @@
           "specifiers": [
             "_parse_txt_cards"
           ]
+        },
+        {
+          "source": "src.deck_builder.registry_build",
+          "specifiers": [
+            "_semantic_cefr_fallback_senses"
+          ]
         }
       ],
       "exports": [
@@ -14923,10 +16240,11 @@
         "test_txt_artifact_parser_preserves_parenthetical_words",
         "test_get_word_candidates_strips_parenthetical_for_source_lookup",
         "test_get_word_candidates_resolves_learning_pattern_to_source_lemma",
+        "test_reviewed_semantic_source_can_inherit_cefr_for_unbadged_exact_sense",
         "test_lookup_gloss_prefers_exact_parenthetical_key",
         "test_lookup_gloss_blocks_unsafe_base_fallback_for_sibling_homonyms"
       ],
-      "totalLines": 131,
+      "totalLines": 157,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_build_notes_module.py": {
@@ -15809,7 +17127,7 @@
     },
     "tests/deck_builder/test_card_identity.py": {
       "filePath": "tests/deck_builder/test_card_identity.py",
-      "contentHash": "5c6d25b7bf393a5b4d56b8848f7bc3fb1b620f1546110ce7b6bdc94f9093c20a",
+      "contentHash": "9eb7b1a9481d5e94844409462ff26958a300b68747efcc5a1d16eb8560cfb122",
       "functions": [
         {
           "name": "test_primary_list_from_tags_keeps_legacy_awl_token_by_default",
@@ -15834,6 +17152,18 @@
           "params": [],
           "exported": true,
           "lineCount": 11
+        },
+        {
+          "name": "test_contend_with_reviewed_secondary_variant_is_exactly_allowlisted",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_takenote_reviewed_semantic_variants_are_exactly_allowlisted",
+          "params": [],
+          "exported": true,
+          "lineCount": 16
         }
       ],
       "classes": [],
@@ -15852,14 +17182,16 @@
         "test_primary_list_from_tags_keeps_legacy_awl_token_by_default",
         "test_primary_list_from_tags_can_canonicalize_awl",
         "test_reviewed_identity_variants_cover_approved_pos_splits",
-        "test_temporal_reviewed_semantic_variants_are_allowed"
+        "test_temporal_reviewed_semantic_variants_are_allowed",
+        "test_contend_with_reviewed_secondary_variant_is_exactly_allowlisted",
+        "test_takenote_reviewed_semantic_variants_are_exactly_allowlisted"
       ],
-      "totalLines": 56,
+      "totalLines": 87,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_card_identity_split.py": {
       "filePath": "tests/deck_builder/test_card_identity_split.py",
-      "contentHash": "69e25bd05077868707d0373ed02a3e28816376f3c2036f7ce29245affcb97951",
+      "contentHash": "42c94366ed7772ee2fc4d5c40a96b7484c2967f9582c81c387ef9be17e30597a",
       "functions": [
         {
           "name": "_registry",
@@ -15948,6 +17280,73 @@
         },
         {
           "name": "test_prepare_is_idempotent_for_the_exact_applied_state",
+          "params": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_contend_registry",
+          "params": [],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_contend_card",
+          "params": [],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_contend_oxford",
+          "params": [],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "_reviewed_contend_audit",
+          "params": [],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "_contend_v2_bundle",
+          "params": [],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 111
+        },
+        {
+          "name": "_prepare_contend_v2",
+          "params": [
+            "bundle"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_v2_extracts_different_headword_from_exact_target_page",
+          "params": [],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "test_v2_rejects_stale_target_page_fingerprint",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_v2_new_sense_requires_exact_mapped_target_sources",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_v2_prepare_is_idempotent_for_exact_applied_state",
           "params": [],
           "exported": true,
           "lineCount": 15
@@ -16058,12 +17457,22 @@
         "test_prepare_rejects_partial_sense_or_source_partition",
         "test_prepare_rejects_source_mapped_to_both_siblings",
         "test_prepare_is_idempotent_for_the_exact_applied_state",
+        "_contend_registry",
+        "_contend_card",
+        "_contend_oxford",
+        "_reviewed_contend_audit",
+        "_contend_v2_bundle",
+        "_prepare_contend_v2",
+        "test_v2_extracts_different_headword_from_exact_target_page",
+        "test_v2_rejects_stale_target_page_fingerprint",
+        "test_v2_new_sense_requires_exact_mapped_target_sources",
+        "test_v2_prepare_is_idempotent_for_exact_applied_state",
         "_write_jsonl",
         "test_publish_rolls_back_all_targets_after_injected_failure",
         "test_publish_rejects_document_changed_after_prepare",
         "test_publish_recovers_a_hard_crash_between_replacements"
       ],
-      "totalLines": 454,
+      "totalLines": 710,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_cefr_integrity_regression.py": {
@@ -16156,7 +17565,7 @@
     },
     "tests/deck_builder/test_collocation_audit.py": {
       "filePath": "tests/deck_builder/test_collocation_audit.py",
-      "contentHash": "ecd06f2de0480878b80648946674bf83c605d55e8ecff70542105d93be74670c",
+      "contentHash": "19b1dac5069e38627dbd0c099b0b4fe2a3f700a91add2b0a7633344fc69588de",
       "functions": [
         {
           "name": "_registry",
@@ -16197,19 +17606,37 @@
             "row"
           ],
           "exported": true,
-          "lineCount": 51
+          "lineCount": 57
         },
         {
-          "name": "test_scaffold_accounts_for_current_items_and_only_example_linked_candidates",
+          "name": "test_scaffold_accounts_for_current_items_and_expanded_candidate_universe",
           "params": [],
           "exported": true,
-          "lineCount": 36
+          "lineCount": 37
         },
         {
           "name": "test_scaffold_reuses_reviews_only_when_both_input_fingerprints_match",
           "params": [],
           "exported": true,
           "lineCount": 26
+        },
+        {
+          "name": "test_v3_scaffold_explicitly_resets_v2_review_state",
+          "params": [],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_cambridge_ordinary_example_derives_exact_portion_pattern_only",
+          "params": [],
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "test_candidate_universe_includes_new_source_provenance_contracts",
+          "params": [],
+          "exported": true,
+          "lineCount": 27
         },
         {
           "name": "test_live_idiom_change_makes_completed_audit_stale",
@@ -16222,6 +17649,36 @@
           "params": [],
           "exported": true,
           "lineCount": 16
+        },
+        {
+          "name": "test_scaffold_reuses_review_for_exact_post_promotion_projection",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "test_scaffold_migrates_complete_review_across_source_id_only_churn",
+          "params": [],
+          "exported": true,
+          "lineCount": 55
+        },
+        {
+          "name": "test_scaffold_reopens_only_items_whose_source_evidence_changed",
+          "params": [],
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "test_scaffold_does_not_reuse_changed_promoted_text_or_provenance",
+          "params": [],
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "test_scaffold_does_not_reuse_review_after_identity_variant_change",
+          "params": [],
+          "exported": true,
+          "lineCount": 25
         },
         {
           "name": "test_unreviewed_live_collocation_projection_remains_stale",
@@ -16239,7 +17696,13 @@
           "name": "test_complete_validation_and_promotion_are_fail_closed_and_deterministic",
           "params": [],
           "exported": true,
-          "lineCount": 35
+          "lineCount": 30
+        },
+        {
+          "name": "test_complete_validation_rejects_surface_interpolated_reason_templates",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
         },
         {
           "name": "test_source_backed_final_must_be_exact_separate_and_evidence_bound",
@@ -16254,10 +17717,34 @@
           "lineCount": 16
         },
         {
+          "name": "test_origin_aware_oxford_sense_cf_normalizes_learner_surface_only",
+          "params": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_oxford_sense_cf_is_a_mandatory_candidate_without_an_example_link",
+          "params": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_terminal_learner_slot_equivalence_requires_example_linked_cambridge_origin",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
           "name": "test_source_binding_prefers_exact_same_source_evidence_before_inflection",
           "params": [],
           "exported": true,
           "lineCount": 34
+        },
+        {
+          "name": "test_source_binding_resolves_exact_surface_independently_per_claimed_source",
+          "params": [],
+          "exported": true,
+          "lineCount": 31
         },
         {
           "name": "test_source_binding_uses_headword_inflection_when_no_exact_surface_exists",
@@ -16348,19 +17835,23 @@
             "CARD_COLUMNS",
             "CURRENT_REVIEW_COLUMNS",
             "EVIDENCE_COLUMNS",
+            "ORIGIN_CONTRACT",
             "apply_collocation_registry",
             "build_audit_rows",
             "collocation_final_item_id",
             "collocation_text_matches_evidence",
             "export_workbook",
             "import_workbook",
+            "normalize_collocation_learner_surface",
             "promote_audit_rows",
             "registry_payload_by_guid",
+            "scaffold_audit_rows",
             "serialize_audit_rows",
             "serialize_registry_rows",
             "validate_audit_rows",
             "validate_current_audit",
             "validate_registry_rows",
+            "_build_candidates",
             "_validate_final_items"
           ]
         },
@@ -16389,16 +17880,29 @@
         "_source",
         "_inputs",
         "_complete",
-        "test_scaffold_accounts_for_current_items_and_only_example_linked_candidates",
+        "test_scaffold_accounts_for_current_items_and_expanded_candidate_universe",
         "test_scaffold_reuses_reviews_only_when_both_input_fingerprints_match",
+        "test_v3_scaffold_explicitly_resets_v2_review_state",
+        "test_cambridge_ordinary_example_derives_exact_portion_pattern_only",
+        "test_candidate_universe_includes_new_source_provenance_contracts",
         "test_live_idiom_change_makes_completed_audit_stale",
         "test_completed_audit_accepts_the_exact_post_promotion_projection",
+        "test_scaffold_reuses_review_for_exact_post_promotion_projection",
+        "test_scaffold_migrates_complete_review_across_source_id_only_churn",
+        "test_scaffold_reopens_only_items_whose_source_evidence_changed",
+        "test_scaffold_does_not_reuse_changed_promoted_text_or_provenance",
+        "test_scaffold_does_not_reuse_review_after_identity_variant_change",
         "test_unreviewed_live_collocation_projection_remains_stale",
         "test_require_complete_rejects_exact_idiom_collocation_overlap",
         "test_complete_validation_and_promotion_are_fail_closed_and_deterministic",
+        "test_complete_validation_rejects_surface_interpolated_reason_templates",
         "test_source_backed_final_must_be_exact_separate_and_evidence_bound",
         "test_source_evidence_binding_allows_only_headword_number_inflection",
+        "test_origin_aware_oxford_sense_cf_normalizes_learner_surface_only",
+        "test_oxford_sense_cf_is_a_mandatory_candidate_without_an_example_link",
+        "test_terminal_learner_slot_equivalence_requires_example_linked_cambridge_origin",
         "test_source_binding_prefers_exact_same_source_evidence_before_inflection",
+        "test_source_binding_resolves_exact_surface_independently_per_claimed_source",
         "test_source_binding_uses_headword_inflection_when_no_exact_surface_exists",
         "test_final_order_numbers_must_match_serialized_list_order",
         "test_workbook_round_trip_rejects_immutable_changes_and_imports_item_decisions",
@@ -16409,12 +17913,12 @@
         "test_scaffold_ignores_empty_source_placeholders_without_headwords",
         "test_apply_registry_updates_dicts_and_built_cards_with_exact_guid_coverage"
       ],
-      "totalLines": 671,
+      "totalLines": 1019,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_corpus_tag_sync.py": {
       "filePath": "tests/deck_builder/test_corpus_tag_sync.py",
-      "contentHash": "c156a1b811076c73b5db93ce597f287809744d390006d8ed03cb0c241ac11a88",
+      "contentHash": "d748a6d3fddfa8e20d1549b4ced1aa7c1c98b90e3752bed93a4369dad48c1b92",
       "functions": [
         {
           "name": "make_txt_line",
@@ -16498,7 +18002,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 192
+          "lineCount": 196
         }
       ],
       "imports": [
@@ -16531,6 +18035,13 @@
             "get_vocab_membership",
             "route_deck"
           ]
+        },
+        {
+          "source": "src.deck_builder.deck_names",
+          "specifiers": [
+            "AWL_DECK",
+            "LEGACY_AWL_DECK"
+          ]
         }
       ],
       "exports": [
@@ -16541,7 +18052,7 @@
         "TestApplyUpdates",
         "TestNewRoutingAndTagContracts"
       ],
-      "totalLines": 451,
+      "totalLines": 456,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_deck_output_p3b.py": {
@@ -16948,7 +18459,7 @@
     },
     "tests/deck_builder/test_definition_audit.py": {
       "filePath": "tests/deck_builder/test_definition_audit.py",
-      "contentHash": "bf8d6d7bf60c5654737e083242d523dd9190abda9e0e8d483a718874a449ebe6",
+      "contentHash": "2b2bdce2b16846a5aa1959ef32eceadbd6bb726e750d513b24e99b8bae94d1d1",
       "functions": [
         {
           "name": "_card_registry",
@@ -16994,10 +18505,11 @@
           "params": [
             "registry",
             "audit",
-            "card_registry"
+            "card_registry",
+            "scope"
           ],
           "exported": true,
-          "lineCount": 16
+          "lineCount": 17
         },
         {
           "name": "test_uphold_is_a_two_sense_evidence_backed_split",
@@ -17031,6 +18543,12 @@
           ],
           "exported": true,
           "lineCount": 15
+        },
+        {
+          "name": "test_all_scope_covers_short_definition_bearing_senses",
+          "params": [],
+          "exported": true,
+          "lineCount": 20
         },
         {
           "name": "test_report_serialization_is_deterministic_and_valid",
@@ -17078,6 +18596,15 @@
           "lineCount": 23
         },
         {
+          "name": "_approved_concise_definition_review",
+          "params": [
+            "summary",
+            "candidates"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
           "name": "test_definition_review_scaffold_is_deterministic_and_exact_coverage",
           "params": [],
           "exported": true,
@@ -17120,6 +18647,18 @@
           "params": [],
           "exported": true,
           "lineCount": 7
+        },
+        {
+          "name": "test_approved_keep_concise_with_row_specific_evidence_passes_all_scope_gate",
+          "params": [],
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "test_keep_concise_rejects_triggered_wording_and_long_scope_promotion",
+          "params": [],
+          "exported": true,
+          "lineCount": 24
         },
         {
           "name": "test_definition_gate_rejects_placeholder_and_identifier_filler",
@@ -17173,6 +18712,7 @@
         "test_token_threshold_finds_verbose_definition_below_character_threshold",
         "test_split_keeps_same_numbered_senses_from_different_pos_and_maps_examples",
         "test_hybrid_candidate_thresholds",
+        "test_all_scope_covers_short_definition_bearing_senses",
         "test_report_serialization_is_deterministic_and_valid",
         "test_report_validator_rejects_stale_recommendation_counts",
         "test_review_override_can_keep_a_heuristic_split_without_touching_inputs",
@@ -17180,6 +18720,7 @@
         "test_build_definition_example_misalignment_fails_closed",
         "test_stale_audit_hash_fails_closed",
         "_approved_definition_review",
+        "_approved_concise_definition_review",
         "test_definition_review_scaffold_is_deterministic_and_exact_coverage",
         "test_definition_review_scaffold_reuses_only_unchanged_fingerprints",
         "test_definition_review_rejects_stale_candidate_fingerprint_and_set",
@@ -17187,9 +18728,11 @@
         "test_definition_review_rejects_generic_evidence",
         "test_non_final_definition_review_decisions_block_promotion",
         "test_approved_keep_with_shorter_alternative_and_exact_loss_passes_gate",
+        "test_approved_keep_concise_with_row_specific_evidence_passes_all_scope_gate",
+        "test_keep_concise_rejects_triggered_wording_and_long_scope_promotion",
         "test_definition_gate_rejects_placeholder_and_identifier_filler"
       ],
-      "totalLines": 577,
+      "totalLines": 668,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_dictionary_links.py": {
@@ -17688,7 +19231,7 @@
     },
     "tests/deck_builder/test_idioms_tag_sync.py": {
       "filePath": "tests/deck_builder/test_idioms_tag_sync.py",
-      "contentHash": "531505a93d541c55ce44a3bdd0a4cbfb374ad758b4755fd58fd962efd00336dc",
+      "contentHash": "65e97cbc43a361ba0f9cd6516781c0bd1424069a4161e8a5280c1e5112feb414",
       "functions": [
         {
           "name": "test_sync_idioms_feature_tag_removes_tag_without_payload",
@@ -17760,7 +19303,7 @@
     },
     "tests/deck_builder/test_learner_relevance_filter.py": {
       "filePath": "tests/deck_builder/test_learner_relevance_filter.py",
-      "contentHash": "422938dd66bb6e560dd0f653ae88e5dab11e4ce384ae1d2483d412bc0a4b2ae0",
+      "contentHash": "315f44ee5cc208d1a81ee9ca6b84e6f77f67f1c77167c6595e676576f8c40ee9",
       "functions": [
         {
           "name": "_audit_by_guid",
@@ -18035,7 +19578,7 @@
     },
     "tests/deck_builder/test_non_oxford_review.py": {
       "filePath": "tests/deck_builder/test_non_oxford_review.py",
-      "contentHash": "daf312459ef11e629ea21357e06a3f6ab774ab89bf2d6763e0a6ee352f5831ad",
+      "contentHash": "c63a7c2612515dcc8dd2e183c43872b1fe1aa74c016683da10fbc99bc9e184a3",
       "functions": [
         {
           "name": "_load_jsonl_rows",
@@ -18087,7 +19630,7 @@
           "name": "test_manual_override_specifics",
           "params": [],
           "exported": true,
-          "lineCount": 21
+          "lineCount": 23
         },
         {
           "name": "test_review_override_can_replace_ipa",
@@ -18180,7 +19723,7 @@
         "test_import_determinism",
         "test_collocations_no_semicolons"
       ],
-      "totalLines": 203,
+      "totalLines": 205,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_opal_tags.py": {
@@ -18353,7 +19896,7 @@
     },
     "tests/deck_builder/test_package_archive.py": {
       "filePath": "tests/deck_builder/test_package_archive.py",
-      "contentHash": "ed31cdb7bc7472a5980d8558f7ce4eaa374c3bb194dd9f7849adb96f659333e4",
+      "contentHash": "2bb72ab1683181d8c938b7998e298b90d7ae2d5f9db356827b096aa5276a7bfb",
       "functions": [
         {
           "name": "_fixture_package",
@@ -18615,6 +20158,12 @@
             "configure_genanki_requirements",
             "generate_deterministic_id"
           ]
+        },
+        {
+          "source": "src.deck_builder.package_contract",
+          "specifiers": [
+            "json_value_for_key"
+          ]
         }
       ],
       "exports": [
@@ -18639,12 +20188,12 @@
         "test_rejects_canonical_deck_id_collision",
         "test_rejects_missing_or_extra_canonical_notes_and_cards"
       ],
-      "totalLines": 452,
+      "totalLines": 453,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_package_provenance.py": {
       "filePath": "tests/deck_builder/test_package_provenance.py",
-      "contentHash": "e7ac81d9d1c19198ea1bbaf466c9012311a7d03efefeac9ffd0543a8acff38a5",
+      "contentHash": "9ac4da18db482b22d3ab430a33c3b99869e6f5802565b2f47bec36a797e093cc",
       "functions": [
         {
           "name": "_guid_proof",
@@ -18695,7 +20244,7 @@
             "tmp_path"
           ],
           "exported": true,
-          "lineCount": 31
+          "lineCount": 34
         },
         {
           "name": "test_packager_contract_change_invalidates_an_existing_sidecar",
@@ -18811,7 +20360,103 @@
         "test_verified_receipt_rejects_a_different_package_provenance",
         "test_verified_receipt_requires_post_import_guid_proof"
       ],
-      "totalLines": 246,
+      "totalLines": 250,
+      "hasStructuralAnalysis": true
+    },
+    "tests/deck_builder/test_phrasal_verb_audit.py": {
+      "filePath": "tests/deck_builder/test_phrasal_verb_audit.py",
+      "contentHash": "d1a033ce5bffe6f109250045fbafdcf733c40aea444944f9c2ab32f96381ffe0",
+      "functions": [
+        {
+          "name": "_registry",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_oxford",
+          "params": [],
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_approve",
+          "params": [
+            "row",
+            "disposition"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_structural_match_is_start_anchored_and_expands_only_explicit_slash",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_scaffold_requires_authoritative_hydrated_target_and_reuses_bound_review",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_complete_validation_enforces_disposition_payload_and_distinct_route_chip_gate",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_workbook_locks_immutable_columns_and_rejects_tampering",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 23
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "copy",
+          "specifiers": [
+            "copy"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "openpyxl",
+          "specifiers": [
+            "load_workbook"
+          ]
+        },
+        {
+          "source": "src.deck_builder.phrasal_verb_audit",
+          "specifiers": [
+            "build_audit_rows",
+            "export_workbook",
+            "import_workbook",
+            "phrase_starts_learner_surface",
+            "structural_phrase_collisions",
+            "validate_audit_rows"
+          ]
+        }
+      ],
+      "exports": [
+        "_registry",
+        "_oxford",
+        "_approve",
+        "test_structural_match_is_start_anchored_and_expands_only_explicit_slash",
+        "test_scaffold_requires_authoritative_hydrated_target_and_reuses_bound_review",
+        "test_complete_validation_enforces_disposition_payload_and_distinct_route_chip_gate",
+        "test_workbook_locks_immutable_columns_and_rejects_tampering"
+      ],
+      "totalLines": 116,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_production.py": {
@@ -19568,7 +21213,7 @@
     },
     "tests/deck_builder/test_release_guard.py": {
       "filePath": "tests/deck_builder/test_release_guard.py",
-      "contentHash": "757afd135fb5061d2f987220f7b6100edb625aa9882cfaf293ecf574fc7ce489",
+      "contentHash": "4bb701f16c7b15c7fee35974688fdca80170da07fb1cb502b466bfa1b43f3453",
       "functions": [
         {
           "name": "_guid_proof",
@@ -19591,13 +21236,31 @@
           "lineCount": 11
         },
         {
+          "name": "_install_cambridge_evi_schema",
+          "params": [
+            "paths"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_refingerprint_cambridge_evi_row",
+          "params": [
+            "row"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
           "name": "_canonical_fixture",
           "params": [
             "paths"
           ],
           "returnType": "tuple[bytes, bytes]",
           "exported": true,
-          "lineCount": 34
+          "lineCount": 36
         },
         {
           "name": "test_canonical_scope_reproduces_registry_and_build_without_writes",
@@ -19607,7 +21270,7 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 54
+          "lineCount": 55
         },
         {
           "name": "test_canonical_scope_rejects_stale_registry_before_build",
@@ -19618,6 +21281,26 @@
           "returnType": "None",
           "exported": true,
           "lineCount": 31
+        },
+        {
+          "name": "test_canonical_scope_requires_exact_cambridge_evi_coverage",
+          "params": [
+            "tmp_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "test_canonical_scope_schema_rejects_refingerprinted_cambridge_evi_row",
+          "params": [
+            "tmp_path",
+            "changes",
+            "expected_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 50
         },
         {
           "name": "test_canonical_scope_rejects_a_built_user_lock_violation",
@@ -19681,6 +21364,18 @@
       "classes": [],
       "imports": [
         {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "inspect",
+          "specifiers": [
+            "inspect"
+          ]
+        },
+        {
           "source": "json",
           "specifiers": [
             "json"
@@ -19690,6 +21385,12 @@
           "source": "pathlib",
           "specifiers": [
             "Path"
+          ]
+        },
+        {
+          "source": "shutil",
+          "specifiers": [
+            "shutil"
           ]
         },
         {
@@ -19733,14 +21434,25 @@
             "ReleaseGuardError",
             "run_release_guard"
           ]
+        },
+        {
+          "source": "src.scraper.cambridge_english_vietnamese",
+          "specifiers": [
+            "build_lookup_plan",
+            "parse_snapshot"
+          ]
         }
       ],
       "exports": [
         "_guid_proof",
         "_write_jsonl",
+        "_install_cambridge_evi_schema",
+        "_refingerprint_cambridge_evi_row",
         "_canonical_fixture",
         "test_canonical_scope_reproduces_registry_and_build_without_writes",
         "test_canonical_scope_rejects_stale_registry_before_build",
+        "test_canonical_scope_requires_exact_cambridge_evi_coverage",
+        "test_canonical_scope_schema_rejects_refingerprinted_cambridge_evi_row",
         "test_canonical_scope_rejects_a_built_user_lock_violation",
         "_package_fixture",
         "test_package_scope_reuses_current_provenance_and_rejects_stale_inputs",
@@ -19748,7 +21460,7 @@
         "test_package_scope_rejects_non_apkg_bytes",
         "test_release_guard_rejects_unknown_scope"
       ],
-      "totalLines": 336,
+      "totalLines": 476,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_resolve_cards.py": {
@@ -20017,7 +21729,7 @@
     },
     "tests/deck_builder/test_reviewed_quality_regressions.py": {
       "filePath": "tests/deck_builder/test_reviewed_quality_regressions.py",
-      "contentHash": "a5180b7315679e6b36e4632a450025748ab1102917818ff3fe659b0dce6c405c",
+      "contentHash": "02c9e2906215e5fba4106fe6882899ff3ffe8c500ca1646d441db5b02da4847f",
       "functions": [
         {
           "name": "_load",
@@ -20138,7 +21850,7 @@
           "name": "test_semantic_overload_grouping_matches_canonical_owner_payloads",
           "params": [],
           "exported": true,
-          "lineCount": 45
+          "lineCount": 51
         },
         {
           "name": "test_sense_grouping_review_matches_canonical_owner_payloads",
@@ -20217,7 +21929,7 @@
         "test_vietnamese_precision_review_matches_canonical_owner_payloads",
         "test_audit_review_20260713_matches_reviewed_card_payloads"
       ],
-      "totalLines": 386,
+      "totalLines": 393,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_semantic_audit.py": {
@@ -20529,7 +22241,7 @@
     },
     "tests/deck_builder/test_semantic_policy.py": {
       "filePath": "tests/deck_builder/test_semantic_policy.py",
-      "contentHash": "19d7255e1c3474ef76e7e4b95f647f0fd64a1bda9c967ddac5274ec2df30a8c3",
+      "contentHash": "61c79f82683108a4af25b5a478d53856ac0f323ecea3512c73d289b289d0d199",
       "functions": [
         {
           "name": "_lock",
@@ -20569,6 +22281,12 @@
           "params": [],
           "exported": true,
           "lineCount": 13
+        },
+        {
+          "name": "test_source_id_drift_can_be_superseded_without_reopening_the_decision",
+          "params": [],
+          "exported": true,
+          "lineCount": 45
         },
         {
           "name": "test_canonical_policy_contains_every_exact_user_wording_lock",
@@ -20635,17 +22353,18 @@
         "test_exact_vi_lock_is_checked_across_every_production_layer",
         "test_source_retention_and_exclusion_are_fail_closed",
         "test_policy_supersession_must_be_append_only_and_same_identity",
+        "test_source_id_drift_can_be_superseded_without_reopening_the_decision",
         "test_canonical_policy_contains_every_exact_user_wording_lock",
         "test_required_user_wording_lock_cannot_be_deleted_or_edited",
         "test_vietnamese_user_lock_evidence_must_match_an_active_policy_row",
         "test_every_active_exact_user_lock_requires_an_explicit_review_claim"
       ],
-      "totalLines": 204,
+      "totalLines": 251,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_semantic_registry.py": {
       "filePath": "tests/deck_builder/test_semantic_registry.py",
-      "contentHash": "1a347d0e6b9e772f561d445efaa52ec83c2fc6496041033613010cbfd2b8dffb",
+      "contentHash": "cf71db7b16f57d96336ec28faae9fc2fb616017013c4a997c6fbadb2ed7a8845",
       "functions": [
         {
           "name": "_empty_gate_documents",
@@ -20809,6 +22528,16 @@
           "lineCount": 9
         },
         {
+          "name": "test_validator_rejects_vietnamese_or_connector",
+          "params": [
+            "field",
+            "value",
+            "location"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
           "name": "test_apply_formats_senses_and_preserves_every_other_card_field",
           "params": [],
           "exported": true,
@@ -20849,6 +22578,18 @@
           "params": [],
           "exported": true,
           "lineCount": 16
+        },
+        {
+          "name": "test_variant_idiom_ownership_can_assign_source_idioms_only_to_primary",
+          "params": [],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "test_variant_idiom_ownership_fails_when_promoted_idiom_has_no_source_match",
+          "params": [],
+          "exported": true,
+          "lineCount": 18
         },
         {
           "name": "test_canonical_semantic_registry_is_the_current_deterministic_promotion",
@@ -20893,6 +22634,7 @@
           "source": "src.deck_builder.semantic_registry",
           "specifiers": [
             "SEMANTIC_REGISTRY_SCHEMA_VERSION",
+            "apply_variant_idiom_ownership",
             "apply_semantic_registry",
             "_render_promoted_audit_rows",
             "promote_reviewed_semantics",
@@ -20938,6 +22680,7 @@
         "test_validator_exempts_true_idiom_only_registry_row",
         "test_validator_rejects_suspected_lossy_unicode",
         "test_validator_allows_terminal_question_punctuation_in_vietnamese",
+        "test_validator_rejects_vietnamese_or_connector",
         "test_apply_formats_senses_and_preserves_every_other_card_field",
         "test_apply_derives_each_sense_pos_from_source_ids_in_card_order",
         "test_apply_clears_semantic_fields_for_zero_sense_card",
@@ -20945,14 +22688,16 @@
         "test_apply_supports_idiom_only_card",
         "test_apply_bilingual_gloss_preserves_phrase_pipe_examples_and_audio",
         "test_apply_fails_closed_on_stale_or_missing_idiom_payload",
+        "test_variant_idiom_ownership_can_assign_source_idioms_only_to_primary",
+        "test_variant_idiom_ownership_fails_when_promoted_idiom_has_no_source_match",
         "test_canonical_semantic_registry_is_the_current_deterministic_promotion"
       ],
-      "totalLines": 645,
+      "totalLines": 710,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_semantic_registry_production.py": {
       "filePath": "tests/deck_builder/test_semantic_registry_production.py",
-      "contentHash": "fbe84f84c2c6d4f271b46f490bac36a0403bfacc59310db2308fef7bf8f7f4cf",
+      "contentHash": "6dcb655b4d1d190bf7d970c28f96da72eaa5ad67caf0bfe69e5adfcd10797ec8",
       "functions": [
         {
           "name": "_jsonl",
@@ -21011,7 +22756,7 @@
           "name": "test_takenote_reviewed_identity_splits_reach_production",
           "params": [],
           "exported": true,
-          "lineCount": 28
+          "lineCount": 34
         },
         {
           "name": "test_takenote_semantic_and_idiom_repairs_reach_production",
@@ -21071,7 +22816,7 @@
         "test_takenote_semantic_and_idiom_repairs_reach_production",
         "test_takenote_collocation_provenance_repairs_reach_production"
       ],
-      "totalLines": 193,
+      "totalLines": 199,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_sense_labels.py": {
@@ -21806,7 +23551,7 @@
     },
     "tests/deck_builder/test_synonym_annotator.py": {
       "filePath": "tests/deck_builder/test_synonym_annotator.py",
-      "contentHash": "a521f1d536c5de174c9cc711002428b0d8f82b68b64aeea652d82cc74be33f55",
+      "contentHash": "60f403f02ad0018df502a550347b8d6cec2cdcb3380cab01b6ae49e0f739d385",
       "functions": [
         {
           "name": "_card",
@@ -22131,7 +23876,7 @@
     },
     "tests/deck_builder/test_update_anki_deck.py": {
       "filePath": "tests/deck_builder/test_update_anki_deck.py",
-      "contentHash": "a14b441239e6ad996962a1e4220eead121d9a44375d97fde245dcfdd7a489c69",
+      "contentHash": "b93d44fb958a28b235f2ad38f0a1bc9ddc9800b5277d1fc40d586621bd8ea99c",
       "functions": [
         {
           "name": "_patch_production_templates",
@@ -22150,7 +23895,7 @@
             "monkeypatch"
           ],
           "exported": true,
-          "lineCount": 26
+          "lineCount": 27
         },
         {
           "name": "test_packager_stops_before_inputs_when_canonical_guard_fails",
@@ -22171,7 +23916,13 @@
           "name": "test_eavm_model_identity_matches_existing_anki_note_type",
           "params": [],
           "exported": true,
-          "lineCount": 17
+          "lineCount": 18
+        },
+        {
+          "name": "test_headword_playback_sources_are_derived_from_established_sound_fields",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
         },
         {
           "name": "test_template_loader_is_ordered_and_composes_production_answer",
@@ -22274,7 +24025,7 @@
             "monkeypatch"
           ],
           "exported": true,
-          "lineCount": 103
+          "lineCount": 105
         }
       ],
       "classes": [],
@@ -22322,6 +24073,12 @@
           ]
         },
         {
+          "source": "src.deck_builder.package_contract",
+          "specifiers": [
+            "json_value_for_key"
+          ]
+        },
+        {
           "source": "src.deck_builder",
           "specifiers": [
             "update_anki_deck"
@@ -22334,6 +24091,7 @@
         "test_packager_stops_before_inputs_when_canonical_guard_fails",
         "test_generate_deterministic_id",
         "test_eavm_model_identity_matches_existing_anki_note_type",
+        "test_headword_playback_sources_are_derived_from_established_sound_fields",
         "test_template_loader_is_ordered_and_composes_production_answer",
         "test_genanki_model_emits_production_only_for_eligible_notes",
         "test_extract_audio_filename",
@@ -22348,7 +24106,7 @@
         "test_update_anki_deck_multiple_subdecks",
         "test_update_anki_deck_note_fields_and_guid_preservation"
       ],
-      "totalLines": 563,
+      "totalLines": 579,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_validate_verdict.py": {
@@ -22464,7 +24222,7 @@
     },
     "tests/deck_builder/test_vietnamese_audit.py": {
       "filePath": "tests/deck_builder/test_vietnamese_audit.py",
-      "contentHash": "1b641478ab6bf71919dc0a5d11f4d0e7958ff701141f08e7d8068745311de349",
+      "contentHash": "7e9eaa62800281e70e38d3da6e7da80c76e1e45019b6da8515499c5f421591cd",
       "functions": [
         {
           "name": "_add_review_evidence",
@@ -22474,7 +24232,7 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 27
+          "lineCount": 33
         },
         {
           "name": "_sense",
@@ -22521,6 +24279,12 @@
           "returnType": "tuple[dict, list[dict]]",
           "exported": true,
           "lineCount": 32
+        },
+        {
+          "name": "test_pending_review_can_carry_non_authoritative_vietnamese_suggestion",
+          "params": [],
+          "exported": true,
+          "lineCount": 19
         },
         {
           "name": "_complete_matching_review",
@@ -22575,11 +24339,32 @@
           "lineCount": 32
         },
         {
-          "name": "test_scaffold_reuses_approved_verdict_only_when_context_and_final_vi_match",
+          "name": "test_scaffold_resets_review_when_nonverb_current_vi_changes_to_old_rewrite",
           "params": [],
           "returnType": "None",
           "exported": true,
-          "lineCount": 77
+          "lineCount": 105
+        },
+        {
+          "name": "test_all_scope_marks_every_verb_for_lexical_core_review",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "test_source_evidence_order_does_not_stale_vietnamese_fingerprints",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_v5_migration_reopens_verbs_but_reuses_unchanged_non_verbs",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 30
         },
         {
           "name": "test_promotion_gate_accepts_complete_all_sense_review",
@@ -22707,7 +24492,7 @@
           "params": [],
           "returnType": "None",
           "exported": true,
-          "lineCount": 43
+          "lineCount": 52
         },
         {
           "name": "test_v4_migration_resets_every_member_of_duplicate_template_group",
@@ -22740,7 +24525,11 @@
         {
           "source": "src.deck_builder.vietnamese_audit",
           "specifiers": [
+            "GLOSS_POLICY_VERSION",
+            "_candidate_fingerprint",
+            "_context_fingerprint",
             "_context_fingerprint_v4",
+            "_context_fingerprint_v5",
             "apply_vietnamese_review",
             "build_vietnamese_audit",
             "render_vietnamese_audit_markdown",
@@ -22758,6 +24547,7 @@
         "_card",
         "_inputs",
         "_complete_review",
+        "test_pending_review_can_carry_non_authoritative_vietnamese_suggestion",
         "_complete_matching_review",
         "test_report_selects_all_promoted_senses_at_threshold",
         "test_all_scope_selects_every_promoted_sense",
@@ -22765,7 +24555,10 @@
         "test_all_scope_rejects_keep_natural_for_long_gloss",
         "test_all_scope_allows_substantive_same_token_rewrite_for_short_gloss",
         "test_all_scope_rejects_punctuation_only_rewrite_for_short_gloss",
-        "test_scaffold_reuses_approved_verdict_only_when_context_and_final_vi_match",
+        "test_scaffold_resets_review_when_nonverb_current_vi_changes_to_old_rewrite",
+        "test_all_scope_marks_every_verb_for_lexical_core_review",
+        "test_source_evidence_order_does_not_stale_vietnamese_fingerprints",
+        "test_v5_migration_reopens_verbs_but_reuses_unchanged_non_verbs",
         "test_promotion_gate_accepts_complete_all_sense_review",
         "test_promotion_gate_rejects_incomplete_or_stale_all_sense_review",
         "test_report_and_review_serialization_are_deterministic",
@@ -22784,7 +24577,7 @@
         "test_v4_migration_enriches_and_reuses_unique_reviews",
         "test_v4_migration_resets_every_member_of_duplicate_template_group"
       ],
-      "totalLines": 1257,
+      "totalLines": 1392,
       "hasStructuralAnalysis": true
     },
     "tests/design/test_back_optional_sections.py": {
@@ -23119,7 +24912,7 @@
     },
     "tests/design/test_example_audio_controls.py": {
       "filePath": "tests/design/test_example_audio_controls.py",
-      "contentHash": "d7584627332425635d9918fffbcd654d49c7d8f2417500aef21563673ce1d59f",
+      "contentHash": "21b17550cb64ca4b96f9dcc3eb8b70a3fd5e69e468aa271d7657b11322e195ad",
       "functions": [
         {
           "name": "_template",
@@ -23151,7 +24944,7 @@
           "name": "test_example_audio_fields_remain_hidden_manual_play_inputs",
           "params": [],
           "exported": true,
-          "lineCount": 18
+          "lineCount": 20
         },
         {
           "name": "test_accent_control_exposes_one_current_accent_switch",
@@ -23321,7 +25114,61 @@
         "test_main_example_font_size_matches_definition",
         "test_playing_example_uses_the_card_cefr_color_without_hover_color"
       ],
-      "totalLines": 483,
+      "totalLines": 485,
+      "hasStructuralAnalysis": true
+    },
+    "tests/design/test_headword_audio_controls.py": {
+      "filePath": "tests/design/test_headword_audio_controls.py",
+      "contentHash": "8d508959ddca54d323bcc910526fe0e952ecb4753f43ada1053eb4fbea1025d5",
+      "functions": [
+        {
+          "name": "test_headword_audio_uses_derived_media_fields_and_autoplays_only_uk",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_equal_ipa_has_two_accessible_half_width_controls_without_idle_labels",
+          "params": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_distinct_ipa_pills_keep_visible_accent_labels_and_whole_pill_controls",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_headword_playback_tracks_real_lifecycle_and_replays_last_accent_with_r",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_example_toggle_shares_toolbar_row_and_wraps_right_on_mobile",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        }
+      ],
+      "exports": [
+        "test_headword_audio_uses_derived_media_fields_and_autoplays_only_uk",
+        "test_equal_ipa_has_two_accessible_half_width_controls_without_idle_labels",
+        "test_distinct_ipa_pills_keep_visible_accent_labels_and_whole_pill_controls",
+        "test_headword_playback_tracks_real_lifecycle_and_replays_last_accent_with_r",
+        "test_example_toggle_shares_toolbar_row_and_wraps_right_on_mobile"
+      ],
+      "totalLines": 73,
       "hasStructuralAnalysis": true
     },
     "tests/design/test_idiom_translation_rendering.py": {
@@ -24148,7 +25995,7 @@
     },
     "tests/design/test_word_highlight.py": {
       "filePath": "tests/design/test_word_highlight.py",
-      "contentHash": "1e90261d69f38356a3604ab87763f90440f1cb51d0f00daaf15a8bcb1158c740",
+      "contentHash": "247886b1a9516523d850442bffa780fc1799e5cf243b7857f4c09759256d86b3",
       "functions": [
         {
           "name": "_template",
@@ -24196,6 +26043,12 @@
           "params": [],
           "exported": true,
           "lineCount": 20
+        },
+        {
+          "name": "test_lexicalized_plural_example_highlights_the_complete_surface_word",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
         },
         {
           "name": "test_current_deck_irregular_forms_are_highlighted_completely",
@@ -24268,18 +26121,19 @@
         "_highlight",
         "test_template_uses_morphological_highlighter_at_the_example_call_site",
         "test_regular_inflections_highlight_the_complete_surface_word",
+        "test_lexicalized_plural_example_highlights_the_complete_surface_word",
         "test_current_deck_irregular_forms_are_highlighted_completely",
         "test_reviewed_spelling_variants_match_production_forms",
         "test_highlighter_rejects_prefixed_compound_and_derived_words",
         "test_sense_qualifier_is_removed_only_for_single_word_highlighting",
         "test_relation_rendering_remains_compatible_with_strict_highlighting"
       ],
-      "totalLines": 222,
+      "totalLines": 230,
       "hasStructuralAnalysis": true
     },
     "tests/fixtures/golden_cambridge_v2.json": {
       "filePath": "tests/fixtures/golden_cambridge_v2.json",
-      "contentHash": "2421a4afdd4aab9047c144f2421a9c70794dcbe62af99548f5d48a44e0a90e44",
+      "contentHash": "e30885bcee450c49e0023bf132b93cb91776d538c04f4243887242c84679a783",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -24299,12 +26153,12 @@
     },
     "tests/fixtures/parser_fixture_manifest.json": {
       "filePath": "tests/fixtures/parser_fixture_manifest.json",
-      "contentHash": "ed9740769f1713313e483b4b338e9606001d56f7e5d1725d9285d71278dd823b",
+      "contentHash": "2bc04595783423f74c91f3b03e5ef92d170dbaa2a3beaca4dbdfbad36503dca7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 187,
+      "totalLines": 229,
       "hasStructuralAnalysis": true
     },
     "tests/scraper/test_cambridge_clean.py": {
@@ -24384,6 +26238,300 @@
         "test_examples_stripped_of_colloc_prefix"
       ],
       "totalLines": 127,
+      "hasStructuralAnalysis": true
+    },
+    "tests/scraper/test_cambridge_english_vietnamese.py": {
+      "filePath": "tests/scraper/test_cambridge_english_vietnamese.py",
+      "contentHash": "24e6edeb5a017f71336d7615cd5fdf8672144b50d679c377f3b476beba81faa7",
+      "functions": [
+        {
+          "name": "parse_snapshot",
+          "params": [
+            "*args",
+            "**kwargs"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_request",
+          "params": [
+            "**overrides"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_lookup_normalization_uses_only_reviewed_aliases",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_parser_is_dictionary_scoped_and_retains_missing_translation",
+          "params": [],
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "test_parser_supports_the_live_k_dictionary_entry_shape",
+          "params": [],
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "test_example_translation_never_becomes_definition_translation",
+          "params": [],
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "test_duplicate_content_senses_keep_unique_ordinal_source_ids",
+          "params": [],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "test_parser_requires_positive_no_entry_evidence",
+          "params": [],
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "test_parser_recognizes_strict_dictionary_home_fallback",
+          "params": [
+            "lookup_headword"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "test_home_like_or_challenge_page_without_exact_signature_still_fails",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_response_url_allows_only_canonical_redirect_bound_to_requested_slug",
+          "params": [],
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "test_pure_snapshot_validation_recomputes_fingerprints_and_exact_coverage",
+          "params": [],
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "test_plan_groups_aliases_and_adds_bound_provisions",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 53
+        },
+        {
+          "name": "test_supplemental_provisions_stays_with_primary_after_split",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "test_supplemental_provisions_rejects_missing_or_ambiguous_owner",
+          "params": [
+            "rows"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_plan_without_provision_does_not_invent_supplemental_owner",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_build_apply_check_and_schema_validation",
+          "params": [
+            "tmp_path",
+            "monkeypatch"
+          ],
+          "exported": true,
+          "lineCount": 58
+        },
+        {
+          "name": "test_transient_http_failure_never_writes_absence_cache",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "test_fetch_retries_429_honoring_retry_after_then_caches_success",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 55
+        },
+        {
+          "name": "test_fetch_uses_bounded_exponential_backoff_for_5xx",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 51
+        },
+        {
+          "name": "test_fetch_resume_reuses_complete_cache_without_network",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "test_legacy_cache_metadata_migrates_only_after_body_url_proof",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "test_cache_pair_rejects_partial_or_mismatched_metadata",
+          "params": [
+            "tmp_path",
+            "metadata"
+          ],
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "test_pair_publication_invalidates_metadata_before_replacing_html",
+          "params": [
+            "tmp_path",
+            "monkeypatch"
+          ],
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "test_retry_after_http_date_and_operational_maximum",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_request_pacer_applies_deferred_cooldown_to_multiple_workers",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timedelta",
+            "timezone"
+          ]
+        },
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "jsonschema",
+          "specifiers": [
+            "jsonschema"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "src.scraper.cambridge_english_vietnamese",
+          "specifiers": [
+            "CambridgeEnglishVietnameseParseError",
+            "lookup_headword_for",
+            "normalize_lookup_headword",
+            "requested_url",
+            "validate_snapshot_rows",
+            "_parse_snapshot"
+          ]
+        },
+        {
+          "source": "tools",
+          "specifiers": [
+            "sync"
+          ]
+        }
+      ],
+      "exports": [
+        "parse_snapshot",
+        "_request",
+        "test_lookup_normalization_uses_only_reviewed_aliases",
+        "test_parser_is_dictionary_scoped_and_retains_missing_translation",
+        "test_parser_supports_the_live_k_dictionary_entry_shape",
+        "test_example_translation_never_becomes_definition_translation",
+        "test_duplicate_content_senses_keep_unique_ordinal_source_ids",
+        "test_parser_requires_positive_no_entry_evidence",
+        "test_parser_recognizes_strict_dictionary_home_fallback",
+        "test_home_like_or_challenge_page_without_exact_signature_still_fails",
+        "test_response_url_allows_only_canonical_redirect_bound_to_requested_slug",
+        "test_pure_snapshot_validation_recomputes_fingerprints_and_exact_coverage",
+        "test_plan_groups_aliases_and_adds_bound_provisions",
+        "test_supplemental_provisions_stays_with_primary_after_split",
+        "test_supplemental_provisions_rejects_missing_or_ambiguous_owner",
+        "test_plan_without_provision_does_not_invent_supplemental_owner",
+        "test_build_apply_check_and_schema_validation",
+        "test_transient_http_failure_never_writes_absence_cache",
+        "test_fetch_retries_429_honoring_retry_after_then_caches_success",
+        "test_fetch_uses_bounded_exponential_backoff_for_5xx",
+        "test_fetch_resume_reuses_complete_cache_without_network",
+        "test_legacy_cache_metadata_migrates_only_after_body_url_proof",
+        "test_cache_pair_rejects_partial_or_mismatched_metadata",
+        "test_pair_publication_invalidates_metadata_before_replacing_html",
+        "test_retry_after_http_date_and_operational_maximum",
+        "test_request_pacer_applies_deferred_cooldown_to_multiple_workers"
+      ],
+      "totalLines": 903,
       "hasStructuralAnalysis": true
     },
     "tests/scraper/test_cambridge_pos_audio.py": {
@@ -24470,9 +26618,35 @@
       "totalLines": 113,
       "hasStructuralAnalysis": true
     },
+    "tests/scraper/test_cambridge_pos_scoping.py": {
+      "filePath": "tests/scraper/test_cambridge_pos_scoping.py",
+      "contentHash": "55d02b8c0ad037b47193220f5bcffc4c33e2b6a464260af147e6f6a079844d79",
+      "functions": [
+        {
+          "name": "test_each_entry_body_pos_owns_only_its_own_senses",
+          "params": [],
+          "exported": true,
+          "lineCount": 40
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "src.scraper.cambridge",
+          "specifiers": [
+            "parse_cambridge"
+          ]
+        }
+      ],
+      "exports": [
+        "test_each_entry_body_pos_owns_only_its_own_senses"
+      ],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
     "tests/scraper/test_collocation_evidence.py": {
       "filePath": "tests/scraper/test_collocation_evidence.py",
-      "contentHash": "f8daf0442ffbf5ae409ae60b6a435c4f8f9fe9edb24c7df71ca5e0be78d1266f",
+      "contentHash": "acc9a49f235590c230415220545ed6a1da1ad7b323fb435777e1bda3ef9c1c2b",
       "functions": [
         {
           "name": "_definition",
@@ -24527,6 +26701,12 @@
           "lineCount": 57
         },
         {
+          "name": "test_cambridge_cl_inside_example_keeps_example_context_and_coordinates",
+          "params": [],
+          "exported": true,
+          "lineCount": 49
+        },
+        {
           "name": "test_merge_unions_distinct_evidence_without_losing_same_surface_origins",
           "params": [],
           "exported": true,
@@ -24542,7 +26722,7 @@
           "name": "test_source_schemas_reject_downgrading_example_linked_origins_to_supporting",
           "params": [],
           "exported": true,
-          "lineCount": 39
+          "lineCount": 52
         }
       ],
       "classes": [],
@@ -24597,11 +26777,12 @@
         "test_oxford_snippet_evidence_keeps_category_truncation_and_full_entry_url",
         "test_oxford_repeated_snippet_category_is_an_order_preserving_union",
         "test_cambridge_dexamp_pairing_distinguishes_example_bare_and_grammar_evidence",
+        "test_cambridge_cl_inside_example_keeps_example_context_and_coordinates",
         "test_merge_unions_distinct_evidence_without_losing_same_surface_origins",
         "test_source_schemas_require_structured_collocation_evidence",
         "test_source_schemas_reject_downgrading_example_linked_origins_to_supporting"
       ],
-      "totalLines": 344,
+      "totalLines": 408,
       "hasStructuralAnalysis": true
     },
     "tests/scraper/test_merge.py": {
@@ -25064,6 +27245,134 @@
       "totalLines": 142,
       "hasStructuralAnalysis": true
     },
+    "tests/scraper/test_oxford_frames_and_phrasal_links.py": {
+      "filePath": "tests/scraper/test_oxford_frames_and_phrasal_links.py",
+      "contentHash": "6abdc71f2b0191d65b820a536abfd27ecedddaaa54fe7be2b519fb3d10619eca",
+      "functions": [
+        {
+          "name": "_parse_inline",
+          "params": [
+            "senses",
+            "aside"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_definitions",
+          "params": [
+            "record"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_direct_sense_frame_is_raw_supporting_evidence_and_safe_example_default",
+          "params": [],
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "test_nested_example_frame_wins_over_direct_sense_frame",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_ambiguous_direct_frames_and_structural_headers_do_not_inherit",
+          "params": [],
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "test_sense_frame_inheritance_never_leaks_across_senses",
+          "params": [],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "test_contend_fixtures_preserve_main_link_and_target_page_identity",
+          "params": [],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "test_phrasal_link_extraction_is_authoritative_canonical_and_deduped",
+          "params": [],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "test_merge_unions_raw_frames_and_exact_phrase_target_identities",
+          "params": [],
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "test_production_rebuild_keeps_phrase_pages_independent",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "jsonschema",
+          "specifiers": [
+            "jsonschema"
+          ]
+        },
+        {
+          "source": "src.scraper.merge",
+          "specifiers": [
+            "merge_word_records"
+          ]
+        },
+        {
+          "source": "src.scraper.oxford",
+          "specifiers": [
+            "parse_oxford"
+          ]
+        },
+        {
+          "source": "src.scraper.rebuild_command",
+          "specifiers": [
+            "merge_oxford_records_from_file"
+          ]
+        },
+        {
+          "source": "tools",
+          "specifiers": [
+            "fixture_catalog"
+          ]
+        }
+      ],
+      "exports": [
+        "_parse_inline",
+        "_definitions",
+        "test_direct_sense_frame_is_raw_supporting_evidence_and_safe_example_default",
+        "test_nested_example_frame_wins_over_direct_sense_frame",
+        "test_ambiguous_direct_frames_and_structural_headers_do_not_inherit",
+        "test_sense_frame_inheritance_never_leaks_across_senses",
+        "test_contend_fixtures_preserve_main_link_and_target_page_identity",
+        "test_phrasal_link_extraction_is_authoritative_canonical_and_deduped",
+        "test_merge_unions_raw_frames_and_exact_phrase_target_identities",
+        "test_production_rebuild_keeps_phrase_pages_independent"
+      ],
+      "totalLines": 239,
+      "hasStructuralAnalysis": true
+    },
     "tests/scraper/test_oxford_labels.py": {
       "filePath": "tests/scraper/test_oxford_labels.py",
       "contentHash": "ec70eda93527c81038758bf12d0de0a42b4522a2966f7f1f17e0b0a106d65b5d",
@@ -25483,7 +27792,7 @@
     },
     "tests/scraper/test_parser_v2.py": {
       "filePath": "tests/scraper/test_parser_v2.py",
-      "contentHash": "444725605fb9eaf07f4e4d6073b60ef5c29ddba7c2dc91cafca29e719772cf5b",
+      "contentHash": "571cfa9ff69bd177939456f27f1f0722bdb3c3db0e750e335ea7a1b31bee5318",
       "functions": [
         {
           "name": "_normalize_ws",
@@ -25500,7 +27809,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 9
+          "lineCount": 23
         },
         {
           "name": "_parse_cambridge_record",
@@ -25740,7 +28049,7 @@
         "test_pos_data_definitions_have_required_fields",
         "test_examples_have_text_and_cf"
       ],
-      "totalLines": 322,
+      "totalLines": 336,
       "hasStructuralAnalysis": true
     },
     "tests/scraper/test_pronunciation_sources.py": {
@@ -25986,7 +28295,7 @@
     },
     "tests/test_config.py": {
       "filePath": "tests/test_config.py",
-      "contentHash": "b73ecdadbe45d790fc6f053cb645c316d2e449eace69a2ca256244df2e034ff1",
+      "contentHash": "c27c7ee34bd093100e13f8419fd52fd0c32675573631233bda20bfe938d80aa5",
       "functions": [
         {
           "name": "test_project_paths_default_root_is_repository_root",
@@ -26000,7 +28309,7 @@
             "tmp_path"
           ],
           "exported": true,
-          "lineCount": 23
+          "lineCount": 29
         },
         {
           "name": "test_project_paths_is_immutable",
@@ -26043,7 +28352,7 @@
         "test_project_paths_resolve_canonical_artifacts",
         "test_project_paths_is_immutable"
       ],
-      "totalLines": 44,
+      "totalLines": 50,
       "hasStructuralAnalysis": true
     },
     "tests/test_documentation_contracts.py": {
@@ -26354,7 +28663,7 @@
     },
     "tests/test_schema_validation.py": {
       "filePath": "tests/test_schema_validation.py",
-      "contentHash": "496f3295e47016a5d4ef656a03ad20821ba9736040549dcfbdbd66093873be3d",
+      "contentHash": "9654227a7595c45c563e4a68c4b8c13e7b780c7cc64423219329db39fef28d2f",
       "functions": [
         {
           "name": "_validate",
@@ -26384,7 +28693,7 @@
             "monkeypatch"
           ],
           "exported": true,
-          "lineCount": 13
+          "lineCount": 17
         },
         {
           "name": "test_oxford_schema_does_not_require_dollar_schema",
@@ -26492,7 +28801,7 @@
         "test_oxford_schema_rejects_noncanonical_opal_membership",
         "test_fresh_cambridge_parser_output_validates"
       ],
-      "totalLines": 187,
+      "totalLines": 199,
       "hasStructuralAnalysis": true
     },
     "tests/tools/test_audit_deck_quality.py": {
@@ -26751,7 +29060,7 @@
     },
     "tests/tools/test_ci_hydrate_parser_fixtures.py": {
       "filePath": "tests/tools/test_ci_hydrate_parser_fixtures.py",
-      "contentHash": "4c579536e7f19f32d33da054dafb95b5fda97e7b6dfe3ce53f0b71865e82d564",
+      "contentHash": "3689b1f35694c252a2e6fb97075ed396f6006c11c27398fa34620296aafb71c0",
       "functions": [
         {
           "name": "_golden_set",
@@ -26793,7 +29102,7 @@
             "monkeypatch"
           ],
           "exported": true,
-          "lineCount": 27
+          "lineCount": 28
         },
         {
           "name": "test_manifest_is_the_fixture_catalog",
@@ -26916,12 +29225,12 @@
         "test_manifest_rejects_noncanonical_opal_assertion",
         "test_default_tests_only_reference_declared_ignored_cache_fixtures"
       ],
-      "totalLines": 276,
+      "totalLines": 277,
       "hasStructuralAnalysis": true
     },
     "tests/tools/test_collocation_audit.py": {
       "filePath": "tests/tools/test_collocation_audit.py",
-      "contentHash": "64078765a1112ad0c2b168ce88b9180a05859b8126bf033fcf5b6d747d9ca803",
+      "contentHash": "057cf86c0ce7d071560aaf6946d3a615890607376c12875721201ac69ebc4a02",
       "functions": [
         {
           "name": "_write_jsonl",
@@ -26975,6 +29284,14 @@
           "lineCount": 52
         },
         {
+          "name": "test_apply_review_bundle_is_fingerprint_bound_and_transactional",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 21
+        },
+        {
           "name": "test_cli_export_import_and_report_are_non_destructive_in_dry_run",
           "params": [
             "tmp_path"
@@ -26999,6 +29316,14 @@
           ],
           "exported": true,
           "lineCount": 43
+        },
+        {
+          "name": "test_cli_create_and_validate_whole_guid_manifests",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 19
         }
       ],
       "classes": [],
@@ -27010,8 +29335,15 @@
           ]
         },
         {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
           "source": "src.deck_builder.collocation_audit",
           "specifiers": [
+            "apply_review_bundle",
             "collocation_final_item_id",
             "load_jsonl",
             "serialize_audit_rows"
@@ -27043,16 +29375,77 @@
         "_current_args",
         "_complete",
         "test_cli_scaffold_validate_promote_and_reuse_review",
+        "test_apply_review_bundle_is_fingerprint_bound_and_transactional",
         "test_cli_export_import_and_report_are_non_destructive_in_dry_run",
         "test_cli_validate_fails_when_ledger_is_missing",
-        "test_cli_validate_and_promote_fail_when_source_evidence_changes"
+        "test_cli_validate_and_promote_fail_when_source_evidence_changes",
+        "test_cli_create_and_validate_whole_guid_manifests"
       ],
-      "totalLines": 278,
+      "totalLines": 325,
+      "hasStructuralAnalysis": true
+    },
+    "tests/tools/test_collocation_audit_manifests.py": {
+      "filePath": "tests/tools/test_collocation_audit_manifests.py",
+      "contentHash": "256eea401cae1f49b137b2f6d98ccefa1f3040817f275a182ee4348d0ab4b8a9",
+      "functions": [
+        {
+          "name": "test_collocation_manifests_are_deterministic_and_keep_whole_guid",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "test_collocation_manifest_validation_detects_stale_worker_bytes",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "src.deck_builder.collocation_audit",
+          "specifiers": [
+            "build_audit_rows",
+            "serialize_audit_rows"
+          ]
+        },
+        {
+          "source": "src.deck_builder.collocation_audit_manifests",
+          "specifiers": [
+            "build_artifacts",
+            "validate_artifacts"
+          ]
+        },
+        {
+          "source": "tests.deck_builder.test_collocation_audit",
+          "specifiers": [
+            "_inputs",
+            "_note",
+            "_registry"
+          ]
+        }
+      ],
+      "exports": [
+        "test_collocation_manifests_are_deterministic_and_keep_whole_guid",
+        "test_collocation_manifest_validation_detects_stale_worker_bytes"
+      ],
+      "totalLines": 62,
       "hasStructuralAnalysis": true
     },
     "tests/tools/test_idiom_audit.py": {
       "filePath": "tests/tools/test_idiom_audit.py",
-      "contentHash": "b426cb6b9722cba53d3f34f2ca9cc9d3738af54e2c43efedcf99cfa123f1d7f8",
+      "contentHash": "1ac1bc24cfc93ab537bc5fc36c1d8daf80eb360edb81767ba1aa23ead376350c",
       "functions": [
         {
           "name": "_registry",
@@ -27102,6 +29495,18 @@
           "params": [],
           "exported": true,
           "lineCount": 23
+        },
+        {
+          "name": "test_scaffold_rebinds_review_that_was_round_tripped_through_promoted_text",
+          "params": [],
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "test_scaffold_does_not_rebind_unattested_promoted_text_review",
+          "params": [],
+          "exported": true,
+          "lineCount": 17
         },
         {
           "name": "test_validation_fails_closed_for_fingerprints_modes_and_approval",
@@ -27252,6 +29657,7 @@
         {
           "source": "tools.idiom_audit",
           "specifiers": [
+            "_refresh_review_rows",
             "main"
           ]
         }
@@ -27263,6 +29669,8 @@
         "_write_jsonl",
         "test_parser_and_source_fingerprint_preserve_exact_trimmed_source_text",
         "test_scaffold_groups_normalized_semantic_keys_and_is_deterministic",
+        "test_scaffold_rebinds_review_that_was_round_tripped_through_promoted_text",
+        "test_scaffold_does_not_rebind_unattested_promoted_text_review",
         "test_validation_fails_closed_for_fingerprints_modes_and_approval",
         "test_validation_rejects_suspected_lossy_unicode_in_review_text",
         "test_validation_allows_unicode_and_terminal_question_punctuation",
@@ -27277,12 +29685,12 @@
         "test_canonical_bilingual_gloss_quality_regressions",
         "test_canonical_bilingual_gloss_concision_rereview_anchors"
       ],
-      "totalLines": 557,
+      "totalLines": 610,
       "hasStructuralAnalysis": true
     },
     "tests/tools/test_semantic_audit.py": {
       "filePath": "tests/tools/test_semantic_audit.py",
-      "contentHash": "61c7cae8ef072a7b4439f4a537be91ca9043c079e4093e1e3db5c29f039f936c",
+      "contentHash": "254d12f2b92f7b33bca5c20e37f47aa7857d7ef75785ff7dd99240621d72bc6f",
       "functions": [
         {
           "name": "_write_jsonl",
@@ -27292,6 +29700,21 @@
           ],
           "exported": true,
           "lineCount": 2
+        },
+        {
+          "name": "test_scaffold_reuses_coverage_only_for_identical_surviving_sources",
+          "params": [],
+          "exported": true,
+          "lineCount": 90
+        },
+        {
+          "name": "test_cli_scaffold_preserves_unchanged_coverage_across_source_set_shrink",
+          "params": [
+            "tmp_path",
+            "capsys"
+          ],
+          "exported": true,
+          "lineCount": 50
         },
         {
           "name": "_add_vietnamese_evidence",
@@ -27336,7 +29759,7 @@
             "tmp_path"
           ],
           "exported": true,
-          "lineCount": 30
+          "lineCount": 105
         },
         {
           "name": "_promotion_scaffold_cli_args",
@@ -27380,7 +29803,7 @@
             "tmp_path"
           ],
           "exported": true,
-          "lineCount": 33
+          "lineCount": 69
         },
         {
           "name": "test_cli_promote_dry_run_does_not_write_output",
@@ -27463,7 +29886,7 @@
             "summary_kind"
           ],
           "exported": true,
-          "lineCount": 38
+          "lineCount": 47
         },
         {
           "name": "test_cli_vietnamese_audit_is_deterministic_and_honours_threshold",
@@ -27491,6 +29914,51 @@
           ],
           "exported": true,
           "lineCount": 55
+        },
+        {
+          "name": "test_cli_vietnamese_review_scaffold_can_reuse_a_separate_prior_ledger",
+          "params": [
+            "tmp_path",
+            "capsys"
+          ],
+          "exported": true,
+          "lineCount": 41
+        },
+        {
+          "name": "test_review_patch_merge_rejects_unknown_duplicate_and_immutable_changes",
+          "params": [],
+          "exported": true,
+          "lineCount": 63
+        },
+        {
+          "name": "test_review_manifest_payloads_are_deterministic_and_capped_at_100",
+          "params": [],
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "test_review_manifest_payloads_keep_whole_guids_together",
+          "params": [],
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "test_cli_definition_review_manifest_applies_only_mutable_patch_fields",
+          "params": [
+            "tmp_path",
+            "capsys"
+          ],
+          "exported": true,
+          "lineCount": 81
+        },
+        {
+          "name": "test_cli_vietnamese_review_manifests_and_incremental_patch_are_safe",
+          "params": [
+            "tmp_path",
+            "capsys"
+          ],
+          "exported": true,
+          "lineCount": 73
         },
         {
           "name": "test_cli_apply_vietnamese_review_failures_are_transactional",
@@ -27595,9 +30063,18 @@
           ]
         },
         {
+          "source": "src.deck_builder.definition_audit",
+          "specifiers": [
+            "DEFINITION_AUDIT_SCHEMA_VERSION",
+            "scaffold_definition_review",
+            "serialize_definition_review"
+          ]
+        },
+        {
           "source": "src.deck_builder.semantic_registry",
           "specifiers": [
-            "SEMANTIC_REGISTRY_SCHEMA_VERSION"
+            "SEMANTIC_REGISTRY_SCHEMA_VERSION",
+            "build_promotion_gate_candidates"
           ]
         },
         {
@@ -27611,6 +30088,11 @@
         {
           "source": "tools.semantic_audit",
           "specifiers": [
+            "DEFINITION_REVIEW_EDITABLE_FIELDS",
+            "_merge_review_patch",
+            "_review_manifest_payloads",
+            "_reuse_unchanged_source_coverage",
+            "_validate_review_patch_size",
             "main"
           ]
         },
@@ -27623,6 +30105,8 @@
       ],
       "exports": [
         "_write_jsonl",
+        "test_scaffold_reuses_coverage_only_for_identical_surviving_sources",
+        "test_cli_scaffold_preserves_unchanged_coverage_across_source_set_shrink",
         "_add_vietnamese_evidence",
         "_vietnamese_candidate_from_registry",
         "_write_complete_all_vietnamese_review",
@@ -27645,6 +30129,12 @@
         "test_cli_vietnamese_audit_is_deterministic_and_honours_threshold",
         "test_cli_vietnamese_audit_uses_complete_audit_when_registry_is_legacy_or_stale",
         "test_cli_vietnamese_review_scaffold_is_deterministic_and_replace_guarded",
+        "test_cli_vietnamese_review_scaffold_can_reuse_a_separate_prior_ledger",
+        "test_review_patch_merge_rejects_unknown_duplicate_and_immutable_changes",
+        "test_review_manifest_payloads_are_deterministic_and_capped_at_100",
+        "test_review_manifest_payloads_keep_whole_guids_together",
+        "test_cli_definition_review_manifest_applies_only_mutable_patch_fields",
+        "test_cli_vietnamese_review_manifests_and_incremental_patch_are_safe",
         "test_cli_apply_vietnamese_review_failures_are_transactional",
         "test_cli_apply_vietnamese_review_changes_only_vi_and_review_metadata",
         "test_cli_sense_merge_audit_writes_report_and_fingerprint_scaffold",
@@ -27653,7 +30143,7 @@
         "test_cli_sense_merge_audit_rejects_canonical_report_output",
         "test_cli_sense_merge_audit_rejects_stale_registry_audit_pair"
       ],
-      "totalLines": 1155,
+      "totalLines": 1791,
       "hasStructuralAnalysis": true
     },
     "tests/tools/test_semantic_audit_manifests.py": {
@@ -28267,12 +30757,12 @@
     },
     "tools/README.md": {
       "filePath": "tools/README.md",
-      "contentHash": "c9fdf5be0a9e5d6509094a5c047f6e0688977661574c0fec399f1f4d2809b17d",
+      "contentHash": "bb75b7f1aae04fd56df6ce8109fd532b4c7ce0f4b1b6d388e5635ef94938a2af",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 232,
+      "totalLines": 336,
       "hasStructuralAnalysis": true
     },
     "tools/_check_determinism.py": {
@@ -28549,7 +31039,7 @@
     },
     "tools/_validate_jsonl.py": {
       "filePath": "tools/_validate_jsonl.py",
-      "contentHash": "da15f3444321162bee0d714bae7899bb5dc1fc278f3f0112d2054ad7d0e0d386",
+      "contentHash": "82a159b538e645331d2725cfc1da00a81cea375e9e69990a743f71ebf826236f",
       "functions": [
         {
           "name": "validate_file",
@@ -28567,7 +31057,7 @@
           "params": [],
           "returnType": "int",
           "exported": true,
-          "lineCount": 18
+          "lineCount": 27
         }
       ],
       "classes": [],
@@ -28607,7 +31097,7 @@
         "validate_file",
         "main"
       ],
-      "totalLines": 77,
+      "totalLines": 93,
       "hasStructuralAnalysis": true
     },
     "tools/_verify_deck_output_p3b.py": {
@@ -29356,7 +31846,7 @@
     },
     "tools/card_identity_split.py": {
       "filePath": "tools/card_identity_split.py",
-      "contentHash": "dd2e5c2bace8812b4de7a8cd5d581beaebd4808de65b06f62439d923d8e3630c",
+      "contentHash": "ab79fc9369987ce6e43dcd16b685c13e5045bcf986af9278d23cb9d28bd62b93",
       "functions": [
         {
           "name": "_already_applied_candidate",
@@ -30287,7 +32777,7 @@
     },
     "tools/ci_hydrate_parser_fixtures.py": {
       "filePath": "tools/ci_hydrate_parser_fixtures.py",
-      "contentHash": "9df5765893c8e251416ee96a2719407dc18bcb5b17a1d66a7c2eed001aad12eb",
+      "contentHash": "a32939ff5bf5825827358de35b1adfccda51aae47ea8290d38ff1b5789456032",
       "functions": [
         {
           "name": "_load_json",
@@ -30316,7 +32806,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 97
+          "lineCount": 105
         },
         {
           "name": "golden_records",
@@ -30386,7 +32876,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 8
+          "lineCount": 22
         },
         {
           "name": "_normalize_cambridge",
@@ -30395,7 +32885,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 5
+          "lineCount": 6
         },
         {
           "name": "_fetch",
@@ -30485,7 +32975,7 @@
           ],
           "returnType": "bool",
           "exported": true,
-          "lineCount": 23
+          "lineCount": 41
         },
         {
           "name": "_hydrate_special_fixture",
@@ -30580,12 +33070,12 @@
         "_hydrate_special_fixture",
         "main"
       ],
-      "totalLines": 434,
+      "totalLines": 475,
       "hasStructuralAnalysis": true
     },
     "tools/collocation_audit.py": {
       "filePath": "tools/collocation_audit.py",
-      "contentHash": "78be6489b799d42da47903dfec85f5d28829a039c7ee31fd7db95a17924db01e",
+      "contentHash": "b422d3f3ea37e2d3a077082fbf97641e3d855102499247ab3b791f70bf2d7e89",
       "functions": [
         {
           "name": "_write_atomic",
@@ -30622,7 +33112,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 17
+          "lineCount": 23
         },
         {
           "name": "_import_xlsx",
@@ -30631,7 +33121,16 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 23
+          "lineCount": 29
+        },
+        {
+          "name": "_apply_review",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 30
         },
         {
           "name": "_report",
@@ -30640,7 +33139,25 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 68
+          "lineCount": 99
+        },
+        {
+          "name": "_create_manifests",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_validate_manifests",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 10
         },
         {
           "name": "_promote",
@@ -30649,7 +33166,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 44
+          "lineCount": 45
         },
         {
           "name": "_load_current_inputs",
@@ -30676,7 +33193,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 50
+          "lineCount": 67
         }
       ],
       "classes": [],
@@ -30712,6 +33229,13 @@
           ]
         },
         {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
           "source": "pathlib",
           "specifiers": [
             "Path"
@@ -30726,17 +33250,26 @@
         {
           "source": "src.deck_builder.collocation_audit",
           "specifiers": [
+            "apply_review_bundle",
             "audit_summary",
             "build_audit_rows",
             "export_workbook",
             "import_workbook",
             "load_jsonl",
             "promote_audit_rows",
+            "scaffold_audit_rows",
             "serialize_audit_rows",
             "serialize_registry_rows",
             "validate_audit_rows",
             "validate_current_audit",
             "validate_registry_rows"
+          ]
+        },
+        {
+          "source": "src.deck_builder.collocation_audit_manifests",
+          "specifiers": [
+            "build_manifest_artifacts",
+            "validate_manifest_artifacts"
           ]
         }
       ],
@@ -30746,18 +33279,21 @@
         "_validate",
         "_export_xlsx",
         "_import_xlsx",
+        "_apply_review",
         "_report",
+        "_create_manifests",
+        "_validate_manifests",
         "_promote",
         "_load_current_inputs",
         "_add_current_input_arguments",
         "main"
       ],
-      "totalLines": 332,
+      "totalLines": 470,
       "hasStructuralAnalysis": true
     },
     "tools/idiom_audit.py": {
       "filePath": "tools/idiom_audit.py",
-      "contentHash": "b00bf6fad1cdf5f49c54141bf56705d53c05662d4a1f3f907d6607ef51eac6a1",
+      "contentHash": "30e4302e86e72ed4bdf23229d131cfab73804ff9ca5c3e75c9be20aa84d1c7e8",
       "functions": [
         {
           "name": "_write_atomic",
@@ -30770,13 +33306,30 @@
           "lineCount": 9
         },
         {
+          "name": "_load_canonical_source_cards",
+          "params": [],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "_refresh_review_rows",
+          "params": [
+            "rows",
+            "existing_rows"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 54
+        },
+        {
           "name": "_scaffold",
           "params": [
             "args"
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 12
+          "lineCount": 20
         },
         {
           "name": "_validate",
@@ -30830,7 +33383,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 41
+          "lineCount": 49
         }
       ],
       "classes": [],
@@ -30878,6 +33431,18 @@
           ]
         },
         {
+          "source": "src.deck_builder.build_contracts",
+          "specifiers": [
+            "BuildNotesPaths"
+          ]
+        },
+        {
+          "source": "src.deck_builder.registry_build",
+          "specifiers": [
+            "build_notes_from_registry"
+          ]
+        },
+        {
           "source": "src.deck_builder.idiom_audit",
           "specifiers": [
             "apply_review_bundle",
@@ -30885,6 +33450,7 @@
             "build_audit_rows",
             "export_workbook",
             "import_workbook",
+            "IMMUTABLE_COLUMNS",
             "load_jsonl",
             "serialize_jsonl",
             "validate_audit_rows"
@@ -30893,6 +33459,8 @@
       ],
       "exports": [
         "_write_atomic",
+        "_load_canonical_source_cards",
+        "_refresh_review_rows",
         "_scaffold",
         "_validate",
         "_export_xlsx",
@@ -30901,7 +33469,7 @@
         "_report",
         "main"
       ],
-      "totalLines": 232,
+      "totalLines": 335,
       "hasStructuralAnalysis": true
     },
     "tools/import_non_oxford_review.py": {
@@ -30989,6 +33557,147 @@
       "totalLines": 212,
       "hasStructuralAnalysis": true
     },
+    "tools/phrasal_verb_audit.py": {
+      "filePath": "tools/phrasal_verb_audit.py",
+      "contentHash": "f458752b42318afec157d514238142d9e89079bbb0ee0b55ec13941ee90fe803",
+      "functions": [
+        {
+          "name": "_write_atomic",
+          "params": [
+            "path",
+            "payload"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_load_optional",
+          "params": [
+            "path"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_summary",
+          "params": [
+            "rows"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_scaffold",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_validate",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_export",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_import",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 26
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "src.config",
+          "specifiers": [
+            "ProjectPaths"
+          ]
+        },
+        {
+          "source": "src.deck_builder.phrasal_verb_audit",
+          "specifiers": [
+            "build_audit_rows",
+            "export_workbook",
+            "import_workbook",
+            "load_jsonl",
+            "serialize_rows",
+            "validate_current_audit"
+          ]
+        }
+      ],
+      "exports": [
+        "_write_atomic",
+        "_load_optional",
+        "_summary",
+        "_scaffold",
+        "_validate",
+        "_export",
+        "_import",
+        "main"
+      ],
+      "totalLines": 140,
+      "hasStructuralAnalysis": true
+    },
     "tools/release_guard.py": {
       "filePath": "tools/release_guard.py",
       "contentHash": "2420ab90527ce2d58bebf0d34e4664f80e6d8c1378e722cd76308a2dabdebf0e",
@@ -31046,7 +33755,7 @@
     },
     "tools/semantic_audit.py": {
       "filePath": "tools/semantic_audit.py",
-      "contentHash": "e93581960752e91cc4d787fab33374592b3dbbd7174163339dc4aa1470618dfb",
+      "contentHash": "7fb6b6be948ca4492b0c64644e07d05b4720b9029ca55e91fb47a82e1e50ccc2",
       "functions": [
         {
           "name": "_write_atomic",
@@ -31082,6 +33791,63 @@
           "returnType": "None",
           "exported": true,
           "lineCount": 7
+        },
+        {
+          "name": "_review_records",
+          "params": [
+            "path",
+            "label"
+          ],
+          "returnType": "tuple[dict, list[dict]]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_merge_review_patch",
+          "params": [
+            "canonical_summary",
+            "canonical_rows",
+            "patch_summary",
+            "patch_rows",
+            "label",
+            "editable_fields"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "_validate_review_patch_size",
+          "params": [
+            "patch_rows",
+            "label"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_review_manifest_payloads",
+          "params": [
+            "summary",
+            "review_rows",
+            "max_rows",
+            "resolved"
+          ],
+          "returnType": "tuple[dict[str, bytes], int]",
+          "exported": true,
+          "lineCount": 55
+        },
+        {
+          "name": "_write_review_manifest_outputs",
+          "params": [
+            "output_dir",
+            "outputs",
+            "replace"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
         },
         {
           "name": "_write_report_atomic",
@@ -31123,13 +33889,23 @@
           "lineCount": 43
         },
         {
+          "name": "_reuse_unchanged_source_coverage",
+          "params": [
+            "existing",
+            "fresh"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 98
+        },
+        {
           "name": "_scaffold",
           "params": [
             "args"
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 14
+          "lineCount": 109
         },
         {
           "name": "_load_complete_vietnamese_review",
@@ -31168,7 +33944,7 @@
             "args"
           ],
           "exported": true,
-          "lineCount": 72
+          "lineCount": 79
         },
         {
           "name": "_validate",
@@ -31258,7 +34034,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 57
+          "lineCount": 58
         },
         {
           "name": "_definition_review_scaffold",
@@ -31267,7 +34043,25 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 31
+          "lineCount": 32
+        },
+        {
+          "name": "_apply_definition_review",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "_definition_review_create_manifests",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 49
         },
         {
           "name": "_sense_merge_review_scaffold",
@@ -31313,7 +34107,25 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 39
+          "lineCount": 42
+        },
+        {
+          "name": "_vietnamese_review_create_manifests",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 55
+        },
+        {
+          "name": "_apply_vietnamese_review_patch",
+          "params": [
+            "args"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 65
         },
         {
           "name": "_apply_vietnamese_review",
@@ -31350,7 +34162,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 174
+          "lineCount": 265
         }
       ],
       "classes": [],
@@ -31359,6 +34171,12 @@
           "source": "argparse",
           "specifiers": [
             "argparse"
+          ]
+        },
+        {
+          "source": "copy",
+          "specifiers": [
+            "copy"
           ]
         },
         {
@@ -31371,6 +34189,12 @@
           "source": "os",
           "specifiers": [
             "os"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
           ]
         },
         {
@@ -31410,8 +34234,10 @@
             "build_definition_audit",
             "render_definition_audit_markdown",
             "scaffold_definition_review",
+            "select_definition_audit_scope",
             "serialize_definition_audit",
             "serialize_definition_review",
+            "validate_definition_review",
             "validate_definition_review_for_promotion",
             "DEFAULT_DEFINITION_MIN_TOKENS",
             "load_definition_jsonl_bytes",
@@ -31488,6 +34314,7 @@
             "scaffold_vietnamese_review",
             "serialize_vietnamese_audit",
             "serialize_vietnamese_review",
+            "validate_vietnamese_review",
             "validate_vietnamese_review_for_promotion",
             "DEFAULT_VIETNAMESE_MIN_TOKENS"
           ]
@@ -31498,10 +34325,16 @@
         "_parallel_snapshot_lock",
         "_load_audit_bytes",
         "_write_manifest_outputs",
+        "_review_records",
+        "_merge_review_patch",
+        "_validate_review_patch_size",
+        "_review_manifest_payloads",
+        "_write_review_manifest_outputs",
         "_write_report_atomic",
         "_reject_canonical_report_output",
         "_semantic_rows_from_complete_audit",
         "_load_vietnamese_audit_inputs",
+        "_reuse_unchanged_source_coverage",
         "_scaffold",
         "_load_complete_vietnamese_review",
         "_load_gate_document",
@@ -31518,17 +34351,21 @@
         "_validate_manifests",
         "_definition_audit",
         "_definition_review_scaffold",
+        "_apply_definition_review",
+        "_definition_review_create_manifests",
         "_sense_merge_review_scaffold",
         "_current_vietnamese_audit",
         "_vietnamese_selection_args",
         "_vietnamese_audit",
         "_vietnamese_review_scaffold",
+        "_vietnamese_review_create_manifests",
+        "_apply_vietnamese_review_patch",
         "_apply_vietnamese_review",
         "_sense_merge_audit",
         "_add_promotion_input_arguments",
         "main"
       ],
-      "totalLines": 1338,
+      "totalLines": 2049,
       "hasStructuralAnalysis": true
     },
     "tools/sync_anki_media.py": {
@@ -31680,6 +34517,325 @@
         "main"
       ],
       "totalLines": 165,
+      "hasStructuralAnalysis": true
+    },
+    "tools/sync_cambridge_english_vietnamese.py": {
+      "filePath": "tools/sync_cambridge_english_vietnamese.py",
+      "contentHash": "40e1e4245d09240153a7323768499e47d3de2ff2ca77df4a562c611a44f63e7e",
+      "functions": [
+        {
+          "name": "_retry_after_seconds",
+          "params": [
+            "headers",
+            "now"
+          ],
+          "returnType": "float | None",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "_retry_delay",
+          "params": [
+            "attempt",
+            "headers",
+            "backoff_base",
+            "backoff_max"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_load_jsonl",
+          "params": [
+            "path"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "build_plan",
+          "params": [
+            "registry_path"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_cache_path",
+          "params": [
+            "cache_dir",
+            "lookup_headword"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_metadata_path",
+          "params": [
+            "cache_path"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_atomic_write",
+          "params": [
+            "path",
+            "payload"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_cache_metadata",
+          "params": [
+            "item",
+            "response_url",
+            "http_status",
+            "body"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_publish_cache_pair",
+          "params": [
+            "cache_path",
+            "item",
+            "response_url",
+            "http_status",
+            "body"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_validate_cache_pair",
+          "params": [
+            "cache_path",
+            "item",
+            "allow_legacy_migration"
+          ],
+          "returnType": "tuple[bytes, dict[str, Any]]",
+          "exported": true,
+          "lineCount": 96
+        },
+        {
+          "name": "_fetch_one",
+          "params": [
+            "session",
+            "semaphore",
+            "item",
+            "cache_dir",
+            "pacer",
+            "max_attempts",
+            "backoff_base",
+            "backoff_max",
+            "sleep"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 97
+        },
+        {
+          "name": "fetch_plan",
+          "params": [
+            "plan",
+            "cache_dir",
+            "concurrency",
+            "request_delay",
+            "max_attempts",
+            "backoff_base",
+            "backoff_max"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "build_rows",
+          "params": [
+            "plan",
+            "cache_dir"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "validate_rows",
+          "params": [
+            "rows",
+            "schema_path",
+            "plan"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_parser",
+          "params": [],
+          "returnType": "argparse.ArgumentParser",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 62
+        }
+      ],
+      "classes": [
+        {
+          "name": "_RequestPacer",
+          "methods": [
+            "__init__",
+            "wait",
+            "defer"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 23
+        }
+      ],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Awaitable",
+            "Callable",
+            "Mapping"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
+          "source": "email.utils",
+          "specifiers": [
+            "parsedate_to_datetime"
+          ]
+        },
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "tempfile",
+          "specifiers": [
+            "tempfile"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "aiohttp",
+          "specifiers": [
+            "aiohttp"
+          ]
+        },
+        {
+          "source": "jsonschema",
+          "specifiers": [
+            "jsonschema"
+          ]
+        },
+        {
+          "source": "src.config",
+          "specifiers": [
+            "ProjectPaths"
+          ]
+        },
+        {
+          "source": "src.scraper.cambridge_english_vietnamese",
+          "specifiers": [
+            "CambridgeEnglishVietnameseParseError",
+            "build_lookup_plan",
+            "parse_snapshot",
+            "serialize_rows",
+            "validate_snapshot_rows"
+          ]
+        }
+      ],
+      "exports": [
+        "_RequestPacer",
+        "_retry_after_seconds",
+        "_retry_delay",
+        "_load_jsonl",
+        "build_plan",
+        "_cache_path",
+        "_metadata_path",
+        "_atomic_write",
+        "_cache_metadata",
+        "_publish_cache_pair",
+        "_validate_cache_pair",
+        "_fetch_one",
+        "fetch_plan",
+        "build_rows",
+        "validate_rows",
+        "_parser",
+        "main"
+      ],
+      "totalLines": 586,
       "hasStructuralAnalysis": true
     },
     "tools/sync_cambridge_pos_audio.py": {

@@ -19,8 +19,8 @@
       "GitHub Actions"
     ],
     "description": "Registry-driven IELTS / Academic English Anki deck builder with a notes database, Oxford/Cambridge scraper pipeline, review data, deterministic validation, and EAVM card packaging. Note: this project has over 100 source files; consider scoping analysis to a subdirectory for faster results.",
-    "analyzedAt": "2026-07-22T14:20:12.590Z",
-    "gitCommitHash": "9214289c9eedb4d0a70969dcecea53e35ab7fa93"
+    "analyzedAt": "2026-07-24T16:26:22.8362496Z",
+    "gitCommitHash": "2d783c7fd01bcdb006b93a27e49f93a4878e4a10"
   },
   "nodes": [
     {
