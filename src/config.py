@@ -26,6 +26,15 @@ class ProjectPaths:
         return self.root / "data" / "sources" / "cambridge.jsonl"
 
     @property
+    def cambridge_english_vietnamese_jsonl(self) -> Path:
+        return (
+            self.root
+            / "data"
+            / "sources"
+            / "cambridge_english_vietnamese.jsonl"
+        )
+
+    @property
     def headword_audio_manifest(self) -> Path:
         return self.root / "data" / "sources" / "headword_audio_manifest.jsonl"
 
@@ -153,6 +162,15 @@ class ProjectPaths:
     @property
     def cambridge_cache_dir(self) -> Path:
         return self.root / "data" / ".cache_html" / "cambridge"
+
+    @property
+    def cambridge_english_vietnamese_cache_dir(self) -> Path:
+        return (
+            self.root
+            / "data"
+            / ".cache_html"
+            / "cambridge_english_vietnamese"
+        )
 
     @property
     def awl_cambridge_fallbacks(self) -> Path:

@@ -531,8 +531,17 @@ def _serialize_result(cards, *, counters: dict[str, int]):
     )
 
 
-def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
-    """Build cards from registry/manual inputs without reading generated outputs."""
+def build_notes_from_registry(
+    paths: BuildNotesPaths,
+    *,
+    apply_semantic_payload: bool = True,
+) -> BuildNotesResult:
+    """Build cards from registry/manual inputs without reading generated outputs.
+
+    ``apply_semantic_payload=False`` is reserved for canonical audit writers
+    that need the current source-owned idiom text before learner-facing
+    Semantic Registry rewrites.
+    """
     from src.deck_builder.corpus_tag_sync import apply_corpus_routing_and_tags
     from src.deck_builder.collocation_audit import (
         apply_collocation_registry,
@@ -542,6 +551,7 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
     from src.deck_builder.relation_validation import validate_lexical_relation_metadata
     from src.deck_builder.sense_labels import apply_sense_labels, load_sense_label_overrides
     from src.deck_builder.semantic_registry import (
+        apply_variant_idiom_ownership,
         apply_semantic_registry,
         validate_semantic_registry_rows,
     )
@@ -1068,11 +1078,13 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
 
     if semantic_registry_rows is not None:
         try:
-            cards = apply_semantic_registry(
-                cards,
-                semantic_registry_rows,
-                source_sense_pos_index,
-            )
+            cards = apply_variant_idiom_ownership(cards, semantic_registry_rows)
+            if apply_semantic_payload:
+                cards = apply_semantic_registry(
+                    cards,
+                    semantic_registry_rows,
+                    source_sense_pos_index,
+                )
         except (KeyError, TypeError, ValueError) as exc:
             raise BuildValidationError([
                 BuildIssue(
@@ -1082,19 +1094,20 @@ def build_notes_from_registry(paths: BuildNotesPaths) -> BuildNotesResult:
                     source=semantic_registry_path,
                 )
             ]) from exc
-        cards = [
-            card._replace(synonyms="", antonyms="")
-            if (
-                card.guid in manual_payload_by_guid
-                and validate_lexical_relation_metadata(
-                    card.example,
-                    card.synonyms,
-                    card.antonyms,
+        if apply_semantic_payload:
+            cards = [
+                card._replace(synonyms="", antonyms="")
+                if (
+                    card.guid in manual_payload_by_guid
+                    and validate_lexical_relation_metadata(
+                        card.example,
+                        card.synonyms,
+                        card.antonyms,
+                    )
                 )
-            )
-            else card
-            for card in cards
-        ]
+                else card
+                for card in cards
+            ]
 
     synonym_overrides_file = getattr(paths, "synonym_example_overrides_path", None)
     antonym_overrides_file = getattr(paths, "antonym_example_overrides_path", None)

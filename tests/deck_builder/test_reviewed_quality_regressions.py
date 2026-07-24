@@ -20,6 +20,7 @@ VIETNAMESE_PRECISION_STATUS = "vietnamese_gloss_precision_review_20260711"
 # successors; keep the archived row useful by checking both canonical owners.
 LEGACY_OWNER_SUCCESSORS = {
     ("denial", "noun", "C1"): ("$|_`hdAC|%", "Jhp@WXA!ga"),
+    ("provision", "noun", "C1"): ("si$OijE.g9", "Jdw3%XIBK#"),
 }
 
 
@@ -213,29 +214,35 @@ def test_semantic_overload_grouping_matches_canonical_owner_payloads():
         "sterile": ("fruitless||", "||"),
     }
     for owner in owners:
-        card = _card_for_owner(owner, rows["cards"])
-        _assert_owner_payload(
-            owner,
-            card,
-            rows["semantic_registry"],
-            rows["collocation_registry"],
-        )
-        semantic_row = next(
-            row for row in rows["semantic_registry"] if row["guid"] == card["guid"]
-        )
-        assert len(card["definition"].split("|")) == len(semantic_row["senses"])
-        assert len(card["example"].split("|")) == len(semantic_row["senses"])
-        expected_synonyms, expected_antonyms = expected_relations[card["word"]]
-        assert {
-            part.strip() for part in card["synonyms"].split("|") if part.strip()
-        } == {
-            part.strip() for part in expected_synonyms.split("|") if part.strip()
-        }
-        assert {
-            part.strip() for part in card["antonyms"].split("|") if part.strip()
-        } == {
-            part.strip() for part in expected_antonyms.split("|") if part.strip()
-        }
+        for card in _cards_for_owner(owner, rows["cards"]):
+            _assert_owner_payload(
+                owner,
+                card,
+                rows["semantic_registry"],
+                rows["collocation_registry"],
+            )
+            semantic_row = next(
+                row
+                for row in rows["semantic_registry"]
+                if row["guid"] == card["guid"]
+            )
+            assert len(card["definition"].split("|")) == len(semantic_row["senses"])
+            assert len(card["example"].split("|")) == len(semantic_row["senses"])
+            expected_synonyms, expected_antonyms = expected_relations[card["word"]]
+            assert {
+                part.strip() for part in card["synonyms"].split("|") if part.strip()
+            } == {
+                part.strip()
+                for part in expected_synonyms.split("|")
+                if part.strip()
+            }
+            assert {
+                part.strip() for part in card["antonyms"].split("|") if part.strip()
+            } == {
+                part.strip()
+                for part in expected_antonyms.split("|")
+                if part.strip()
+            }
 
 
 def test_sense_grouping_review_matches_canonical_owner_payloads():

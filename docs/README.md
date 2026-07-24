@@ -32,6 +32,8 @@ Current semantic/release guardrail decisions:
   GUID storage, same-name media repair, and post-import export proof.
 - [ADR 0024](./adr/0024-reviewed-collocation-registry.md) — two-way reviewed
   dictionary collocation evidence, fail-closed promotion, and source-aware chips.
+- [ADR 0031](./adr/0031-collocation-source-id-migration.md) — fingerprint-bound
+  migration across regenerated Cambridge source IDs and promoted-note baselines.
 
 ## Cleanup Rules
 

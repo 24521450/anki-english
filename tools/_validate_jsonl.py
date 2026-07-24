@@ -1,4 +1,4 @@
-"""Validate the canonical Oxford and Cambridge source JSONL files.
+"""Validate canonical Oxford, Cambridge, and Cambridge English–Vietnamese JSONL.
 
 Run with: python -m tools._validate_jsonl
 """
@@ -16,8 +16,15 @@ paths = ProjectPaths()
 PROJECT_ROOT = paths.root
 OXFORD_SCHEMA = PROJECT_ROOT / "data" / "schema" / "oxford_record.schema.json"
 CAMBRIDGE_SCHEMA = PROJECT_ROOT / "data" / "schema" / "cambridge_record.schema.json"
+CAMBRIDGE_ENGLISH_VIETNAMESE_SCHEMA = (
+    PROJECT_ROOT
+    / "data"
+    / "schema"
+    / "cambridge_english_vietnamese_record.schema.json"
+)
 OXFORD_MERGED = paths.oxford_jsonl
 CAMBRIDGE_FULL = paths.cambridge_jsonl
+CAMBRIDGE_ENGLISH_VIETNAMESE = paths.cambridge_english_vietnamese_jsonl
 
 
 def validate_file(jsonl_path: Path, schema_path: Path, label: str) -> tuple[int, list[tuple[int, str, str]]]:
@@ -63,6 +70,15 @@ def main() -> int:
 
     # 2) Cambridge full (1 source per word, no merge)
     t, e = validate_file(CAMBRIDGE_FULL, CAMBRIDGE_SCHEMA, "Cambridge full")
+    grand_total += t
+    grand_errors += len(e)
+
+    # 3) Cambridge English–Vietnamese supporting translation evidence
+    t, e = validate_file(
+        CAMBRIDGE_ENGLISH_VIETNAMESE,
+        CAMBRIDGE_ENGLISH_VIETNAMESE_SCHEMA,
+        "Cambridge English–Vietnamese snapshot",
+    )
     grand_total += t
     grand_errors += len(e)
 

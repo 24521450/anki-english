@@ -660,7 +660,7 @@ def test_production_overrides_loaded_and_used_once():
     )
 
     res = build_notes(paths)
-    assert res.built_cards_count == 2465
+    assert res.built_cards_count == 2468
 
     # Every built card has synonyms and antonyms fields (possibly empty strings).
     for c in res.built_cards:

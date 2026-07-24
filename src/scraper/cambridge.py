@@ -435,31 +435,47 @@ def parse_cambridge(html_bytes: bytes, source_files: Optional[list[str]] = None)
     register_top = _extract_register_top(root)
     see_also = _extract_see_also(root)
 
-    pos_data: list[dict] = []
+    definitions_by_pos: dict[str, list[dict]] = {pos_label: [] for pos_label in pos}
+    entry_scopes = []
+    for entry_el in root.cssselect(".entry-body__el"):
+        header = _first(entry_el, ".pos-header.dpos-h")
+        if header is None:
+            continue
+        entry_positions = _dedup_preserve_order(
+            _text_of(pos_el) for pos_el in header.cssselect(CAMBRIDGE["pos"])
+        )
+        entry_scopes.append((entry_positions, entry_el.cssselect(CAMBRIDGE["sense"])))
+    if not entry_scopes:
+        entry_scopes.append((pos, root.cssselect(CAMBRIDGE["sense"])))
+
+    for entry_positions, sense_elements in entry_scopes:
+        for pos_label in entry_positions:
+            definitions = definitions_by_pos.setdefault(pos_label, [])
+            for sense_el in sense_elements:
+                # Cambridge does not expose sensenum attribute
+                examples, collocations, collocation_evidence = (
+                    _extract_examples_collocations_and_evidence(sense_el)
+                )
+                definitions.append({
+                    "n": len(definitions) + 1,
+                    "sensenum_local": None,
+                    "text": _extract_def_text(sense_el),
+                    "register_tags": _extract_register_def(sense_el),
+                    "cefr": _extract_cefr(sense_el),
+                    "topics": _extract_topics(sense_el),
+                    "collocations": collocations,
+                    "collocation_evidence": collocation_evidence,
+                    "examples": examples,
+                    "is_phrase": False,
+                    "is_idiom": _is_idiom(sense_el),
+                })
+
+    pos_data = []
     for pos_label in pos:
-        definitions: list[dict] = []
-        for n, sense_el in enumerate(root.cssselect(CAMBRIDGE["sense"]), start=1):
-            # Cambridge does not expose sensenum attribute
-            examples, collocations, collocation_evidence = (
-                _extract_examples_collocations_and_evidence(sense_el)
-            )
-            definitions.append({
-                "n": n,
-                "sensenum_local": None,  # Cambridge doesn't have this attribute
-                "text": _extract_def_text(sense_el),
-                "register_tags": _extract_register_def(sense_el),
-                "cefr": _extract_cefr(sense_el),
-                "topics": _extract_topics(sense_el),
-                "collocations": collocations,
-                "collocation_evidence": collocation_evidence,
-                "examples": examples,
-                "is_phrase": False,
-                "is_idiom": _is_idiom(sense_el),
-            })
         pos_data.append({
             "pos": pos_label,
             "register_tags": [],
-            "definitions": definitions,
+            "definitions": definitions_by_pos[pos_label],
         })
 
     # Cambridge has no idiom-phrase block separate from senses

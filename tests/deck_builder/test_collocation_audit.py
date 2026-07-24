@@ -18,6 +18,7 @@ from src.deck_builder.collocation_audit import (
     normalize_collocation_learner_surface,
     promote_audit_rows,
     registry_payload_by_guid,
+    scaffold_audit_rows,
     serialize_audit_rows,
     serialize_registry_rows,
     validate_audit_rows,
@@ -404,6 +405,185 @@ def test_completed_audit_accepts_the_exact_post_promotion_projection():
         cambridge,
         require_complete=True,
     ) == []
+
+
+def test_scaffold_reuses_review_for_exact_post_promotion_projection():
+    oxford, cambridge, semantic = _inputs()
+    rows = build_audit_rows([_note()], _registry(), semantic, oxford, cambridge)
+    _complete(rows[0])
+    promoted = promote_audit_rows(rows, _registry())
+    projected_card = apply_collocation_registry([_note()], promoted)[0]
+
+    refreshed = scaffold_audit_rows(
+        [projected_card],
+        _registry(),
+        semantic,
+        oxford,
+        cambridge,
+        existing_rows=rows,
+    )
+
+    assert refreshed == rows
+
+
+def test_scaffold_migrates_complete_review_across_source_id_only_churn():
+    oxford, cambridge, semantic = _inputs()
+    rows = build_audit_rows([_note()], _registry(), semantic, oxford, cambridge)
+    _complete(rows[0])
+    promoted = promote_audit_rows(rows, _registry())
+    projected_card = apply_collocation_registry([_note()], promoted)[0]
+
+    changed_cambridge = copy.deepcopy(cambridge)
+    changed_cambridge[0]["source_files"] = ["renumbered_cambridge_curriculum.html"]
+    new_cambridge_id = source_sense_id(
+        changed_cambridge[0], _flatten_senses(changed_cambridge[0])[0]
+    )
+    changed_semantic = copy.deepcopy(semantic)
+    changed_semantic[0]["senses"][0]["source_sense_ids"] = [
+        value
+        if not value.startswith("cam_")
+        else new_cambridge_id
+        for value in changed_semantic[0]["senses"][0]["source_sense_ids"]
+    ]
+
+    refreshed = scaffold_audit_rows(
+        [projected_card],
+        _registry(),
+        changed_semantic,
+        oxford,
+        changed_cambridge,
+        existing_rows=rows,
+    )
+
+    assert refreshed[0]["source_fingerprint"] != rows[0]["source_fingerprint"]
+    assert refreshed[0]["final_items"]
+    assert all(
+        item["decision"] not in {"pending", "uncertain"}
+        for item in (
+            refreshed[0]["current_items"]
+            + refreshed[0]["mandatory_candidates"]
+        )
+    )
+    new_evidence_ids = {
+        item["evidence_id"] for item in refreshed[0]["source_evidence"]
+    }
+    assert all(
+        evidence_id in new_evidence_ids
+        for item in refreshed[0]["final_items"]
+        for evidence_id in item["evidence_ids"]
+    )
+    assert validate_current_audit(
+        refreshed,
+        [projected_card],
+        _registry(),
+        changed_semantic,
+        oxford,
+        changed_cambridge,
+        require_complete=True,
+    ) == []
+
+
+def test_scaffold_reopens_only_items_whose_source_evidence_changed():
+    oxford, cambridge, semantic = _inputs()
+    rows = build_audit_rows([_note()], _registry(), semantic, oxford, cambridge)
+    _complete(rows[0])
+    promoted = promote_audit_rows(rows, _registry())
+    projected_card = apply_collocation_registry([_note()], promoted)[0]
+
+    changed_cambridge = copy.deepcopy(cambridge)
+    changed_evidence = changed_cambridge[0]["pos_data"][0]["definitions"][0][
+        "collocation_evidence"
+    ]
+    changed_evidence[0]["example_text"] = "A changed curriculum example."
+    changed_cambridge[0]["pos_data"][0]["definitions"][0]["examples"][0][
+        "text"
+    ] = "A changed curriculum example."
+    new_cambridge_id = source_sense_id(
+        changed_cambridge[0], _flatten_senses(changed_cambridge[0])[0]
+    )
+    changed_semantic = copy.deepcopy(semantic)
+    changed_semantic[0]["senses"][0]["source_sense_ids"] = [
+        value
+        if not value.startswith("cam_")
+        else new_cambridge_id
+        for value in changed_semantic[0]["senses"][0]["source_sense_ids"]
+    ]
+
+    refreshed = scaffold_audit_rows(
+        [projected_card],
+        _registry(),
+        changed_semantic,
+        oxford,
+        changed_cambridge,
+        existing_rows=rows,
+    )
+    current = {
+        item["text"]: item for item in refreshed[0]["current_items"]
+    }
+    assert current["school/national curriculum"]["decision"] == "keep_curated"
+    assert current["curriculum development"]["decision"] == "keep_curated"
+    assert current["on the curriculum"]["decision"] == "pending"
+
+
+def test_scaffold_does_not_reuse_changed_promoted_text_or_provenance():
+    oxford, cambridge, semantic = _inputs()
+    rows = build_audit_rows([_note()], _registry(), semantic, oxford, cambridge)
+    _complete(rows[0])
+    promoted = promote_audit_rows(rows, _registry())
+    projected_card = apply_collocation_registry([_note()], promoted)[0]
+
+    changed_text = dict(projected_card, collocations="unreviewed phrase")
+    text_rows = scaffold_audit_rows(
+        [changed_text],
+        _registry(),
+        semantic,
+        oxford,
+        cambridge,
+        existing_rows=rows,
+    )
+    assert {item["decision"] for item in text_rows[0]["current_items"]} == {
+        "pending"
+    }
+
+    changed_source = dict(projected_card, collocation_sources="oxford")
+    source_rows = scaffold_audit_rows(
+        [changed_source],
+        _registry(),
+        semantic,
+        oxford,
+        cambridge,
+        existing_rows=rows,
+    )
+    assert {item["decision"] for item in source_rows[0]["current_items"]} == {
+        "pending"
+    }
+
+
+def test_scaffold_does_not_reuse_review_after_identity_variant_change():
+    oxford, cambridge, semantic = _inputs()
+    rows = build_audit_rows([_note()], _registry(), semantic, oxford, cambridge)
+    _complete(rows[0])
+    promoted = promote_audit_rows(rows, _registry())
+    projected_card = apply_collocation_registry([_note()], promoted)[0]
+    changed_registry = [{**_registry()[0], "variant": "secondary_typical_of"}]
+    changed_semantic = [{
+        **semantic[0],
+        "variant": "secondary_typical_of",
+    }]
+
+    refreshed = scaffold_audit_rows(
+        [projected_card],
+        changed_registry,
+        changed_semantic,
+        oxford,
+        cambridge,
+        existing_rows=rows,
+    )
+
+    assert refreshed[0]["variant"] == "secondary_typical_of"
+    assert {item["decision"] for item in refreshed[0]["current_items"]} == {
+        "pending"
+    }
 
 
 def test_unreviewed_live_collocation_projection_remains_stale():

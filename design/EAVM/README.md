@@ -35,12 +35,23 @@ Kịch bản đóng gói bộ thẻ [`update_anki_deck.py`](../../update_anki_de
 > của packager và được chỉnh trong chính file tương ứng. Sau khi sửa CSS, sync
 > `styling.txt` rồi chạy `python -m tools.check_design_sync` để verify.
 
+Headword audio trên mặt sau Recognition được gộp với IPA thành Headword
+Pronunciation Cluster. Khi IPA UK/US khác nhau, hai pill có nhãn và toàn pill
+có thể bấm; khi IPA giống nhau, template render một pill duy nhất chia hai vùng
+50/50, UK trái và US phải. Shared pill không hiện nhãn hoặc icon lúc nghỉ; icon
+loa chỉ xuất hiện ở nửa đang phát. UK autoplay khi lật mặt sau, bấm accent khác
+sẽ dừng clip hiện tại, và `R` phát lại accent gần nhất. Hai field append-only
+`HeadwordAudioUKSrc` / `HeadwordAudioUSSrc` là filename media được derive từ
+`AudioUK` / `AudioUS`; chúng không thay thế pronunciation authority.
+
 Audio câu ví dụ dùng bốn field nối cuối note type: `ExampleAudioUK`,
 `ExampleAudioUS`, `IdiomExampleAudioUK`, và `IdiomExampleAudioUS`. Mặt sau hiển
-thị một switch ngang trong Audio Row. Switch chỉ có một thumb mang nhãn accent
-hiện tại: mặc định `UK`, bấm/tap thì thumb trượt và đổi nhãn thành `US`; không
-hiện đồng thời accent còn lại và không lưu lựa chọn giữa các card. Nhấn trực
-tiếp vào câu Example hoặc Idiom Example để phát accent đang chọn. Khi audio
+thị một switch ngang ở mép phải của cùng hàng với pronunciation; không có nhãn
+`Examples`. Trên màn hình hẹp switch xuống hàng và vẫn căn phải. Switch chỉ có
+một thumb mang nhãn accent hiện tại: mặc định `UK`, bấm/tap thì thumb trượt và
+đổi nhãn thành `US`; không hiện đồng thời accent còn lại và không lưu lựa chọn
+giữa các card. Nhấn trực tiếp vào câu Example hoặc Idiom Example để phát accent
+đang chọn. Khi audio
 thực sự phát, toàn bộ câu chuyển sang màu CEFR của card; từ vựng mục tiêu vẫn
 giữ chữ đậm và underline. Hover không đổi màu, còn end, pause, lỗi hoặc đổi
 clip sẽ trả câu về màu bình thường. Audio không autoplay và mỗi lần chỉ có một

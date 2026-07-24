@@ -17,13 +17,14 @@ from src.deck_builder.canonical_io import (
 )
 
 
-DEFINITION_AUDIT_SCHEMA_VERSION = 3
+DEFINITION_AUDIT_SCHEMA_VERSION = 4
 LONG_DEFINITION_LENGTH = 80
 CONNECTOR_DEFINITION_LENGTH = 60
 DEFAULT_MIN_TOKENS = 12
 _AND_RE = re.compile(r"\band\b", re.IGNORECASE)
 DEFINITION_REVIEW_DECISIONS = {
     "pending",
+    "keep_concise",
     "keep_explanatory",
     "rewrite_required",
     "split_required",
@@ -450,10 +451,13 @@ def build_definition_audit(
     *,
     input_hashes: dict[str, str],
     min_tokens: int = DEFAULT_MIN_TOKENS,
+    scope: str = "all",
 ) -> tuple[dict, list[dict]]:
     """Build deterministic report records without modifying canonical inputs."""
     if not isinstance(min_tokens, int) or isinstance(min_tokens, bool) or min_tokens < 1:
         raise ValueError("definition_audit_invalid_min_tokens")
+    if scope not in {"long", "all"}:
+        raise ValueError("definition_audit_invalid_scope")
     errors = _validate_input_parity(
         registry_rows,
         notes_rows,
@@ -476,10 +480,26 @@ def build_definition_audit(
                 sense["definition_en"],
                 min_tokens=min_tokens,
             )
-            if not triggers:
+            if scope == "long" and not triggers:
                 continue
             evidence, coverage = _relevant_evidence(audit_row, sense)
-            recommendation, segments, reason = _draft_proposal(card, sense, evidence)
+            if triggers:
+                recommendation, segments, reason = _draft_proposal(
+                    card, sense, evidence
+                )
+            else:
+                recommendation = "keep_common"
+                segments = [_proposal_segment(
+                    1,
+                    sense["definition_en"],
+                    sense["definition_vi"],
+                    list(sense.get("examples") or []),
+                    list(sense.get("source_sense_ids") or []),
+                )]
+                reason = (
+                    "Included for exact all-sense Definition Concision Review "
+                    "coverage; no long-definition triage trigger fired."
+                )
             proposal = _render_proposal(segments)
             candidate = {
                 "record_type": "candidate",
@@ -542,6 +562,7 @@ def build_definition_audit(
     summary = {
         "record_type": "summary",
         "schema_version": DEFINITION_AUDIT_SCHEMA_VERSION,
+        "scope": scope,
         "inputs": dict(sorted(input_hashes.items())),
         "thresholds": {
             "long_definition_length": LONG_DEFINITION_LENGTH,
@@ -655,6 +676,8 @@ def validate_definition_audit(summary: dict, candidates: list[dict]) -> list[str
         errors.append("invalid_summary_record_type")
     if summary.get("schema_version") != DEFINITION_AUDIT_SCHEMA_VERSION:
         errors.append("invalid_summary_schema_version")
+    if summary.get("scope") not in {"long", "all"}:
+        errors.append("invalid_summary_scope")
     seen: set[str] = set()
     for row in candidates:
         identity = (str(row.get("guid") or ""), str(row.get("semantic_sense_id") or ""))
@@ -703,6 +726,11 @@ def validate_definition_audit(summary: dict, candidates: list[dict]) -> list[str
                 errors.append(f"unknown_proposal_source_ids:{identity}:{sorted(unknown)}")
     if summary.get("candidate_senses") != len(candidates):
         errors.append("candidate_sense_count_mismatch")
+    if (
+        summary.get("scope") == "all"
+        and summary.get("candidate_senses") != summary.get("senses_scanned")
+    ):
+        errors.append("all_scope_sense_coverage_mismatch")
     if summary.get("candidate_cards") != len({row.get("guid") for row in candidates}):
         errors.append("candidate_card_count_mismatch")
     expected_order = sorted(candidates, key=lambda row: (
@@ -726,6 +754,48 @@ def validate_definition_audit(summary: dict, candidates: list[dict]) -> list[str
     return errors
 
 
+def select_definition_audit_scope(
+    summary: dict,
+    candidates: list[dict],
+    *,
+    scope: str,
+) -> tuple[dict, list[dict]]:
+    """Select a deterministic review scope from an all-sense audit."""
+    errors = validate_definition_audit(summary, candidates)
+    if errors:
+        raise ValueError("Invalid Definition audit:\n" + "\n".join(errors))
+    if summary.get("scope") != "all":
+        raise ValueError("definition_audit_scope_selection_requires_all")
+    if scope not in {"long", "all"}:
+        raise ValueError("definition_audit_invalid_scope")
+    if scope == "all":
+        return copy.deepcopy(summary), copy.deepcopy(candidates)
+
+    selected = [
+        copy.deepcopy(candidate)
+        for candidate in candidates
+        if candidate.get("triggers")
+    ]
+    selected_summary = copy.deepcopy(summary)
+    selected_summary.update({
+        "scope": "long",
+        "candidate_cards": len({row["guid"] for row in selected}),
+        "candidate_senses": len(selected),
+        "candidate_set_sha256": _candidate_set_digest(selected),
+        "recommendations": {
+            value: sum(row["recommendation"] == value for row in selected)
+            for value in ("keep_common", "split", "uncertain")
+        },
+    })
+    selected_errors = validate_definition_audit(selected_summary, selected)
+    if selected_errors:
+        raise ValueError(
+            "Definition audit scope selection failed:\n"
+            + "\n".join(selected_errors)
+        )
+    return selected_summary, selected
+
+
 def serialize_definition_audit(summary: dict, candidates: list[dict]) -> str:
     rows = [summary, *candidates]
     return "".join(
@@ -747,6 +817,7 @@ def scaffold_definition_review(
     review_summary = {
         "record_type": "review_summary",
         "schema_version": DEFINITION_AUDIT_SCHEMA_VERSION,
+        "scope": summary["scope"],
         "candidate_count": len(candidates),
         "candidate_set_sha256": summary["candidate_set_sha256"],
     }
@@ -946,6 +1017,8 @@ def validate_definition_review(
         errors.append("definition_review_missing_summary")
     if review_summary.get("schema_version") != DEFINITION_AUDIT_SCHEMA_VERSION:
         errors.append("definition_review_invalid_schema_version")
+    if review_summary.get("scope") != summary.get("scope"):
+        errors.append("definition_review_scope_mismatch")
     if review_summary.get("candidate_count") != len(candidates):
         errors.append("definition_review_candidate_count_mismatch")
     if review_summary.get("candidate_set_sha256") != summary.get(
@@ -1096,6 +1169,80 @@ def validate_definition_review(
                     for value in grounding
                 ):
                     errors.append(f"definition_review_missing_grounding:{identity}")
+        elif decision == "keep_concise":
+            if candidate.get("triggers"):
+                errors.append(f"definition_review_keep_concise_not_short:{identity}")
+            if alternative or distinction:
+                errors.append(
+                    f"definition_review_unexpected_concise_alternative:{identity}"
+                )
+            normalized_reason = _normalise_review_text(reason)
+            if (
+                not reason
+                or normalized_reason in _GENERIC_REVIEW_TEXT
+                or len(re.findall(r"\w+", normalized_reason, flags=re.UNICODE)) < 4
+            ):
+                errors.append(f"definition_review_generic_reason:{identity}")
+            residual_reason = _definition_review_residual(
+                reason,
+                candidate,
+                review,
+                strip_review_values=True,
+            )
+            if residual_reason in seen_reasons:
+                errors.append(f"definition_review_duplicate_reason:{identity}")
+            if residual_reason:
+                seen_reasons.add(residual_reason)
+            if _has_suspicious_review_token(
+                reason,
+                candidate,
+                review,
+                strip_review_values=True,
+            ):
+                errors.append(f"definition_review_suspicious_token:{identity}")
+            if len(re.findall(r"\w", reviewer, flags=re.UNICODE)) < 3:
+                errors.append(f"definition_review_invalid_reviewer:{identity}")
+            try:
+                date.fromisoformat(reviewed_at)
+            except ValueError:
+                errors.append(f"definition_review_invalid_reviewed_at:{identity}")
+            if not evidence:
+                errors.append(f"definition_review_missing_semantic_evidence:{identity}")
+            else:
+                normalized_evidence = _normalise_review_text(evidence)
+                if normalized_evidence in _GENERIC_REVIEW_TEXT:
+                    errors.append(
+                        f"definition_review_generic_semantic_evidence:{identity}"
+                    )
+                residual_evidence = _definition_review_residual(
+                    evidence,
+                    candidate,
+                    review,
+                    strip_review_values=True,
+                )
+                if residual_evidence in seen_evidence:
+                    errors.append(
+                        f"definition_review_duplicate_semantic_evidence:{identity}"
+                    )
+                if residual_evidence:
+                    seen_evidence.add(residual_evidence)
+                if _has_suspicious_review_token(
+                    evidence,
+                    candidate,
+                    review,
+                    strip_review_values=True,
+                ):
+                    errors.append(f"definition_review_suspicious_token:{identity}")
+                if not _contains_exact_review_text(evidence, expected):
+                    errors.append(
+                        f"definition_review_evidence_missing_current_en:{identity}"
+                    )
+                grounding = _definition_grounding_values(candidate)
+                if not grounding or not any(
+                    _contains_exact_review_text(evidence, value)
+                    for value in grounding
+                ):
+                    errors.append(f"definition_review_missing_grounding:{identity}")
         elif any((alternative, distinction, evidence)):
             errors.append(f"definition_review_unexpected_keep_evidence:{identity}")
 
@@ -1117,6 +1264,8 @@ def validate_definition_review_for_promotion(
         review_summary,
         review_rows,
     )
+    if summary.get("scope") != "all" or review_summary.get("scope") != "all":
+        errors.append("definition_review_scope_must_be_all")
     candidates_by_id = {row["candidate_id"]: row for row in candidates}
     seen: set[str] = set()
     for review in review_rows:
@@ -1127,7 +1276,7 @@ def validate_definition_review_for_promotion(
         candidate = candidates_by_id[candidate_id]
         identity = f"{candidate['guid']}:{candidate['semantic_sense_id']}"
         decision = review.get("decision")
-        if decision != "keep_explanatory":
+        if decision not in {"keep_concise", "keep_explanatory"}:
             errors.append(f"definition_promotion_open_decision:{identity}:{decision}")
         if review.get("approval") != "approved":
             errors.append(f"definition_promotion_not_approved:{identity}")

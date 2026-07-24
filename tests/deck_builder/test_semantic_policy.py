@@ -112,6 +112,53 @@ def test_policy_supersession_must_be_append_only_and_same_identity():
     )
 
 
+def test_source_id_drift_can_be_superseded_without_reopening_the_decision():
+    excluded_original = _lock(
+        "exclude_source_sense",
+        lock_id="exclude-old",
+        semantic_sense_id="",
+        source_sense_id="source-old",
+    )
+    excluded_replacement = _lock(
+        "exclude_source_sense",
+        lock_id="exclude-new",
+        semantic_sense_id="",
+        source_sense_id="source-new",
+        supersedes="exclude-old",
+    )
+    excluded_audit = _audit()
+    excluded_audit["source_coverage"] = [{
+        "source_sense_id": "source-new",
+        "disposition": "excluded",
+        "target_semantic_sense_ids": [],
+    }]
+    assert validate_audit_policy(
+        [excluded_audit], [excluded_original, excluded_replacement]
+    ) == []
+
+    retained_original = _lock(
+        "retain_source_sense",
+        lock_id="retain-old",
+        source_sense_id="source-old",
+    )
+    retained_replacement = _lock(
+        "retain_source_sense",
+        lock_id="retain-new",
+        source_sense_id="source-new",
+        supersedes="retain-old",
+    )
+    retained_audit = _audit()
+    retained_audit["semantic_senses"][0]["source_sense_ids"] = ["source-new"]
+    retained_audit["source_coverage"] = [{
+        "source_sense_id": "source-new",
+        "disposition": "mapped",
+        "target_semantic_sense_ids": ["sem-1"],
+    }]
+    assert validate_audit_policy(
+        [retained_audit], [retained_original, retained_replacement]
+    ) == []
+
+
 def test_canonical_policy_contains_every_exact_user_wording_lock():
     path = ProjectPaths().semantic_policy_locks
     rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]

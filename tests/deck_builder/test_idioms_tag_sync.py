@@ -32,7 +32,7 @@ def test_production_cards_derive_idioms_tag_from_payload():
         ).splitlines()
         if line.strip()
     ]
-    assert len(cards) == 2465
+    assert len(cards) == 2468
     # Only cards with a POS-owned idiom receive the payload/tag. The previous
     # count included idioms leaked across homonym/POS entry boundaries.
     assert sum(bool(card["idioms"]) for card in cards) == 369

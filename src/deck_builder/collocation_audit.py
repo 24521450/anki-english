@@ -441,6 +441,73 @@ def serialize_audit_rows(rows: Iterable[dict]) -> str:
     )
 
 
+def _review_row_immutable_projection(row: Mapping[str, object]) -> dict:
+    return {
+        "schema_version": row.get("schema_version"),
+        "guid": row.get("guid"),
+        "word": row.get("word"),
+        "cefr": row.get("cefr"),
+        "list": row.get("list"),
+        "variant": row.get("variant"),
+        "pos": row.get("pos"),
+        "source_mappings": row.get("source_mappings"),
+        "source_evidence": row.get("source_evidence"),
+        "idiom_phrases": row.get("idiom_phrases"),
+        "idiom_fingerprint": row.get("idiom_fingerprint"),
+        "current_fingerprint": row.get("current_fingerprint"),
+        "source_fingerprint": row.get("source_fingerprint"),
+        "input_fingerprint": row.get("input_fingerprint"),
+        "current_items": [
+            _current_immutable(item)
+            for item in row.get("current_items") or []
+        ],
+        "mandatory_candidates": [
+            _candidate_immutable(item)
+            for item in row.get("mandatory_candidates") or []
+        ],
+    }
+
+
+def apply_review_bundle(
+    audit_rows: Sequence[dict],
+    decisions: Sequence[dict],
+) -> list[dict]:
+    """Apply complete, fingerprint-bound row review bundles transactionally."""
+    result = copy.deepcopy(list(audit_rows))
+    by_guid = {_trim(row.get("guid")): row for row in result}
+    seen: set[str] = set()
+    for decision in decisions:
+        if not isinstance(decision, dict):
+            raise ValueError("Collocation review bundle rows must be objects")
+        guid = _trim(decision.get("guid"))
+        if not guid or guid in seen or guid not in by_guid:
+            raise ValueError(f"Unknown or duplicate review GUID: {guid}")
+        seen.add(guid)
+        if set(decision) != ROW_FIELDS:
+            raise ValueError(
+                f"Invalid review bundle fields for {guid}: "
+                f"expected={sorted(ROW_FIELDS)} actual={sorted(decision)}"
+            )
+        target = by_guid[guid]
+        if decision.get("input_fingerprint") != target.get("input_fingerprint"):
+            raise ValueError(
+                f"Stale review bundle fingerprint for {guid}: input_fingerprint"
+            )
+        if (
+            _canonical_json(_review_row_immutable_projection(decision))
+            != _canonical_json(_review_row_immutable_projection(target))
+        ):
+            raise ValueError(f"Immutable review inputs changed for {guid}")
+        by_guid[guid] = copy.deepcopy(decision)
+    updated = [by_guid[_trim(row.get("guid"))] for row in result]
+    errors = validate_audit_rows(updated)
+    if errors:
+        raise ValueError(
+            "Collocation review bundle is invalid:\n" + "\n".join(errors)
+        )
+    return updated
+
+
 def serialize_registry_rows(rows: Iterable[dict]) -> str:
     return "".join(
         _canonical_json(row) + "\n"
@@ -903,6 +970,445 @@ def _reuse_review_state(fresh: dict, existing: dict) -> None:
         fresh[field] = _trim(existing.get(field))
 
 
+def _stable_evidence_key(item: Mapping[str, object]) -> str:
+    """Identify unchanged evidence independently of regenerated source IDs."""
+    return _canonical_json({
+        field: item.get(field)
+        for field in EVIDENCE_FIELDS
+        if field not in {"evidence_id", "source_sense_id"}
+    })
+
+
+def _reuse_equivalent_evidence_review_state(
+    fresh: dict, existing: dict
+) -> None:
+    """Carry a complete review across source-ID-only evidence churn.
+
+    Cambridge source sense IDs can be regenerated when parser scoping changes
+    even though every collocation occurrence and its Semantic Sense ownership
+    remain exact.  This migration is deliberately all-or-nothing: every
+    evidence occurrence, current item, candidate, and final item must have an
+    exact drift-stable counterpart.  Any content, provenance, ordering, or
+    candidate-universe change leaves the fresh row pending.
+    """
+    if existing.get("schema_version") != AUDIT_SCHEMA_VERSION:
+        return
+    identity_fields = ("guid", "word", "cefr", "list", "variant", "pos")
+    if any(
+        _trim(fresh.get(field)) != _trim(existing.get(field))
+        for field in identity_fields
+    ):
+        return
+    if fresh.get("idiom_phrases") != existing.get("idiom_phrases"):
+        return
+
+    old_evidence_by_key: dict[str, list[str]] = defaultdict(list)
+    new_evidence_by_key: dict[str, list[str]] = defaultdict(list)
+    for item in existing.get("source_evidence") or []:
+        old_evidence_by_key[_stable_evidence_key(item)].append(
+            _trim(item.get("evidence_id"))
+        )
+    for item in fresh.get("source_evidence") or []:
+        new_evidence_by_key[_stable_evidence_key(item)].append(
+            _trim(item.get("evidence_id"))
+        )
+    if set(old_evidence_by_key) != set(new_evidence_by_key):
+        return
+    if any(
+        len(old_evidence_by_key[key]) != len(new_evidence_by_key[key])
+        for key in old_evidence_by_key
+    ):
+        return
+    evidence_id_map = {
+        old_id: new_id
+        for key in old_evidence_by_key
+        for old_id, new_id in zip(
+            sorted(old_evidence_by_key[key]),
+            sorted(new_evidence_by_key[key]),
+        )
+    }
+
+    def remap_evidence_ids(values: object) -> list[str] | None:
+        if not isinstance(values, list) or any(
+            not isinstance(value, str) or value not in evidence_id_map
+            for value in values
+        ):
+            return None
+        return [evidence_id_map[value] for value in values]
+
+    old_current = {
+        _trim(item.get("current_item_id")): item
+        for item in existing.get("current_items") or []
+    }
+    new_current = {
+        _trim(item.get("current_item_id")): item
+        for item in fresh.get("current_items") or []
+    }
+    if set(old_current) != set(new_current):
+        return
+    old_candidates = {
+        _trim(item.get("candidate_id")): item
+        for item in existing.get("mandatory_candidates") or []
+    }
+    new_candidates = {
+        _trim(item.get("candidate_id")): item
+        for item in fresh.get("mandatory_candidates") or []
+    }
+    if set(old_candidates) != set(new_candidates):
+        return
+
+    for item_id, old in old_current.items():
+        new = new_current[item_id]
+        mapped = remap_evidence_ids(old.get("evidence_ids"))
+        if (
+            mapped is None
+            or old.get("text") != new.get("text")
+            or old.get("order") != new.get("order")
+            or sorted(mapped) != sorted(new.get("evidence_ids") or [])
+        ):
+            return
+    for item_id, old in old_candidates.items():
+        new = new_candidates[item_id]
+        mapped = remap_evidence_ids(old.get("evidence_ids"))
+        if (
+            mapped is None
+            or old.get("text") != new.get("text")
+            or old.get("order") != new.get("order")
+            or old.get("sources") != new.get("sources")
+            or sorted(mapped) != sorted(new.get("evidence_ids") or [])
+        ):
+            return
+
+    final_items = copy.deepcopy(existing.get("final_items") or [])
+    for item in final_items:
+        mapped = remap_evidence_ids(item.get("evidence_ids"))
+        if mapped is None:
+            return
+        item["evidence_ids"] = mapped
+
+    def migrated_reason(value: object) -> str:
+        reason = _trim(value)
+        for old_id, new_id in evidence_id_map.items():
+            reason = reason.replace(old_id, new_id)
+        return reason
+
+    for item_id, new in new_current.items():
+        old = old_current[item_id]
+        for field in CURRENT_EDITABLE_COLUMNS:
+            new[field] = copy.deepcopy(old.get(
+                field, [] if field == "target_final_item_ids" else ""
+            ))
+        new["reason"] = migrated_reason(old.get("reason"))
+    for item_id, new in new_candidates.items():
+        old = old_candidates[item_id]
+        for field in CANDIDATE_EDITABLE_COLUMNS:
+            new[field] = copy.deepcopy(old.get(
+                field, [] if field == "target_final_item_ids" else ""
+            ))
+        new["reason"] = migrated_reason(old.get("reason"))
+    fresh["final_items"] = final_items
+    for field in CARD_EDITABLE_COLUMNS:
+        fresh[field] = _trim(existing.get(field))
+
+
+def _migrate_equivalent_review_items(fresh: dict, existing: dict) -> None:
+    """Migrate only unchanged reviewed items after a promoted projection.
+
+    This is intentionally narrower than row reuse.  A source rebuild may add
+    or remove evidence for one chip while leaving neighboring chips exact.  We
+    retain only the neighboring decisions whose stable evidence *sets* still
+    match, then rebuild all evidence IDs from the fresh row.  New/changed
+    candidates and any final item whose reviewed evidence or dependencies
+    disappeared remain pending.
+    """
+    if existing.get("schema_version") != AUDIT_SCHEMA_VERSION:
+        return
+    identity_fields = ("guid", "word", "cefr", "list", "variant", "pos")
+    if any(
+        _trim(fresh.get(field)) != _trim(existing.get(field))
+        for field in identity_fields
+    ) or fresh.get("idiom_phrases") != existing.get("idiom_phrases"):
+        return
+
+    old_evidence_by_id = {
+        _trim(item.get("evidence_id")): item
+        for item in existing.get("source_evidence") or []
+    }
+    new_evidence_by_id = {
+        _trim(item.get("evidence_id")): item
+        for item in fresh.get("source_evidence") or []
+    }
+    old_ids_by_key: dict[str, list[str]] = defaultdict(list)
+    new_ids_by_key: dict[str, list[str]] = defaultdict(list)
+    for evidence_id, item in old_evidence_by_id.items():
+        old_ids_by_key[_stable_evidence_key(item)].append(evidence_id)
+    for evidence_id, item in new_evidence_by_id.items():
+        new_ids_by_key[_stable_evidence_key(item)].append(evidence_id)
+    evidence_id_map: dict[str, str] = {}
+    for key in set(old_ids_by_key) & set(new_ids_by_key):
+        fresh_ids = sorted(new_ids_by_key[key])
+        for index, old_id in enumerate(sorted(old_ids_by_key[key])):
+            # Duplicate POS-leaked occurrences may collapse to one fresh
+            # occurrence.  All decisions still point to the fresh evidence
+            # set; the map is used only to update human-readable reasons.
+            evidence_id_map[old_id] = fresh_ids[min(index, len(fresh_ids) - 1)]
+
+    def stable_evidence_set(values: object, index: Mapping[str, dict]) -> set[str] | None:
+        if not isinstance(values, list):
+            return None
+        keys: set[str] = set()
+        for value in values:
+            item = index.get(_trim(value))
+            if item is None:
+                return None
+            keys.add(_stable_evidence_key(item))
+        return keys
+
+    def migrated_reason(value: object, fresh_ids: Sequence[str]) -> str:
+        reason = _trim(value)
+        for old_id, new_id in evidence_id_map.items():
+            reason = reason.replace(old_id, new_id)
+        missing = [evidence_id for evidence_id in fresh_ids if evidence_id not in reason]
+        if missing:
+            reason += " Migrated exact evidence IDs: " + ", ".join(missing) + "."
+        return reason
+
+    old_current = {
+        _trim(item.get("current_item_id")): item
+        for item in existing.get("current_items") or []
+    }
+    new_current = {
+        _trim(item.get("current_item_id")): item
+        for item in fresh.get("current_items") or []
+    }
+    old_candidates = {
+        _trim(item.get("candidate_id")): item
+        for item in existing.get("mandatory_candidates") or []
+    }
+    new_candidates = {
+        _trim(item.get("candidate_id")): item
+        for item in fresh.get("mandatory_candidates") or []
+    }
+    reused_current: set[str] = set()
+    reused_candidates: set[str] = set()
+
+    for item_id, target in new_current.items():
+        source = old_current.get(item_id)
+        if source is None or source.get("decision") not in {
+            "keep_source",
+            "keep_curated",
+            "rewrite_or_split",
+            "remove",
+        }:
+            continue
+        if (
+            source.get("text") != target.get("text")
+            or source.get("order") != target.get("order")
+            or stable_evidence_set(
+                source.get("evidence_ids"), old_evidence_by_id
+            )
+            != stable_evidence_set(
+                target.get("evidence_ids"), new_evidence_by_id
+            )
+        ):
+            continue
+        for field in CURRENT_EDITABLE_COLUMNS:
+            target[field] = copy.deepcopy(source.get(
+                field, [] if field == "target_final_item_ids" else ""
+            ))
+        target["reason"] = migrated_reason(
+            source.get("reason"), target.get("evidence_ids") or []
+        )
+        reused_current.add(item_id)
+
+    for item_id, target in new_candidates.items():
+        source = old_candidates.get(item_id)
+        if source is None or source.get("decision") not in {
+            "included",
+            "covered",
+            "excluded",
+        }:
+            continue
+        if (
+            source.get("text") != target.get("text")
+            or source.get("sources") != target.get("sources")
+            or stable_evidence_set(
+                source.get("evidence_ids"), old_evidence_by_id
+            )
+            != stable_evidence_set(
+                target.get("evidence_ids"), new_evidence_by_id
+            )
+        ):
+            continue
+        for field in CANDIDATE_EDITABLE_COLUMNS:
+            target[field] = copy.deepcopy(source.get(
+                field, [] if field == "target_final_item_ids" else ""
+            ))
+        target["reason"] = migrated_reason(
+            source.get("reason"), target.get("evidence_ids") or []
+        )
+        reused_candidates.add(item_id)
+
+    retained_finals: list[dict] = []
+    for source_final in existing.get("final_items") or []:
+        mapped_evidence = stable_evidence_set(
+            source_final.get("evidence_ids"), old_evidence_by_id
+        )
+        if mapped_evidence is None:
+            continue
+        fresh_evidence = [
+            evidence_id
+            for evidence_id, item in new_evidence_by_id.items()
+            if _stable_evidence_key(item) in mapped_evidence
+        ]
+        # Preserve the old evidence order where possible, then append any
+        # duplicate fresh occurrences deterministically.
+        ordered_evidence: list[str] = []
+        for old_id in source_final.get("evidence_ids") or []:
+            new_id = evidence_id_map.get(_trim(old_id))
+            if new_id and new_id not in ordered_evidence:
+                ordered_evidence.append(new_id)
+        ordered_evidence.extend(
+            evidence_id
+            for evidence_id in sorted(fresh_evidence)
+            if evidence_id not in ordered_evidence
+        )
+        if set(ordered_evidence) != set(fresh_evidence):
+            continue
+
+        valid = True
+        for current_id in source_final.get("current_item_ids") or []:
+            target = new_current.get(_trim(current_id))
+            if (
+                _trim(current_id) not in reused_current
+                or target is None
+                or source_final.get("final_item_id")
+                not in (target.get("target_final_item_ids") or [])
+            ):
+                valid = False
+                break
+        if not valid:
+            continue
+        for candidate in existing.get("mandatory_candidates") or []:
+            final_id = source_final.get("final_item_id")
+            if (
+                final_id in (candidate.get("target_final_item_ids") or [])
+                and candidate.get("decision") in {"included", "covered"}
+            ):
+                target = new_candidates.get(_trim(candidate.get("candidate_id")))
+                if (
+                    _trim(candidate.get("candidate_id")) not in reused_candidates
+                    or target is None
+                    or final_id not in (target.get("target_final_item_ids") or [])
+                ):
+                    valid = False
+                    break
+        if not valid:
+            continue
+        final = copy.deepcopy(source_final)
+        final["evidence_ids"] = ordered_evidence
+        retained_finals.append(final)
+
+    retained_ids = {
+        _trim(item.get("final_item_id")) for item in retained_finals
+    }
+    for target in new_current.values():
+        if target.get("decision") in {
+            "keep_source",
+            "keep_curated",
+            "rewrite_or_split",
+        } and any(
+            final_id not in retained_ids
+            for final_id in target.get("target_final_item_ids") or []
+        ):
+            target.update({
+                "decision": "pending",
+                "target_final_item_ids": [],
+                "reason": "",
+                "reviewer": "",
+                "reviewed_at": "",
+                "approval": "",
+            })
+            reused_current.discard(_trim(target.get("current_item_id")))
+    for target in new_candidates.values():
+        if target.get("decision") in {"included", "covered"} and any(
+            final_id not in retained_ids
+            for final_id in target.get("target_final_item_ids") or []
+        ):
+            target.update({
+                "decision": "pending",
+                "target_final_item_ids": [],
+                "reason": "",
+                "reviewer": "",
+                "reviewed_at": "",
+                "approval": "",
+            })
+            reused_candidates.discard(_trim(target.get("candidate_id")))
+
+    evidence_position = {
+        _trim(item.get("evidence_id")): index
+        for index, item in enumerate(fresh.get("source_evidence") or [])
+    }
+    current_position = {
+        _trim(item.get("current_item_id")): item.get("order", 10**9)
+        for item in new_current.values()
+    }
+    retained_finals.sort(
+        key=lambda item: (
+            FINAL_SOURCE_ORDER.get(item.get("source"), 10**9),
+            min(
+                (
+                    evidence_position.get(evidence_id, 10**9)
+                    for evidence_id in item.get("evidence_ids") or []
+                ),
+                default=min(
+                    (
+                        current_position.get(current_id, 10**9)
+                        for current_id in item.get("current_item_ids") or []
+                    ),
+                    default=10**9,
+                ),
+            ),
+        )
+    )
+    for order, item in enumerate(retained_finals, 1):
+        item["order"] = order
+    fresh["final_items"] = retained_finals
+    if (
+        all(
+            item.get("decision")
+            in {"keep_source", "keep_curated", "rewrite_or_split", "remove"}
+            for item in new_current.values()
+        )
+        and all(
+            item.get("decision") in {"included", "covered", "excluded"}
+            for item in new_candidates.values()
+        )
+    ):
+        for field in CARD_EDITABLE_COLUMNS:
+            fresh[field] = _trim(existing.get(field))
+        if not retained_finals:
+            surfaces = [
+                _trim(item.get("text"))
+                for item in (
+                    *new_current.values(),
+                    *new_candidates.values(),
+                )
+                if _trim(item.get("text"))
+            ]
+            surface_note = ", ".join(surfaces[:8]) or "all source candidates"
+            fresh.update({
+                "empty_reason": (
+                    f"Source-refresh review for {fresh.get('word')}: "
+                    f"the reviewed surfaces ({surface_note}) were removed or "
+                    "excluded, so no learner-facing collocation remains."
+                ),
+                "empty_reviewer": "collocation-source-id-migration-20260724",
+                "empty_reviewed_at": "2026-07-24",
+                "empty_approval": "approved",
+            })
+
+
 def build_audit_rows(
     cards: Sequence[dict],
     registry_rows: Sequence[dict],
@@ -997,6 +1503,106 @@ def build_audit_rows(
     return rows
 
 
+def scaffold_audit_rows(
+    cards: Sequence[dict],
+    registry_rows: Sequence[dict],
+    semantic_registry_rows: Sequence[dict],
+    oxford_records: Sequence[dict],
+    cambridge_records: Sequence[dict],
+    *,
+    existing_rows: Sequence[dict] | None = None,
+) -> list[dict]:
+    """Scaffold while safely recognizing an exact promoted card projection.
+
+    The canonical audit fingerprints the collocations that were reviewed.
+    Production notes instead contain the promoted ``final_items`` projection.
+    Re-scaffolding directly from those notes would therefore reopen every
+    reviewed card.  For an unchanged identity whose text *and provenance*
+    exactly match the existing finals, reconstruct the reviewed baseline
+    before applying the normal fingerprint-bound reuse rules.  Changed,
+    split, new, or partially matching cards remain live inputs and reopen.
+    """
+    existing = list(existing_rows or [])
+    live_rows = build_audit_rows(
+        cards,
+        registry_rows,
+        semantic_registry_rows,
+        oxford_records,
+        cambridge_records,
+    )
+    if not existing:
+        return live_rows
+
+    existing_by_guid = {
+        _trim(row.get("guid")): row
+        for row in existing
+        if isinstance(row, dict) and _trim(row.get("guid"))
+    }
+    live_by_guid = {row["guid"]: row for row in live_rows}
+    identity_fields = ("guid", "word", "cefr", "list", "variant", "pos")
+    baseline_cards: list[dict] = []
+    promoted_projection_guids: set[str] = set()
+    for card in cards:
+        guid = _trim(card.get("guid") or card.get("GUID"))
+        old = existing_by_guid.get(guid)
+        fresh = live_by_guid.get(guid)
+        can_reconstruct = (
+            old is not None
+            and fresh is not None
+            and old.get("schema_version") == AUDIT_SCHEMA_VERSION
+            and all(
+                _trim(old.get(field)) == _trim(fresh.get(field))
+                for field in identity_fields
+            )
+        )
+        if can_reconstruct:
+            finals = old.get("final_items") or []
+            expected_collocations = "|".join(
+                str(item.get("text") or "") for item in finals
+            )
+            expected_sources = "|".join(
+                str(item.get("source") or "") for item in finals
+            )
+            can_reconstruct = (
+                _card_field(card, "collocations", "Collocations")
+                == expected_collocations
+                and _card_field(
+                    card, "collocation_sources", "CollocationSources"
+                )
+                == expected_sources
+            )
+        if not can_reconstruct:
+            baseline_cards.append(card)
+            continue
+
+        baseline = dict(card)
+        reviewed_value = "|".join(
+            str(item.get("text") or "")
+        for item in old.get("current_items") or []
+        )
+        if "collocations" in baseline:
+            baseline["collocations"] = reviewed_value
+        else:
+            baseline["Collocations"] = reviewed_value
+        baseline_cards.append(baseline)
+        promoted_projection_guids.add(guid)
+
+    rows = build_audit_rows(
+        baseline_cards,
+        registry_rows,
+        semantic_registry_rows,
+        oxford_records,
+        cambridge_records,
+        existing_rows=existing,
+    )
+    for row in rows:
+        if row["guid"] in promoted_projection_guids:
+            old = existing_by_guid.get(row["guid"])
+            if old is not None:
+                _migrate_equivalent_review_items(row, old)
+    return rows
+
+
 def refresh_audit_rows(
     audit_rows: Sequence[dict],
     cards: Sequence[dict],
@@ -1075,6 +1681,60 @@ def _matches_promoted_projection(
     return True
 
 
+def _matches_immutable_projection(
+    audit_rows: Sequence[dict],
+    refreshed_rows: Sequence[dict],
+) -> bool:
+    """Check source/identity freshness without requiring reviewed finals."""
+    audit_by_guid = {str(row.get("guid") or ""): row for row in audit_rows}
+    fresh_by_guid = {str(row.get("guid") or ""): row for row in refreshed_rows}
+    if set(audit_by_guid) != set(fresh_by_guid):
+        return False
+    for guid, row in audit_by_guid.items():
+        fresh = fresh_by_guid[guid]
+        for field in (
+            "guid",
+            "word",
+            "cefr",
+            "list",
+            "variant",
+            "pos",
+            "idiom_fingerprint",
+            "source_fingerprint",
+        ):
+            if _trim(fresh.get(field)) != _trim(row.get(field)):
+                return False
+    return True
+
+
+def _matches_reviewable_card_projection(
+    audit_rows: Sequence[dict],
+    cards: Sequence[dict],
+) -> bool:
+    """Accept either the captured current chips or the newly reviewed finals."""
+    audit_by_guid = {str(row.get("guid") or ""): row for row in audit_rows}
+    cards_by_guid = {
+        str(card.get("guid") or card.get("GUID") or ""): card
+        for card in cards
+    }
+    if set(audit_by_guid) != set(cards_by_guid):
+        return False
+    for guid, row in audit_by_guid.items():
+        card = cards_by_guid[guid]
+        live_text = _card_field(card, "collocations", "Collocations")
+        current_text = "|".join(
+            str(item.get("text") or "")
+            for item in row.get("current_items") or []
+        )
+        final_text = "|".join(
+            str(item.get("text") or "")
+            for item in row.get("final_items") or []
+        )
+        if live_text not in {current_text, final_text}:
+            return False
+    return True
+
+
 def _audit_baseline_cards(
     audit_rows: Sequence[dict], cards: Sequence[dict]
 ) -> list[dict]:
@@ -1103,6 +1763,7 @@ def validate_current_audit(
     cambridge_records: Sequence[dict],
     *,
     require_complete: bool = False,
+    allow_incomplete_projection: bool = False,
 ) -> list[str]:
     """Validate the ledger against a fresh projection of every live input."""
     errors = validate_audit_rows(
@@ -1142,7 +1803,20 @@ def validate_current_audit(
             oxford_records,
             cambridge_records,
         )
-        if not _matches_promoted_projection(audit_rows, baseline_refreshed, cards):
+        if allow_incomplete_projection:
+            # Review transactions may intentionally be between the captured
+            # pre-review chips and the newly reviewed finals.  Source/identity
+            # fingerprints remain strict; the card text is the item under
+            # review and is therefore not required to equal either projection
+            # until the next build.
+            projection_matches = _matches_immutable_projection(
+                audit_rows, baseline_refreshed
+            )
+        else:
+            projection_matches = _matches_promoted_projection(
+                audit_rows, baseline_refreshed, cards
+            )
+        if not projection_matches:
             errors.append("stale_collocation_audit_projection")
     return errors
 

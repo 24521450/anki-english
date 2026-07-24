@@ -83,9 +83,23 @@ _Avoid_: Restriction tag, register pill
 A `.ipa-text` element with monospace font + pill background, displaying the phonetic transcription. Uses the `Charis SIL` → `Doulos SIL` → `Segoe UI` → `Lucida Sans Unicode` → `Arial Unicode MS` font cascade.
 _Avoid_: Pronunciation, phonetic text
 
-**Audio Button**:
-A `.audio-btn-wrapper` chip with a Tabler volume icon, in either UK (`.audio-btn-uk`, blue accent) or US (`.audio-btn-us`, red accent) variant. Missing audio is hidden rather than rendered as a disabled placeholder.
-_Avoid_: Speaker button, sound icon
+**Headword Pronunciation Cluster**:
+The centered Recognition-answer control that binds IPA display and headword
+audio playback. UK is always left and US right. Distinct IPA values render as
+two labeled, fully clickable IPA Pills; a shared IPA renders once in one pill
+whose left and right halves are separate UK/US controls. The shared pill has no
+visible accent labels or idle speaker icons; the active half shows a temporary
+speaker icon and accent tint only while audio is playing.
+_Avoid_: Audio Row, separate speaker buttons, invisible center dead zone
+
+**Headword Audio Playback Source**:
+The two append-only EAVM fields `HeadwordAudioUKSrc` and
+`HeadwordAudioUSSrc`, deterministically derived from the established
+`AudioUK`/`AudioUS` sound references. They are media-only template inputs, not
+pronunciation authorities. The Recognition answer autoplays UK; clicking a
+Headword Pronunciation Cluster control switches immediately to that accent,
+and `R` replays the most recently selected accent.
+_Avoid_: second pronunciation authority, hand-authored media path, native replay button
 
 **Entry-Scoped Pronunciation**:
 One accent-specific IPA/audio pair taken from the same Oxford or Cambridge
@@ -187,7 +201,14 @@ own POS count.
 _Avoid_: one-example-per-sense rule, idiom-example substitution, POS-blind example count
 
 **Example Accent Toggle**:
-A card-local single-label `.example-accent-toggle` in the Audio Row that selects UK or US Example Audio for every main and idiom example on that card. Its only visible thumb carries the current accent label and slides horizontally when toggled. It defaults to UK on each card; clicking an `.example-audio-trigger` sentence plays the selected accent without adding the clip to Anki's autoplay queue.
+A card-local single-label `.example-accent-toggle` at the far-right edge of the
+Headword Pronunciation Cluster row that selects UK or US Example Audio for
+every main and idiom example on that card. It has no separate visible
+`Examples` label. Its only visible thumb carries the current accent label and
+slides horizontally when toggled; on narrow screens it wraps to a second,
+right-aligned row. It defaults to UK on each card; clicking an
+`.example-audio-trigger` sentence plays the selected accent without adding the
+clip to Anki's autoplay queue.
 _Avoid_: Two visible accent options, per-sentence audio buttons, persisted accent preference
 
 **Playing Example State**:
@@ -329,10 +350,35 @@ language rather than copied clause by clause from a source definition. Source
 definitions are semantic evidence, not display text. A Vietnamese lexical
 equivalent may express the complete learner meaning without mirroring every
 English source clause; synonyms are included only when they improve clarity or
-recall. Length thresholds only create review queues. A longer explanatory gloss
-remains valid when its review names the exact distinction a shorter wording
-would lose.
-_Avoid_: source-definition transcription, machine-shaped paraphrase, hard word cap
+recall. An English Lexical Gloss has a hard ceiling of ten counted words.
+Bracketed grammar and register labels do not count toward that ceiling; each
+`sb`/`sth` placeholder, including a slash form such as `sb/sth`, counts as one
+word. Vietnamese wording remains governed by naturalness and material meaning
+rather than this English ceiling. When one Semantic Sense spans multiple parts
+of speech, its English gloss states the semantic core once; it need not
+paraphrase every part-of-speech realization. `SensePOS` and aligned Examples
+carry that usage coverage. Definition VI is manually reviewed by the user
+whenever translation confidence is not above 80%; confidence is a triage
+signal, not permission to publish an unreviewed uncertain gloss. A review by
+another actor or an automatic score does not satisfy this user-review
+requirement. A gloss above 80% may be auto-accepted only when its
+Oxford/Cambridge sense alignment is clear and no semantic or naturalness
+warning is present; warnings still require the user's review. An English gloss
+of nine or ten counted words may remain when it preserves a material
+distinction, has Oxford/Cambridge evidence, and has no redundancy warning;
+glosses over ten counted words must be rewritten or split.
+Learner-facing Vietnamese glosses never use the connector `hoặc`; parallel
+alternatives use `/` or a shorter lexical core. This applies to Definition VI
+and Idiom VI, while source quotations and review evidence remain verbatim.
+_Avoid_: source-definition transcription, machine-shaped paraphrase, English gloss over ten counted words, semicolon-joined part-of-speech paraphrases
+
+**Vietnamese Review Suggestion**:
+A non-authoritative `suggested_vi` aid on a Vietnamese Naturalness Review row.
+It may recommend retaining or rewriting the current gloss, but it never counts
+as the user's manual review, never changes the final Vietnamese gloss, and
+never satisfies the promotion gate. The user must still record the review
+decision and approval through the canonical review transaction.
+_Avoid_: auto-approved Vietnamese gloss, suggestion-equals-review
 
 **Definition Sense Audit**:
 A report-only triage view of unusually long, token-heavy, or connector-heavy
@@ -341,13 +387,16 @@ semicolon-separated clauses are independent senses or belong in one bilingual
 sense, preserves Oxford/Cambridge evidence IDs, and requires
 Definition/Example pipe alignment. It never writes canonical review or
 production data. Candidate thresholds only select the current Definition
-Concision Review queue; they never authorize an automatic rewrite or split.
-_Avoid_: automatic definition rewrite, splitting every semicolon, maximum English length
+Concision Review queue; they never by themselves authorize a rewrite or split,
+while the ten-word English Lexical Gloss ceiling remains independently binding.
+_Avoid_: automatic definition rewrite from a triage threshold, splitting every semicolon
 
 **Definition Concision Review**:
-The fail-closed, fingerprint-bound promotion review for every current
-Definition Sense Audit candidate. An approved retained explanation names a
-genuinely shorter or connector-reduced English wording considered, the exact
+The fail-closed, fingerprint-bound promotion review for every current English
+Lexical Gloss, including glosses within the ten-word ceiling. It checks both
+the ceiling and unnecessary wording such as duplicated part-of-speech
+paraphrases. An approved retained explanation names a genuinely shorter or
+connector-reduced English wording considered, the exact
 material distinction it would lose, and row-specific semantic evidence that
 contains the current wording, alternative, and distinction. A required rewrite
 or split stays open until the Bilingual Semantic Audit is changed through its
@@ -420,6 +469,21 @@ Implications:
   sensitivity. GUID `fXYJ-i~KFJ` is variant `secondary_art_physical`, keeps the
   art and physical-reaction senses, routes to the Secondary Senses deck, and
   carries `SecondarySense`.
+- **Reviewed semantic variants — `worthy|C1|Oxford_5000|adjective`**: GUID
+  `J4vX4Ms>Gu` is variant `primary` and keeps only formal deservingness. GUID
+  `t<{&f+,xy(` is variant `secondary_typical_of`, keeps `typical of sb/sth`,
+  routes to the Secondary Senses deck, and carries `SecondarySense`. The
+  good-but-dull sense is excluded from both cards.
+- **Reviewed semantic variants — `provision|C1|Oxford_5000|noun`**: GUID
+  `si$OijE.g9` is variant `primary` and keeps supply, future preparation, and
+  the explicitly plural-only `[pl. provisions]` food/drink sense. GUID
+  `Jdw3%XIBK#` is variant `secondary_legal_condition`, keeps the legal-clause
+  sense, routes to the Secondary Senses deck, and carries `SecondarySense`.
+- **Reviewed semantic variants — `allowance|C1|Oxford_5000|noun`**: GUID
+  `{@EH_k/.?d` is variant `primary` and keeps regular-purpose money plus
+  permitted amount. GUID `q&$pu$7C?h` is variant
+  `secondary_child_allowance`, keeps the child pocket-money sense, routes to
+  the Secondary Senses deck, and carries `SecondarySense`.
 - **Reviewed POS merge — `torture|C1|Oxford_5000`**: the earlier noun/verb split was reversed on 2026-07-06. `torture` now follows the default Card Identity rule as one `noun, verb` card under the original noun GUID; the retired verb GUID must be deleted from Anki only after delete-tag audit/export.
 - Reviewed identity variants are an allowlist, not a general rule to split multi-POS cards.
 - `NO_LIST` is a valid identity bucket for cards with no corpus list tag (e.g. Oxford proper nouns not on any curated list). The identity rule applies uniformly.
@@ -613,6 +677,10 @@ A fail-closed phrase-level review of every idiom selected for an active card.
 One review row is shared by occurrences with the same normalized phrase and
 source meaning. It chooses one Idiom Display Mode and one canonical Vietnamese
 meaning, while preserving card-local order, examples, and audio alignment.
+The maintained scaffold derives source explanations from the pre-Semantic-Registry
+build projection; it must not use an already promoted learner gloss as source
+evidence. Reviewed Card Identity splits may explicitly partition idioms between
+primary and secondary variants, and the build enforces that ownership.
 _Avoid_: raw Oxford idiom translation, card-by-card duplicate review
 
 **Idiom Semantic Key**:
@@ -990,6 +1058,21 @@ _Avoid_: Oxford scrape entry, OLD record
 **Cambridge Record**:
 A word entry in `data/sources/cambridge.jsonl` produced by parsing the Cambridge cache. Carries the same per-def schema as Oxford records but with Oxford-only fields **empty** (`oxford_lists: []`, `opal: null`, `awl: null`, `topics: []`) — Cambridge thuần, không inherit. `register_tags` is parsed from Cambridge's `<span class="usage dusage">` labels (e.g. `formal`, `informal`, `slang`, `specialized`). `source = "cambridge"`.
 _Avoid_: Cambridge scrape entry, dictionary entry
+
+**Cambridge English–Vietnamese Evidence Record**:
+One deterministic lookup row in
+`data/sources/cambridge_english_vietnamese.jsonl`. It preserves the isolated
+Cambridge English–Vietnamese cache fingerprint, `found` / `no_entry` status,
+entry/POS structure, English definitions, Vietnamese translations, examples,
+and exact active Card Identity coverage requests. Learning-pattern headwords
+use only the explicit lookup aliases recorded by the planner; supplemental
+lexicalized forms such as `provisions` are explicit lookups rather than
+automatic stemming. This source is supporting review evidence and a durable
+future reference. It does not override Bilingual Semantic Audit decisions or
+Semantic Registry payloads. Transient or unexpected HTTP failures and
+unrecognized page structures must fail the snapshot build; they are never
+recorded as `no_entry`.
+_Avoid_: Cambridge translation override, implicit lemma fallback, failed lookup
 
 **Topic**:
 One entry in a record's `topics: list[{name, cefr}]` field. `name` is an Oxford academic-subject tag (e.g. "Difficulty and failure", "War and conflict"); `cefr` is the per-topic CEFR from Oxford's `<span class="topic_cefr">` (one of `A1`–`C2`, or `""` when the page doesn't tag a topic with a level). A word can have the same `name` at multiple CEFRs (e.g. "Education" at B1 in one sense, C2 in another); both pairs are kept. The 23 canonical `name` values live in the labels taxonomy `data/oxford_labels.json → subject_labels`. Cambridge records always have `topics: []` (Cambridge doesn't expose per-topic CEFR).

@@ -110,6 +110,14 @@ def test_regular_inflections_highlight_the_complete_surface_word():
     ]
 
 
+def test_lexicalized_plural_example_highlights_the_complete_surface_word():
+    assert _run_highlight_cases(
+        [["We have enough provisions to last us two weeks.", "provision", "noun"]]
+    ) == [
+        f"We have enough {_highlight('provisions')} to last us two weeks."
+    ]
+
+
 def test_current_deck_irregular_forms_are_highlighted_completely():
     irregulars = [
         ("bind", "bound", "verb"),

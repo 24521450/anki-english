@@ -16,7 +16,7 @@ These are maintained entry points for current workflows:
   `idiom_audit.py`, `collocation_audit.py`
 - Registry / corpus sync: `sync_card_registry.py`, `check_corpus_tags.py`,
   `check_sense_labels.py`, `sync_cambridge_pos_audio.py`,
-  `sync_pronunciation_audio.py`
+  `sync_pronunciation_audio.py`, `sync_cambridge_english_vietnamese.py`
 - Integrity gates: `check_audio_gate.py`, `check_awl_integrity.py`,
   `check_deck_cefr.py`, `check_def_before_integrity.py`,
   `check_design_sync.py`, `check_oxford_opal.py`
@@ -64,6 +64,30 @@ rejects manifest rows outside the active selection set. Use `--attest-existing`
 only for a reviewed migration and `--resume-staging` only with the staging
 directory produced by the same current plan.
 
+### Cambridge English–Vietnamese source snapshot
+
+```bash
+# Inspect normalized lookup coverage without network or filesystem writes.
+python -m tools.sync_cambridge_english_vietnamese plan
+
+# Populate only the isolated ignored cache, then atomically publish the snapshot.
+python -m tools.sync_cambridge_english_vietnamese fetch
+python -m tools.sync_cambridge_english_vietnamese build --apply
+
+# Read-only canonical and schema checks.
+python -m tools.sync_cambridge_english_vietnamese build --check
+python -m tools.sync_cambridge_english_vietnamese validate
+```
+
+The plan groups active Card Registry requests by normalized lookup headword.
+It uses only the reviewed aliases declared in the parser module and the
+mandatory `provisions` supplemental request; it performs no stemming or
+lemmatization. Each found or positively confirmed `no_entry` lookup produces
+one deterministic row with sorted coverage requests. Missing sense
+translations remain `translation_status: missing`; transient HTTP failures,
+challenge pages, and unrecognized parser shapes fail the command and never
+become absence evidence.
+
 ### Semantic and collocation workflows
 
 ```bash
@@ -76,16 +100,73 @@ python -m tools.idiom_audit import-xlsx
 python -m tools.collocation_audit scaffold
 python -m tools.collocation_audit export-xlsx
 python -m tools.collocation_audit import-xlsx
+python -m tools.collocation_audit apply-review \
+  --input scratch/collocation_review_part_001.jsonl
 python -m tools.collocation_audit validate --require-complete
 python -m tools.collocation_audit report
 python -m tools.collocation_audit promote
 python -m tools.semantic_audit vietnamese-review-scaffold --scope all --replace
-python -m tools.semantic_audit definition-review-scaffold --replace
+python -m tools.semantic_audit definition-review-scaffold --scope all --replace
 python -m tools.semantic_audit sense-merge-review-scaffold --replace
 python -m tools.semantic_audit validate --require-complete
 python -m tools.idiom_audit validate --require-complete
 python -m tools.semantic_audit promote
 ```
+
+`idiom_audit scaffold` builds its default input from the canonical
+pre-Semantic-Registry source projection. This preserves exact Oxford/Cambridge
+source explanations and prevents a previously promoted learner gloss from
+becoming a new source fingerprint. Pass `--notes <path>` only when an explicit
+card projection is required for a fixture or a controlled migration.
+
+`apply-review` consumes a complete row bundle produced from the same scaffold.
+It checks each row's immutable `input_fingerprint`, source evidence, current
+items, and mandatory candidates, then validates the live projection before an
+atomic write. Use it for parallel JSONL review patches; stale or partially
+edited rows are rejected. When a promoted-note projection is used as the
+scaffold input, unchanged rows may reuse only exact reviewed final text and
+provenance; source-ID-only churn is migrated by stable evidence keys, while
+new or changed evidence/candidates remains pending for explicit review.
+
+Definition Concision Review defaults to `--scope all` and must cover every
+promoted Definition-bearing Semantic Sense before promotion. Use `--scope long`
+only for threshold-based triage; that narrower ledger cannot pass promotion.
+Already-short wording closes with an approved `keep_concise` decision and
+row-specific semantic evidence. `keep_explanatory` still requires a genuinely
+shorter alternative plus the exact material distinction it would lose.
+
+Large canonical review ledgers can be handled as deterministic batches of at
+most 100 unresolved rows. Every manifest repeats the canonical review summary,
+so it remains fingerprint-bound and can be applied as a partial patch:
+
+```bash
+# Definition Concision Review batches.
+python -m tools.semantic_audit definition-review-create-manifests
+python -m tools.semantic_audit apply-definition-review \
+  --input scratch/definition_review_manifests/manifest_001.jsonl --dry-run
+python -m tools.semantic_audit apply-definition-review \
+  --input scratch/definition_review_manifests/manifest_001.jsonl
+
+# Vietnamese Naturalness Review batches (ledger only; does not change Bilingual Audit).
+python -m tools.semantic_audit vietnamese-review-create-manifests
+python -m tools.semantic_audit apply-vietnamese-review-patch \
+  --input scratch/vietnamese_review_manifests/manifest_001.jsonl --dry-run
+python -m tools.semantic_audit apply-vietnamese-review-patch \
+  --input scratch/vietnamese_review_manifests/manifest_001.jsonl
+```
+
+Use `--max-rows N` to choose a smaller batch (`1 <= N <= 100`) and `--replace`
+to reproduce an existing manifest directory. Rows for one GUID stay in the
+same manifest unless that GUID alone exceeds the selected limit. Creation
+rejects a stale or invalid canonical candidate set. Patch application rejects a changed summary,
+unknown or duplicate candidates, stale fingerprints, and edits to immutable
+context fields; a patch outside the same 1–100-row limit is also rejected. It
+validates the complete current candidate universe before atomically updating
+the canonical review ledger. The Vietnamese patch command
+intentionally leaves `data/review/bilingual_semantic_audit.jsonl` unchanged.
+After every Vietnamese batch is resolved, run the existing
+`apply-vietnamese-review` workflow to enforce completeness and apply approved
+rewrites to the Bilingual Semantic Audit.
 
 An identity split is a separate reviewed transaction, not a semantic scaffold
 side effect:

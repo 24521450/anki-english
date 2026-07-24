@@ -33,7 +33,7 @@ def _card_registry(word="uphold", guid="g-uphold"):
 
 def _semantic_registry(
     definition_en="support and keep a principle or law; confirm that a decision is correct",
-    definition_vi="duy trì/bảo vệ nguyên tắc hoặc luật; xác nhận quyết định là đúng",
+    definition_vi="duy trì/bảo vệ nguyên tắc / luật; xác nhận quyết định là đúng",
     *,
     word="uphold",
     guid="g-uphold",
@@ -128,7 +128,7 @@ def _audit(word="uphold", guid="g-uphold", *, source_count=2):
     }]
 
 
-def _build(registry=None, audit=None, card_registry=None):
+def _build(registry=None, audit=None, card_registry=None, *, scope="long"):
     registry = registry or _semantic_registry()
     audit = audit or _audit()
     card_registry = card_registry or _card_registry()
@@ -143,6 +143,7 @@ def _build(registry=None, audit=None, card_registry=None):
             "card_registry": "d" * 64,
             "semantic_registry": "e" * 64,
         },
+        scope=scope,
     )
 
 
@@ -291,6 +292,28 @@ def test_hybrid_candidate_thresholds(definition, is_candidate):
     assert bool(summary["candidate_senses"]) is is_candidate
 
 
+def test_all_scope_covers_short_definition_bearing_senses():
+    registry = _semantic_registry(
+        "easy to understand",
+        "dễ hiểu",
+        word="plain",
+        guid="g-plain",
+        examples=["The meaning is plain."],
+    )
+    registry[0]["senses"][0]["source_sense_ids"] = ["ox-1"]
+
+    summary, candidates = _build(
+        registry,
+        _audit("plain", "g-plain", source_count=1),
+        _card_registry("plain", "g-plain"),
+        scope="all",
+    )
+
+    assert summary["scope"] == "all"
+    assert summary["candidate_senses"] == summary["senses_scanned"] == 1
+    assert candidates[0]["triggers"] == []
+
+
 def test_report_serialization_is_deterministic_and_valid():
     first = _build()
     second = _build()
@@ -404,6 +427,24 @@ def _approved_definition_review(summary, candidates):
     return review_summary, reviews
 
 
+def _approved_concise_definition_review(summary, candidates):
+    review_summary, reviews = scaffold_definition_review(summary, candidates)
+    review = reviews[0]
+    current = review["expected_definition_en"]
+    support = candidates[0]["current"]["examples"][0]
+    review.update({
+        "decision": "keep_concise",
+        "reason": "The definition states this learner meaning directly in three words.",
+        "semantic_evidence": (
+            f'Current EN "{current}" directly matches the learner example "{support}".'
+        ),
+        "reviewer": "reviewer@example",
+        "reviewed_at": "2026-07-24",
+        "approval": "approved",
+    })
+    return review_summary, reviews
+
+
 def test_definition_review_scaffold_is_deterministic_and_exact_coverage():
     summary, candidates = _build()
     first = scaffold_definition_review(summary, candidates)
@@ -476,7 +517,7 @@ def test_definition_review_rejects_stale_candidate_fingerprint_and_set():
 
 
 def test_definition_review_does_not_bind_downstream_artifact_hashes():
-    summary, candidates = _build()
+    summary, candidates = _build(scope="all")
     review_summary, reviews = _approved_definition_review(summary, candidates)
     rebuilt_summary = copy.deepcopy(summary)
     rebuilt_summary["inputs"]["semantic_registry"] = "9" * 64
@@ -535,12 +576,62 @@ def test_non_final_definition_review_decisions_block_promotion(decision):
 
 
 def test_approved_keep_with_shorter_alternative_and_exact_loss_passes_gate():
-    summary, candidates = _build()
+    summary, candidates = _build(scope="all")
     review_summary, reviews = _approved_definition_review(summary, candidates)
 
     assert validate_definition_review_for_promotion(
         summary, candidates, review_summary, reviews
     ) == []
+
+
+def test_approved_keep_concise_with_row_specific_evidence_passes_all_scope_gate():
+    registry = _semantic_registry(
+        "easy to understand",
+        "dễ hiểu",
+        word="plain",
+        guid="g-plain",
+        examples=["The meaning is plain."],
+    )
+    registry[0]["senses"][0]["source_sense_ids"] = ["ox-1"]
+    summary, candidates = _build(
+        registry,
+        _audit("plain", "g-plain", source_count=1),
+        _card_registry("plain", "g-plain"),
+        scope="all",
+    )
+    review_summary, reviews = _approved_concise_definition_review(
+        summary, candidates
+    )
+
+    assert validate_definition_review_for_promotion(
+        summary, candidates, review_summary, reviews
+    ) == []
+
+
+def test_keep_concise_rejects_triggered_wording_and_long_scope_promotion():
+    long_summary, long_candidates = _build(scope="long")
+    review_summary, reviews = scaffold_definition_review(
+        long_summary, long_candidates
+    )
+    review = reviews[0]
+    review.update({
+        "decision": "keep_concise",
+        "reason": "The definition already states the learner meaning directly.",
+        "semantic_evidence": (
+            f'Current EN "{review["expected_definition_en"]}" matches exact learner '
+            f'example "{long_candidates[0]["current"]["examples"][0]}".'
+        ),
+        "reviewer": "reviewer@example",
+        "reviewed_at": "2026-07-24",
+        "approval": "approved",
+    })
+
+    errors = validate_definition_review_for_promotion(
+        long_summary, long_candidates, review_summary, reviews
+    )
+
+    assert any("keep_concise_not_short" in error for error in errors)
+    assert "definition_review_scope_must_be_all" in errors
 
 
 def test_definition_gate_rejects_placeholder_and_identifier_filler():

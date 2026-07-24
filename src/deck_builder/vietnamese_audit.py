@@ -1032,6 +1032,7 @@ def scaffold_vietnamese_review(
                 "gloss_policy_version": candidate["gloss_policy_version"],
                 "style_findings": list(candidate["style_findings"]),
                 "decision": "pending",
+                "suggested_vi": "",
                 "proposed_vi": "",
                 "shorter_vi_considered": "",
                 "preserved_distinction": "",
@@ -1140,6 +1141,9 @@ def validate_vietnamese_review(
         approval = review.get("approval", "")
         if approval not in REVIEW_APPROVALS:
             errors.append(f"review_invalid_approval:{identity}:{approval}")
+        suggested_vi = review.get("suggested_vi", "")
+        if suggested_vi and _invalid_vietnamese(suggested_vi):
+            errors.append(f"review_invalid_suggested_vi:{identity}")
         proposed_vi = review.get("proposed_vi", "")
         shorter_vi_considered = review.get("shorter_vi_considered", "")
         preserved_distinction = str(

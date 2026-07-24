@@ -6,6 +6,7 @@ import pytest
 import genanki
 
 from src.config import ProjectPaths
+from src.deck_builder.package_contract import json_value_for_key
 
 paths = ProjectPaths()
 PROJECT_ROOT = paths.root
@@ -57,6 +58,7 @@ def _production_design_paths(tmp_path: Path, monkeypatch):
         fixture_paths.pronunciation_selection_locks,
         fixture_paths.definition_concision_review,
         fixture_paths.semantic_sense_merge_review,
+        fixture_paths.cambridge_english_vietnamese_jsonl,
     ):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("fixture\n", encoding="utf-8")
@@ -89,9 +91,10 @@ def test_eavm_model_identity_matches_existing_anki_note_type():
     assert update_anki_deck.EAVM_MODEL_ID != update_anki_deck.generate_deterministic_id(
         update_anki_deck.EAVM_MODEL_NAME
     )
-    assert update_anki_deck.EAVM_FIELD_NAMES[-7:] == (
+    assert update_anki_deck.EAVM_FIELD_NAMES[-9:] == (
         "DefinitionVI", "CambridgeURL", "OxfordPOSURLs", "ProductionAnswer",
         "SensePOS", "IdiomMeaningVI", "CollocationSources",
+        "HeadwordAudioUKSrc", "HeadwordAudioUSSrc",
     )
     assert update_anki_deck.EAVM_FIELD_NAMES[22] == "ProductionAnswer"
     assert update_anki_deck.EAVM_FIELD_NAMES[23] == "SensePOS"
@@ -100,6 +103,17 @@ def test_eavm_model_identity_matches_existing_anki_note_type():
     assert update_anki_deck.EAVM_TEMPLATE_NAMES == (
         "Recognition", "Production (VI -> EN)",
     )
+
+
+def test_headword_playback_sources_are_derived_from_established_sound_fields():
+    row = {
+        "uk_audio": "[sound:uk_word.mp3]",
+        "us_audio": "[sound:us_word.mp3]",
+        "headword_audio_uk_src": "untrusted.mp3",
+    }
+
+    assert json_value_for_key(row, "headword_audio_uk_src") == "uk_word.mp3"
+    assert json_value_for_key(row, "headword_audio_us_src") == "us_word.mp3"
 
 
 def test_template_loader_is_ordered_and_composes_production_answer(tmp_path: Path):
@@ -556,6 +570,8 @@ def test_update_anki_deck_note_fields_and_guid_preservation(tmp_path, monkeypatc
         "verb|verb",
         "bilingual_gloss :: nghĩa",
         "curated",
+        "uk_conquer.mp3",
+        "us_conquer.mp3",
     ]
     assert created["guid"] == "test_guid_12345"
     assert created["tags"] == ["C1", "verb", "academic"]

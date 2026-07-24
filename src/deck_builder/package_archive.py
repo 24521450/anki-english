@@ -20,6 +20,7 @@ from src.deck_builder.package_contract import (
     EAVM_MODEL_ID,
     EAVM_MODEL_NAME,
     EAVM_REQUIREMENTS_BY_FIELD,
+    json_value_for_key,
 )
 
 
@@ -104,7 +105,7 @@ def _load_expected_notes(notes_jsonl: Path) -> dict[str, _ExpectedNote]:
                     )
                 fields: list[str] = []
                 for key, _field_name in EAVM_JSON_TO_FIELD:
-                    value = row.get(key) or ""
+                    value = json_value_for_key(row, key)
                     if not isinstance(value, str):
                         raise PackageArchiveError(
                             f"invalid canonical note field {key!r} on line {line_number}"

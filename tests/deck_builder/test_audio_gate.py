@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from src.deck_builder.audio_gate import validate_audio_gate
+from src.deck_builder.audio_gate import (
+    tracked_audio_names_from_git,
+    validate_audio_gate,
+)
 from src.deck_builder.build_contracts import BuiltCard
 
 
@@ -110,6 +113,26 @@ def test_validate_audio_gate_rejects_tracked_unreferenced_audio(tmp_path: Path):
     ]
     assert len(orphan_issues) == 1
     assert orphan_issues[0].source == audio_dir / "oxford_uk_orphan.mp3"
+
+
+def test_tracked_git_audio_ignores_paths_staged_for_deletion(
+    tmp_path: Path,
+    monkeypatch,
+):
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    (tmp_path / ".git").mkdir()
+    (audio_dir / "kept.mp3").write_bytes(VALID_ID3_MP3)
+
+    class Result:
+        stdout = "audio/kept.mp3\naudio/deleted.mp3\n"
+
+    monkeypatch.setattr(
+        "src.deck_builder.audio_gate.subprocess.run",
+        lambda *args, **kwargs: Result(),
+    )
+
+    assert tracked_audio_names_from_git(audio_dir) == {"kept.mp3"}
 
 
 def test_validate_audio_gate_rejects_case_mismatch(tmp_path: Path):

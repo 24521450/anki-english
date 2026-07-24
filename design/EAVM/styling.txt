@@ -1,12 +1,3 @@
-/* Anki card design — auto-baked into .apkg.
- * Source of truth: ../index.html (vùng 2 card CSS, line 197+).
- * Drift enforced by tests/design/test_design_sync.py.
- * Selector class names are immutable contracts (don't rename).
- */
-/* IPA font — Doulos SIL (SIL Global, OFL 1.1) loaded from jsDelivr.
-   See styling.txt for full comment + offline fallback chain. */
-
-/* ─── #7 Fade-in animation ─── */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
@@ -20,7 +11,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-
 .card {
   font-family: 'Hanken Grotesk', -apple-system, sans-serif;
   background-color: #141313;
@@ -29,6 +19,7 @@
   margin: 0;
   padding: 0;
 }
+
 .anki-card-container {
   background: #141313;
   border-radius: 20px;
@@ -37,12 +28,13 @@
   margin: 0 auto;
   overflow: hidden;
   border: 1px solid #2a2929;
+  
   box-shadow:
     0 10px 30px rgba(0,0,0,0.55),
     0 1px 0 rgba(255,255,255,0.03) inset;
 }
 
-/* ── Top bar ── */
+
 .top-bar {
   display: flex;
   justify-content: space-between;
@@ -74,7 +66,6 @@
   text-transform: uppercase;
 }
 
-/* ── CEFR badges ── */
 .cefr-badge-A1         { color: #5eead4; border: 1px solid #0f766e; background: #0f766e20; }
 .cefr-badge-A2         { color: #67e8f9; border: 1px solid #0e7490; background: #0e749020; }
 .cefr-badge-B1         { color: #93c5fd; border: 1px solid #1d4ed8; background: #1d4ed820; }
@@ -91,7 +82,6 @@
 .anki-card-container[data-cefr="C2"] {--example-playing-color: #fda4af;}
 .anki-card-container[data-cefr="UNCLASSIFIED"] {--example-playing-color: #c4c7c7;}
 
-/* ── POS chips ── */
 .pos-chip {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
@@ -130,7 +120,6 @@
   line-height: 1.6;
 }
 
-/* ── Front card ── */
 .card-content-front {
   display: flex;
   align-items: center;
@@ -138,6 +127,7 @@
   min-height: 240px;
   padding: 40px;
 }
+
 
 .word-front {
   font-size: 52px;
@@ -162,7 +152,6 @@
   outline: none;
 }
 
-/* #A: Sense count dots on front card — only shown when multi-sense */
 .front-word-group {
   display: flex;
   flex-direction: column;
@@ -182,12 +171,11 @@
   border: 1px solid #3a3939;
 }
 
-/* ── Back card ── */
 .card-content-back {
-  padding: 28px 20px; /* #6 wider horizontal breathing room */
+  padding: 28px 20px; 
   display: flex;
   flex-direction: column;
-  gap: 20px; /* #6 was 16px */
+  gap: 20px; 
 }
 .word-header-back {
   text-align: center;
@@ -212,7 +200,16 @@
   flex-wrap: wrap;
   margin-top: 4px;
 }
-/* #3 Fix: IPA — monospace + pill background, distinct from plain text */
+
+.pronunciation-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 84px;
+  box-sizing: border-box;
+}
 .ipa-text {
   display: inline-flex;
   align-items: center;
@@ -229,14 +226,19 @@
   flex-wrap: wrap;
 }
 .ipa-chip {
+  position: relative;
+  appearance: none;
+  font: inherit;
   display: inline-flex;
   align-items: baseline;
   gap: 7px;
+  cursor: pointer;
   background: #171a20;
   border: 1px solid #2b3442;
   border-radius: 8px;
-  padding: 3px 10px 4px;
+  padding: 3px 30px 4px 10px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 100ms ease;
 }
 .ipa-chip-uk {
   border-color: #244263;
@@ -259,8 +261,86 @@
   color: #cbd5e1;
   white-space: nowrap;
 }
+.ipa-chip:hover,
+.ipa-zone:hover {
+  background: #202938;
+}
+.ipa-chip-us:hover {
+  background: #302229;
+}
+.ipa-chip:active,
+.ipa-zone:active {
+  transform: scale(0.98);
+}
+.ipa-chip:focus-visible,
+.ipa-zone:focus-visible {
+  outline: 2px solid #cbd5e1;
+  outline-offset: 2px;
+}
+.headword-playing-icon {
+  position: absolute;
+  top: 50%;
+  opacity: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+.ipa-chip .headword-playing-icon {
+  right: 9px;
+}
+.ipa-chip.is-playing {
+  box-shadow: 0 0 0 2px #93c5fd66, 0 0 14px #3b82f633;
+}
+.ipa-chip-us.is-playing {
+  box-shadow: 0 0 0 2px #fda4af66, 0 0 14px #ef444433;
+}
+.ipa-chip.is-playing .headword-playing-icon,
+.ipa-zone.is-playing .headword-playing-icon {
+  opacity: 1;
+}
+.ipa-shared {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 172px;
+  min-height: 34px;
+  padding: 3px 44px 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #182331 0%, #171a20 42%, #171a20 58%, #241b20 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.ipa-zone {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  width: 50%;
+  height: 100%;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.ipa-zone-uk { left: 0; }
+.ipa-zone-us { right: 0; }
+.ipa-zone-uk:hover { background: #24426344; }
+.ipa-zone-us:hover { background: #4b2c3544; }
+.ipa-zone-uk .headword-playing-icon { left: 10px; }
+.ipa-zone-us .headword-playing-icon { right: 10px; }
+.ipa-zone.is-playing {
+  box-shadow: inset 0 0 0 1px #cbd5e166, 0 0 14px #64748b33;
+}
+.ipa-shared .ipa-symbols {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+.headword-audio-engine { display: none; }
 
-/* ── Dividers ── */
 .divider { border: none; border-top: 1px solid #2e2d2d; margin: 12px 0; }
 .divider-A1          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #5eead4, transparent); margin:12px 0; }
 .divider-A2          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #67e8f9, transparent); margin:12px 0; }
@@ -270,62 +350,6 @@
 .divider-C2          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #fda4af, transparent); margin:12px 0; }
 .divider-UNCLASSIFIED{ border:none; height:1.5px; background:linear-gradient(90deg, transparent, #c4c7c7, transparent); margin:12px 0; }
 
-/* ── #3 Audio buttons ── */
-.audio-row {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: center;
-  min-height: 50px;
-  padding: 0 78px;
-  box-sizing: border-box;
-  margin: 0;
-}
-.audio-btn-wrapper {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #94a3b8;
-  background: #181717;
-  border: 1px solid #333232;
-  border-radius: 9999px;  padding: 4px 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  /* #3 hover/transition */
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-  user-select: none;
-}
-.audio-btn-wrapper:hover {
-  background: #232222;
-  color: #e5e2e1;
-}
-.audio-btn-wrapper:active {
-  transform: scale(0.96);
-}
-/* #3 UK = subtle blue accent, US = subtle red accent */
-.audio-btn-uk {
-  border-color: #1e3a5f;
-}
-.audio-btn-uk:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #1d4ed840;
-}
-.audio-btn-us {
-  border-color: #450a0a;
-}
-.audio-btn-us:hover {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 1px #9f123840;
-}
-.audio-btn-wrapper i {
-  font-size: 10px;
-}
-
-/* ── Section boxes ── */
 .section-box {
   background: #181717;
   border: 1px solid #252424;
@@ -333,7 +357,7 @@
   padding: 14px 18px;
   text-align: left;
 }
-/* #4 section title with icon */
+
 .section-title {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
@@ -351,7 +375,6 @@
   color: #374151;
 }
 
-/* ── #2 Word highlight in examples ── */
 .word-highlight {
   color: #f1f5f9;
   font-weight: 700;
@@ -362,7 +385,6 @@
   text-decoration-thickness: 1.5px;
 }
 
-/* ── Collocations ── */
 .collocations-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .collocation-chip {
   font-family: 'JetBrains Mono', monospace;
@@ -402,7 +424,6 @@
   letter-spacing: 0.04em;
 }
 
-/* ── #5 Word family chips ── */
 .word-family-content {
   display: flex;
   flex-wrap: wrap;
@@ -431,13 +452,13 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-/* POS colors */
-.wf-pos-n    { background: #0f2e2e; color: #5eead4; border-left: 1px solid #0f766e; }  /* noun — teal */
-.wf-pos-v    { background: #0c1f40; color: #93c5fd; border-left: 1px solid #1d4ed8; }  /* verb — blue */
-.wf-pos-adj  { background: #1c1a2e; color: #a78bfa; border-left: 1px solid #6d28d9; }  /* adjective — purple */
-.wf-pos-adv  { background: #2d1a00; color: #fbbf24; border-left: 1px solid #78350f; }  /* adverb — amber */
-.wf-pos-phr  { background: #1c0e00; color: #fb923c; border-left: 1px solid #7c2d12; }  /* phrase — orange */
-.wf-pos-prep { background: #0a1a0a; color: #86efac; border-left: 1px solid #166534; }  /* preposition — green */
+
+.wf-pos-n    { background: #0f2e2e; color: #5eead4; border-left: 1px solid #0f766e; }  
+.wf-pos-v    { background: #0c1f40; color: #93c5fd; border-left: 1px solid #1d4ed8; }  
+.wf-pos-adj  { background: #1c1a2e; color: #a78bfa; border-left: 1px solid #6d28d9; }  
+.wf-pos-adv  { background: #2d1a00; color: #fbbf24; border-left: 1px solid #78350f; }  
+.wf-pos-phr  { background: #1c0e00; color: #fb923c; border-left: 1px solid #7c2d12; }  
+.wf-pos-prep { background: #0a1a0a; color: #86efac; border-left: 1px solid #166534; }  
 
 .word-family-box {
   background: #131226;
@@ -450,7 +471,6 @@
   color: #6d28d9;
 }
 
-/* ── Corpus badges ── */
 .corpus-badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
@@ -465,7 +485,6 @@
 .corpus-oxf   { color: #d1fae5; background: #022c22; border: 1px solid #065f46; }
 .corpus-awl   { color: #fef3c7; background: #1c1200; border: 1px solid #78350f; }
 
-/* #4 Fix: register-tag slightly smaller to save L3 column space */
 .register-tag {
   font-family: 'Hanken Grotesk', sans-serif;
   font-size: 10px;
@@ -487,7 +506,6 @@
 .rt-subject { color: #c4b5fd; background: #1e1b4b; border: 1px solid #4338ca; }
 .rt-idiom   { color: #86efac; background: #031a0e; border: 1px solid #166534; }
 
-/* ── Top-bar: POS │ Corpus separator ── */
 .top-bar-sep {
   width: 1px;
   height: 14px;
@@ -497,8 +515,6 @@
   margin: 0 2px;
 }
 
-/* ── Usage restriction tags (old-fashioned, dialect, trademark) ── */
-/* Moves to meta-row, next to IPA — word-level constraint */
 .usage-tag {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
@@ -511,8 +527,6 @@
   border-radius: 9999px;
 }
 
-/* ── Feature tags row (idioms, phrasal verbs) ── */
-/* Standalone row at bottom, more prominent than old footer */
 .feature-row {
   display: flex;
   gap: 8px;
@@ -543,7 +557,6 @@
   font-size: 12px;
 }
 
-/* ── L3 Sense grid (Def1/Ex1 … Def3/Ex3) ── */
 .senses-box {
   padding: 0;
   overflow: hidden;
@@ -557,7 +570,7 @@
 .sense-row + .sense-row {
   border-top: 1px solid #1e1d1d;
 }
-/* #4 Fix: sense-def wider line-height + hyphenation for long words */
+
 .sense-def {
   font-size: 15.5px;
   line-height: 1.8;
@@ -599,7 +612,6 @@
 .idiom-vi-text {
   color: inherit;
 }
-/* #1 Fix: empty sense-ex — hide orphaned border-left */
 .sense-ex:empty {
   border-left: none;
 }
@@ -638,12 +650,14 @@
 .example-line + .example-line { margin-top: 8px; }
 .example-text { flex: 1; min-width: 0; }
 .example-audio-toolbar {
+  display: flex;
+  align-items: center;
+}
+.pronunciation-toolbar > .example-audio-toolbar {
   position: absolute;
   top: 50%;
   right: 0;
   transform: translateY(-50%);
-  display: flex;
-  align-items: center;
 }
 .example-audio-toolbar[hidden] { display: none; }
 .example-accent-toggle {
@@ -714,7 +728,6 @@
   outline-offset: 3px;
   border-radius: 3px;
 }
-/* ── Idioms section (phrase + bilingual meaning + examples) ── */
 .idiom-box {
   background: #1a1810;
   border-color: #3a2a08;
@@ -783,7 +796,21 @@
   .card-content-back > :not(.word-header-back) { animation: none; }
   .example-accent-label { transition: none; }
   .example-audio-trigger { transition: none; }
-  .example-audio-trigger .example-text * { transition: none; }
+.example-audio-trigger .example-text * { transition: none; }
+}
+@media (max-width: 560px) {
+  .pronunciation-toolbar {
+    padding: 0;
+    min-height: 46px;
+    flex-wrap: wrap;
+  }
+  .pronunciation-toolbar > .example-audio-toolbar {
+    position: static;
+    flex-basis: 100%;
+    justify-content: flex-end;
+    transform: none;
+    margin-top: 4px;
+  }
 }
 
 /* Vietnamese -> English Production sibling card */

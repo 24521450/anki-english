@@ -7,6 +7,7 @@ from src.config import ProjectPaths
 from src.deck_builder.build_contracts import BuiltCard
 from src.deck_builder.semantic_registry import (
     SEMANTIC_REGISTRY_SCHEMA_VERSION,
+    apply_variant_idiom_ownership,
     apply_semantic_registry,
     _render_promoted_audit_rows,
     promote_reviewed_semantics,
@@ -420,6 +421,32 @@ def test_validator_allows_terminal_question_punctuation_in_vietnamese():
     assert not any(error.startswith("suspected_lossy_unicode:") for error in errors)
 
 
+@pytest.mark.parametrize(
+    ("field", "value", "location"),
+    [
+        (
+            "definition_vi",
+            "người mua hoặc bán",
+            "sem-1:definition_vi",
+        ),
+        (
+            "explanation_vi",
+            "do hoặc nhờ",
+            "idm_" + "1" * 24 + ":explanation_vi",
+        ),
+    ],
+)
+def test_validator_rejects_vietnamese_or_connector(field, value, location):
+    if field == "explanation_vi":
+        row = _promoted(idioms=[_promoted_idiom(**{field: value})])
+    else:
+        row = _promoted(senses=[_promoted_sense(**{field: value})])
+
+    errors = validate_semantic_registry_rows([row], [_registry()])
+
+    assert f"forbidden_vietnamese_or_connector:guid-1:{location}" in errors
+
+
 def test_apply_formats_senses_and_preserves_every_other_card_field():
     row = _promoted(senses=[
         _promoted_sense(examples=["First.", "Second."]),
@@ -559,6 +586,44 @@ def test_apply_fails_closed_on_stale_or_missing_idiom_payload():
         apply_semantic_registry([card], [_promoted(idioms=[stale])])
     with pytest.raises(ValueError, match="idiom count mismatch"):
         apply_semantic_registry([card], [_promoted(idioms=[])])
+
+
+def test_variant_idiom_ownership_can_assign_source_idioms_only_to_primary():
+    source = "source explanation"
+    secondary = _card(
+        guid="secondary",
+        idioms=f"phrase :: {source} :: Example.",
+    )
+    row = _promoted(
+        guid="secondary",
+        variant="secondary_reviewed_sense",
+        idioms=[],
+    )
+
+    aligned = apply_variant_idiom_ownership([secondary], [row])
+
+    assert aligned[0].idioms == ""
+    assert apply_semantic_registry(aligned, [row])[0].idioms == ""
+
+
+def test_variant_idiom_ownership_fails_when_promoted_idiom_has_no_source_match():
+    source = "source explanation"
+    secondary = _card(
+        guid="secondary",
+        idioms=f"source phrase :: {source}",
+    )
+    promoted = _promoted_idiom(
+        phrase_en="different phrase",
+        source_explanation_en=source,
+    )
+    row = _promoted(
+        guid="secondary",
+        variant="secondary_reviewed_sense",
+        idioms=[promoted],
+    )
+
+    with pytest.raises(ValueError, match="variant idiom ownership mismatch"):
+        apply_variant_idiom_ownership([secondary], [row])
 
 
 def test_canonical_semantic_registry_is_the_current_deterministic_promotion():

@@ -85,7 +85,7 @@ def test_non_oxford_review_in_memory_metrics_and_scope():
     cards = get_cards_with_overrides()
     by_guid = {card.guid: card for card in cards}
 
-    assert len(cards) == 2465
+    assert len(cards) == 2468
     assert set(overrides).issubset(by_guid)
     assert _override_guids(paths_reg.synonym_example_overrides).issubset(by_guid)
     assert _override_guids(paths_reg.antonym_example_overrides).issubset(by_guid)
@@ -111,8 +111,7 @@ def test_manual_override_specifics():
     assert nursing.definition == "care of sick people (nghề điều dưỡng)"
     assert nursing.example == "a career in nursing"
     assert nursing.collocations == (
-        "nurse something back to health|be nursed through|nursing care|"
-        "nursing career|nursing profession"
+        "nursing care|nursing career|nursing profession"
     )
 
 

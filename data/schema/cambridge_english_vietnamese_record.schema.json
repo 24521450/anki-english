@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cambridge English–Vietnamese source snapshot record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_id",
+    "lookup_headword",
+    "slug",
+    "status",
+    "requested_url",
+    "response_url",
+    "canonical_url",
+    "http_status",
+    "resolved_headword",
+    "coverage_requests",
+    "source_metadata",
+    "snapshot",
+    "entries",
+    "record_fingerprint"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_id": {"type": "string", "pattern": "^cev:[0-9a-f]{24}$"},
+    "lookup_headword": {"type": "string", "minLength": 1},
+    "slug": {"type": "string", "minLength": 1},
+    "status": {"enum": ["found", "no_entry"]},
+    "requested_url": {
+      "type": "string",
+      "pattern": "^https://dictionary\\.cambridge\\.org/dictionary/english-vietnamese/"
+    },
+    "response_url": {
+      "type": "string",
+      "pattern": "^https://dictionary\\.cambridge\\.org/dictionary/english-vietnamese/"
+    },
+    "canonical_url": {
+      "type": "string",
+      "pattern": "^https://dictionary\\.cambridge\\.org/dictionary/english-vietnamese/"
+    },
+    "http_status": {"type": "integer", "enum": [200, 404]},
+    "resolved_headword": {"type": ["string", "null"]},
+    "coverage_requests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/coverage_request"}
+    },
+    "source_metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["publisher", "dictionary", "source_language", "target_language"],
+      "properties": {
+        "publisher": {"const": "Cambridge University Press & Assessment"},
+        "dictionary": {"const": "Cambridge English–Vietnamese Dictionary"},
+        "source_language": {"const": "en"},
+        "target_language": {"const": "vi"}
+      }
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cache_file", "html_sha256"],
+      "properties": {
+        "cache_file": {
+          "type": "string",
+          "pattern": "^cambridge_english_vietnamese_[0-9a-f]{16}\\.html$"
+        },
+        "html_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/entry"}
+    },
+    "record_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "found"}}},
+      "then": {
+        "properties": {
+          "resolved_headword": {"type": "string", "minLength": 1},
+          "entries": {"minItems": 1}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "no_entry"}}},
+      "then": {
+        "properties": {
+          "resolved_headword": {"type": "null"},
+          "entries": {"maxItems": 0}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "coverage_request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["guid", "word", "variant", "pos", "card_status", "reason"],
+      "properties": {
+        "guid": {"type": "string", "minLength": 1},
+        "word": {"type": "string", "minLength": 1},
+        "variant": {"type": "string"},
+        "pos": {"type": "string", "minLength": 1},
+        "card_status": {"const": "active"},
+        "reason": {
+          "enum": [
+            "card_identity",
+            "lookup_alias",
+            "lexicalized_plural_source_evidence"
+          ]
+        }
+      }
+    },
+    "example": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text_en", "translation_vi"],
+      "properties": {
+        "text_en": {"type": "string", "minLength": 1},
+        "translation_vi": {"type": ["string", "null"]}
+      }
+    },
+    "sense": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_sense_id",
+        "source_wordlist_sense_id",
+        "sense_order",
+        "definition_en",
+        "translation_vi",
+        "translation_status",
+        "examples",
+        "sense_fingerprint"
+      ],
+      "properties": {
+        "source_sense_id": {
+          "type": "string",
+          "pattern": "^cev-sense:[0-9a-f]{24}$"
+        },
+        "source_wordlist_sense_id": {"type": ["string", "null"]},
+        "sense_order": {"type": "integer", "minimum": 1},
+        "definition_en": {"type": ["string", "null"]},
+        "translation_vi": {"type": ["string", "null"]},
+        "translation_status": {"enum": ["found", "missing"]},
+        "examples": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/example"}
+        },
+        "sense_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"translation_status": {"const": "found"}}},
+          "then": {"properties": {"translation_vi": {"type": "string", "minLength": 1}}}
+        },
+        {
+          "if": {"properties": {"translation_status": {"const": "missing"}}},
+          "then": {"properties": {"translation_vi": {"type": "null"}}}
+        }
+      ]
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_entry_id",
+        "source_entry_dom_id",
+        "entry_order",
+        "headword",
+        "pos",
+        "grammar",
+        "senses"
+      ],
+      "properties": {
+        "source_entry_id": {
+          "type": "string",
+          "pattern": "^cev-entry:[0-9a-f]{24}$"
+        },
+        "source_entry_dom_id": {"type": ["string", "null"]},
+        "entry_order": {"type": "integer", "minimum": 1},
+        "headword": {"type": "string", "minLength": 1},
+        "pos": {"type": ["string", "null"]},
+        "grammar": {"type": ["string", "null"]},
+        "senses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/sense"}
+        }
+      }
+    }
+  }
+}

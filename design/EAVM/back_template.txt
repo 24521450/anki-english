@@ -18,27 +18,23 @@
     <div class="word-header-back">
       <div class="word-back">{{#CambridgeURL}}<a href="{{CambridgeURL}}" target="_blank" rel="noopener noreferrer" aria-label="Open headword in Cambridge Dictionary">{{Word}}</a>{{/CambridgeURL}}{{^CambridgeURL}}{{Word}}{{/CambridgeURL}}</div>
       <hr class="divider divider-{{CEFRLevel}}">
+      <div class="pronunciation-toolbar" id="pronunciation-toolbar">
+        <div class="ipa-text" id="ipa-display">{{IPA}}</div>
+        <div class="example-audio-toolbar" id="example-audio-toolbar" hidden>
+          <button type="button" class="example-accent-toggle" id="example-accent-toggle" role="switch" aria-checked="false" aria-label="Example audio accent: UK">
+            <span class="example-accent-label" id="example-accent-label">UK</span>
+          </button>
+        </div>
+      </div>
       <div class="meta-row">
-        {{#IPA}}<span class="ipa-text" id="ipa-display">{{IPA}}</span>{{/IPA}}
         <span id="usage-tags-container"></span>
       </div>
     </div>
 
-    <!-- Audio row -->
-    <div class="audio-row" id="audio-row-container">
-      {{#AudioUK}}
-      <span class="audio-btn-wrapper audio-btn-uk" id="audio-uk-wrapper"><i class="ti ti-volume"></i> UK {{AudioUK}}</span>
-      {{/AudioUK}}
-      {{#AudioUS}}
-      <span class="audio-btn-wrapper audio-btn-us" id="audio-us-wrapper"><i class="ti ti-volume"></i> US {{AudioUS}}</span>
-      {{/AudioUS}}
-      <!-- Card-local Example Audio accent selector (shown by JS when audio exists) -->
-      <div class="example-audio-toolbar" id="example-audio-toolbar" hidden>
-        <button type="button" class="example-accent-toggle" id="example-accent-toggle" role="switch" aria-checked="false" aria-label="Example audio accent: UK">
-          <span class="example-accent-label" id="example-accent-label">UK</span>
-        </button>
-      </div>
-    </div>
+    <audio class="headword-audio-engine" id="headword-audio-uk" preload="auto" autoplay
+      {{#HeadwordAudioUKSrc}}src="{{HeadwordAudioUKSrc}}"{{/HeadwordAudioUKSrc}}></audio>
+    <audio class="headword-audio-engine" id="headword-audio-us" preload="auto"
+      {{#HeadwordAudioUSSrc}}src="{{HeadwordAudioUSSrc}}"{{/HeadwordAudioUSSrc}}></audio>
 
     <!-- Senses: L3 grid (def left / ex right), built by JS -->
     {{#Definition}}
@@ -574,21 +570,99 @@
     raw = trim(raw);
     if (!raw) return '';
     var parts = [], re = /(UK|US)\s*:\s*([^|]+)/gi, m;
+    var icon = '<i class="headword-playing-icon ti ti-volume" aria-hidden="true"></i>';
     while ((m = re.exec(raw)) !== null) {
       parts.push({label: m[1].toUpperCase(), value: trim(m[2])});
     }
     if (!parts.length) {
+      var ukAudio = headwordAudioElement('uk'), usAudio = headwordAudioElement('us');
+      if (ukAudio && usAudio && ukAudio.getAttribute('src') && usAudio.getAttribute('src')) {
+        return '<span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" data-accent="uk" aria-label="Play UK pronunciation">' + icon + '</button>'
+          + '<span class="ipa-symbols">' + escapeHtml(raw) + '</span>'
+          + '<button type="button" class="ipa-zone ipa-zone-us" data-accent="us" aria-label="Play US pronunciation">' + icon + '</button></span>';
+      }
       return '<span class="ipa-chip"><span class="ipa-symbols">' + escapeHtml(raw) + '</span></span>';
     }
-    var html = '<span class="ipa-cluster">';
-    for (var p = 0; p < parts.length; p++) {
-      if (parts[p].label === 'UK') {
-        html += '<span class="ipa-chip ipa-chip-uk"><span class="ipa-label">UK</span><span class="ipa-symbols">' + escapeHtml(parts[p].value) + '</span></span>';
-      } else {
-        html += '<span class="ipa-chip ipa-chip-us"><span class="ipa-label">US</span><span class="ipa-symbols">' + escapeHtml(parts[p].value) + '</span></span>';
-      }
+    var byAccent = {UK:'', US:''};
+    for (var p = 0; p < parts.length; p++) byAccent[parts[p].label] = parts[p].value;
+    var uk = byAccent.UK, us = byAccent.US;
+    if (uk && us && uk === us) {
+      return '<span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" data-accent="uk" aria-label="Play UK pronunciation">' + icon + '</button>'
+        + '<span class="ipa-symbols">' + escapeHtml(uk) + '</span>'
+        + '<button type="button" class="ipa-zone ipa-zone-us" data-accent="us" aria-label="Play US pronunciation">' + icon + '</button></span>';
     }
+    var html = '<span class="ipa-cluster">';
+    if (uk) html += '<button type="button" class="ipa-chip ipa-chip-uk" data-accent="uk" aria-label="Play UK pronunciation"><span class="ipa-label">UK</span><span class="ipa-symbols">' + escapeHtml(uk) + '</span>' + icon + '</button>';
+    if (us) html += '<button type="button" class="ipa-chip ipa-chip-us" data-accent="us" aria-label="Play US pronunciation"><span class="ipa-label">US</span><span class="ipa-symbols">' + escapeHtml(us) + '</span>' + icon + '</button>';
     return html + '</span>';
+  }
+
+  var activeHeadwordAudio = null;
+  var lastHeadwordAccent = 'uk';
+  function headwordAudioElement(accent) {
+    return document.getElementById('headword-audio-' + accent);
+  }
+  function clearHeadwordPlaying(audio) {
+    if (activeHeadwordAudio !== audio) return;
+    var accent = audio.getAttribute('data-accent');
+    activeHeadwordAudio = null;
+    var zones = document.querySelectorAll('button[data-accent="' + accent + '"]');
+    for (var i = 0; i < zones.length; i++) zones[i].classList.remove('is-playing');
+  }
+  function stopHeadwordAudio() {
+    var audio = activeHeadwordAudio;
+    if (!audio) return;
+    activeHeadwordAudio = null;
+    audio.pause();
+    audio.currentTime = 0;
+    var accent = audio.getAttribute('data-accent');
+    var zones = document.querySelectorAll('button[data-accent="' + accent + '"]');
+    for (var i = 0; i < zones.length; i++) zones[i].classList.remove('is-playing');
+  }
+  function playHeadwordAudio(accent) {
+    if (accent !== 'uk' && accent !== 'us') return;
+    var audio = headwordAudioElement(accent);
+    if (!audio || !audio.getAttribute('src')) return;
+    stopHeadwordAudio();
+    lastHeadwordAccent = accent;
+    audio.setAttribute('data-accent', accent);
+    activeHeadwordAudio = audio;
+    audio.currentTime = 0;
+    var playResult = audio.play();
+    if (playResult && playResult.catch) {
+      playResult.catch(function() { clearHeadwordPlaying(audio); });
+    }
+  }
+  function wireHeadwordAudio() {
+    var ukAudio = headwordAudioElement('uk');
+    var usAudio = headwordAudioElement('us');
+    var audios = [ukAudio, usAudio];
+    for (var i = 0; i < audios.length; i++) {
+      var audio = audios[i];
+      if (!audio || !audio.getAttribute('src')) continue;
+      audio.addEventListener('playing', function() {
+        if (activeHeadwordAudio !== this) return;
+        var zones = document.querySelectorAll('button[data-accent="' + this.getAttribute('data-accent') + '"]');
+        for (var j = 0; j < zones.length; j++) zones[j].classList.add('is-playing');
+      });
+      audio.addEventListener('ended', function() { clearHeadwordPlaying(this); });
+      audio.addEventListener('pause', function() { clearHeadwordPlaying(this); });
+      audio.addEventListener('error', function() { clearHeadwordPlaying(this); });
+    }
+    var controls = document.querySelectorAll('button[data-accent]');
+    for (var c = 0; c < controls.length; c++) {
+      controls[c].addEventListener('click', function() {
+        playHeadwordAudio(this.getAttribute('data-accent'));
+      });
+    }
+    document.addEventListener('keydown', function(event) {
+      if (event.key.toLowerCase() !== 'r') return;
+      var target = event.target;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+      event.preventDefault();
+      playHeadwordAudio(lastHeadwordAccent);
+    });
+    if (ukAudio && ukAudio.getAttribute('src')) ukAudio.setAttribute('data-accent', 'uk');
   }
 
   // 1. POS chips
@@ -831,6 +905,10 @@
   }
 
   wireExampleAudio();
+  wireHeadwordAudio();
+  if (headwordAudioElement('uk') && headwordAudioElement('uk').getAttribute('src')) {
+    playHeadwordAudio('uk');
+  }
 
 })();
 </script>

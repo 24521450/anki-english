@@ -20,7 +20,7 @@ from src.deck_builder.idiom_audit import (
     serialize_jsonl,
     validate_audit_rows,
 )
-from tools.idiom_audit import main
+from tools.idiom_audit import _refresh_review_rows, main
 
 
 def _registry(*guids):
@@ -143,6 +143,59 @@ def test_scaffold_groups_normalized_semantic_keys_and_is_deterministic():
     assert rows[0]["source_examples"] == ["Try it and see."]
     assert serialize_jsonl(rows) == serialize_jsonl(reversed_rows)
     assert validate_audit_rows(rows, registry) == []
+
+
+def test_scaffold_rebinds_review_that_was_round_tripped_through_promoted_text():
+    registry = _registry("g1")
+    raw = build_audit_rows(
+        [_card("g1", "phrase :: a longer exact source explanation")],
+        registry,
+    )
+    promoted_projection = build_audit_rows(
+        [_card("g1", "phrase :: shorter learner gloss")],
+        registry,
+    )
+    reviewed = promoted_projection[0]
+    reviewed.update({
+        "display_mode": "bilingual_gloss",
+        "equivalence_kind": "none",
+        "explanation_en_simple": "shorter learner gloss",
+        "explanation_vi": "nghĩa ngắn gọn",
+        "decision": "pass",
+        "confidence": "high",
+        "review_reason": "The exact raw meaning was reviewed before source rebinding.",
+        "reviewer": "reviewer",
+        "reviewed_at": "2026-07-24",
+        "approval": "approved",
+        "translation_provenance": "manual_raw_source_review",
+    })
+
+    refreshed = _refresh_review_rows(raw, promoted_projection)
+
+    assert refreshed[0]["source_explanation_en"] == (
+        "a longer exact source explanation"
+    )
+    assert refreshed[0]["explanation_en_simple"] == "shorter learner gloss"
+    assert refreshed[0]["decision"] == "pass"
+
+
+def test_scaffold_does_not_rebind_unattested_promoted_text_review():
+    registry = _registry("g1")
+    raw = build_audit_rows(
+        [_card("g1", "phrase :: a longer exact source explanation")],
+        registry,
+    )
+    promoted_projection = build_audit_rows(
+        [_card("g1", "phrase :: shorter learner gloss")],
+        registry,
+    )
+    reviewed = promoted_projection[0]
+    _complete(reviewed, mode="bilingual_gloss")
+    reviewed["explanation_en_simple"] = "shorter learner gloss"
+
+    refreshed = _refresh_review_rows(raw, promoted_projection)
+
+    assert refreshed[0]["decision"] == "pending"
 
 
 def test_validation_fails_closed_for_fingerprints_modes_and_approval():

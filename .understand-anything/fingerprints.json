@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "62bae6df5b219c194bcd7482313015cb7a8b9c17",
-  "generatedAt": "2026-07-22T13:16:43.558Z",
+  "gitCommitHash": "9214289c9eedb4d0a70969dcecea53e35ab7fa93",
+  "generatedAt": "2026-07-22T14:21:08.712Z",
   "files": {
     ".gitattributes": {
       "filePath": ".gitattributes",
@@ -43,6 +43,36 @@
       "totalLines": 570,
       "hasStructuralAnalysis": true
     },
+    "CONTEXT.md": {
+      "filePath": "CONTEXT.md",
+      "contentHash": "64fac96fd0558f1ae39858efe9aaf6306e66e04f8c1e1d1058ac1f69a14a26fc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1070,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "653ab4f1a874ff71bafa1bb03e303db261260967cff3b07ce9f145dc0cdaf4ab",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "USER_NOTES.md": {
+      "filePath": "USER_NOTES.md",
+      "contentHash": "e3ded32ad2841f221dea0c31a179f3ef039fae1a8add1b77e9750f763c68729c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 214,
+      "hasStructuralAnalysis": true
+    },
     "conftest.py": {
       "filePath": "conftest.py",
       "contentHash": "5ce339df37c01df5afa06990f515bcafac77ab4ff24229e322044908a4a5ac19",
@@ -65,34 +95,14 @@
       "totalLines": 18,
       "hasStructuralAnalysis": true
     },
-    "CONTEXT.md": {
-      "filePath": "CONTEXT.md",
-      "contentHash": "64fac96fd0558f1ae39858efe9aaf6306e66e04f8c1e1d1058ac1f69a14a26fc",
+    "design/EAVM/README.md": {
+      "filePath": "design/EAVM/README.md",
+      "contentHash": "bf741692bcc346913ca162762296a09b620893ab6a8c6917f647dc6b5e99282c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1070,
-      "hasStructuralAnalysis": true
-    },
-    "design/card-improvement-notes.md": {
-      "filePath": "design/card-improvement-notes.md",
-      "contentHash": "3babc45aac313a27b047f413e6046d5c7bb3ba75a6e157baee518a4a99eda2b7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 175,
-      "hasStructuralAnalysis": true
-    },
-    "design/card-improvement-user-notes.md": {
-      "filePath": "design/card-improvement-user-notes.md",
-      "contentHash": "9376bf7b83cad5eacc8703e04bf385d310b67f42631a44fcaf0f7c67d0739e6a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 309,
+      "totalLines": 117,
       "hasStructuralAnalysis": true
     },
     "design/EAVM/back_template.txt": {
@@ -135,16 +145,6 @@
       "totalLines": 382,
       "hasStructuralAnalysis": false
     },
-    "design/EAVM/README.md": {
-      "filePath": "design/EAVM/README.md",
-      "contentHash": "bf741692bcc346913ca162762296a09b620893ab6a8c6917f647dc6b5e99282c",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 117,
-      "hasStructuralAnalysis": true
-    },
     "design/EAVM/styling.txt": {
       "filePath": "design/EAVM/styling.txt",
       "contentHash": "07b267a515f1ba688a4f8792876dcaa6c296e07d4bc66901cda5a79b3602d183",
@@ -153,16 +153,6 @@
       "imports": [],
       "exports": [],
       "totalLines": 826,
-      "hasStructuralAnalysis": false
-    },
-    "design/index.html": {
-      "filePath": "design/index.html",
-      "contentHash": "f5bc16ab0d77adfa27332dbfd4f9a77a2b1c3605c9a897678f882fffd4acff94",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 1958,
       "hasStructuralAnalysis": false
     },
     "design/README.md": {
@@ -174,6 +164,36 @@
       "exports": [],
       "totalLines": 245,
       "hasStructuralAnalysis": true
+    },
+    "design/card-improvement-notes.md": {
+      "filePath": "design/card-improvement-notes.md",
+      "contentHash": "3babc45aac313a27b047f413e6046d5c7bb3ba75a6e157baee518a4a99eda2b7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 175,
+      "hasStructuralAnalysis": true
+    },
+    "design/card-improvement-user-notes.md": {
+      "filePath": "design/card-improvement-user-notes.md",
+      "contentHash": "9376bf7b83cad5eacc8703e04bf385d310b67f42631a44fcaf0f7c67d0739e6a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 309,
+      "hasStructuralAnalysis": true
+    },
+    "design/index.html": {
+      "filePath": "design/index.html",
+      "contentHash": "f5bc16ab0d77adfa27332dbfd4f9a77a2b1c3605c9a897678f882fffd4acff94",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1958,
+      "hasStructuralAnalysis": false
     },
     "design/reference/oxford_labels.html": {
       "filePath": "design/reference/oxford_labels.html",
@@ -193,6 +213,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 446,
+      "hasStructuralAnalysis": true
+    },
+    "docs/README.md": {
+      "filePath": "docs/README.md",
+      "contentHash": "e4e6c8ee1143b579d19006f8c73856630e7f0fdf6f346fac2fb2136972e55c9d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 52,
       "hasStructuralAnalysis": true
     },
     "docs/adr/0001-lxml-parser-backend.md": {
@@ -455,16 +485,6 @@
       "totalLines": 91,
       "hasStructuralAnalysis": true
     },
-    "docs/README.md": {
-      "filePath": "docs/README.md",
-      "contentHash": "e4e6c8ee1143b579d19006f8c73856630e7f0fdf6f346fac2fb2136972e55c9d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 52,
-      "hasStructuralAnalysis": true
-    },
     "pyproject.toml": {
       "filePath": "pyproject.toml",
       "contentHash": "08d1d3202f7d1a7e058dbcd2f7e50f9948501055f352088d25b327452e8955d7",
@@ -473,16 +493,6 @@
       "imports": [],
       "exports": [],
       "totalLines": 45,
-      "hasStructuralAnalysis": true
-    },
-    "README.md": {
-      "filePath": "README.md",
-      "contentHash": "653ab4f1a874ff71bafa1bb03e303db261260967cff3b07ce9f145dc0cdaf4ab",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 23,
       "hasStructuralAnalysis": true
     },
     "requirements.txt": {
@@ -2978,6 +2988,153 @@
       "totalLines": 46,
       "hasStructuralAnalysis": true
     },
+    "src/deck_builder/card_identity.py": {
+      "filePath": "src/deck_builder/card_identity.py",
+      "contentHash": "bf9cadf447c610dbde4a3f5f1c3fa8b356ab7fc81b7e24df9b81989d5a6dd9f8",
+      "functions": [
+        {
+          "name": "normalize_word",
+          "params": [
+            "word"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "normalize_cefr",
+          "params": [
+            "cefr"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "normalize_variant",
+          "params": [
+            "variant"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "normalize_list_name",
+          "params": [
+            "list_name",
+            "canonical"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "primary_list_from_tags",
+          "params": [
+            "tags",
+            "canonical"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "reviewed_identity_variant",
+          "params": [
+            "word",
+            "cefr",
+            "list_name",
+            "pos"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "is_reviewed_identity_variant_allowed",
+          "params": [
+            "word",
+            "cefr",
+            "list_name",
+            "pos",
+            "variant"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "is_reviewed_semantic_identity_variant",
+          "params": [
+            "word",
+            "cefr",
+            "list_name",
+            "pos",
+            "variant"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "reviewed_homonym_variant",
+          "params": [
+            "word",
+            "cefr",
+            "list_name",
+            "pos"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [
+        {
+          "name": "CardIdentity",
+          "methods": [
+            "as_key"
+          ],
+          "properties": [
+            "word",
+            "cefr",
+            "list",
+            "variant"
+          ],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "imports": [
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Final"
+          ]
+        }
+      ],
+      "exports": [
+        "CardIdentity",
+        "normalize_word",
+        "normalize_cefr",
+        "normalize_variant",
+        "normalize_list_name",
+        "primary_list_from_tags",
+        "reviewed_identity_variant",
+        "is_reviewed_identity_variant_allowed",
+        "is_reviewed_semantic_identity_variant",
+        "reviewed_homonym_variant"
+      ],
+      "totalLines": 172,
+      "hasStructuralAnalysis": true
+    },
     "src/deck_builder/card_identity_split.py": {
       "filePath": "src/deck_builder/card_identity_split.py",
       "contentHash": "bcaca5ebfc194bf034d9d4c6eedd4a3f6885bd4cba3c1c99f827c1e532dca768",
@@ -3665,153 +3822,6 @@
         "publish_card_identity_split"
       ],
       "totalLines": 1355,
-      "hasStructuralAnalysis": true
-    },
-    "src/deck_builder/card_identity.py": {
-      "filePath": "src/deck_builder/card_identity.py",
-      "contentHash": "bf9cadf447c610dbde4a3f5f1c3fa8b356ab7fc81b7e24df9b81989d5a6dd9f8",
-      "functions": [
-        {
-          "name": "normalize_word",
-          "params": [
-            "word"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "normalize_cefr",
-          "params": [
-            "cefr"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "normalize_variant",
-          "params": [
-            "variant"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "normalize_list_name",
-          "params": [
-            "list_name",
-            "canonical"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 5
-        },
-        {
-          "name": "primary_list_from_tags",
-          "params": [
-            "tags",
-            "canonical"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 12
-        },
-        {
-          "name": "reviewed_identity_variant",
-          "params": [
-            "word",
-            "cefr",
-            "list_name",
-            "pos"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 16
-        },
-        {
-          "name": "is_reviewed_identity_variant_allowed",
-          "params": [
-            "word",
-            "cefr",
-            "list_name",
-            "pos",
-            "variant"
-          ],
-          "returnType": "bool",
-          "exported": true,
-          "lineCount": 23
-        },
-        {
-          "name": "is_reviewed_semantic_identity_variant",
-          "params": [
-            "word",
-            "cefr",
-            "list_name",
-            "pos",
-            "variant"
-          ],
-          "returnType": "bool",
-          "exported": true,
-          "lineCount": 17
-        },
-        {
-          "name": "reviewed_homonym_variant",
-          "params": [
-            "word",
-            "cefr",
-            "list_name",
-            "pos"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 8
-        }
-      ],
-      "classes": [
-        {
-          "name": "CardIdentity",
-          "methods": [
-            "as_key"
-          ],
-          "properties": [
-            "word",
-            "cefr",
-            "list",
-            "variant"
-          ],
-          "exported": true,
-          "lineCount": 10
-        }
-      ],
-      "imports": [
-        {
-          "source": "dataclasses",
-          "specifiers": [
-            "dataclass"
-          ]
-        },
-        {
-          "source": "typing",
-          "specifiers": [
-            "Final"
-          ]
-        }
-      ],
-      "exports": [
-        "CardIdentity",
-        "normalize_word",
-        "normalize_cefr",
-        "normalize_variant",
-        "normalize_list_name",
-        "primary_list_from_tags",
-        "reviewed_identity_variant",
-        "is_reviewed_identity_variant_allowed",
-        "is_reviewed_semantic_identity_variant",
-        "reviewed_homonym_variant"
-      ],
-      "totalLines": 172,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/card_registry.py": {
@@ -5670,77 +5680,6 @@
       "totalLines": 98,
       "hasStructuralAnalysis": true
     },
-    "src/deck_builder/example_audio_command.py": {
-      "filePath": "src/deck_builder/example_audio_command.py",
-      "contentHash": "69521d9dd2b336c282b69af3e8a18a2ff4dec2d3ccae169ac5cbb80356c14f87",
-      "functions": [
-        {
-          "name": "main",
-          "params": [
-            "argv"
-          ],
-          "returnType": "int",
-          "exported": true,
-          "lineCount": 60
-        }
-      ],
-      "classes": [],
-      "imports": [
-        {
-          "source": "argparse",
-          "specifiers": [
-            "argparse"
-          ]
-        },
-        {
-          "source": "asyncio",
-          "specifiers": [
-            "asyncio"
-          ]
-        },
-        {
-          "source": "sys",
-          "specifiers": [
-            "sys"
-          ]
-        },
-        {
-          "source": "pathlib",
-          "specifiers": [
-            "Path"
-          ]
-        },
-        {
-          "source": "src.config",
-          "specifiers": [
-            "ProjectPaths"
-          ]
-        },
-        {
-          "source": "src.deck_builder.build_contracts",
-          "specifiers": [
-            "BuildNotesPaths"
-          ]
-        },
-        {
-          "source": "src.deck_builder.example_audio",
-          "specifiers": [
-            "generate_example_audio"
-          ]
-        },
-        {
-          "source": "src.deck_builder.registry_build",
-          "specifiers": [
-            "build_notes_from_registry"
-          ]
-        }
-      ],
-      "exports": [
-        "main"
-      ],
-      "totalLines": 79,
-      "hasStructuralAnalysis": true
-    },
     "src/deck_builder/example_audio.py": {
       "filePath": "src/deck_builder/example_audio.py",
       "contentHash": "a1adca50db2dbd2cda7d4c6daf9a6d05522b5c4ed87749cf15879b08b8c3ba52",
@@ -5985,6 +5924,77 @@
         "validate_example_audio_alignment"
       ],
       "totalLines": 258,
+      "hasStructuralAnalysis": true
+    },
+    "src/deck_builder/example_audio_command.py": {
+      "filePath": "src/deck_builder/example_audio_command.py",
+      "contentHash": "69521d9dd2b336c282b69af3e8a18a2ff4dec2d3ccae169ac5cbb80356c14f87",
+      "functions": [
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 60
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "src.config",
+          "specifiers": [
+            "ProjectPaths"
+          ]
+        },
+        {
+          "source": "src.deck_builder.build_contracts",
+          "specifiers": [
+            "BuildNotesPaths"
+          ]
+        },
+        {
+          "source": "src.deck_builder.example_audio",
+          "specifiers": [
+            "generate_example_audio"
+          ]
+        },
+        {
+          "source": "src.deck_builder.registry_build",
+          "specifiers": [
+            "build_notes_from_registry"
+          ]
+        }
+      ],
+      "exports": [
+        "main"
+      ],
+      "totalLines": 79,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/example_policy.py": {
@@ -9093,249 +9103,6 @@
       "totalLines": 137,
       "hasStructuralAnalysis": true
     },
-    "src/deck_builder/semantic_audit_manifests.py": {
-      "filePath": "src/deck_builder/semantic_audit_manifests.py",
-      "contentHash": "a5772bc014a7025268e210784ed3283878bf744be9a2adec33a11eb1fd35b1c7",
-      "functions": [
-        {
-          "name": "canonical_json_bytes",
-          "params": [
-            "value",
-            "newline"
-          ],
-          "returnType": "bytes",
-          "exported": true,
-          "lineCount": 11
-        },
-        {
-          "name": "sha256_bytes",
-          "params": [
-            "value"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "sha256_file",
-          "params": [
-            "path"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "utc_now",
-          "params": [],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "_pending_semantic_ids",
-          "params": [
-            "row"
-          ],
-          "returnType": "tuple[str, ...]",
-          "exported": true,
-          "lineCount": 9
-        },
-        {
-          "name": "_pending_source_ids",
-          "params": [
-            "row"
-          ],
-          "returnType": "tuple[str, ...]",
-          "exported": true,
-          "lineCount": 13
-        },
-        {
-          "name": "work_card",
-          "params": [
-            "row",
-            "ledger_sha256"
-          ],
-          "returnType": "WorkCard | None",
-          "exported": true,
-          "lineCount": 15
-        },
-        {
-          "name": "scan_review_bundles",
-          "params": [
-            "scratch_root",
-            "rows_by_guid",
-            "open_guids"
-          ],
-          "returnType": "BundleScan",
-          "exported": true,
-          "lineCount": 40
-        },
-        {
-          "name": "partition_work",
-          "params": [
-            "cards",
-            "workers"
-          ],
-          "returnType": "list[list[WorkCard]]",
-          "exported": true,
-          "lineCount": 10
-        },
-        {
-          "name": "manifest_row",
-          "params": [
-            "card",
-            "ledger_sha256",
-            "worker"
-          ],
-          "returnType": "dict",
-          "exported": true,
-          "lineCount": 21
-        },
-        {
-          "name": "render_jsonl",
-          "params": [
-            "rows"
-          ],
-          "returnType": "bytes",
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "build_artifacts",
-          "params": [
-            "audit_bytes",
-            "rows",
-            "registry_rows",
-            "scratch_root",
-            "created_at",
-            "workers",
-            "bundle_scan"
-          ],
-          "returnType": "tuple[dict[str, bytes], dict, list[str]]",
-          "exported": true,
-          "lineCount": 77
-        },
-        {
-          "name": "_snapshot_bundle_scan",
-          "params": [
-            "summary",
-            "rows_by_guid",
-            "open_guids"
-          ],
-          "returnType": "BundleScan",
-          "exported": true,
-          "lineCount": 41
-        },
-        {
-          "name": "validate_artifacts",
-          "params": [
-            "audit_bytes",
-            "rows",
-            "registry_rows",
-            "manifest_dir",
-            "scratch_root"
-          ],
-          "returnType": "list[str]",
-          "exported": true,
-          "lineCount": 81
-        }
-      ],
-      "classes": [
-        {
-          "name": "WorkCard",
-          "methods": [
-            "guid"
-          ],
-          "properties": [
-            "row",
-            "pending_source_ids",
-            "pending_semantic_ids",
-            "weight",
-            "weight_basis",
-            "fingerprint"
-          ],
-          "exported": true,
-          "lineCount": 11
-        },
-        {
-          "name": "BundleScan",
-          "methods": [],
-          "properties": [
-            "completed",
-            "reserved"
-          ],
-          "exported": true,
-          "lineCount": 3
-        }
-      ],
-      "imports": [
-        {
-          "source": "json",
-          "specifiers": [
-            "json"
-          ]
-        },
-        {
-          "source": "dataclasses",
-          "specifiers": [
-            "dataclass"
-          ]
-        },
-        {
-          "source": "datetime",
-          "specifiers": [
-            "datetime",
-            "timezone"
-          ]
-        },
-        {
-          "source": "pathlib",
-          "specifiers": [
-            "Path"
-          ]
-        },
-        {
-          "source": "typing",
-          "specifiers": [
-            "Iterable"
-          ]
-        },
-        {
-          "source": ".semantic_audit",
-          "specifiers": [
-            "load_jsonl",
-            "validate_audit_rows"
-          ]
-        },
-        {
-          "source": ".canonical_io",
-          "specifiers": [
-            "canonical_text_sha256"
-          ]
-        }
-      ],
-      "exports": [
-        "canonical_json_bytes",
-        "sha256_bytes",
-        "sha256_file",
-        "utc_now",
-        "WorkCard",
-        "BundleScan",
-        "_pending_semantic_ids",
-        "_pending_source_ids",
-        "work_card",
-        "scan_review_bundles",
-        "partition_work",
-        "manifest_row",
-        "render_jsonl",
-        "build_artifacts",
-        "_snapshot_bundle_scan",
-        "validate_artifacts"
-      ],
-      "totalLines": 395,
-      "hasStructuralAnalysis": true
-    },
     "src/deck_builder/semantic_audit.py": {
       "filePath": "src/deck_builder/semantic_audit.py",
       "contentHash": "b4b15c8acf973f211c4367c5bcde83b67f67b0de4312011d132fc35d8da0bf21",
@@ -9684,6 +9451,249 @@
         "mark_reviewed_pass"
       ],
       "totalLines": 928,
+      "hasStructuralAnalysis": true
+    },
+    "src/deck_builder/semantic_audit_manifests.py": {
+      "filePath": "src/deck_builder/semantic_audit_manifests.py",
+      "contentHash": "a5772bc014a7025268e210784ed3283878bf744be9a2adec33a11eb1fd35b1c7",
+      "functions": [
+        {
+          "name": "canonical_json_bytes",
+          "params": [
+            "value",
+            "newline"
+          ],
+          "returnType": "bytes",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "sha256_bytes",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "sha256_file",
+          "params": [
+            "path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "utc_now",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_pending_semantic_ids",
+          "params": [
+            "row"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_pending_source_ids",
+          "params": [
+            "row"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "work_card",
+          "params": [
+            "row",
+            "ledger_sha256"
+          ],
+          "returnType": "WorkCard | None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "scan_review_bundles",
+          "params": [
+            "scratch_root",
+            "rows_by_guid",
+            "open_guids"
+          ],
+          "returnType": "BundleScan",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "partition_work",
+          "params": [
+            "cards",
+            "workers"
+          ],
+          "returnType": "list[list[WorkCard]]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "manifest_row",
+          "params": [
+            "card",
+            "ledger_sha256",
+            "worker"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "render_jsonl",
+          "params": [
+            "rows"
+          ],
+          "returnType": "bytes",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "build_artifacts",
+          "params": [
+            "audit_bytes",
+            "rows",
+            "registry_rows",
+            "scratch_root",
+            "created_at",
+            "workers",
+            "bundle_scan"
+          ],
+          "returnType": "tuple[dict[str, bytes], dict, list[str]]",
+          "exported": true,
+          "lineCount": 77
+        },
+        {
+          "name": "_snapshot_bundle_scan",
+          "params": [
+            "summary",
+            "rows_by_guid",
+            "open_guids"
+          ],
+          "returnType": "BundleScan",
+          "exported": true,
+          "lineCount": 41
+        },
+        {
+          "name": "validate_artifacts",
+          "params": [
+            "audit_bytes",
+            "rows",
+            "registry_rows",
+            "manifest_dir",
+            "scratch_root"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 81
+        }
+      ],
+      "classes": [
+        {
+          "name": "WorkCard",
+          "methods": [
+            "guid"
+          ],
+          "properties": [
+            "row",
+            "pending_source_ids",
+            "pending_semantic_ids",
+            "weight",
+            "weight_basis",
+            "fingerprint"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "BundleScan",
+          "methods": [],
+          "properties": [
+            "completed",
+            "reserved"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Iterable"
+          ]
+        },
+        {
+          "source": ".semantic_audit",
+          "specifiers": [
+            "load_jsonl",
+            "validate_audit_rows"
+          ]
+        },
+        {
+          "source": ".canonical_io",
+          "specifiers": [
+            "canonical_text_sha256"
+          ]
+        }
+      ],
+      "exports": [
+        "canonical_json_bytes",
+        "sha256_bytes",
+        "sha256_file",
+        "utc_now",
+        "WorkCard",
+        "BundleScan",
+        "_pending_semantic_ids",
+        "_pending_source_ids",
+        "work_card",
+        "scan_review_bundles",
+        "partition_work",
+        "manifest_row",
+        "render_jsonl",
+        "build_artifacts",
+        "_snapshot_bundle_scan",
+        "validate_artifacts"
+      ],
+      "totalLines": 395,
       "hasStructuralAnalysis": true
     },
     "src/deck_builder/semantic_policy.py": {
@@ -12226,103 +12236,6 @@
       "totalLines": 98,
       "hasStructuralAnalysis": true
     },
-    "src/scraper/cambridge_audio.py": {
-      "filePath": "src/scraper/cambridge_audio.py",
-      "contentHash": "9872fcb3b7b68badd1a7a3fa7a40124e53c3962eacba47be3634be3948ba1193",
-      "functions": [
-        {
-          "name": "normalize_word",
-          "params": [
-            "word"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "normalize_pos",
-          "params": [
-            "pos"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "resolve_audio_pos",
-          "params": [
-            "word",
-            "card_pos"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 4
-        },
-        {
-          "name": "parse_cambridge_entries",
-          "params": [
-            "html_bytes"
-          ],
-          "returnType": "list[dict[str, Any]]",
-          "exported": true,
-          "lineCount": 30
-        },
-        {
-          "name": "select_entry",
-          "params": [
-            "word",
-            "pos",
-            "entries"
-          ],
-          "returnType": "dict[str, Any] | None",
-          "exported": true,
-          "lineCount": 31
-        },
-        {
-          "name": "get_audio_filename",
-          "params": [
-            "word",
-            "pos",
-            "accent"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 10
-        }
-      ],
-      "classes": [],
-      "imports": [
-        {
-          "source": "re",
-          "specifiers": [
-            "re"
-          ]
-        },
-        {
-          "source": "typing",
-          "specifiers": [
-            "Any",
-            "Optional"
-          ]
-        },
-        {
-          "source": "lxml",
-          "specifiers": [
-            "lxml_html"
-          ]
-        }
-      ],
-      "exports": [
-        "normalize_word",
-        "normalize_pos",
-        "resolve_audio_pos",
-        "parse_cambridge_entries",
-        "select_entry",
-        "get_audio_filename"
-      ],
-      "totalLines": 98,
-      "hasStructuralAnalysis": true
-    },
     "src/scraper/cambridge.py": {
       "filePath": "src/scraper/cambridge.py",
       "contentHash": "ff732f8d32a992f053e2df37a54727e3fc8dd24f55722a8b6af6512b88da5a82",
@@ -12656,6 +12569,103 @@
       "totalLines": 457,
       "hasStructuralAnalysis": true
     },
+    "src/scraper/cambridge_audio.py": {
+      "filePath": "src/scraper/cambridge_audio.py",
+      "contentHash": "9872fcb3b7b68badd1a7a3fa7a40124e53c3962eacba47be3634be3948ba1193",
+      "functions": [
+        {
+          "name": "normalize_word",
+          "params": [
+            "word"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "normalize_pos",
+          "params": [
+            "pos"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "resolve_audio_pos",
+          "params": [
+            "word",
+            "card_pos"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "parse_cambridge_entries",
+          "params": [
+            "html_bytes"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "select_entry",
+          "params": [
+            "word",
+            "pos",
+            "entries"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "get_audio_filename",
+          "params": [
+            "word",
+            "pos",
+            "accent"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Optional"
+          ]
+        },
+        {
+          "source": "lxml",
+          "specifiers": [
+            "lxml_html"
+          ]
+        }
+      ],
+      "exports": [
+        "normalize_word",
+        "normalize_pos",
+        "resolve_audio_pos",
+        "parse_cambridge_entries",
+        "select_entry",
+        "get_audio_filename"
+      ],
+      "totalLines": 98,
+      "hasStructuralAnalysis": true
+    },
     "src/scraper/merge.py": {
       "filePath": "src/scraper/merge.py",
       "contentHash": "0934e809a681175c065efcb8a42559dfd4ae89964cd928934a31c37b8db806be",
@@ -12798,56 +12808,6 @@
         "_apply_skip_flags"
       ],
       "totalLines": 616,
-      "hasStructuralAnalysis": true
-    },
-    "src/scraper/oxford_labels.py": {
-      "filePath": "src/scraper/oxford_labels.py",
-      "contentHash": "a01d41f8ba5a1e2755b37ada873dd01f031353cd075465b0cf5810739f41c8e7",
-      "functions": [
-        {
-          "name": "parse_label_compound",
-          "params": [
-            "label_text"
-          ],
-          "returnType": "dict[str, list[str] | str | None]",
-          "exported": true,
-          "lineCount": 49
-        },
-        {
-          "name": "_label_is_owned_by_sense",
-          "params": [
-            "lbl_el",
-            "sense_el"
-          ],
-          "returnType": "bool",
-          "exported": true,
-          "lineCount": 29
-        },
-        {
-          "name": "extract_labels_for_sense",
-          "params": [
-            "sense_el"
-          ],
-          "returnType": "dict[str, list[str] | str | None]",
-          "exported": true,
-          "lineCount": 21
-        }
-      ],
-      "classes": [],
-      "imports": [
-        {
-          "source": "re",
-          "specifiers": [
-            "re"
-          ]
-        }
-      ],
-      "exports": [
-        "parse_label_compound",
-        "_label_is_owned_by_sense",
-        "extract_labels_for_sense"
-      ],
-      "totalLines": 170,
       "hasStructuralAnalysis": true
     },
     "src/scraper/oxford.py": {
@@ -13287,6 +13247,56 @@
         "parse_oxford"
       ],
       "totalLines": 977,
+      "hasStructuralAnalysis": true
+    },
+    "src/scraper/oxford_labels.py": {
+      "filePath": "src/scraper/oxford_labels.py",
+      "contentHash": "a01d41f8ba5a1e2755b37ada873dd01f031353cd075465b0cf5810739f41c8e7",
+      "functions": [
+        {
+          "name": "parse_label_compound",
+          "params": [
+            "label_text"
+          ],
+          "returnType": "dict[str, list[str] | str | None]",
+          "exported": true,
+          "lineCount": 49
+        },
+        {
+          "name": "_label_is_owned_by_sense",
+          "params": [
+            "lbl_el",
+            "sense_el"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "extract_labels_for_sense",
+          "params": [
+            "sense_el"
+          ],
+          "returnType": "dict[str, list[str] | str | None]",
+          "exported": true,
+          "lineCount": 21
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        }
+      ],
+      "exports": [
+        "parse_label_compound",
+        "_label_is_owned_by_sense",
+        "extract_labels_for_sense"
+      ],
+      "totalLines": 170,
       "hasStructuralAnalysis": true
     },
     "src/scraper/rebuild_command.py": {
@@ -14808,6 +14818,117 @@
       "totalLines": 49,
       "hasStructuralAnalysis": true
     },
+    "tests/deck_builder/test_build_notes.py": {
+      "filePath": "tests/deck_builder/test_build_notes.py",
+      "contentHash": "d2456e8314f528f27cbe102d98547d6268e27f0142458287c336f2ce0cbd0d03",
+      "functions": [
+        {
+          "name": "test_separators_match_template_contract",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_format_examples_keeps_one_example_per_sense_by_default",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_definition_example_pairing_uses_same_pipe_chunks",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_txt_row",
+          "params": [
+            "guid",
+            "word",
+            "pos",
+            "cefr"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "test_txt_artifact_parser_preserves_parenthetical_words",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "test_get_word_candidates_strips_parenthetical_for_source_lookup",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_get_word_candidates_resolves_learning_pattern_to_source_lemma",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_lookup_gloss_prefers_exact_parenthetical_key",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_lookup_gloss_blocks_unsafe_base_fallback_for_sibling_homonyms",
+          "params": [],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "src.deck_builder.build_contracts",
+          "specifiers": [
+            "DEF_SEPARATOR",
+            "EX_SEP"
+          ]
+        },
+        {
+          "source": "src.deck_builder.build_support",
+          "specifiers": [
+            "_format_examples",
+            "get_word_candidates",
+            "lookup_gloss"
+          ]
+        },
+        {
+          "source": "src.deck_builder.build_validation",
+          "specifiers": [
+            "_parse_txt_cards"
+          ]
+        }
+      ],
+      "exports": [
+        "test_separators_match_template_contract",
+        "test_format_examples_keeps_one_example_per_sense_by_default",
+        "test_definition_example_pairing_uses_same_pipe_chunks",
+        "_txt_row",
+        "test_txt_artifact_parser_preserves_parenthetical_words",
+        "test_get_word_candidates_strips_parenthetical_for_source_lookup",
+        "test_get_word_candidates_resolves_learning_pattern_to_source_lemma",
+        "test_lookup_gloss_prefers_exact_parenthetical_key",
+        "test_lookup_gloss_blocks_unsafe_base_fallback_for_sibling_homonyms"
+      ],
+      "totalLines": 131,
+      "hasStructuralAnalysis": true
+    },
     "tests/deck_builder/test_build_notes_module.py": {
       "filePath": "tests/deck_builder/test_build_notes_module.py",
       "contentHash": "963935a55d42526ac44025145679d03029a37902498cef08bf17da788bf035e5",
@@ -15067,117 +15188,6 @@
         "test_resolve_primary_record_defaults_to_first_without_contributors"
       ],
       "totalLines": 361,
-      "hasStructuralAnalysis": true
-    },
-    "tests/deck_builder/test_build_notes.py": {
-      "filePath": "tests/deck_builder/test_build_notes.py",
-      "contentHash": "d2456e8314f528f27cbe102d98547d6268e27f0142458287c336f2ce0cbd0d03",
-      "functions": [
-        {
-          "name": "test_separators_match_template_contract",
-          "params": [],
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "test_format_examples_keeps_one_example_per_sense_by_default",
-          "params": [],
-          "exported": true,
-          "lineCount": 8
-        },
-        {
-          "name": "test_definition_example_pairing_uses_same_pipe_chunks",
-          "params": [],
-          "exported": true,
-          "lineCount": 11
-        },
-        {
-          "name": "_txt_row",
-          "params": [
-            "guid",
-            "word",
-            "pos",
-            "cefr"
-          ],
-          "returnType": "str",
-          "exported": true,
-          "lineCount": 29
-        },
-        {
-          "name": "test_txt_artifact_parser_preserves_parenthetical_words",
-          "params": [
-            "tmp_path"
-          ],
-          "exported": true,
-          "lineCount": 20
-        },
-        {
-          "name": "test_get_word_candidates_strips_parenthetical_for_source_lookup",
-          "params": [],
-          "exported": true,
-          "lineCount": 5
-        },
-        {
-          "name": "test_get_word_candidates_resolves_learning_pattern_to_source_lemma",
-          "params": [],
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "test_lookup_gloss_prefers_exact_parenthetical_key",
-          "params": [],
-          "exported": true,
-          "lineCount": 14
-        },
-        {
-          "name": "test_lookup_gloss_blocks_unsafe_base_fallback_for_sibling_homonyms",
-          "params": [],
-          "exported": true,
-          "lineCount": 15
-        }
-      ],
-      "classes": [],
-      "imports": [
-        {
-          "source": "pathlib",
-          "specifiers": [
-            "Path"
-          ]
-        },
-        {
-          "source": "src.deck_builder.build_contracts",
-          "specifiers": [
-            "DEF_SEPARATOR",
-            "EX_SEP"
-          ]
-        },
-        {
-          "source": "src.deck_builder.build_support",
-          "specifiers": [
-            "_format_examples",
-            "get_word_candidates",
-            "lookup_gloss"
-          ]
-        },
-        {
-          "source": "src.deck_builder.build_validation",
-          "specifiers": [
-            "_parse_txt_cards"
-          ]
-        }
-      ],
-      "exports": [
-        "test_separators_match_template_contract",
-        "test_format_examples_keeps_one_example_per_sense_by_default",
-        "test_definition_example_pairing_uses_same_pipe_chunks",
-        "_txt_row",
-        "test_txt_artifact_parser_preserves_parenthetical_words",
-        "test_get_word_candidates_strips_parenthetical_for_source_lookup",
-        "test_get_word_candidates_resolves_learning_pattern_to_source_lemma",
-        "test_lookup_gloss_prefers_exact_parenthetical_key",
-        "test_lookup_gloss_blocks_unsafe_base_fallback_for_sibling_homonyms"
-      ],
-      "totalLines": 131,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_build_publisher.py": {
@@ -15797,6 +15807,56 @@
       "totalLines": 36,
       "hasStructuralAnalysis": true
     },
+    "tests/deck_builder/test_card_identity.py": {
+      "filePath": "tests/deck_builder/test_card_identity.py",
+      "contentHash": "5c6d25b7bf393a5b4d56b8848f7bc3fb1b620f1546110ce7b6bdc94f9093c20a",
+      "functions": [
+        {
+          "name": "test_primary_list_from_tags_keeps_legacy_awl_token_by_default",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_primary_list_from_tags_can_canonicalize_awl",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_reviewed_identity_variants_cover_approved_pos_splits",
+          "params": [],
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "test_temporal_reviewed_semantic_variants_are_allowed",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "src.deck_builder.card_identity",
+          "specifiers": [
+            "LIST_PRIORITY",
+            "is_reviewed_identity_variant_allowed",
+            "primary_list_from_tags",
+            "reviewed_identity_variant"
+          ]
+        }
+      ],
+      "exports": [
+        "test_primary_list_from_tags_keeps_legacy_awl_token_by_default",
+        "test_primary_list_from_tags_can_canonicalize_awl",
+        "test_reviewed_identity_variants_cover_approved_pos_splits",
+        "test_temporal_reviewed_semantic_variants_are_allowed"
+      ],
+      "totalLines": 56,
+      "hasStructuralAnalysis": true
+    },
     "tests/deck_builder/test_card_identity_split.py": {
       "filePath": "tests/deck_builder/test_card_identity_split.py",
       "contentHash": "69e25bd05077868707d0373ed02a3e28816376f3c2036f7ce29245affcb97951",
@@ -16004,56 +16064,6 @@
         "test_publish_recovers_a_hard_crash_between_replacements"
       ],
       "totalLines": 454,
-      "hasStructuralAnalysis": true
-    },
-    "tests/deck_builder/test_card_identity.py": {
-      "filePath": "tests/deck_builder/test_card_identity.py",
-      "contentHash": "5c6d25b7bf393a5b4d56b8848f7bc3fb1b620f1546110ce7b6bdc94f9093c20a",
-      "functions": [
-        {
-          "name": "test_primary_list_from_tags_keeps_legacy_awl_token_by_default",
-          "params": [],
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "test_primary_list_from_tags_can_canonicalize_awl",
-          "params": [],
-          "exported": true,
-          "lineCount": 3
-        },
-        {
-          "name": "test_reviewed_identity_variants_cover_approved_pos_splits",
-          "params": [],
-          "exported": true,
-          "lineCount": 22
-        },
-        {
-          "name": "test_temporal_reviewed_semantic_variants_are_allowed",
-          "params": [],
-          "exported": true,
-          "lineCount": 11
-        }
-      ],
-      "classes": [],
-      "imports": [
-        {
-          "source": "src.deck_builder.card_identity",
-          "specifiers": [
-            "LIST_PRIORITY",
-            "is_reviewed_identity_variant_allowed",
-            "primary_list_from_tags",
-            "reviewed_identity_variant"
-          ]
-        }
-      ],
-      "exports": [
-        "test_primary_list_from_tags_keeps_legacy_awl_token_by_default",
-        "test_primary_list_from_tags_can_canonicalize_awl",
-        "test_reviewed_identity_variants_cover_approved_pos_splits",
-        "test_temporal_reviewed_semantic_variants_are_allowed"
-      ],
-      "totalLines": 56,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_cefr_integrity_regression.py": {
@@ -20633,130 +20643,6 @@
       "totalLines": 204,
       "hasStructuralAnalysis": true
     },
-    "tests/deck_builder/test_semantic_registry_production.py": {
-      "filePath": "tests/deck_builder/test_semantic_registry_production.py",
-      "contentHash": "fbe84f84c2c6d4f271b46f490bac36a0403bfacc59310db2308fef7bf8f7f4cf",
-      "functions": [
-        {
-          "name": "_jsonl",
-          "params": [
-            "path"
-          ],
-          "exported": true,
-          "lineCount": 6
-        },
-        {
-          "name": "_definition",
-          "params": [
-            "row"
-          ],
-          "exported": true,
-          "lineCount": 5
-        },
-        {
-          "name": "_example",
-          "params": [
-            "row"
-          ],
-          "exported": true,
-          "lineCount": 5
-        },
-        {
-          "name": "_relation_terms",
-          "params": [
-            "card"
-          ],
-          "exported": true,
-          "lineCount": 8
-        },
-        {
-          "name": "_semantic_example",
-          "params": [
-            "value",
-            "relation_terms"
-          ],
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "test_production_build_uses_the_complete_promoted_semantic_registry",
-          "params": [],
-          "exported": true,
-          "lineCount": 19
-        },
-        {
-          "name": "test_production_inventory_matches_all_canonical_authorities",
-          "params": [],
-          "exported": true,
-          "lineCount": 45
-        },
-        {
-          "name": "test_takenote_reviewed_identity_splits_reach_production",
-          "params": [],
-          "exported": true,
-          "lineCount": 28
-        },
-        {
-          "name": "test_takenote_semantic_and_idiom_repairs_reach_production",
-          "params": [],
-          "exported": true,
-          "lineCount": 28
-        },
-        {
-          "name": "test_takenote_collocation_provenance_repairs_reach_production",
-          "params": [],
-          "exported": true,
-          "lineCount": 20
-        }
-      ],
-      "classes": [],
-      "imports": [
-        {
-          "source": "hashlib",
-          "specifiers": [
-            "hashlib"
-          ]
-        },
-        {
-          "source": "json",
-          "specifiers": [
-            "json"
-          ]
-        },
-        {
-          "source": "re",
-          "specifiers": [
-            "re"
-          ]
-        },
-        {
-          "source": "src.config",
-          "specifiers": [
-            "ProjectPaths"
-          ]
-        },
-        {
-          "source": "src.deck_builder.synonym_annotator",
-          "specifiers": [
-            "strip_synonym_annotations"
-          ]
-        }
-      ],
-      "exports": [
-        "_jsonl",
-        "_definition",
-        "_example",
-        "_relation_terms",
-        "_semantic_example",
-        "test_production_build_uses_the_complete_promoted_semantic_registry",
-        "test_production_inventory_matches_all_canonical_authorities",
-        "test_takenote_reviewed_identity_splits_reach_production",
-        "test_takenote_semantic_and_idiom_repairs_reach_production",
-        "test_takenote_collocation_provenance_repairs_reach_production"
-      ],
-      "totalLines": 193,
-      "hasStructuralAnalysis": true
-    },
     "tests/deck_builder/test_semantic_registry.py": {
       "filePath": "tests/deck_builder/test_semantic_registry.py",
       "contentHash": "1a347d0e6b9e772f561d445efaa52ec83c2fc6496041033613010cbfd2b8dffb",
@@ -21062,6 +20948,130 @@
         "test_canonical_semantic_registry_is_the_current_deterministic_promotion"
       ],
       "totalLines": 645,
+      "hasStructuralAnalysis": true
+    },
+    "tests/deck_builder/test_semantic_registry_production.py": {
+      "filePath": "tests/deck_builder/test_semantic_registry_production.py",
+      "contentHash": "fbe84f84c2c6d4f271b46f490bac36a0403bfacc59310db2308fef7bf8f7f4cf",
+      "functions": [
+        {
+          "name": "_jsonl",
+          "params": [
+            "path"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_definition",
+          "params": [
+            "row"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_example",
+          "params": [
+            "row"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_relation_terms",
+          "params": [
+            "card"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_semantic_example",
+          "params": [
+            "value",
+            "relation_terms"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_production_build_uses_the_complete_promoted_semantic_registry",
+          "params": [],
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "test_production_inventory_matches_all_canonical_authorities",
+          "params": [],
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "test_takenote_reviewed_identity_splits_reach_production",
+          "params": [],
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "test_takenote_semantic_and_idiom_repairs_reach_production",
+          "params": [],
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "test_takenote_collocation_provenance_repairs_reach_production",
+          "params": [],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "src.config",
+          "specifiers": [
+            "ProjectPaths"
+          ]
+        },
+        {
+          "source": "src.deck_builder.synonym_annotator",
+          "specifiers": [
+            "strip_synonym_annotations"
+          ]
+        }
+      ],
+      "exports": [
+        "_jsonl",
+        "_definition",
+        "_example",
+        "_relation_terms",
+        "_semantic_example",
+        "test_production_build_uses_the_complete_promoted_semantic_registry",
+        "test_production_inventory_matches_all_canonical_authorities",
+        "test_takenote_reviewed_identity_splits_reach_production",
+        "test_takenote_semantic_and_idiom_repairs_reach_production",
+        "test_takenote_collocation_provenance_repairs_reach_production"
+      ],
+      "totalLines": 193,
       "hasStructuralAnalysis": true
     },
     "tests/deck_builder/test_sense_labels.py": {
@@ -27270,115 +27280,6 @@
       "totalLines": 557,
       "hasStructuralAnalysis": true
     },
-    "tests/tools/test_semantic_audit_manifests.py": {
-      "filePath": "tests/tools/test_semantic_audit_manifests.py",
-      "contentHash": "3e292307e68a2c9f7d4acb6febd57d6b99866ed2efd661b1f7ab0821ac29f5b1",
-      "functions": [
-        {
-          "name": "_sense",
-          "params": [
-            "guid",
-            "source_id"
-          ],
-          "returnType": "dict",
-          "exported": true,
-          "lineCount": 31
-        },
-        {
-          "name": "_registry",
-          "params": [
-            "guid"
-          ],
-          "returnType": "dict",
-          "exported": true,
-          "lineCount": 2
-        },
-        {
-          "name": "test_work_card_prioritizes_pending_source_and_is_idiom_validator_compatible",
-          "params": [],
-          "exported": true,
-          "lineCount": 16
-        },
-        {
-          "name": "test_partition_is_guid_deterministic_and_balances_weight",
-          "params": [],
-          "exported": true,
-          "lineCount": 14
-        },
-        {
-          "name": "test_build_and_validate_manifest_artifacts_are_byte_stable",
-          "params": [
-            "tmp_path"
-          ],
-          "exported": true,
-          "lineCount": 18
-        },
-        {
-          "name": "test_manifest_validation_ignores_worker_bundles_created_after_snapshot",
-          "params": [
-            "tmp_path"
-          ],
-          "exported": true,
-          "lineCount": 31
-        },
-        {
-          "name": "test_parallel_lock_blocks_canonical_writer",
-          "params": [
-            "tmp_path",
-            "monkeypatch"
-          ],
-          "exported": true,
-          "lineCount": 6
-        }
-      ],
-      "classes": [],
-      "imports": [
-        {
-          "source": "json",
-          "specifiers": [
-            "json"
-          ]
-        },
-        {
-          "source": "pathlib",
-          "specifiers": [
-            "Path"
-          ]
-        },
-        {
-          "source": "pytest",
-          "specifiers": [
-            "pytest"
-          ]
-        },
-        {
-          "source": "tools.semantic_audit",
-          "specifiers": [
-            "semantic_audit_cli"
-          ]
-        },
-        {
-          "source": "src.deck_builder.semantic_audit_manifests",
-          "specifiers": [
-            "build_artifacts",
-            "partition_work",
-            "validate_artifacts",
-            "work_card"
-          ]
-        }
-      ],
-      "exports": [
-        "_sense",
-        "_registry",
-        "test_work_card_prioritizes_pending_source_and_is_idiom_validator_compatible",
-        "test_partition_is_guid_deterministic_and_balances_weight",
-        "test_build_and_validate_manifest_artifacts_are_byte_stable",
-        "test_manifest_validation_ignores_worker_bundles_created_after_snapshot",
-        "test_parallel_lock_blocks_canonical_writer"
-      ],
-      "totalLines": 145,
-      "hasStructuralAnalysis": true
-    },
     "tests/tools/test_semantic_audit.py": {
       "filePath": "tests/tools/test_semantic_audit.py",
       "contentHash": "61c7cae8ef072a7b4439f4a537be91ca9043c079e4093e1e3db5c29f039f936c",
@@ -27753,6 +27654,115 @@
         "test_cli_sense_merge_audit_rejects_stale_registry_audit_pair"
       ],
       "totalLines": 1155,
+      "hasStructuralAnalysis": true
+    },
+    "tests/tools/test_semantic_audit_manifests.py": {
+      "filePath": "tests/tools/test_semantic_audit_manifests.py",
+      "contentHash": "3e292307e68a2c9f7d4acb6febd57d6b99866ed2efd661b1f7ab0821ac29f5b1",
+      "functions": [
+        {
+          "name": "_sense",
+          "params": [
+            "guid",
+            "source_id"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "_registry",
+          "params": [
+            "guid"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_work_card_prioritizes_pending_source_and_is_idiom_validator_compatible",
+          "params": [],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "test_partition_is_guid_deterministic_and_balances_weight",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_build_and_validate_manifest_artifacts_are_byte_stable",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "test_manifest_validation_ignores_worker_bundles_created_after_snapshot",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "test_parallel_lock_blocks_canonical_writer",
+          "params": [
+            "tmp_path",
+            "monkeypatch"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "tools.semantic_audit",
+          "specifiers": [
+            "semantic_audit_cli"
+          ]
+        },
+        {
+          "source": "src.deck_builder.semantic_audit_manifests",
+          "specifiers": [
+            "build_artifacts",
+            "partition_work",
+            "validate_artifacts",
+            "work_card"
+          ]
+        }
+      ],
+      "exports": [
+        "_sense",
+        "_registry",
+        "test_work_card_prioritizes_pending_source_and_is_idiom_validator_compatible",
+        "test_partition_is_guid_deterministic_and_balances_weight",
+        "test_build_and_validate_manifest_artifacts_are_byte_stable",
+        "test_manifest_validation_ignores_worker_bundles_created_after_snapshot",
+        "test_parallel_lock_blocks_canonical_writer"
+      ],
+      "totalLines": 145,
       "hasStructuralAnalysis": true
     },
     "tests/tools/test_sync_anki_media.py": {
@@ -28253,6 +28263,16 @@
         "test_sync_downloads_shared_media_once_but_manifests_each_entry_identity"
       ],
       "totalLines": 389,
+      "hasStructuralAnalysis": true
+    },
+    "tools/README.md": {
+      "filePath": "tools/README.md",
+      "contentHash": "c9fdf5be0a9e5d6509094a5c047f6e0688977661574c0fec399f1f4d2809b17d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 232,
       "hasStructuralAnalysis": true
     },
     "tools/_check_determinism.py": {
@@ -30969,16 +30989,6 @@
       "totalLines": 212,
       "hasStructuralAnalysis": true
     },
-    "tools/README.md": {
-      "filePath": "tools/README.md",
-      "contentHash": "c9fdf5be0a9e5d6509094a5c047f6e0688977661574c0fec399f1f4d2809b17d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 232,
-      "hasStructuralAnalysis": true
-    },
     "tools/release_guard.py": {
       "filePath": "tools/release_guard.py",
       "contentHash": "2420ab90527ce2d58bebf0d34e4664f80e6d8c1378e722cd76308a2dabdebf0e",
@@ -32396,16 +32406,6 @@
       ],
       "exports": [],
       "totalLines": 17,
-      "hasStructuralAnalysis": true
-    },
-    "USER_NOTES.md": {
-      "filePath": "USER_NOTES.md",
-      "contentHash": "e3ded32ad2841f221dea0c31a179f3ef039fae1a8add1b77e9750f763c68729c",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 214,
       "hasStructuralAnalysis": true
     },
     "vocab_list/AWL/AWL.md": {

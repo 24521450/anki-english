@@ -17,6 +17,14 @@ paths = ProjectPaths()
 PROJECT_ROOT = paths.root
 OXFORD_SCHEMA = json.loads((PROJECT_ROOT / "data" / "schema" / "oxford_record.schema.json").read_text(encoding="utf-8"))
 CAMBRIDGE_SCHEMA = json.loads((PROJECT_ROOT / "data" / "schema" / "cambridge_record.schema.json").read_text(encoding="utf-8"))
+CAMBRIDGE_ENGLISH_VIETNAMESE_SCHEMA = json.loads(
+    (
+        PROJECT_ROOT
+        / "data"
+        / "schema"
+        / "cambridge_english_vietnamese_record.schema.json"
+    ).read_text(encoding="utf-8")
+)
 
 
 def _validate(jsonl_path: Path, schema: dict) -> list[tuple[int, str, str]]:
@@ -56,7 +64,11 @@ def test_validation_cli_only_checks_canonical_sources(monkeypatch):
     monkeypatch.setattr(cli, "validate_file", fake_validate)
 
     assert cli.main() == 0
-    assert [call[0] for call in calls] == [paths.oxford_jsonl, paths.cambridge_jsonl]
+    assert [call[0] for call in calls] == [
+        paths.oxford_jsonl,
+        paths.cambridge_jsonl,
+        paths.cambridge_english_vietnamese_jsonl,
+    ]
 
 
 # -----------------------------------------------------------------------------

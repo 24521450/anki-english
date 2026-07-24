@@ -49,6 +49,9 @@ def package_provenance_inputs(
         "card_registry": project_paths.card_registry,
         "semantic_registry": project_paths.semantic_registry,
         "collocation_registry": project_paths.collocation_registry,
+        "cambridge_english_vietnamese_source": (
+            project_paths.cambridge_english_vietnamese_jsonl
+        ),
         "headword_audio_manifest": project_paths.headword_audio_manifest,
         "bilingual_semantic_audit": project_paths.bilingual_semantic_audit,
         "bilingual_idiom_audit": project_paths.bilingual_idiom_audit,

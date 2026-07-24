@@ -310,6 +310,15 @@
   margin-top: 4px;
 }
 
+.pronunciation-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 84px;
+  box-sizing: border-box;
+}
 .ipa-text {
   display: inline-flex;
   align-items: center;
@@ -326,14 +335,19 @@
   flex-wrap: wrap;
 }
 .ipa-chip {
+  position: relative;
+  appearance: none;
+  font: inherit;
   display: inline-flex;
   align-items: baseline;
   gap: 7px;
+  cursor: pointer;
   background: #171a20;
   border: 1px solid #2b3442;
   border-radius: 8px;
-  padding: 3px 10px 4px;
+  padding: 3px 30px 4px 10px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 100ms ease;
 }
 .ipa-chip-uk {
   border-color: #244263;
@@ -356,6 +370,85 @@
   color: #cbd5e1;
   white-space: nowrap;
 }
+.ipa-chip:hover,
+.ipa-zone:hover {
+  background: #202938;
+}
+.ipa-chip-us:hover {
+  background: #302229;
+}
+.ipa-chip:active,
+.ipa-zone:active {
+  transform: scale(0.98);
+}
+.ipa-chip:focus-visible,
+.ipa-zone:focus-visible {
+  outline: 2px solid #cbd5e1;
+  outline-offset: 2px;
+}
+.headword-playing-icon {
+  position: absolute;
+  top: 50%;
+  opacity: 0;
+  transform: translateY(-50%);
+  font-size: 12px;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+.ipa-chip .headword-playing-icon {
+  right: 9px;
+}
+.ipa-chip.is-playing {
+  box-shadow: 0 0 0 2px #93c5fd66, 0 0 14px #3b82f633;
+}
+.ipa-chip-us.is-playing {
+  box-shadow: 0 0 0 2px #fda4af66, 0 0 14px #ef444433;
+}
+.ipa-chip.is-playing .headword-playing-icon,
+.ipa-zone.is-playing .headword-playing-icon {
+  opacity: 1;
+}
+.ipa-shared {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 172px;
+  min-height: 34px;
+  padding: 3px 44px 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #182331 0%, #171a20 42%, #171a20 58%, #241b20 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.ipa-zone {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  width: 50%;
+  height: 100%;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.ipa-zone-uk { left: 0; }
+.ipa-zone-us { right: 0; }
+.ipa-zone-uk:hover { background: #24426344; }
+.ipa-zone-us:hover { background: #4b2c3544; }
+.ipa-zone-uk .headword-playing-icon { left: 10px; }
+.ipa-zone-us .headword-playing-icon { right: 10px; }
+.ipa-zone.is-playing {
+  box-shadow: inset 0 0 0 1px #cbd5e166, 0 0 14px #64748b33;
+}
+.ipa-shared .ipa-symbols {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+.headword-audio-engine { display: none; }
 
 .divider { border: none; border-top: 1px solid #2e2d2d; margin: 12px 0; }
 .divider-A1          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #5eead4, transparent); margin:12px 0; }
@@ -365,60 +458,6 @@
 .divider-C1          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #fcd34d, transparent); margin:12px 0; }
 .divider-C2          { border:none; height:1.5px; background:linear-gradient(90deg, transparent, #fda4af, transparent); margin:12px 0; }
 .divider-UNCLASSIFIED{ border:none; height:1.5px; background:linear-gradient(90deg, transparent, #c4c7c7, transparent); margin:12px 0; }
-
-.audio-row {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: center;
-  min-height: 50px;
-  padding: 0 78px;
-  box-sizing: border-box;
-  margin: 0;
-}
-.audio-btn-wrapper {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #94a3b8;
-  background: #181717;
-  border: 1px solid #333232;
-  border-radius: 9999px;  padding: 4px 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-  user-select: none;
-}
-.audio-btn-wrapper:hover {
-  background: #232222;
-  color: #e5e2e1;
-}
-.audio-btn-wrapper:active {
-  transform: scale(0.96);
-}
-
-.audio-btn-uk {
-  border-color: #1e3a5f;
-}
-.audio-btn-uk:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #1d4ed840;
-}
-.audio-btn-us {
-  border-color: #450a0a;
-}
-.audio-btn-us:hover {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 1px #9f123840;
-}
-.audio-btn-wrapper i {
-  font-size: 10px;
-}
 
 .section-box {
   background: #181717;
@@ -720,12 +759,14 @@
 .example-line + .example-line { margin-top: 8px; }
 .example-text { flex: 1; min-width: 0; }
 .example-audio-toolbar {
+  display: flex;
+  align-items: center;
+}
+.pronunciation-toolbar > .example-audio-toolbar {
   position: absolute;
   top: 50%;
   right: 0;
   transform: translateY(-50%);
-  display: flex;
-  align-items: center;
 }
 .example-audio-toolbar[hidden] { display: none; }
 .example-accent-toggle {
@@ -864,7 +905,21 @@
   .card-content-back > :not(.word-header-back) { animation: none; }
   .example-accent-label { transition: none; }
   .example-audio-trigger { transition: none; }
-  .example-audio-trigger .example-text * { transition: none; }
+.example-audio-trigger .example-text * { transition: none; }
+}
+@media (max-width: 560px) {
+  .pronunciation-toolbar {
+    padding: 0;
+    min-height: 46px;
+    flex-wrap: wrap;
+  }
+  .pronunciation-toolbar > .example-audio-toolbar {
+    position: static;
+    flex-basis: 100%;
+    justify-content: flex-end;
+    transform: none;
+    margin-top: 4px;
+  }
 }
 
 /* Vietnamese -> English Production sibling card */
@@ -1029,7 +1084,7 @@
         <li><code style="color:#fbbf24">.card-content-front</code> + <code style="color:#fbbf24">.word-front</code> + <code style="color:#fbbf24">.sense-count</code> + <code style="color:#fbbf24">.sense-count-dot</code></li>
         <li><code style="color:#fbbf24">.card-content-back</code> + <code style="color:#fbbf24">.word-back</code> + <code style="color:#fbbf24">.word-header-back</code> + <code style="color:#fbbf24">.meta-row</code> + <code style="color:#fbbf24">.ipa-text</code></li>
         <li><code style="color:#fbbf24">.divider</code> + <code style="color:#fbbf24">.divider-A1</code> … <code style="color:#fbbf24">.divider-UNCLASSIFIED</code></li>
-        <li><code style="color:#fbbf24">.audio-row</code> + <code style="color:#fbbf24">.audio-btn-wrapper</code> + <code style="color:#fbbf24">.audio-btn-uk</code> + <code style="color:#fbbf24">.audio-btn-us</code></li>
+        <li><code style="color:#fbbf24">.pronunciation-toolbar</code> + <code style="color:#fbbf24">.ipa-chip</code> + <code style="color:#fbbf24">.ipa-shared</code> + <code style="color:#fbbf24">.ipa-zone</code> + <code style="color:#fbbf24">.headword-playing-icon</code></li>
         <li><code style="color:#fbbf24">.section-box</code> + <code style="color:#fbbf24">.section-title</code></li>
         <li><code style="color:#fbbf24">.word-highlight</code> (used in examples)</li>
         <li><code style="color:#fbbf24">.relation-synonym</code> + <code style="color:#fbbf24">.relation-antonym</code> (sense-level synonym/antonym parentheticals)</li>
@@ -1147,18 +1202,10 @@
     </div>
 
     <div class="demo-block">
-      <div class="demo-label">IPA chips</div>
+      <div class="demo-label">Headword pronunciation — shared and distinct IPA</div>
       <div class="demo-row">
-        <span class="ipa-text"><span class="ipa-cluster"><span class="ipa-chip ipa-chip-uk"><span class="ipa-label">UK</span><span class="ipa-symbols">/rɪɡərəs/</span></span><span class="ipa-chip ipa-chip-us"><span class="ipa-label">US</span><span class="ipa-symbols">/rɪɡərəs/</span></span></span></span>
-        <span class="ipa-text"><span class="ipa-cluster"><span class="ipa-chip ipa-chip-uk"><span class="ipa-label">UK</span><span class="ipa-symbols">/əˈbændən/</span></span><span class="ipa-chip ipa-chip-us"><span class="ipa-label">US</span><span class="ipa-symbols">/əˈbændən/</span></span></span></span>
-      </div>
-    </div>
-
-    <div class="demo-block">
-      <div class="demo-label">Audio buttons (UK · US)</div>
-      <div class="demo-row">
-        <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
-        <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+        <span class="ipa-text"><span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" aria-label="Play UK pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button><span class="ipa-symbols">/rɪɡərəs/</span><button type="button" class="ipa-zone ipa-zone-us" aria-label="Play US pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
+        <span class="ipa-text"><span class="ipa-cluster"><button type="button" class="ipa-chip ipa-chip-uk"><span class="ipa-label">UK</span><span class="ipa-symbols">/əˈbændən/</span><i class="headword-playing-icon ti ti-volume"></i></button><button type="button" class="ipa-chip ipa-chip-us"><span class="ipa-label">US</span><span class="ipa-symbols">/əˈbæn.dən/</span><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
       </div>
     </div>
 
@@ -1171,9 +1218,8 @@
 
     <div class="demo-block">
       <div class="demo-label">Sense row (L3 grid: def │ ex) — single &amp; multi-sense</div>
-      <div class="audio-row">
-        <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
-        <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+      <div class="pronunciation-toolbar">
+        <span class="ipa-text"><span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" aria-label="Play UK pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button><span class="ipa-symbols">/ˈætɪtjuːd/</span><button type="button" class="ipa-zone ipa-zone-us" aria-label="Play US pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
         <div class="example-audio-toolbar">
           <button type="button" class="example-accent-toggle" role="switch" aria-checked="false" aria-label="Example audio accent: UK">
             <span class="example-accent-label">UK</span>
@@ -1360,9 +1406,8 @@
               <div class="word-back">abolish</div>
               <hr class="divider divider-C1">
             </div>
-            <div class="audio-row">
-              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
-              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            <div class="pronunciation-toolbar">
+              <span class="ipa-text"><span class="ipa-cluster"><button type="button" class="ipa-chip ipa-chip-uk"><span class="ipa-label">UK</span><span class="ipa-symbols">/əˈbɒl.ɪʃ/</span><i class="headword-playing-icon ti ti-volume"></i></button><button type="button" class="ipa-chip ipa-chip-us"><span class="ipa-label">US</span><span class="ipa-symbols">/əˈbɑː.lɪʃ/</span><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
@@ -1425,9 +1470,8 @@
               <div class="word-back">absent</div>
               <hr class="divider divider-C1">
             </div>
-            <div class="audio-row">
-              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
-              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            <div class="pronunciation-toolbar">
+              <span class="ipa-text"><span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" aria-label="Play UK pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button><span class="ipa-symbols">/ˈæb.sənt/</span><button type="button" class="ipa-zone ipa-zone-us" aria-label="Play US pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
@@ -1480,9 +1524,8 @@
                 <span class="usage-tag">saying</span>
               </div>
             </div>
-            <div class="audio-row">
-              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
-              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            <div class="pronunciation-toolbar">
+              <span class="ipa-text"><span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" aria-label="Play UK pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button><span class="ipa-symbols">/ˈæb.səns/</span><button type="button" class="ipa-zone ipa-zone-us" aria-label="Play US pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
               <div class="example-audio-toolbar">
                 <button type="button" class="example-accent-toggle" role="switch" aria-checked="false" aria-label="Example audio accent: UK">
                   <span class="example-accent-label">UK</span>
@@ -1544,9 +1587,8 @@
               <div class="word-back">aggregate</div>
               <hr class="divider divider-C2">
             </div>
-            <div class="audio-row">
-              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
-              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            <div class="pronunciation-toolbar">
+              <span class="ipa-text"><span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" aria-label="Play UK pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button><span class="ipa-symbols">/ˈæɡ.rɪ.ɡət/</span><button type="button" class="ipa-zone ipa-zone-us" aria-label="Play US pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
@@ -1686,9 +1728,8 @@
               <div class="word-back">sick</div>
               <hr class="divider divider-A1">
             </div>
-            <div class="audio-row">
-              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
-              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            <div class="pronunciation-toolbar">
+              <span class="ipa-text"><span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" aria-label="Play UK pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button><span class="ipa-symbols">/sɪk/</span><button type="button" class="ipa-zone ipa-zone-us" aria-label="Play US pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
@@ -1757,9 +1798,8 @@
               <div class="word-back">abandon</div>
               <hr class="divider divider-B2">
             </div>
-            <div class="audio-row">
-              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
-              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            <div class="pronunciation-toolbar">
+              <span class="ipa-text"><span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" aria-label="Play UK pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button><span class="ipa-symbols">/əˈbæn.dən/</span><button type="button" class="ipa-zone ipa-zone-us" aria-label="Play US pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">
@@ -1809,9 +1849,8 @@
               <div class="word-back">acid</div>
               <hr class="divider divider-B2">
             </div>
-            <div class="audio-row">
-              <span class="audio-btn-wrapper audio-btn-uk"><i class="ti ti-volume"></i> UK ▷</span>
-              <span class="audio-btn-wrapper audio-btn-us"><i class="ti ti-volume"></i> US ▷</span>
+            <div class="pronunciation-toolbar">
+              <span class="ipa-text"><span class="ipa-shared"><button type="button" class="ipa-zone ipa-zone-uk" aria-label="Play UK pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button><span class="ipa-symbols">/ˈæs.ɪd/</span><button type="button" class="ipa-zone ipa-zone-us" aria-label="Play US pronunciation"><i class="headword-playing-icon ti ti-volume"></i></button></span></span>
             </div>
             <div class="section-box senses-box">
               <div class="sense-row">

@@ -22,6 +22,7 @@ from src.deck_builder.package_command import (
     configure_genanki_requirements,
     generate_deterministic_id,
 )
+from src.deck_builder.package_contract import json_value_for_key
 
 
 CSS = "body { color: #123; }"
@@ -72,7 +73,7 @@ def _fixture_package(tmp_path: Path):
     deck.add_note(
         genanki.Note(
             model=model,
-            fields=[row.get(key) or "" for key, _field in EAVM_JSON_TO_FIELD],
+            fields=[json_value_for_key(row, key) for key, _field in EAVM_JSON_TO_FIELD],
             guid=row["guid"],
             tags=row["tags"].split(),
         )

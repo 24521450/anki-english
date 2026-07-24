@@ -35,6 +35,7 @@ from src.deck_builder.package_command import (
     load_eavm_templates,
 )
 from src.deck_builder.package_archive import validate_package_archive
+from src.deck_builder.package_contract import json_value_for_key
 from src.deck_builder.package_provenance import (
     invalidate_verified_import_receipt,
     media_file_map,
@@ -62,6 +63,8 @@ LEGACY_EAVM_FIELDS = EAVM_FIELDS[:19]
 PRE_SENSE_POS_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("SensePOS")]
 PRE_IDIOM_MEANING_VI_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("IdiomMeaningVI")]
 PRE_COLLOCATION_SOURCES_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("CollocationSources")]
+PRE_HEADWORD_AUDIO_EAVM_FIELDS = EAVM_FIELDS[:EAVM_FIELDS.index("HeadwordAudioUKSrc")]
+PRE_HEADWORD_AUDIO_US_EAVM_FIELDS = EAVM_FIELDS[:-1]
 SOUND_RE = re.compile(r"\[sound:([^\]]+)\]")
 AUDIO_SRC_RE = re.compile(r"<audio\b[^>]*\bsrc=[\"']([^\"']+)[\"'][^>]*>", re.IGNORECASE)
 
@@ -251,6 +254,8 @@ def _model_contract(client: AnkiConnectClient) -> tuple[bool, tuple[str, ...], s
             PRE_SENSE_POS_EAVM_FIELDS,
             PRE_IDIOM_MEANING_VI_EAVM_FIELDS,
             PRE_COLLOCATION_SOURCES_EAVM_FIELDS,
+            PRE_HEADWORD_AUDIO_EAVM_FIELDS,
+            PRE_HEADWORD_AUDIO_US_EAVM_FIELDS,
             EAVM_FIELDS,
         }
     ):
@@ -272,7 +277,9 @@ def load_expected_signatures(notes_jsonl: Path) -> Counter[tuple[str, ...]]:
                 row = json.loads(line)
             except json.JSONDecodeError as exc:
                 raise ValueError(f"Invalid JSONL on line {line_number}: {exc}") from exc
-            signatures[tuple(str(row.get(key) or "") for key, _ in JSON_TO_ANKI_FIELD)] += 1
+            signatures[
+                tuple(json_value_for_key(row, key) for key, _ in JSON_TO_ANKI_FIELD)
+            ] += 1
     if not signatures:
         raise ValueError("The canonical notes JSONL contains no notes")
     return signatures
@@ -321,7 +328,7 @@ def load_expected_records(notes_jsonl: Path) -> dict[tuple[str, ...], dict[str, 
             records[identity] = {
                 "deck": str(row.get("deck") or ""),
                 "fields": {
-                    field_name: str(row.get(key) or "")
+                    field_name: json_value_for_key(row, key)
                     for key, field_name in JSON_TO_ANKI_FIELD
                 },
                 "tags": tags,

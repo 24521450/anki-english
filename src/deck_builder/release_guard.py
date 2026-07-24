@@ -5,6 +5,9 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 
+from jsonschema import Draft202012Validator
+from jsonschema.exceptions import SchemaError
+
 from src.config import ProjectPaths
 from src.deck_builder.anki_import_command import validate_local_inputs
 from src.deck_builder.collocation_audit import (
@@ -39,6 +42,10 @@ from src.deck_builder.semantic_registry import (
 from src.deck_builder.semantic_policy import validate_built_policy
 from src.design_css import design_css_in_sync
 from src.design_css import load_production_css
+from src.scraper.cambridge_english_vietnamese import (
+    build_lookup_plan,
+    validate_snapshot_rows,
+)
 
 
 RELEASE_GUARD_SCOPES = ("canonical", "package", "import")
@@ -83,6 +90,52 @@ def _require_exact_bytes(path: Path, expected: bytes, label: str) -> None:
         raise ReleaseGuardError(
             f"stale {label}: rerun its canonical writer before release"
         )
+
+
+def _validate_cambridge_english_vietnamese_source(
+    paths: ProjectPaths,
+    rows: list[dict],
+    card_registry_rows: list[dict],
+) -> None:
+    schema_path = (
+        paths.root
+        / "data"
+        / "schema"
+        / "cambridge_english_vietnamese_record.schema.json"
+    )
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise ReleaseGuardError(
+            f"could not load Cambridge English–Vietnamese source schema: {exc}"
+        ) from exc
+    try:
+        Draft202012Validator.check_schema(schema)
+    except SchemaError as exc:
+        raise ReleaseGuardError(
+            f"invalid Cambridge English–Vietnamese source schema: {exc.message}"
+        ) from exc
+
+    validator = Draft202012Validator(schema)
+    for row_number, row in enumerate(rows, start=1):
+        error = next(validator.iter_errors(row), None)
+        if error is not None:
+            lookup = row.get("lookup_headword", "<missing>")
+            raise ReleaseGuardError(
+                "invalid Cambridge English–Vietnamese source "
+                f"row {row_number} ({lookup!r}) at {error.json_path}: "
+                f"{error.message}"
+            )
+
+    try:
+        validate_snapshot_rows(
+            rows,
+            expected_plan=build_lookup_plan(card_registry_rows),
+        )
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ReleaseGuardError(
+            f"invalid Cambridge English–Vietnamese source: {exc}"
+        ) from exc
 
 
 def _build_paths(paths: ProjectPaths) -> BuildNotesPaths:
@@ -141,6 +194,15 @@ def _validate_canonical(paths: ProjectPaths) -> ReleaseGuardReport:
         paths.non_oxford_non_c2_overrides, "non-Oxford/non-C2 overrides"
     )
     _, card_registry_rows = _load_document(paths.card_registry, "Card Registry")
+    _, cambridge_english_vietnamese_rows = _load_document(
+        paths.cambridge_english_vietnamese_jsonl,
+        "Cambridge English–Vietnamese source",
+    )
+    _validate_cambridge_english_vietnamese_source(
+        paths,
+        cambridge_english_vietnamese_rows,
+        card_registry_rows,
+    )
     collocation_audit_bytes, collocation_audit_rows = _load_document(
         paths.collocation_audit, "Collocation Audit"
     )
@@ -270,6 +332,7 @@ def _validate_canonical(paths: ProjectPaths) -> ReleaseGuardReport:
         scope="canonical",
         checks=(
             "promotion-inputs",
+            "cambridge-english-vietnamese-source",
             "semantic-registry-reproduction",
             "collocation-audit-freshness",
             "collocation-registry-reproduction",

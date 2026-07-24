@@ -144,12 +144,14 @@ def test_example_audio_fields_remain_hidden_manual_play_inputs():
     ):
         assert f"{{{{{field}}}}}" in template
 
-    assert "autoplay" not in template.lower()
+    assert 'id="headword-audio-uk"' in template
+    assert 'id="headword-audio-us"' in template
+    assert "autoplay" in template.lower()
     assert 'id="example-audio-toolbar" hidden' in template
     assert 'role="switch" aria-checked="false"' in template
-    audio_row = template.index('<div class="audio-row" id="audio-row-container">')
+    audio_row = template.index('<div class="pronunciation-toolbar" id="pronunciation-toolbar">')
     toolbar = template.index('id="example-audio-toolbar"')
-    assert audio_row < toolbar < template.index("</div>", audio_row)
+    assert audio_row < toolbar < template.index('<div class="meta-row">', audio_row)
     assert "Example audio</span>" not in template
 
 
@@ -193,12 +195,12 @@ console.log(JSON.stringify([initial, selectedUs, usSource, selectedUk, window.__
 def test_single_switch_has_one_sliding_labeled_thumb():
     css = STYLING.read_text(encoding="utf-8")
 
-    audio_row = re.search(r"\.audio-row\s*\{([^}]*)\}", css, re.DOTALL)
+    audio_row = re.search(r"\.pronunciation-toolbar\s*\{([^}]*)\}", css, re.DOTALL)
     toggle = re.search(r"\.example-accent-toggle\s*\{([^}]*)\}", css, re.DOTALL)
     label = re.search(r"\.example-accent-label\s*\{([^}]*)\}", css, re.DOTALL)
 
     assert audio_row is not None
-    assert "padding: 0 78px;" in audio_row.group(1)
+    assert "padding: 0 84px;" in audio_row.group(1)
     assert toggle is not None
     assert "width: 70px;" in toggle.group(1)
     assert "height: 32px;" in toggle.group(1)
@@ -416,10 +418,10 @@ def test_example_audio_controls_have_global_toggle_and_invisible_trigger_css():
         assert selector in css
 
     assert ".example-audio-toolbar[hidden] { display: none; }" in css
-    audio_row = re.search(r"\.audio-row\s*\{([^}]*)\}", css, re.DOTALL)
+    audio_row = re.search(r"\.pronunciation-toolbar\s*\{([^}]*)\}", css, re.DOTALL)
     assert audio_row is not None
     assert "position: relative;" in audio_row.group(1)
-    toolbar = re.search(r"\.example-audio-toolbar\s*\{([^}]*)\}", css, re.DOTALL)
+    toolbar = re.search(r"\.pronunciation-toolbar > \.example-audio-toolbar\s*\{([^}]*)\}", css, re.DOTALL)
     assert toolbar is not None
     assert "position: absolute;" in toolbar.group(1)
     assert "right: 0;" in toolbar.group(1)

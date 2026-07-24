@@ -427,6 +427,11 @@ Example Audio delimiter grammar.
 index 25) and is pipe-aligned with `Collocations`. Its tokens are `oxford`,
 `cambridge`, `oxford+cambridge`, and `curated`. Missing or invalid legacy
 metadata must render all collocation chips neutrally rather than infer a source.
+`HeadwordAudioUKSrc` and `HeadwordAudioUSSrc` follow `CollocationSources`
+(fields 27 and 28, zero-based indexes 26 and 27). They are deterministic
+media-only filenames derived from the established `AudioUK` / `AudioUS`
+`[sound:...]` references for the Recognition playback controller; they never
+select, override, or independently attest a pronunciation.
 
 ### Anki package import workflow
 

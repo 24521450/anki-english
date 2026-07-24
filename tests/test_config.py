@@ -16,6 +16,12 @@ def test_project_paths_resolve_canonical_artifacts(tmp_path):
 
     assert paths.oxford_jsonl == tmp_path / "data" / "sources" / "oxford.jsonl"
     assert paths.cambridge_jsonl == tmp_path / "data" / "sources" / "cambridge.jsonl"
+    assert paths.cambridge_english_vietnamese_jsonl == (
+        tmp_path / "data" / "sources" / "cambridge_english_vietnamese.jsonl"
+    )
+    assert paths.cambridge_english_vietnamese_cache_dir == (
+        tmp_path / "data" / (".cache" + "_html") / "cambridge_english_vietnamese"
+    )
     assert paths.headword_audio_manifest == tmp_path / "data" / "sources" / "headword_audio_manifest.jsonl"
     assert paths.deck_audit_jsonl == tmp_path / "data" / "curated" / "deck_audit.jsonl"
     assert paths.card_registry == tmp_path / "data" / "curated" / "card_registry.jsonl"

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
+import inspect
 import json
 from pathlib import Path
+import shutil
 from types import SimpleNamespace
 
 import pytest
@@ -17,6 +20,10 @@ from src.deck_builder.package_provenance import (
     write_verified_import_receipt,
 )
 from src.deck_builder.release_guard import ReleaseGuardError, run_release_guard
+from src.scraper.cambridge_english_vietnamese import (
+    build_lookup_plan,
+    parse_snapshot,
+)
 
 
 def _guid_proof(note_count: int, card_count: int | None = None) -> dict[str, object]:
@@ -44,7 +51,37 @@ def _write_jsonl(path: Path, rows: list[dict]) -> None:
     )
 
 
+def _install_cambridge_evi_schema(paths: ProjectPaths) -> None:
+    source = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "schema"
+        / "cambridge_english_vietnamese_record.schema.json"
+    )
+    target = (
+        paths.root
+        / "data"
+        / "schema"
+        / "cambridge_english_vietnamese_record.schema.json"
+    )
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source, target)
+
+
+def _refingerprint_cambridge_evi_row(row: dict) -> None:
+    unsigned = dict(row)
+    unsigned.pop("record_fingerprint")
+    payload = json.dumps(
+        unsigned,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    row["record_fingerprint"] = hashlib.sha256(payload).hexdigest()
+
+
 def _canonical_fixture(paths: ProjectPaths) -> tuple[bytes, bytes]:
+    _install_cambridge_evi_schema(paths)
     _write_jsonl(paths.bilingual_semantic_audit, [{"audit": "row"}])
     _write_jsonl(paths.bilingual_idiom_audit, [{"idiom": "row"}])
     _write_jsonl(
@@ -71,6 +108,7 @@ def _canonical_fixture(paths: ProjectPaths) -> tuple[bytes, bytes]:
     )
     _write_jsonl(paths.oxford_jsonl, [])
     _write_jsonl(paths.cambridge_jsonl, [])
+    _write_jsonl(paths.cambridge_english_vietnamese_jsonl, [])
 
     jsonl_bytes = b'{"guid": "guid-1"}\n'
     txt_bytes = b"header\nrow\n"
@@ -131,6 +169,7 @@ def test_canonical_scope_reproduces_registry_and_build_without_writes(
 
     assert calls == ["promote", "build"]
     assert report.note_count == 1
+    assert "cambridge-english-vietnamese-source" in report.checks
     assert report.checks[-1] == "build-artifact-reproduction"
     assert "built-semantic-policy" in report.checks
     assert paths.semantic_registry.read_bytes() == b'{"guid":"guid-1"}\n'
@@ -167,6 +206,107 @@ def test_canonical_scope_rejects_stale_registry_before_build(
 
     with pytest.raises(ReleaseGuardError, match="stale Semantic Registry"):
         run_release_guard(paths, "canonical")
+
+
+def test_canonical_scope_requires_exact_cambridge_evi_coverage(
+    tmp_path: Path,
+) -> None:
+    paths = ProjectPaths(tmp_path)
+    _canonical_fixture(paths)
+    _write_jsonl(paths.card_registry, [{
+        "guid": "guid-1",
+        "word": "abolish",
+        "variant": "",
+        "pos": "verb",
+        "status": "active",
+    }])
+
+    with pytest.raises(
+        ReleaseGuardError,
+        match="exact active Card Registry coverage",
+    ):
+        run_release_guard(paths, "canonical")
+
+
+@pytest.mark.parametrize(
+    ("changes", "expected_path"),
+    [
+        ({"status": "network_error"}, "$.status"),
+        (
+            {
+                "status": "found",
+                "resolved_headword": "abolish",
+                "entries": [],
+            },
+            "$.entries",
+        ),
+        ({"http_status": 503}, "$.http_status"),
+        ({"canonical_url": 42}, "$.canonical_url"),
+        (
+            {"requested_url": "https://example.test/abolish"},
+            "$.requested_url",
+        ),
+        (
+            {
+                "snapshot": {
+                    "cache_file": "abolish.html",
+                    "html_sha256": "a" * 64,
+                }
+            },
+            "$.snapshot.cache_file",
+        ),
+    ],
+)
+def test_canonical_scope_schema_rejects_refingerprinted_cambridge_evi_row(
+    tmp_path: Path,
+    changes: dict[str, object],
+    expected_path: str,
+) -> None:
+    paths = ProjectPaths(tmp_path)
+    _canonical_fixture(paths)
+    registry_row = {
+        "guid": "guid-1",
+        "word": "abolish",
+        "variant": "",
+        "pos": "verb",
+        "status": "active",
+    }
+    _write_jsonl(paths.card_registry, [registry_row])
+    plan = build_lookup_plan([registry_row])[0]
+    parse_kwargs = {}
+    if "response_url" in inspect.signature(parse_snapshot).parameters:
+        parse_kwargs["response_url"] = plan["requested_url"]
+    row = parse_snapshot(
+        (
+            b"<html><head><link rel='canonical' "
+            b"href='https://dictionary.cambridge.org/dictionary/"
+            b"english-vietnamese/abolish'></head>"
+            b"<body><div class='no-results'>no results for abolish</div></body></html>"
+        ),
+        lookup_headword=plan["lookup_headword"],
+        coverage_requests=plan["coverage_requests"],
+        cache_file="cambridge_english_vietnamese_0123456789abcdef.html",
+        **parse_kwargs,
+    )
+    schema = json.loads(
+        (
+            paths.root
+            / "data"
+            / "schema"
+            / "cambridge_english_vietnamese_record.schema.json"
+        ).read_text(encoding="utf-8")
+    )
+    if "response_url" in schema.get("properties", {}):
+        row.setdefault("response_url", plan["requested_url"])
+    row.update(changes)
+    _refingerprint_cambridge_evi_row(row)
+    _write_jsonl(paths.cambridge_english_vietnamese_jsonl, [row])
+
+    with pytest.raises(ReleaseGuardError) as exc_info:
+        run_release_guard(paths, "canonical")
+    message = str(exc_info.value)
+    assert "row 1 ('abolish')" in message
+    assert f"at {expected_path}:" in message
 
 
 def test_canonical_scope_rejects_a_built_user_lock_violation(

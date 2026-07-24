@@ -49,7 +49,7 @@ def test_production_build_uses_the_complete_promoted_semantic_registry():
     registry_by_guid = {row["guid"]: row for row in registry_rows}
     cards_by_guid = {card["guid"]: card for card in cards}
 
-    assert len(registry_by_guid) == len(cards_by_guid) == 2465
+    assert len(registry_by_guid) == len(cards_by_guid) == 2468
     assert set(registry_by_guid) == set(cards_by_guid)
     audit_sha256 = hashlib.sha256(paths.bilingual_semantic_audit.read_bytes()).hexdigest()
     assert {row["audit_sha256"] for row in registry_rows} == {audit_sha256}
@@ -74,25 +74,25 @@ def test_production_inventory_matches_all_canonical_authorities():
     pronunciation_locks = _jsonl(paths.pronunciation_selection_locks)
     headword_audio_manifest = _jsonl(paths.headword_audio_manifest)
 
-    assert len(card_registry) == 2467
-    assert sum(row["status"] == "active" for row in card_registry) == 2465
+    assert len(card_registry) == 2470
+    assert sum(row["status"] == "active" for row in card_registry) == 2468
     assert sum(row["status"] == "retired" for row in card_registry) == 2
-    assert len(semantic_audit) == 2465
-    assert len(semantic_registry) == 2465
-    assert len(collocation_registry) == 2465
-    assert len(cards) == 2465
-    assert sum(len(row["senses"]) for row in semantic_registry) == 3479
+    assert len(semantic_audit) == 2468
+    assert len(semantic_registry) == 2468
+    assert len(collocation_registry) == 2468
+    assert len(cards) == 2468
+    assert sum(len(row["senses"]) for row in semantic_registry) == 3478
 
     vietnamese_summary = vietnamese_review[0]
     assert vietnamese_summary["record_type"] == "review_summary"
-    assert vietnamese_summary["candidate_count"] == 3479
-    assert len(vietnamese_review) == 3480
+    assert vietnamese_summary["candidate_count"] == 3478
+    assert len(vietnamese_review) == 3479
     assert sum(
         bool(card["definition_vi"])
         and bool(card["example"])
         and bool(card["production_answer"])
         for card in cards
-    ) == 2463
+    ) == 2466
     assert len(pronunciation_locks) == 277
     assert {row["schema_version"] for row in pronunciation_locks} == {2}
     assert sum(row["decision"] == "select" for row in pronunciation_locks) == 273
@@ -128,6 +128,12 @@ def test_takenote_reviewed_identity_splits_reach_production():
         "q?0?C/TI0}": ("alien", "secondary_disapproving_space", True),
         "fM]>3mcy3=": ("sensitivity", "primary", False),
         "fXYJ-i~KFJ": ("sensitivity", "secondary_art_physical", True),
+        "J4vX4Ms>Gu": ("worthy", "primary", False),
+        "t<{&f+,xy(": ("worthy", "secondary_typical_of", True),
+        "si$OijE.g9": ("provision", "primary", False),
+        "Jdw3%XIBK#": ("provision", "secondary_legal_condition", True),
+        "{@EH_k/.?d": ("allowance", "primary", False),
+        "q&$pu$7C?h": ("allowance", "secondary_child_allowance", True),
     }
 
     for guid, (word, variant, is_secondary) in expected.items():

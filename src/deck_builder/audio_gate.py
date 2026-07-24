@@ -61,7 +61,12 @@ def tracked_audio_names_from_git(audio_dir: Path) -> set[str] | None:
     for line in result.stdout.splitlines():
         line = line.strip()
         if line:
-            tracked.add(Path(line).name)
+            name = Path(line).name
+            # ``git ls-files`` still reports a path staged for deletion until
+            # the next commit.  Such a path is no longer part of the working
+            # tree's media set and must not block the next canonical build.
+            if (audio_dir / name).is_file():
+                tracked.add(name)
     return tracked
 
 

@@ -25,6 +25,7 @@ CANONICAL_AUTHORITY_LABELS = (
     "bilingual_idiom_audit",
     "collocation_audit",
     "collocation_registry",
+    "cambridge_english_vietnamese_source",
     "vietnamese_naturalness_review",
     "semantic_policy_locks",
     "pronunciation_selection_locks",
@@ -99,6 +100,9 @@ def test_shared_input_mapping_binds_every_release_authority(tmp_path: Path):
         "card_registry": paths.card_registry,
         "semantic_registry": paths.semantic_registry,
         "collocation_registry": paths.collocation_registry,
+        "cambridge_english_vietnamese_source": (
+            paths.cambridge_english_vietnamese_jsonl
+        ),
         "headword_audio_manifest": paths.headword_audio_manifest,
         "bilingual_semantic_audit": paths.bilingual_semantic_audit,
         "bilingual_idiom_audit": paths.bilingual_idiom_audit,

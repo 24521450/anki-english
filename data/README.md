@@ -10,14 +10,15 @@ authority, writer, and edit policy.
 | --- | --- | --- | --- |
 | `sources/oxford.jsonl` | Canonical Oxford parser output; raw senses remain auditable. | `python -m tools._run_full_cache` | No; fix parser/cache inputs or use an explicitly reviewed source repair. |
 | `sources/cambridge.jsonl` | Canonical Cambridge parser output. | `python -m tools._run_full_cache` | No. |
+| `sources/cambridge_english_vietnamese.jsonl` | Canonical Cambridge English–Vietnamese supporting-translation snapshot, with exact active Card Registry coverage and explicit `no_entry` rows. | `python -m tools.sync_cambridge_english_vietnamese build --apply` | Never; update the isolated cache through the sync command and rebuild. |
 | `sources/headword_audio_manifest.jsonl` | Byte-attested media projection for every selected entry-scoped UK/US pronunciation. | `python -m tools.sync_pronunciation_audio --apply` | Never. |
 | `curated/card_registry.jsonl` | Canonical card identity, GUID, status, and routing inventory. | `python -m tools.sync_card_registry`; reviewed splits use `python -m tools.card_identity_split apply-review` | No. |
 | `curated/pronunciation_selection_locks.jsonl` | Fingerprint-bound selected/absent pronunciation decisions for ambiguous or explicitly aliased `(GUID, accent)` requests. | Reviewed pronunciation-selection workflow | Only through an explicit candidate-level review; never infer from filenames. |
 | `curated/semantic_policy_locks.jsonl` | Machine-readable exact-VI and absent/retain/exclude release invariants. | Reviewed semantic-policy workflow | Append reviewed history for ordinary locks. The five required user exact-VI locks need explicit user instruction plus a coordinated code/data change and cannot be silently deleted or superseded. |
 | `review/bilingual_semantic_audit.jsonl` | Fingerprint-bound English/Vietnamese sense decisions and complete source coverage. | `python -m tools.semantic_audit scaffold/import-xlsx/apply-review`; reviewed identity splits use `python -m tools.card_identity_split apply-review` | Only through a validated review transaction. |
 | `review/vietnamese_naturalness_review.jsonl` | All-sense Vietnamese naturalness evidence with row-specific `reason_code` and EN/example-grounded `semantic_evidence`; user-locked rows also cite `lock_id`, while interpolated bulk templates are rejected. | `python -m tools.semantic_audit vietnamese-review-scaffold/apply-vietnamese-review` | Only through a complete validated review. |
-| `review/bilingual_idiom_audit.jsonl` | Phrase-level idiom meaning and display-mode decisions. | `python -m tools.idiom_audit scaffold/import-xlsx` | Only through a validated review transaction. |
-| `review/collocation_audit.jsonl` | Fingerprint-bound two-way decisions for every current collocation and mandatory example-linked Oxford/Cambridge candidate. | `python -m tools.collocation_audit scaffold/import-xlsx` | Only through a validated review transaction; every item requires an explicit decision. |
+| `review/bilingual_idiom_audit.jsonl` | Phrase-level idiom meaning and display-mode decisions. The default scaffold uses a pre-Semantic-Registry source projection so promoted glosses cannot overwrite source fingerprints. | `python -m tools.idiom_audit scaffold/import-xlsx` | Only through a validated review transaction. |
+| `review/collocation_audit.jsonl` | Fingerprint-bound two-way decisions for every current collocation and mandatory example-linked Oxford/Cambridge candidate. | `python -m tools.collocation_audit scaffold/import-xlsx/apply-review` | Only through a validated review transaction; every item requires an explicit decision. |
 | `review/phrasal_verb_routing_audit.jsonl` | Fingerprint-bound routing decisions for Oxford phrasal targets linked from active parent cards. | `python -m tools.phrasal_verb_audit scaffold/import-xlsx` | Only through a validated review transaction; distinct secondary routes require a completed Atomic Card Identity split. |
 | `review/definition_concision_review.jsonl` | Exact-coverage, fingerprint-bound promotion gate for every current English concision candidate. | `python -m tools.semantic_audit definition-review-scaffold` | Only through a complete validated review; required rewrites/splits belong in the Bilingual Semantic Audit first. |
 | `review/semantic_sense_merge_review.jsonl` | Exact-coverage, fingerprint-bound promotion gate proving why every current overlap candidate remains separate. | `python -m tools.semantic_audit sense-merge-review-scaffold` | Only through a complete validated review; apply merge/reword bundles to the Bilingual Semantic Audit first. |
@@ -43,6 +44,9 @@ Supporting data:
 - `schema/` contains source-record JSON schemas.
 - `oxford_labels.json` and `oxford_symbols.json` contain Oxford taxonomies.
 - `.cache_html/{oxford,cambridge}/` contains ignored fetcher caches.
+- `.cache_html/cambridge_english_vietnamese/` is the isolated ignored cache for
+  the Cambridge English–Vietnamese snapshot; it never shares filenames with
+  the English Cambridge fetcher.
 - `scratch/release/*.provenance.json` binds an exact `.apkg` to all canonical
   package inputs and media; `*.verified-import.json` additionally binds the
   exact package to a completed live verification and the post-import APKG
@@ -79,6 +83,10 @@ sources + pronunciation locks/manifest + Card Registry
 # Rebuild source datasets from isolated local caches.
 python -m tools._run_full_cache
 python -m tools.check_oxford_opal
+python -m tools.sync_cambridge_english_vietnamese plan
+python -m tools.sync_cambridge_english_vietnamese fetch
+python -m tools.sync_cambridge_english_vietnamese build --apply
+python -m tools.sync_cambridge_english_vietnamese validate
 python -m tools.sync_pronunciation_audio
 python -m tools.sync_pronunciation_audio --apply
 

@@ -149,6 +149,14 @@ def _validate_structure(rows: list[dict]) -> list[str]:
                 errors.append(
                     f"suspected_lossy_unicode:{guid}:{semantic_id}:definition_vi"
                 )
+            if re.search(
+                r"(?<!\w)hoặc(?!\w)",
+                str(sense.get("definition_vi") or ""),
+                re.IGNORECASE,
+            ):
+                errors.append(
+                    f"forbidden_vietnamese_or_connector:{guid}:{semantic_id}:definition_vi"
+                )
             if sense.get("cambridge_match") not in _PROMOTED_CAMBRIDGE_MATCHES:
                 errors.append(f"invalid_cambridge_match:{guid}:{semantic_id}")
 
@@ -237,6 +245,14 @@ def _validate_structure(rows: list[dict]) -> list[str]:
             if has_suspected_lossy_unicode(idiom.get("explanation_vi")):
                 errors.append(
                     f"suspected_lossy_unicode:{guid}:{idiom_id}:explanation_vi"
+                )
+            if re.search(
+                r"(?<!\w)hoặc(?!\w)",
+                str(idiom.get("explanation_vi") or ""),
+                re.IGNORECASE,
+            ):
+                errors.append(
+                    f"forbidden_vietnamese_or_connector:{guid}:{idiom_id}:explanation_vi"
                 )
 
             idiom_examples = idiom.get("examples")
@@ -719,6 +735,55 @@ def render_registry_idiom_fields(idioms: list[dict]) -> tuple[str, str]:
             f"{idiom['display_mode']} :: {idiom['explanation_vi']}"
         )
     return "$$".join(legacy_entries), "$$".join(vietnamese_entries)
+
+
+def apply_variant_idiom_ownership(
+    cards: list[BuiltCard],
+    rows: list[dict],
+) -> list[BuiltCard]:
+    """Keep only the source idioms assigned to reviewed secondary identities.
+
+    Atomic Card Identity splits explicitly partition idioms between the primary
+    and secondary cards.  The raw source lookup is word-scoped, so without this
+    step it would attach every source idiom to both siblings.
+    """
+    from src.deck_builder.idiom_audit import parse_serialized_idioms
+
+    rows_by_guid = {row.get("guid") or "": row for row in rows}
+    updated: list[BuiltCard] = []
+    for card in cards:
+        row = rows_by_guid.get(card.guid)
+        if row is None or not row.get("variant"):
+            updated.append(card)
+            continue
+
+        selected = parse_serialized_idioms(card.idioms)
+        owned: list[dict] = []
+        for promoted in row.get("idioms") or []:
+            matches = [
+                item
+                for item in selected
+                if (
+                    item["phrase_en"] == promoted.get("phrase_en")
+                    and item["examples"] == (promoted.get("examples") or [])
+                )
+            ]
+            if len(matches) != 1:
+                raise ValueError(
+                    "Semantic Registry/card variant idiom ownership mismatch:"
+                    f"{card.guid}:{promoted.get('order') or len(owned) + 1}"
+                )
+            owned.append(matches[0])
+
+        serialized = []
+        for idiom in owned:
+            serialized.append(" :: ".join([
+                idiom["phrase_en"],
+                idiom["source_explanation_en"],
+                *idiom["examples"],
+            ]))
+        updated.append(card._replace(idioms="$$".join(serialized)))
+    return updated
 
 
 def apply_semantic_registry(

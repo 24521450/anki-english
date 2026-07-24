@@ -19,9 +19,11 @@ from src.deck_builder.definition_audit import (
     load_jsonl_bytes as load_definition_jsonl_bytes,
     render_definition_audit_markdown,
     scaffold_definition_review,
+    select_definition_audit_scope,
     serialize_definition_audit,
     serialize_definition_review,
     sha256_bytes as definition_sha256_bytes,
+    validate_definition_review,
     validate_definition_review_for_promotion,
 )
 from src.deck_builder.idiom_audit import (
@@ -75,6 +77,7 @@ from src.deck_builder.vietnamese_audit import (
     scaffold_vietnamese_review,
     serialize_vietnamese_audit,
     serialize_vietnamese_review,
+    validate_vietnamese_review,
     validate_vietnamese_review_for_promotion,
 )
 
@@ -91,11 +94,42 @@ DEFAULT_VIETNAMESE_AUDIT_MARKDOWN = paths.root / "scratch" / "vietnamese_natural
 DEFAULT_VIETNAMESE_REVIEW = paths.vietnamese_naturalness_review
 DEFAULT_SEMANTIC_POLICY = paths.semantic_policy_locks
 DEFAULT_DEFINITION_REVIEW = paths.definition_concision_review
+DEFAULT_DEFINITION_REVIEW_MANIFEST_DIR = (
+    paths.root / "scratch" / "definition_review_manifests"
+)
+DEFAULT_VIETNAMESE_REVIEW_MANIFEST_DIR = (
+    paths.root / "scratch" / "vietnamese_review_manifests"
+)
 DEFAULT_CANONICAL_SENSE_MERGE_REVIEW = paths.semantic_sense_merge_review
 DEFAULT_SENSE_MERGE_AUDIT = paths.root / "scratch" / "semantic_sense_merge_audit.jsonl"
 DEFAULT_SENSE_MERGE_AUDIT_MARKDOWN = paths.root / "scratch" / "semantic_sense_merge_audit.md"
 DEFAULT_SENSE_MERGE_REVIEW = paths.root / "scratch" / "semantic_sense_merge_review.jsonl"
 PARALLEL_LOCK = paths.root / "scratch" / "parallel" / ".canonical_ledger.lock"
+MAX_REVIEW_MANIFEST_ROWS = 100
+DEFINITION_REVIEW_EDITABLE_FIELDS = frozenset({
+    "decision",
+    "shorter_en_considered",
+    "preserved_distinction",
+    "reason",
+    "semantic_evidence",
+    "reviewer",
+    "reviewed_at",
+    "approval",
+})
+VIETNAMESE_REVIEW_EDITABLE_FIELDS = frozenset({
+    "decision",
+    "suggested_vi",
+    "proposed_vi",
+    "shorter_vi_considered",
+    "preserved_distinction",
+    "reason",
+    "reason_code",
+    "semantic_evidence",
+    "lock_id",
+    "reviewer",
+    "reviewed_at",
+    "approval",
+})
 
 
 def _write_atomic(path: Path, text: str) -> None:
@@ -139,6 +173,149 @@ def _write_manifest_outputs(output_dir: Path, outputs: dict[str, bytes]) -> None
         temporary = target.with_suffix(target.suffix + ".tmp")
         temporary.write_bytes(payload)
         os.replace(temporary, target)
+
+
+def _review_records(path: Path, *, label: str) -> tuple[dict, list[dict]]:
+    records = load_jsonl(path)
+    if not records:
+        raise ValueError(f"{label}_empty")
+    summary = records[0]
+    if not isinstance(summary, dict) or any(
+        not isinstance(row, dict) for row in records[1:]
+    ):
+        raise ValueError(f"{label}_invalid_record_type")
+    if summary.get("record_type") != "review_summary":
+        raise ValueError(f"{label}_missing_summary")
+    return summary, records[1:]
+
+
+def _merge_review_patch(
+    canonical_summary: dict,
+    canonical_rows: list[dict],
+    patch_summary: dict,
+    patch_rows: list[dict],
+    *,
+    label: str,
+    editable_fields: frozenset[str],
+) -> list[dict]:
+    """Merge a small review patch without allowing context fields to drift."""
+    if patch_summary != canonical_summary:
+        raise ValueError(f"{label}_patch_summary_mismatch")
+
+    canonical_by_id: dict[str, dict] = {}
+    for row in canonical_rows:
+        candidate_id = str(row.get("candidate_id") or "")
+        if not candidate_id or candidate_id in canonical_by_id:
+            raise ValueError(f"{label}_canonical_duplicate_or_empty:{candidate_id}")
+        canonical_by_id[candidate_id] = row
+
+    patch_ids: set[str] = set()
+    merged_by_id = copy.deepcopy(canonical_by_id)
+    for patch in patch_rows:
+        candidate_id = str(patch.get("candidate_id") or "")
+        if not candidate_id or candidate_id in patch_ids:
+            raise ValueError(f"{label}_patch_duplicate_or_empty:{candidate_id}")
+        patch_ids.add(candidate_id)
+        existing = canonical_by_id.get(candidate_id)
+        if existing is None:
+            raise ValueError(f"{label}_patch_unknown_candidate:{candidate_id}")
+        immutable_fields = (set(existing) | set(patch)) - editable_fields
+        changed = sorted(
+            field
+            for field in immutable_fields
+            if patch.get(field) != existing.get(field)
+        )
+        if changed:
+            raise ValueError(
+                f"{label}_patch_immutable_change:{candidate_id}:{','.join(changed)}"
+            )
+        merged = copy.deepcopy(existing)
+        for field in editable_fields:
+            if field in patch:
+                merged[field] = copy.deepcopy(patch[field])
+        merged_by_id[candidate_id] = merged
+
+    return [merged_by_id[candidate_id] for candidate_id in sorted(merged_by_id)]
+
+
+def _validate_review_patch_size(patch_rows: list[dict], *, label: str) -> None:
+    if not 1 <= len(patch_rows) <= MAX_REVIEW_MANIFEST_ROWS:
+        raise ValueError(
+            f"{label}_patch_rows_must_be_1_to_{MAX_REVIEW_MANIFEST_ROWS}"
+        )
+
+
+def _review_manifest_payloads(
+    summary: dict,
+    review_rows: list[dict],
+    *,
+    max_rows: int,
+    resolved,
+) -> tuple[dict[str, bytes], int]:
+    if (
+        not isinstance(max_rows, int)
+        or isinstance(max_rows, bool)
+        or not 1 <= max_rows <= MAX_REVIEW_MANIFEST_ROWS
+    ):
+        raise ValueError(
+            f"review_manifest_max_rows_must_be_1_to_{MAX_REVIEW_MANIFEST_ROWS}"
+        )
+    unresolved = sorted(
+        (copy.deepcopy(row) for row in review_rows if not resolved(row)),
+        key=lambda row: (
+            str(row.get("word") or "").casefold(),
+            str(row.get("guid") or ""),
+            str(row.get("candidate_id") or ""),
+        ),
+    )
+    groups: list[list[dict]] = []
+    for row in unresolved:
+        guid = str(row.get("guid") or "")
+        if groups and str(groups[-1][0].get("guid") or "") == guid:
+            groups[-1].append(row)
+        else:
+            groups.append([row])
+
+    chunks: list[list[dict]] = []
+    current: list[dict] = []
+    for group in groups:
+        if len(group) > max_rows:
+            if current:
+                chunks.append(current)
+                current = []
+            chunks.extend(
+                group[offset:offset + max_rows]
+                for offset in range(0, len(group), max_rows)
+            )
+            continue
+        if current and len(current) + len(group) > max_rows:
+            chunks.append(current)
+            current = []
+        current.extend(group)
+    if current:
+        chunks.append(current)
+
+    outputs: dict[str, bytes] = {}
+    for index, chunk in enumerate(chunks, start=1):
+        name = f"manifest_{index:03d}.jsonl"
+        outputs[name] = canonical_jsonl_bytes([summary, *chunk])
+    return outputs, len(unresolved)
+
+
+def _write_review_manifest_outputs(
+    output_dir: Path,
+    outputs: dict[str, bytes],
+    *,
+    replace: bool,
+) -> None:
+    existing = sorted(output_dir.glob("manifest_*.jsonl")) if output_dir.exists() else []
+    if existing and not replace:
+        raise ValueError(f"review manifest output exists: {output_dir}; use --replace")
+    _write_manifest_outputs(output_dir, outputs)
+    expected = set(outputs)
+    for path in existing:
+        if path.name not in expected:
+            path.unlink()
 
 
 def _write_report_atomic(path: Path, text: str) -> None:
@@ -246,6 +423,106 @@ def _load_vietnamese_audit_inputs(
     )
 
 
+def _reuse_unchanged_source_coverage(existing: dict, fresh: dict) -> None:
+    """Carry coverage only for uniquely identical source-sense payloads."""
+    existing_sources = {
+        sense.get("source_sense_id"): sense
+        for sense in existing.get("source_senses") or []
+    }
+    fresh_sources = {
+        sense.get("source_sense_id"): sense
+        for sense in fresh.get("source_senses") or []
+    }
+    existing_coverage = {
+        item.get("source_sense_id"): item
+        for item in existing.get("source_coverage") or []
+    }
+
+    def payload_without_id(source: dict) -> str:
+        return json.dumps(
+            {
+                key: value
+                for key, value in source.items()
+                if key != "source_sense_id"
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+
+    existing_ids_by_payload: dict[str, list[str]] = {}
+    for source_id, source in existing_sources.items():
+        existing_ids_by_payload.setdefault(
+            payload_without_id(source), []
+        ).append(source_id)
+
+    def reused_coverage(item: dict) -> dict:
+        source_id = item.get("source_sense_id")
+        source = fresh_sources.get(source_id)
+        if (
+            source_id in existing_coverage
+            and source_id in existing_sources
+            and existing_sources[source_id] == source
+        ):
+            return copy.deepcopy(existing_coverage[source_id])
+        matching_ids = existing_ids_by_payload.get(
+            payload_without_id(source or {}), []
+        )
+        if len(matching_ids) != 1:
+            return copy.deepcopy(item)
+        old_source_id = matching_ids[0]
+        old_coverage = existing_coverage.get(old_source_id)
+        if old_coverage is None:
+            return copy.deepcopy(item)
+        reused = copy.deepcopy(old_coverage)
+        reused["source_sense_id"] = source_id
+        return reused
+
+    fresh["source_coverage"] = [
+        reused_coverage(item)
+        for item in fresh.get("source_coverage") or []
+    ]
+    semantic_by_id = {
+        sense.get("semantic_sense_id"): sense
+        for sense in fresh.get("semantic_senses") or []
+    }
+    for sense in semantic_by_id.values():
+        sense["source_sense_ids"] = []
+    for coverage in fresh["source_coverage"]:
+        if coverage.get("disposition") != "mapped":
+            continue
+        for target in coverage.get("target_semantic_sense_ids") or []:
+            if target in semantic_by_id:
+                semantic_by_id[target]["source_sense_ids"].append(
+                    coverage["source_sense_id"]
+                )
+    for sense in semantic_by_id.values():
+        sense["source_sense_ids"].sort()
+
+    decisions = {sense.get("decision") for sense in semantic_by_id.values()}
+    if decisions:
+        if any(
+            item.get("disposition") == "pending"
+            for item in fresh["source_coverage"]
+        ):
+            status = "pending"
+        elif "uncertain" in decisions:
+            status = "uncertain"
+        elif "pending" in decisions:
+            status = "pending"
+        elif "repair_proposed" in decisions:
+            status = "repair_proposed"
+        else:
+            status = "pass"
+        existing_coverage_summary = existing.get("coverage") or {}
+        fresh["coverage"]["status"] = status
+        fresh["coverage"]["reason"] = (
+            str(existing_coverage_summary.get("reason") or "")
+            if status == existing_coverage_summary.get("status")
+            else ""
+        )
+
+
 def _scaffold(args) -> int:
     cards = load_jsonl(args.notes)
     registry = load_jsonl(args.registry)
@@ -326,8 +603,13 @@ def _scaffold(args) -> int:
                 for old_sense, new_sense, effective in zip(
                     existing_semantic, migrated["semantic_senses"], existing_effective
                 ):
+                    fresh_order = new_sense["order"]
+                    new_sense.clear()
+                    new_sense.update(copy.deepcopy(old_sense))
                     new_sense["semantic_sense_id"] = old_sense["semantic_sense_id"]
+                    new_sense["order"] = fresh_order
                     new_sense["current"] = copy.deepcopy(effective)
+                _reuse_unchanged_source_coverage(existing, migrated)
                 reused_rows.append(migrated)
                 continue
             reused = copy.deepcopy(existing)
@@ -505,6 +787,13 @@ def _current_promotion_gate_candidates(args):
             ),
         )
     )
+    requested_scope = getattr(args, "scope", "all")
+    if requested_scope != "all":
+        definition_summary, definition_candidates = select_definition_audit_scope(
+            definition_summary,
+            definition_candidates,
+            scope=requested_scope,
+        )
     return (
         documents,
         definition_summary,
@@ -761,6 +1050,7 @@ def _definition_audit(args) -> int:
                 "semantic_registry": definition_sha256_bytes(semantic_bytes),
             },
             min_tokens=args.min_tokens,
+            scope="long",
         )
         if args.reviews:
             review_bytes, review_rows = load_definition_jsonl_bytes(args.reviews)
@@ -823,8 +1113,119 @@ def _definition_review_scaffold(args) -> int:
     print(json.dumps({
         "candidates": len(candidates),
         "candidate_set_sha256": review_summary["candidate_set_sha256"],
+        "scope": review_summary["scope"],
         "dry_run": args.dry_run,
         "output": str(args.output),
+    }, ensure_ascii=False, sort_keys=True))
+    return 0
+
+
+def _apply_definition_review(args) -> int:
+    try:
+        canonical_before = args.review.read_bytes()
+        canonical_summary, canonical_rows = _review_records(
+            args.review,
+            label="definition_review_canonical",
+        )
+        patch_summary, patch_rows = _review_records(
+            args.input,
+            label="definition_review_patch",
+        )
+        _validate_review_patch_size(patch_rows, label="definition_review")
+        merged_rows = _merge_review_patch(
+            canonical_summary,
+            canonical_rows,
+            patch_summary,
+            patch_rows,
+            label="definition_review",
+            editable_fields=DEFINITION_REVIEW_EDITABLE_FIELDS,
+        )
+        _, current_summary, current_candidates, _, _ = (
+            _current_promotion_gate_candidates(args)
+        )
+        if canonical_summary.get("scope") == "long":
+            current_summary, current_candidates = select_definition_audit_scope(
+                current_summary,
+                current_candidates,
+                scope="long",
+            )
+        errors = validate_definition_review(
+            current_summary,
+            current_candidates,
+            canonical_summary,
+            merged_rows,
+        )
+        if errors:
+            raise ValueError(
+                "Definition review patch produced an invalid canonical ledger:\n"
+                + "\n".join(errors[:100])
+            )
+        serialized = serialize_definition_review(canonical_summary, merged_rows)
+        if not args.dry_run:
+            if args.review.read_bytes() != canonical_before:
+                raise RuntimeError(
+                    "canonical Definition review changed while applying patch"
+                )
+            _write_atomic(args.review, serialized)
+    except (OSError, RuntimeError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        print(f"Definition review apply failed: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps({
+        "candidates": len(merged_rows),
+        "dry_run": args.dry_run,
+        "patch_rows": len(patch_rows),
+        "review": str(args.review),
+    }, ensure_ascii=False, sort_keys=True))
+    return 0
+
+
+def _definition_review_create_manifests(args) -> int:
+    try:
+        summary, rows = _review_records(args.review, label="definition_review")
+        _, current_summary, current_candidates, _, _ = (
+            _current_promotion_gate_candidates(args)
+        )
+        if summary.get("scope") == "long":
+            current_summary, current_candidates = select_definition_audit_scope(
+                current_summary,
+                current_candidates,
+                scope="long",
+            )
+        errors = validate_definition_review(
+            current_summary,
+            current_candidates,
+            summary,
+            rows,
+        )
+        if errors:
+            raise ValueError(
+                "Definition review is stale or invalid:\n"
+                + "\n".join(errors[:100])
+            )
+        outputs, unresolved = _review_manifest_payloads(
+            summary,
+            rows,
+            max_rows=args.max_rows,
+            resolved=lambda row: (
+                row.get("decision") in {"keep_concise", "keep_explanatory"}
+                and row.get("approval") == "approved"
+            ),
+        )
+        if not args.dry_run:
+            _write_review_manifest_outputs(
+                args.output,
+                outputs,
+                replace=args.replace,
+            )
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        print(f"Definition review manifest creation failed: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps({
+        "dry_run": args.dry_run,
+        "manifest_count": len(outputs),
+        "max_rows": args.max_rows,
+        "output": str(args.output),
+        "unresolved_rows": unresolved,
     }, ensure_ascii=False, sort_keys=True))
     return 0
 
@@ -913,7 +1314,7 @@ def _vietnamese_audit(args) -> int:
             min_tokens=min_tokens,
             scope=scope,
         )
-    except (OSError, ValueError, json.JSONDecodeError) as exc:
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
         print(f"Vietnamese audit failed: {exc}", file=sys.stderr)
         return 1
 
@@ -979,6 +1380,130 @@ def _vietnamese_review_scaffold(args) -> int:
         "output": str(args.output),
         "replaced": bool(args.replace),
         "scope": review_summary["scope"],
+    }, ensure_ascii=False, sort_keys=True))
+    return 0
+
+
+def _vietnamese_review_create_manifests(args) -> int:
+    try:
+        summary, rows = _review_records(args.review, label="vietnamese_review")
+        (
+            current_summary,
+            current_candidates,
+            _,
+            _,
+            _,
+            _,
+            _,
+        ) = _current_vietnamese_audit(
+            args,
+            min_tokens=summary.get("min_tokens"),
+            scope=summary.get("scope", "long"),
+        )
+        errors = validate_vietnamese_review(
+            current_summary,
+            current_candidates,
+            summary,
+            rows,
+            require_complete=False,
+        )
+        if errors:
+            raise ValueError(
+                "Vietnamese review is stale or invalid:\n"
+                + "\n".join(errors[:100])
+            )
+        outputs, unresolved = _review_manifest_payloads(
+            summary,
+            rows,
+            max_rows=args.max_rows,
+            resolved=lambda row: (
+                row.get("decision")
+                in {"keep_natural", "keep_explanatory", "rewrite"}
+                and row.get("approval") == "approved"
+            ),
+        )
+        if not args.dry_run:
+            _write_review_manifest_outputs(
+                args.output,
+                outputs,
+                replace=args.replace,
+            )
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        print(f"Vietnamese review manifest creation failed: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps({
+        "dry_run": args.dry_run,
+        "manifest_count": len(outputs),
+        "max_rows": args.max_rows,
+        "output": str(args.output),
+        "unresolved_rows": unresolved,
+    }, ensure_ascii=False, sort_keys=True))
+    return 0
+
+
+def _apply_vietnamese_review_patch(args) -> int:
+    try:
+        canonical_before = args.review.read_bytes()
+        canonical_summary, canonical_rows = _review_records(
+            args.review,
+            label="vietnamese_review_canonical",
+        )
+        patch_summary, patch_rows = _review_records(
+            args.input,
+            label="vietnamese_review_patch",
+        )
+        _validate_review_patch_size(patch_rows, label="vietnamese_review")
+        merged_rows = _merge_review_patch(
+            canonical_summary,
+            canonical_rows,
+            patch_summary,
+            patch_rows,
+            label="vietnamese_review",
+            editable_fields=VIETNAMESE_REVIEW_EDITABLE_FIELDS,
+        )
+        (
+            current_summary,
+            current_candidates,
+            _,
+            _,
+            _,
+            _,
+            _,
+        ) = _current_vietnamese_audit(
+            args,
+            min_tokens=canonical_summary.get("min_tokens"),
+            scope=canonical_summary.get("scope", "long"),
+        )
+        errors = validate_vietnamese_review(
+            current_summary,
+            current_candidates,
+            canonical_summary,
+            merged_rows,
+            require_complete=False,
+        )
+        if errors:
+            raise ValueError(
+                "Vietnamese review patch produced an invalid canonical ledger:\n"
+                + "\n".join(errors[:100])
+            )
+        serialized = serialize_vietnamese_review(
+            canonical_summary,
+            merged_rows,
+        )
+        if not args.dry_run:
+            if args.review.read_bytes() != canonical_before:
+                raise RuntimeError(
+                    "canonical Vietnamese review changed while applying patch"
+                )
+            _write_atomic(args.review, serialized)
+    except (OSError, RuntimeError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        print(f"Vietnamese review patch apply failed: {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps({
+        "candidates": len(merged_rows),
+        "dry_run": args.dry_run,
+        "patch_rows": len(patch_rows),
+        "review": str(args.review),
     }, ensure_ascii=False, sort_keys=True))
     return 0
 
@@ -1340,9 +1865,51 @@ def main(argv: list[str] | None = None) -> int:
     definition_review.add_argument(
         "--output", type=Path, default=DEFAULT_DEFINITION_REVIEW
     )
+    definition_review.add_argument(
+        "--scope", choices=("long", "all"), default="all"
+    )
     definition_review.add_argument("--replace", action="store_true")
     definition_review.add_argument("--dry-run", action="store_true")
     definition_review.set_defaults(handler=_definition_review_scaffold)
+
+    apply_definition_review = sub.add_parser("apply-definition-review")
+    _add_promotion_input_arguments(
+        apply_definition_review,
+        include_gate_reviews=False,
+    )
+    apply_definition_review.add_argument(
+        "--review",
+        type=Path,
+        default=DEFAULT_DEFINITION_REVIEW,
+        help="Canonical Definition Review ledger to update.",
+    )
+    apply_definition_review.add_argument("--input", type=Path, required=True)
+    apply_definition_review.add_argument("--dry-run", action="store_true")
+    apply_definition_review.set_defaults(handler=_apply_definition_review)
+
+    definition_manifests = sub.add_parser(
+        "definition-review-create-manifests"
+    )
+    _add_promotion_input_arguments(
+        definition_manifests,
+        include_gate_reviews=False,
+    )
+    definition_manifests.add_argument(
+        "--review", type=Path, default=DEFAULT_DEFINITION_REVIEW
+    )
+    definition_manifests.add_argument(
+        "--output",
+        type=Path,
+        default=DEFAULT_DEFINITION_REVIEW_MANIFEST_DIR,
+    )
+    definition_manifests.add_argument(
+        "--max-rows", type=int, default=MAX_REVIEW_MANIFEST_ROWS
+    )
+    definition_manifests.add_argument("--replace", action="store_true")
+    definition_manifests.add_argument("--dry-run", action="store_true")
+    definition_manifests.set_defaults(
+        handler=_definition_review_create_manifests
+    )
 
     vietnamese_audit = sub.add_parser("vietnamese-audit")
     vietnamese_audit.add_argument(
@@ -1378,6 +1945,45 @@ def main(argv: list[str] | None = None) -> int:
     vietnamese_review_scaffold.add_argument("--replace", action="store_true")
     vietnamese_review_scaffold.add_argument("--dry-run", action="store_true")
     vietnamese_review_scaffold.set_defaults(handler=_vietnamese_review_scaffold)
+
+    vietnamese_manifests = sub.add_parser(
+        "vietnamese-review-create-manifests"
+    )
+    vietnamese_manifests.add_argument(
+        "--semantic-registry", type=Path, default=paths.semantic_registry
+    )
+    vietnamese_manifests.add_argument(
+        "--review", type=Path, default=DEFAULT_VIETNAMESE_REVIEW
+    )
+    vietnamese_manifests.add_argument(
+        "--output",
+        type=Path,
+        default=DEFAULT_VIETNAMESE_REVIEW_MANIFEST_DIR,
+    )
+    vietnamese_manifests.add_argument(
+        "--max-rows", type=int, default=MAX_REVIEW_MANIFEST_ROWS
+    )
+    vietnamese_manifests.add_argument("--replace", action="store_true")
+    vietnamese_manifests.add_argument("--dry-run", action="store_true")
+    vietnamese_manifests.set_defaults(
+        handler=_vietnamese_review_create_manifests
+    )
+
+    apply_vietnamese_patch = sub.add_parser(
+        "apply-vietnamese-review-patch"
+    )
+    apply_vietnamese_patch.add_argument(
+        "--semantic-registry", type=Path, default=paths.semantic_registry
+    )
+    apply_vietnamese_patch.add_argument(
+        "--review",
+        type=Path,
+        default=DEFAULT_VIETNAMESE_REVIEW,
+        help="Canonical Vietnamese Naturalness Review ledger to update.",
+    )
+    apply_vietnamese_patch.add_argument("--input", type=Path, required=True)
+    apply_vietnamese_patch.add_argument("--dry-run", action="store_true")
+    apply_vietnamese_patch.set_defaults(handler=_apply_vietnamese_review_patch)
 
     apply_vietnamese_review_parser = sub.add_parser("apply-vietnamese-review")
     apply_vietnamese_review_parser.add_argument(

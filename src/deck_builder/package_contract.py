@@ -4,7 +4,7 @@ from __future__ import annotations
 from importlib.metadata import version
 
 
-PACKAGER_CONTRACT_SCHEMA_VERSION = 2
+PACKAGER_CONTRACT_SCHEMA_VERSION = 3
 EAVM_MODEL_NAME = "English Academic Vocabulary Model"
 EAVM_MODEL_ID = 1607392819
 EAVM_JSON_TO_FIELD: tuple[tuple[str, str], ...] = (
@@ -34,6 +34,10 @@ EAVM_JSON_TO_FIELD: tuple[tuple[str, str], ...] = (
     ("sense_pos", "SensePOS"),
     ("idiom_meaning_vi", "IdiomMeaningVI"),
     ("collocation_sources", "CollocationSources"),
+    # Derived, non-authoritative media paths used by the Recognition template.
+    # The canonical pronunciation authority remains uk_audio/us_audio.
+    ("headword_audio_uk_src", "HeadwordAudioUKSrc"),
+    ("headword_audio_us_src", "HeadwordAudioUSSrc"),
 )
 EAVM_FIELD_NAMES: tuple[str, ...] = tuple(
     field_name for _, field_name in EAVM_JSON_TO_FIELD
@@ -43,6 +47,21 @@ EAVM_REQUIREMENTS_BY_FIELD: tuple[tuple[int, str, tuple[str, ...]], ...] = (
     (0, "any", ("Word",)),
     (1, "all", ("DefinitionVI", "Example", "ProductionAnswer")),
 )
+
+
+def json_value_for_key(row: dict, key: str) -> str:
+    """Return a canonical JSONL value, including derived media-only fields."""
+
+    if key not in {"headword_audio_uk_src", "headword_audio_us_src"}:
+        return str(row.get(key) or "")
+    source_key = {
+        "headword_audio_uk_src": "uk_audio",
+        "headword_audio_us_src": "us_audio",
+    }[key]
+    source = str(row.get(source_key) or "")
+    if source.startswith("[sound:") and source.endswith("]"):
+        return source[len("[sound:"):-1]
+    return ""
 
 
 def packager_contract_payload(*, genanki_version: str | None = None) -> dict:

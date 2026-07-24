@@ -267,6 +267,27 @@ def _complete_review(
     return review_summary, review_rows
 
 
+def test_pending_review_can_carry_non_authoritative_vietnamese_suggestion():
+    semantic_rows, audit_rows, card_rows = _inputs()
+    summary, candidates = build_vietnamese_audit(
+        semantic_rows,
+        audit_rows,
+        card_rows,
+    )
+    review_summary, reviews = scaffold_vietnamese_review(summary, candidates)
+
+    assert reviews[0]["suggested_vi"] == ""
+    reviews[0]["suggested_vi"] = "nghĩa tiếng Việt gợi ý"
+
+    assert validate_vietnamese_review(
+        summary,
+        candidates,
+        review_summary,
+        reviews,
+        require_complete=False,
+    ) == []
+
+
 def _complete_matching_review(
     summary: dict,
     candidates: list[dict],

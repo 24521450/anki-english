@@ -1,6 +1,9 @@
 import json
 
+import pytest
+
 from src.deck_builder.collocation_audit import (
+    apply_review_bundle,
     collocation_final_item_id,
     load_jsonl,
     serialize_audit_rows,
@@ -182,6 +185,29 @@ def test_cli_scaffold_validate_promote_and_reuse_review(tmp_path):
         "source": "curated",
         "text": "school curriculum",
     }]
+
+
+def test_apply_review_bundle_is_fingerprint_bound_and_transactional(tmp_path):
+    fixture_paths = _fixture_files(tmp_path)
+    audit = tmp_path / "audit.jsonl"
+    assert main(_scaffold_args(audit, fixture_paths)) == 0
+    rows = load_jsonl(audit)
+    row = rows[0]
+    _complete(row)
+    bundle = [json.loads(json.dumps(row))]
+    bundle[0]["current_items"][0]["reviewer"] = "bundle-reviewer"
+    updated = apply_review_bundle(rows, bundle)
+    assert updated[0]["current_items"][0]["reviewer"] == "bundle-reviewer"
+
+    stale = json.loads(json.dumps(bundle[0]))
+    stale["input_fingerprint"] = "0" * 64
+    with pytest.raises(ValueError, match="Stale review bundle fingerprint"):
+        apply_review_bundle(rows, [stale])
+
+    immutable = json.loads(json.dumps(bundle[0]))
+    immutable["source_evidence"] = [{"unexpected": "mutation"}]
+    with pytest.raises(ValueError, match="Immutable review inputs changed"):
+        apply_review_bundle(rows, [immutable])
 
 
 def test_cli_export_import_and_report_are_non_destructive_in_dry_run(tmp_path):

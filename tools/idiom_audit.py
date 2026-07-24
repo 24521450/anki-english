@@ -9,6 +9,8 @@ import sys
 from pathlib import Path
 
 from src.config import ProjectPaths
+from src.deck_builder.build_contracts import BuildNotesPaths
+from src.deck_builder.registry_build import build_notes_from_registry
 from src.deck_builder.idiom_audit import (
     apply_review_bundle,
     audit_summary,
@@ -38,49 +40,102 @@ def _write_atomic(path: Path, text: str) -> None:
             temporary.unlink()
 
 
+def _load_canonical_source_cards() -> list[dict]:
+    build_paths = BuildNotesPaths(
+        oxford_jsonl_path=paths.oxford_jsonl,
+        deck_audit_jsonl_path=paths.deck_audit_jsonl,
+        gamma_verdicts_path=paths.gamma_verdicts,
+        oxford_3000_md=paths.oxford_3000_md,
+        oxford_5000_md=paths.oxford_5000_md,
+        awl_md=paths.awl_md,
+        audio_dir=paths.audio_dir,
+        card_registry_path=paths.card_registry,
+        manual_cards_path=paths.manual_cards,
+        review_overrides_path=paths.non_oxford_non_c2_overrides,
+        synonym_example_overrides_path=paths.synonym_example_overrides,
+        antonym_example_overrides_path=paths.antonym_example_overrides,
+        sense_label_overrides_path=paths.sense_label_overrides,
+        semantic_registry_path=paths.semantic_registry,
+        collocation_registry_path=paths.collocation_registry,
+        cambridge_jsonl_path=paths.cambridge_jsonl,
+        pronunciation_selection_locks_path=paths.pronunciation_selection_locks,
+        headword_audio_manifest_path=paths.headword_audio_manifest,
+    )
+    result = build_notes_from_registry(
+        build_paths,
+        apply_semantic_payload=False,
+    )
+    return [card.to_dict() for card in result.built_cards]
+
+
+def _refresh_review_rows(rows: list[dict], existing_rows: list[dict]) -> list[dict]:
+    existing = {row.get("idiom_id"): row for row in existing_rows}
+    by_phrase: dict[str, list[dict]] = {}
+    for old in existing_rows:
+        by_phrase.setdefault(str(old.get("phrase_en") or ""), []).append(old)
+    refreshed = []
+    editable = set(existing_rows[0]) - set(IMMUTABLE_COLUMNS) if existing_rows else set()
+    for row in rows:
+        old = existing.get(row["idiom_id"])
+        if old is not None and all(
+            old.get(field) == row.get(field) for field in IMMUTABLE_COLUMNS
+        ):
+            refreshed.append(old)
+            continue
+        candidates = by_phrase.get(str(row.get("phrase_en") or ""), [])
+        if len(candidates) == 1:
+            candidate = candidates[0]
+
+            def occurrence_identity(item: dict) -> dict:
+                return {
+                    key: value for key, value in item.items()
+                    if key not in {"source_explanation_en", "source_fingerprint"}
+                }
+
+            same_occurrences = [
+                occurrence_identity(item) for item in candidate.get("occurrences") or []
+            ] == [occurrence_identity(item) for item in row.get("occurrences") or []]
+            promoted_explanation = str(candidate.get("explanation_en_simple") or "")
+            source_round_trip = (
+                candidate.get("display_mode") == "bilingual_gloss"
+                and candidate.get("decision") == "pass"
+                and candidate.get("confidence") == "high"
+                and candidate.get("approval") == "approved"
+                and str(candidate.get("translation_provenance") or "").startswith(
+                    "manual_raw_"
+                )
+                and candidate.get("source_explanation_en") == promoted_explanation
+            )
+            if (
+                candidate.get("display_mode") == "bilingual_gloss"
+                and candidate.get("source_examples") == row.get("source_examples")
+                and same_occurrences
+                and (
+                    promoted_explanation == row.get("source_explanation_en")
+                    or source_round_trip
+                )
+            ):
+                migrated = dict(row)
+                for field in editable:
+                    migrated[field] = candidate.get(field)
+                refreshed.append(migrated)
+                continue
+        refreshed.append(row)
+    return refreshed
+
+
 def _scaffold(args) -> int:
-    cards = load_jsonl(args.notes)
+    cards = (
+        load_jsonl(args.notes)
+        if args.notes is not None
+        else _load_canonical_source_cards()
+    )
     registry = load_jsonl(args.registry)
     rows = build_audit_rows(cards, registry)
     existing_path = args.existing_audit or (args.audit if args.audit.is_file() else None)
     if existing_path is not None and existing_path.is_file():
         existing_rows = load_jsonl(existing_path)
-        existing = {row.get("idiom_id"): row for row in existing_rows}
-        by_phrase: dict[str, list[dict]] = {}
-        for old in existing_rows:
-            by_phrase.setdefault(str(old.get("phrase_en") or ""), []).append(old)
-        refreshed = []
-        editable = set(existing_rows[0]) - set(IMMUTABLE_COLUMNS) if existing_rows else set()
-        for row in rows:
-            old = existing.get(row["idiom_id"])
-            if old is not None and all(old.get(field) == row.get(field) for field in IMMUTABLE_COLUMNS):
-                refreshed.append(old)
-                continue
-            candidates = by_phrase.get(str(row.get("phrase_en") or ""), [])
-            if len(candidates) == 1:
-                candidate = candidates[0]
-                def occurrence_identity(item: dict) -> dict:
-                    return {
-                        key: value for key, value in item.items()
-                        if key not in {"source_explanation_en", "source_fingerprint"}
-                    }
-                same_occurrences = [
-                    occurrence_identity(item) for item in candidate.get("occurrences") or []
-                ] == [occurrence_identity(item) for item in row.get("occurrences") or []]
-                promoted_explanation = str(candidate.get("explanation_en_simple") or "")
-                if (
-                    candidate.get("display_mode") == "bilingual_gloss"
-                    and promoted_explanation == row.get("source_explanation_en")
-                    and candidate.get("source_examples") == row.get("source_examples")
-                    and same_occurrences
-                ):
-                    migrated = dict(row)
-                    for field in editable:
-                        migrated[field] = candidate.get(field)
-                    refreshed.append(migrated)
-                    continue
-            refreshed.append(row)
-        rows = refreshed
+        rows = _refresh_review_rows(rows, existing_rows)
     errors = validate_audit_rows(rows, registry)
     if errors:
         print("Idiom Audit scaffold validation failed:\n" + "\n".join(errors[:100]), file=sys.stderr)
@@ -231,7 +286,14 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
 
     scaffold = sub.add_parser("scaffold")
-    scaffold.add_argument("--notes", type=Path, default=paths.anki_notes_jsonl)
+    scaffold.add_argument(
+        "--notes",
+        type=Path,
+        help=(
+            "Explicit card projection override. By default the command builds "
+            "the canonical pre-Semantic-Registry source projection."
+        ),
+    )
     scaffold.add_argument("--existing-audit", type=Path)
     scaffold.add_argument("--dry-run", action="store_true")
     scaffold.set_defaults(handler=_scaffold)

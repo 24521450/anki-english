@@ -24,6 +24,7 @@ from src.deck_builder.package_contract import (
     EAVM_MODEL_NAME,
     EAVM_REQUIREMENTS_BY_FIELD,
     EAVM_TEMPLATE_NAMES,
+    json_value_for_key,
 )
 from src.deck_builder.package_provenance import (
     invalidate_verified_import_receipt,
@@ -288,7 +289,9 @@ def main(argv: list[str] | None = None) -> int:
 
             # Map JSONL keys to genanki fields order. Missing keys default
             # to empty string so legacy 12-field JSONL rows still validate.
-            note_fields = [r.get(key) or "" for key, _ in EAVM_JSON_TO_FIELD]
+            note_fields = [
+                json_value_for_key(r, key) for key, _ in EAVM_JSON_TO_FIELD
+            ]
 
             # Validate audio files
             for audio_field_name in ("uk_audio", "us_audio"):
@@ -301,6 +304,26 @@ def main(argv: list[str] | None = None) -> int:
                     audio_path = AUDIO_DIR / filename
                     if not audio_path.exists():
                         print(f"Error: Missing referenced audio file '{filename}' (referenced on line {line_num})", file=sys.stderr)
+                        return 1
+                    media_files.add(str(audio_path))
+
+            for audio_key in ("headword_audio_uk_src", "headword_audio_us_src"):
+                filename = json_value_for_key(r, audio_key)
+                if filename:
+                    if Path(filename).name != filename:
+                        print(
+                            f"Error: Invalid headword audio filename {filename!r} "
+                            f"(referenced on line {line_num})",
+                            file=sys.stderr,
+                        )
+                        return 1
+                    audio_path = AUDIO_DIR / filename
+                    if not audio_path.exists():
+                        print(
+                            f"Error: Missing referenced headword audio file "
+                            f"'{filename}' (referenced on line {line_num})",
+                            file=sys.stderr,
+                        )
                         return 1
                     media_files.add(str(audio_path))
 

@@ -88,7 +88,8 @@
 {"cefr":"C1","deck_override":null,"guid":"gOB>$Mt*{","list":"Oxford_5000","pos":"noun","status":"active","variant":"","word":"alliance"}
 {"cefr":"C1","deck_override":null,"guid":"uH%?QgG&[z","list":"Oxford_5000","pos":"verb","status":"active","variant":"","word":"allocate"}
 {"cefr":"C1","deck_override":null,"guid":"DM:$~,FCwu","list":"Oxford_5000","pos":"noun","status":"active","variant":"","word":"allocation"}
-{"cefr":"C1","deck_override":null,"guid":"{@EH_k/.?d","list":"Oxford_5000","pos":"noun","status":"active","variant":"","word":"allowance"}
+{"cefr":"C1","deck_override":null,"guid":"{@EH_k/.?d","list":"Oxford_5000","pos":"noun","status":"active","variant":"primary","word":"allowance"}
+{"cefr":"C1","deck_override":"English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses","guid":"q&$pu$7C?h","list":"Oxford_5000","pos":"noun","status":"active","variant":"secondary_child_allowance","word":"allowance"}
 {"cefr":"C1","deck_override":null,"guid":"rhB$Y$hmdU","list":"Oxford_5000","pos":"noun","status":"active","variant":"","word":"ally"}
 {"cefr":"B2","deck_override":null,"guid":"x6D=DOGSJd","list":"Oxford_5000","pos":"preposition","status":"active","variant":"","word":"alongside"}
 {"cefr":"B2","deck_override":null,"guid":"i-pg9$6sjk","list":"Oxford_5000","pos":"adverb","status":"active","variant":"","word":"altogether"}
@@ -1775,7 +1776,8 @@
 {"cefr":"C1","deck_override":null,"guid":"PjQ&*<:fiG","list":"Oxford_5000","pos":"noun","status":"active","variant":"","word":"protocol"}
 {"cefr":"C1","deck_override":null,"guid":"b4H}Vo4Eu$","list":"Oxford_5000","pos":"noun","status":"active","variant":"","word":"province"}
 {"cefr":"C1","deck_override":null,"guid":"kW[CM[sD8B","list":"Oxford_5000","pos":"adjective","status":"active","variant":"","word":"provincial"}
-{"cefr":"C1","deck_override":null,"guid":"si$OijE.g9","list":"Oxford_5000","pos":"noun","status":"active","variant":"","word":"provision"}
+{"cefr":"C1","deck_override":null,"guid":"si$OijE.g9","list":"Oxford_5000","pos":"noun","status":"active","variant":"primary","word":"provision"}
+{"cefr":"C1","deck_override":"English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses","guid":"Jdw3%XIBK#","list":"Oxford_5000","pos":"noun","status":"active","variant":"secondary_legal_condition","word":"provision"}
 {"cefr":"C1","deck_override":null,"guid":"d83(vrw.yP","list":"Oxford_5000","pos":"verb","status":"active","variant":"","word":"provoke"}
 {"cefr":"C1","deck_override":null,"guid":"DgBhjl(^f~","list":"Oxford_5000","pos":"adjective","status":"active","variant":"","word":"psychiatric"}
 {"cefr":"B2","deck_override":null,"guid":"&{^WFE^&v-","list":"Oxford_5000","pos":"adjective","status":"active","variant":"","word":"psychological"}
@@ -2458,7 +2460,8 @@
 {"cefr":"B2","deck_override":null,"guid":"oczse&E:v#","list":"Oxford_5000","pos":"noun","status":"active","variant":"","word":"worm"}
 {"cefr":"C1","deck_override":null,"guid":",qqw,<G4mQ","list":"Oxford_5000","pos":"noun, verb","status":"active","variant":"","word":"worship"}
 {"cefr":"C1","deck_override":null,"guid":"u*l:}~=8<S","list":"Oxford_5000","pos":"adjective","status":"active","variant":"","word":"worthwhile"}
-{"cefr":"C1","deck_override":null,"guid":"J4vX4Ms>Gu","list":"Oxford_5000","pos":"adjective","status":"active","variant":"","word":"worthy"}
+{"cefr":"C1","deck_override":null,"guid":"J4vX4Ms>Gu","list":"Oxford_5000","pos":"adjective","status":"active","variant":"primary","word":"worthy"}
+{"cefr":"C1","deck_override":"English Academic Vocabulary::Oxford::Oxford 5000::Secondary Senses","guid":"t<{&f+,xy(","list":"Oxford_5000","pos":"adjective","status":"active","variant":"secondary_typical_of","word":"worthy"}
 {"cefr":"UNCLASSIFIED","deck_override":"English Academic Vocabulary::TED YT","guid":"eNR}T/Wh~t","list":"NO_LIST","pos":"verb","status":"active","variant":"","word":"wreak"}
 {"cefr":"B2","deck_override":null,"guid":"92-ZD=xB**","list":"Oxford_5000","pos":"noun","status":"active","variant":"","word":"wrist"}
 {"cefr":"C1","deck_override":null,"guid":"M$Y|dZ9bp.","list":"Oxford_5000","pos":"verb","status":"active","variant":"","word":"yell"}

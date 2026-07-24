@@ -35,11 +35,20 @@ REVIEWED_SEMANTIC_IDENTITY_VARIANTS: Final[dict[tuple[str, str, str, str], froze
     ("denial", "C1", "Oxford_5000", "noun"): frozenset(
         {"primary", "secondary_entitlement_psychological"}
     ),
+    ("allowance", "C1", "Oxford_5000", "noun"): frozenset(
+        {"primary", "secondary_child_allowance"}
+    ),
+    ("provision", "C1", "Oxford_5000", "noun"): frozenset(
+        {"primary", "secondary_legal_condition"}
+    ),
     ("proposition", "C1", "Oxford_5000", "noun"): frozenset(
         {"primary", "secondary_law_formal"}
     ),
     ("sensitivity", "C1", "Oxford_5000", "noun"): frozenset(
         {"primary", "secondary_art_physical"}
+    ),
+    ("worthy", "C1", "Oxford_5000", "adjective"): frozenset(
+        {"primary", "secondary_typical_of"}
     ),
     ("contend with sb/sth", "C1", "Oxford_5000", "phrasal verb"): frozenset(
         {"secondary_phrasal_contend_with"}

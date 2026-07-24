@@ -36,6 +36,7 @@ from src.deck_builder.anki_import_command import (
 )
 from src.deck_builder.deck_names import AWL_DECK, LEGACY_AWL_DECK
 from src.deck_builder.package_command import load_eavm_templates
+from src.deck_builder.package_contract import json_value_for_key
 from src.deck_builder.live_guid_proof import LiveGuidProof
 from src.deck_builder.package_archive import (
     PackageArchiveError,
@@ -153,11 +154,14 @@ def _live_note(row: dict) -> dict:
         "antonyms", "example_audio_uk", "example_audio_us", "idiom_example_audio_uk",
         "idiom_example_audio_us", "definition_vi", "cambridge_url",
         "oxford_pos_urls", "production_answer", "sense_pos", "idiom_meaning_vi",
-        "collocation_sources",
+        "collocation_sources", "headword_audio_uk_src", "headword_audio_us_src",
     )
     return {
         "modelName": EAVM_MODEL_NAME,
-        "fields": {name: {"value": str(row.get(key) or "")} for key, name in zip(key_order, EAVM_FIELDS)},
+        "fields": {
+            name: {"value": json_value_for_key(row, key)}
+            for key, name in zip(key_order, EAVM_FIELDS)
+        },
     }
 
 
@@ -557,10 +561,8 @@ def test_snapshot_accepts_legacy_prefix_before_field_migration(tmp_path: Path):
     live["noteId"] = 123
     live["cards"] = [456]
     live["tags"] = []
-    live["fields"].pop("ProductionAnswer")
-    live["fields"].pop("SensePOS")
-    live["fields"].pop("IdiomMeaningVI")
-    live["fields"].pop("CollocationSources")
+    for field in EAVM_FIELDS[22:]:
+        live["fields"].pop(field)
 
     class Client:
         def call(self, action, **params):
@@ -1474,6 +1476,8 @@ def test_sync_example_audio_fields_matches_established_signature_and_batches_upd
             "SensePOS": row["sense_pos"],
             "IdiomMeaningVI": row["idiom_meaning_vi"],
             "CollocationSources": row["collocation_sources"],
+            "HeadwordAudioUKSrc": "uk_conquer.mp3",
+            "HeadwordAudioUSSrc": "",
         }}},
     }]
 

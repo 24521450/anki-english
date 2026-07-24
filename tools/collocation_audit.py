@@ -11,12 +11,14 @@ from pathlib import Path
 
 from src.config import ProjectPaths
 from src.deck_builder.collocation_audit import (
+    apply_review_bundle,
     audit_summary,
     build_audit_rows,
     export_workbook,
     import_workbook,
     load_jsonl,
     promote_audit_rows,
+    scaffold_audit_rows,
     serialize_audit_rows,
     serialize_registry_rows,
     validate_audit_rows,
@@ -53,7 +55,7 @@ def _scaffold(args) -> int:
     oxford = load_jsonl(args.oxford)
     cambridge = load_jsonl(args.cambridge)
     existing = load_jsonl(args.audit) if args.audit.is_file() else []
-    rows = build_audit_rows(
+    rows = scaffold_audit_rows(
         cards,
         registry,
         semantic,
@@ -108,7 +110,13 @@ def _export_xlsx(args) -> int:
     registry = load_jsonl(args.registry)
     cards, semantic, oxford, cambridge = _load_current_inputs(args)
     errors = validate_current_audit(
-        rows, cards, registry, semantic, oxford, cambridge
+        rows,
+        cards,
+        registry,
+        semantic,
+        oxford,
+        cambridge,
+        allow_incomplete_projection=True,
     )
     if errors:
         print(
@@ -128,11 +136,49 @@ def _import_xlsx(args) -> int:
     registry = load_jsonl(args.registry)
     cards, semantic, oxford, cambridge = _load_current_inputs(args)
     errors = validate_current_audit(
-        updated, cards, registry, semantic, oxford, cambridge
+        updated,
+        cards,
+        registry,
+        semantic,
+        oxford,
+        cambridge,
+        allow_incomplete_projection=True,
     )
     if errors:
         print(
             "Collocation Audit workbook validation failed:\n"
+            + "\n".join(errors[:100]),
+            file=sys.stderr,
+        )
+        return 1
+    if not args.dry_run:
+        _write_atomic(args.audit, serialize_audit_rows(updated))
+    print(json.dumps(
+        {**audit_summary(updated), "dry_run": args.dry_run},
+        ensure_ascii=False,
+        sort_keys=True,
+    ))
+    return 0
+
+
+def _apply_review(args) -> int:
+    rows = load_jsonl(args.audit)
+    decisions = load_jsonl(args.input)
+    updated = apply_review_bundle(rows, decisions)
+    registry = load_jsonl(args.registry)
+    cards, semantic, oxford, cambridge = _load_current_inputs(args)
+    errors = validate_current_audit(
+        updated,
+        cards,
+        registry,
+        semantic,
+        oxford,
+        cambridge,
+        allow_incomplete_projection=True,
+    )
+    if errors:
+        print(
+            "Collocation Audit review-bundle projection validation failed:\n"
             + "\n".join(errors[:100]),
             file=sys.stderr,
         )
@@ -152,7 +198,13 @@ def _report(args) -> int:
     registry = load_jsonl(args.registry)
     cards, semantic, oxford, cambridge = _load_current_inputs(args)
     errors = validate_current_audit(
-        rows, cards, registry, semantic, oxford, cambridge
+        rows,
+        cards,
+        registry,
+        semantic,
+        oxford,
+        cambridge,
+        allow_incomplete_projection=True,
     )
     summary = {**audit_summary(rows), "errors": len(errors)}
     lines = [
@@ -291,6 +343,7 @@ def _promote(args) -> int:
         oxford,
         cambridge,
         require_complete=True,
+        allow_incomplete_projection=True,
     )
     if current_errors:
         print(
@@ -374,6 +427,12 @@ def main(argv: list[str] | None = None) -> int:
     import_xlsx.add_argument("--xlsx", type=Path, default=DEFAULT_XLSX)
     import_xlsx.add_argument("--dry-run", action="store_true")
     import_xlsx.set_defaults(handler=_import_xlsx)
+
+    apply_review = sub.add_parser("apply-review")
+    _add_current_input_arguments(apply_review)
+    apply_review.add_argument("--input", type=Path, required=True)
+    apply_review.add_argument("--dry-run", action="store_true")
+    apply_review.set_defaults(handler=_apply_review)
 
     report = sub.add_parser("report")
     _add_current_input_arguments(report)

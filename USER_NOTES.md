@@ -228,3 +228,28 @@ dùng.
 - Tách `contend with sb/sth` thành Secondary Sense Card riêng và khóa chính xác
   Vietnamese Gloss là `đối phó`; card chính `contend` chỉ giữ `contend that`,
   `contend for sth`, và `contend against sb` theo provenance đã chỉ định.
+
+## 2026-07-24
+
+- Thiết kế lại headword audio thành Pronunciation Cluster: UK luôn bên trái,
+  US bên phải; IPA khác nhau dùng hai pill có nhãn, IPA giống nhau chỉ hiển thị
+  một pill chia hai vùng bấm 50/50. Shared pill không hiện nhãn hay icon khi
+  nghỉ; icon chỉ hiện trong lúc đang phát. Recognition answer autoplay UK, `R`
+  phát lại accent gần nhất; Example Accent Toggle nằm cùng hàng ở góc phải và
+  không có nhãn `Examples`.
+
+- Áp dụng `scratch/takenote.md` qua các review authority hiện hành: tách card
+  secondary cho `worthy` (typical-of), `provision` (legal condition), và
+  `allowance` (tiền tiêu vặt); tách riêng nghĩa plural-only `provisions`; sửa
+  `conserve`, `tolerate`, `federal`; loại đúng các sense/example đã chỉ định.
+- Rà soát Definition EN trên toàn bộ deck theo từng batch 100 sense. Threshold
+  độ dài chỉ dùng để triage; mọi sense phải có review fingerprint-bound, và mọi
+  rewrite phải giữ register, điều kiện, giới hạn cùng đối lập nghĩa quan trọng.
+- Bổ sung snapshot Cambridge English–Vietnamese cho exact active Card Identity
+  coverage tại `data/sources/cambridge_english_vietnamese.jsonl` để làm bằng
+  chứng giải nghĩa hiện tại và nguồn tham chiếu lâu dài. Lỗi HTTP/parser phải
+  fail closed; không được ghi thành `no_entry`, tự động stemming, hay override
+  Semantic Registry.
+- Chỉ import deck cuối qua pipeline/AnkiConnect sau khi toàn bộ batch review,
+  promotion, build, Release Guard, package provenance và post-import GUID/media
+  verification đều hoàn tất.

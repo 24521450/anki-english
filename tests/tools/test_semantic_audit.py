@@ -6,18 +6,177 @@ from pathlib import Path
 import pytest
 
 from src.deck_builder.idiom_audit import build_audit_rows, serialize_jsonl
-from src.deck_builder.semantic_registry import SEMANTIC_REGISTRY_SCHEMA_VERSION
+from src.deck_builder.definition_audit import (
+    DEFINITION_AUDIT_SCHEMA_VERSION,
+    scaffold_definition_review,
+    serialize_definition_review,
+)
+from src.deck_builder.semantic_registry import (
+    SEMANTIC_REGISTRY_SCHEMA_VERSION,
+    build_promotion_gate_candidates,
+)
 from src.deck_builder.vietnamese_audit import (
     build_vietnamese_audit,
     scaffold_vietnamese_review,
     serialize_vietnamese_review,
 )
-from tools.semantic_audit import main
+from tools.semantic_audit import (
+    DEFINITION_REVIEW_EDITABLE_FIELDS,
+    _merge_review_patch,
+    _review_manifest_payloads,
+    _reuse_unchanged_source_coverage,
+    _validate_review_patch_size,
+    main,
+)
 from src.deck_builder.canonical_io import canonical_text_sha256
 
 
 def _write_jsonl(path, rows):
     path.write_text("".join(json.dumps(row) + "\n" for row in rows), encoding="utf-8")
+
+
+def test_scaffold_reuses_coverage_only_for_identical_surviving_sources():
+    unchanged = {
+        "source_sense_id": "ox-keep",
+        "definition": "easy to understand",
+        "examples": ["The meaning is plain."],
+    }
+    renumbered_before = {
+        "source_sense_id": "cam-old-id",
+        "definition": "not at the expected place",
+        "examples": ["Anna was absent."],
+        "pos": "adjective",
+    }
+    renumbered_after = {
+        **renumbered_before,
+        "source_sense_id": "cam-new-id",
+    }
+    changed_before = {
+        "source_sense_id": "ox-change",
+        "definition": "clear",
+        "examples": ["It was clear."],
+    }
+    changed_after = {
+        **changed_before,
+        "examples": ["The answer was clear."],
+    }
+    existing = {
+        "coverage": {
+            "status": "pass",
+            "reason": "Reviewed source coverage is complete.",
+        },
+        "source_senses": [
+            unchanged,
+            renumbered_before,
+            changed_before,
+            {"source_sense_id": "ox-removed", "definition": "removed"},
+        ],
+        "source_coverage": [
+            {
+                "source_sense_id": source_id,
+                "disposition": "mapped",
+                "target_semantic_sense_ids": ["sem-reviewed"],
+                "reason": f"Reviewed {source_id}.",
+            }
+            for source_id in (
+                "ox-keep",
+                "cam-old-id",
+                "ox-change",
+                "ox-removed",
+            )
+        ],
+    }
+    fresh = {
+        "coverage": {"status": "pending", "reason": ""},
+        "semantic_senses": [{
+            "semantic_sense_id": "sem-reviewed",
+            "decision": "pass",
+            "source_sense_ids": [],
+        }],
+        "source_senses": [
+            unchanged,
+            renumbered_after,
+            changed_after,
+            {"source_sense_id": "ox-new", "definition": "new"},
+        ],
+        "source_coverage": [
+            {
+                "source_sense_id": source_id,
+                "disposition": "pending",
+                "target_semantic_sense_ids": [],
+                "reason": "",
+            }
+            for source_id in ("ox-keep", "cam-new-id", "ox-change", "ox-new")
+        ],
+    }
+
+    _reuse_unchanged_source_coverage(existing, fresh)
+
+    coverage = {
+        row["source_sense_id"]: row for row in fresh["source_coverage"]
+    }
+    assert coverage["ox-keep"]["disposition"] == "mapped"
+    assert coverage["ox-keep"]["target_semantic_sense_ids"] == ["sem-reviewed"]
+    assert coverage["cam-new-id"]["disposition"] == "mapped"
+    assert coverage["cam-new-id"]["target_semantic_sense_ids"] == [
+        "sem-reviewed"
+    ]
+    assert coverage["ox-change"]["disposition"] == "pending"
+    assert coverage["ox-new"]["disposition"] == "pending"
+    assert "ox-removed" not in coverage
+    assert fresh["coverage"] == {"status": "pending", "reason": ""}
+
+
+def test_cli_scaffold_preserves_unchanged_coverage_across_source_set_shrink(
+    tmp_path,
+    capsys,
+):
+    audit, registry, _, _ = _promotion_fixture(tmp_path, complete=True)
+    rows = [
+        json.loads(line)
+        for line in audit.read_text(encoding="utf-8").splitlines()
+    ]
+    card = rows[0]
+    surviving_id = card["source_senses"][0]["source_sense_id"]
+    removed_source = {
+        **copy.deepcopy(card["source_senses"][0]),
+        "source_sense_id": "ox-removed",
+        "definition": "obsolete duplicate source sense",
+    }
+    card["source_senses"].append(removed_source)
+    card["source_coverage"].append({
+        "source_sense_id": "ox-removed",
+        "disposition": "excluded",
+        "target_semantic_sense_ids": [],
+        "reason": "Reviewed duplicate.",
+    })
+    _write_jsonl(audit, rows)
+    capsys.readouterr()
+
+    assert main([
+        "--audit", str(audit),
+        "--registry", str(registry),
+        "scaffold",
+        "--notes", str(tmp_path / "notes.jsonl"),
+        "--oxford", str(tmp_path / "oxford.jsonl"),
+        "--cambridge", str(tmp_path / "cambridge.jsonl"),
+    ]) == 0
+
+    refreshed = [
+        json.loads(line)
+        for line in audit.read_text(encoding="utf-8").splitlines()
+    ][0]
+    assert [row["source_sense_id"] for row in refreshed["source_coverage"]] == [
+        surviving_id
+    ]
+    assert refreshed["source_coverage"][0]["disposition"] == "mapped"
+    assert refreshed["source_coverage"][0]["target_semantic_sense_ids"] == [
+        refreshed["semantic_senses"][0]["semantic_sense_id"]
+    ]
+    assert refreshed["coverage"]["status"] == "pass"
+    assert refreshed["coverage"]["reason"] == (
+        "Reviewed source coverage is complete."
+    )
 
 
 def _add_vietnamese_evidence(row, candidate):
@@ -198,12 +357,87 @@ def _promotion_gate_cli_args(tmp_path):
     overrides = tmp_path / "overrides.jsonl"
     empty_set_sha = hashlib.sha256(b"[]").hexdigest()
     semantic_policy.write_text("", encoding="utf-8")
-    _write_jsonl(definition_review, [{
-        "record_type": "review_summary",
-        "schema_version": 3,
-        "candidate_count": 0,
-        "candidate_set_sha256": empty_set_sha,
-    }])
+    audit = tmp_path / "audit.jsonl"
+    registry = tmp_path / "registry.jsonl"
+    idiom_audit = tmp_path / "idiom_audit.jsonl"
+    vietnamese_review = tmp_path / "vietnamese_review.jsonl"
+    idiom_rows = [
+        json.loads(line)
+        for line in idiom_audit.read_text(encoding="utf-8").splitlines()
+    ]
+    if not vietnamese_review.exists() or any(
+        row.get("decision") == "pending" for row in idiom_rows
+    ):
+        _write_jsonl(definition_review, [{
+            "record_type": "review_summary",
+            "schema_version": DEFINITION_AUDIT_SCHEMA_VERSION,
+            "scope": "all",
+            "candidate_count": 0,
+            "candidate_set_sha256": empty_set_sha,
+        }])
+        definition_args = [
+            "--semantic-policy", str(semantic_policy),
+            "--definition-review", str(definition_review),
+            "--sense-merge-review", str(sense_merge_review),
+            "--deck-audit", str(deck_audit),
+            "--overrides", str(overrides),
+        ]
+        _write_jsonl(sense_merge_review, [{
+            "schema_version": 1,
+            "kind": "semantic_sense_merge_review",
+            "candidate_set_sha256": empty_set_sha,
+            "candidate_cards": 0,
+            "input_hashes": {},
+        }])
+        _write_jsonl(deck_audit, [])
+        _write_jsonl(overrides, [])
+        return definition_args
+    definition_summary, definition_candidates, _, _ = (
+        build_promotion_gate_candidates(
+            [
+                json.loads(line)
+                for line in audit.read_text(encoding="utf-8").splitlines()
+            ],
+            [
+                json.loads(line)
+                for line in registry.read_text(encoding="utf-8").splitlines()
+            ],
+            idiom_rows,
+            [],
+            [],
+            audit_sha256=canonical_text_sha256(audit.read_bytes()),
+            idiom_audit_sha256=canonical_text_sha256(idiom_audit.read_bytes()),
+            vietnamese_review_sha256=canonical_text_sha256(
+                vietnamese_review.read_bytes()
+            ),
+            semantic_policy_sha256=canonical_text_sha256(
+                semantic_policy.read_bytes()
+            ),
+            deck_audit_sha256=canonical_text_sha256(b""),
+            non_oxford_non_c2_override_sha256=canonical_text_sha256(b""),
+        )
+    )
+    review_summary, review_rows = scaffold_definition_review(
+        definition_summary, definition_candidates
+    )
+    for row, candidate in zip(review_rows, definition_candidates):
+        current = row["expected_definition_en"]
+        support = candidate["current"]["examples"][0]
+        row.update({
+            "decision": "keep_concise",
+            "reason": "The definition states this learner meaning directly and concisely.",
+            "semantic_evidence": (
+                f'Current EN "{current}" directly matches exact learner example '
+                f'"{support}".'
+            ),
+            "reviewer": "test-reviewer",
+            "reviewed_at": "2026-07-24",
+            "approval": "approved",
+        })
+    definition_review.write_text(
+        serialize_definition_review(review_summary, review_rows),
+        encoding="utf-8",
+    )
     _write_jsonl(sense_merge_review, [{
         "schema_version": 1,
         "kind": "semantic_sense_merge_review",
@@ -278,7 +512,7 @@ def _definition_audit_fixture(tmp_path):
         "list": "Oxford_5000", "variant": "", "status": "active",
     }])
     definition_en = "support and keep a principle or law; confirm that a decision is correct"
-    definition_vi = "duy trì/bảo vệ nguyên tắc hoặc luật; xác nhận quyết định là đúng"
+    definition_vi = "duy trì/bảo vệ nguyên tắc / luật; xác nhận quyết định là đúng"
     examples = ["We have a duty to uphold the law.", "The court upheld the conviction."]
     _write_jsonl(semantic_registry, [{
         "schema_version": SEMANTIC_REGISTRY_SCHEMA_VERSION,
@@ -309,7 +543,7 @@ def _definition_audit_fixture(tmp_path):
 def _vietnamese_audit_fixture(
     tmp_path,
     *,
-    definition_vi="người hoặc đội có cơ hội thắng cuộc",
+    definition_vi="người / đội có cơ hội thắng cuộc",
     schema_version=1,
 ):
     tmp_path.mkdir(parents=True, exist_ok=True)
@@ -748,7 +982,10 @@ def test_cli_promotion_gate_scaffolds_are_deterministic_and_replace_guarded(
     ]
 
     assert main([*base, "--dry-run"]) == 0
-    assert json.loads(capsys.readouterr().out)["candidates"] == 0
+    dry_summary = json.loads(capsys.readouterr().out)
+    assert dry_summary["candidates"] == (
+        1 if command_name == "definition-review-scaffold" else 0
+    )
     assert not output.exists()
 
     assert main(base) == 0
@@ -756,6 +993,8 @@ def test_cli_promotion_gate_scaffolds_are_deterministic_and_replace_guarded(
     first = output.read_bytes()
     summary = json.loads(first.decode("utf-8").splitlines()[0])
     assert summary.get("record_type", summary.get("kind")) == summary_kind
+    if command_name == "definition-review-scaffold":
+        assert summary["scope"] == "all"
 
     assert main(base) == 1
     assert "use --replace" in capsys.readouterr().err
@@ -764,6 +1003,10 @@ def test_cli_promotion_gate_scaffolds_are_deterministic_and_replace_guarded(
     assert main([*base, "--replace"]) == 0
     capsys.readouterr()
     assert output.read_bytes() == first
+
+    if command_name == "definition-review-scaffold":
+        assert main([*base, "--scope", "long", "--replace", "--dry-run"]) == 0
+        assert json.loads(capsys.readouterr().out)["candidates"] == 0
 
 
 def test_cli_vietnamese_audit_is_deterministic_and_honours_threshold(tmp_path, capsys):
@@ -957,6 +1200,320 @@ def test_cli_vietnamese_review_scaffold_can_reuse_a_separate_prior_ledger(
         for line in output.read_text(encoding="utf-8").splitlines()
     ]
     assert refreshed[1] == records[1]
+
+
+def test_review_patch_merge_rejects_unknown_duplicate_and_immutable_changes():
+    summary = {
+        "record_type": "review_summary",
+        "schema_version": 4,
+        "candidate_count": 1,
+        "candidate_set_sha256": "a" * 64,
+    }
+    row = {
+        "record_type": "review",
+        "schema_version": 4,
+        "candidate_id": "g1::sem_1",
+        "candidate_fingerprint": "b" * 64,
+        "decision": "pending",
+        "reason": "",
+    }
+    patch = {**row, "decision": "keep_concise", "reason": "Specific review."}
+
+    merged = _merge_review_patch(
+        summary,
+        [row],
+        summary,
+        [patch],
+        label="definition_review",
+        editable_fields=DEFINITION_REVIEW_EDITABLE_FIELDS,
+    )
+    assert merged[0]["decision"] == "keep_concise"
+
+    with pytest.raises(ValueError, match="patch_duplicate_or_empty"):
+        _merge_review_patch(
+            summary,
+            [row],
+            summary,
+            [patch, patch],
+            label="definition_review",
+            editable_fields=DEFINITION_REVIEW_EDITABLE_FIELDS,
+        )
+    with pytest.raises(ValueError, match="patch_unknown_candidate"):
+        _merge_review_patch(
+            summary,
+            [row],
+            summary,
+            [{**patch, "candidate_id": "unknown"}],
+            label="definition_review",
+            editable_fields=DEFINITION_REVIEW_EDITABLE_FIELDS,
+        )
+    with pytest.raises(ValueError, match="patch_immutable_change"):
+        _merge_review_patch(
+            summary,
+            [row],
+            summary,
+            [{**patch, "candidate_fingerprint": "stale"}],
+            label="definition_review",
+            editable_fields=DEFINITION_REVIEW_EDITABLE_FIELDS,
+        )
+    with pytest.raises(ValueError, match="patch_summary_mismatch"):
+        _merge_review_patch(
+            summary,
+            [row],
+            {**summary, "candidate_set_sha256": "stale"},
+            [patch],
+            label="definition_review",
+            editable_fields=DEFINITION_REVIEW_EDITABLE_FIELDS,
+        )
+
+
+def test_review_manifest_payloads_are_deterministic_and_capped_at_100():
+    summary = {
+        "record_type": "review_summary",
+        "candidate_count": 205,
+        "candidate_set_sha256": "a" * 64,
+    }
+    rows = [
+        {
+            "record_type": "review",
+            "candidate_id": f"candidate-{index:03d}",
+            "decision": "pending",
+        }
+        for index in reversed(range(205))
+    ]
+    outputs, unresolved = _review_manifest_payloads(
+        summary,
+        rows,
+        max_rows=100,
+        resolved=lambda row: False,
+    )
+    repeated, _ = _review_manifest_payloads(
+        summary,
+        rows,
+        max_rows=100,
+        resolved=lambda row: False,
+    )
+
+    assert unresolved == 205
+    assert outputs == repeated
+    assert list(outputs) == [
+        "manifest_001.jsonl",
+        "manifest_002.jsonl",
+        "manifest_003.jsonl",
+    ]
+    assert [
+        len(payload.decode("utf-8").splitlines()) - 1
+        for payload in outputs.values()
+    ] == [100, 100, 5]
+    with pytest.raises(ValueError, match="max_rows_must_be_1_to_100"):
+        _review_manifest_payloads(
+            summary,
+            rows,
+            max_rows=101,
+            resolved=lambda row: False,
+        )
+    _validate_review_patch_size([{}] * 100, label="definition_review")
+    with pytest.raises(ValueError, match="patch_rows_must_be_1_to_100"):
+        _validate_review_patch_size([], label="definition_review")
+    with pytest.raises(ValueError, match="patch_rows_must_be_1_to_100"):
+        _validate_review_patch_size([{}] * 101, label="definition_review")
+
+
+def test_review_manifest_payloads_keep_whole_guids_together():
+    summary = {
+        "record_type": "review_summary",
+        "candidate_count": 150,
+        "candidate_set_sha256": "a" * 64,
+    }
+    rows = [
+        {
+            "record_type": "review",
+            "guid": guid,
+            "candidate_id": f"{guid}::{index:03d}",
+            "decision": "pending",
+        }
+        for guid, count in (("guid-b", 60), ("guid-a", 60), ("guid-c", 30))
+        for index in range(count)
+    ]
+
+    outputs, unresolved = _review_manifest_payloads(
+        summary,
+        rows,
+        max_rows=100,
+        resolved=lambda row: False,
+    )
+
+    assert unresolved == 150
+    guid_to_manifests: dict[str, set[str]] = {}
+    row_counts = []
+    for name, payload in outputs.items():
+        records = [
+            json.loads(line)
+            for line in payload.decode("utf-8").splitlines()
+        ][1:]
+        row_counts.append(len(records))
+        for row in records:
+            guid_to_manifests.setdefault(row["guid"], set()).add(name)
+    assert row_counts == [60, 90]
+    assert all(len(names) == 1 for names in guid_to_manifests.values())
+
+
+def test_cli_definition_review_manifest_applies_only_mutable_patch_fields(
+    tmp_path,
+    capsys,
+):
+    audit, registry, idiom_audit, vietnamese_review = _promotion_fixture(
+        tmp_path,
+        complete=True,
+    )
+    review = tmp_path / "definition-review.jsonl"
+    manifests = tmp_path / "definition-manifests"
+    shared = [
+        "--idiom-audit", str(idiom_audit),
+        "--vietnamese-review", str(vietnamese_review),
+        *_promotion_scaffold_cli_args(tmp_path),
+    ]
+    scaffold = [
+        "--audit", str(audit),
+        "--registry", str(registry),
+        "definition-review-scaffold",
+        *shared,
+        "--output", str(review),
+    ]
+    assert main(scaffold) == 0
+    capsys.readouterr()
+
+    create = [
+        "--audit", str(audit),
+        "--registry", str(registry),
+        "definition-review-create-manifests",
+        *shared,
+        "--review", str(review),
+        "--output", str(manifests),
+    ]
+    assert main(create) == 0
+    capsys.readouterr()
+    manifest = manifests / "manifest_001.jsonl"
+    patch = [
+        json.loads(line)
+        for line in manifest.read_text(encoding="utf-8").splitlines()
+    ]
+    audit_card = json.loads(audit.read_text(encoding="utf-8").splitlines()[0])
+    current = patch[1]["expected_definition_en"]
+    support = audit_card["semantic_senses"][0]["current"]["examples"][0]
+    patch[1].update({
+        "decision": "keep_concise",
+        "reason": "This wording directly states the reviewed learner meaning.",
+        "semantic_evidence": (
+            f'Current EN "{current}" is grounded by exact learner example '
+            f'"{support}".'
+        ),
+        "reviewer": "test-reviewer",
+        "reviewed_at": "2026-07-24",
+        "approval": "approved",
+    })
+    _write_jsonl(manifest, patch)
+    review_before = review.read_bytes()
+    apply_patch = [
+        "--audit", str(audit),
+        "--registry", str(registry),
+        "apply-definition-review",
+        *shared,
+        "--review", str(review),
+        "--input", str(manifest),
+    ]
+    assert main([*apply_patch, "--dry-run"]) == 0
+    capsys.readouterr()
+    assert review.read_bytes() == review_before
+    assert main(apply_patch) == 0
+    capsys.readouterr()
+    updated = [
+        json.loads(line)
+        for line in review.read_text(encoding="utf-8").splitlines()
+    ]
+    assert updated[1]["decision"] == "keep_concise"
+
+    patch[1]["candidate_fingerprint"] = "0" * 64
+    _write_jsonl(manifest, patch)
+    updated_before = review.read_bytes()
+    assert main(apply_patch) == 1
+    assert "patch_immutable_change" in capsys.readouterr().err
+    assert review.read_bytes() == updated_before
+
+
+def test_cli_vietnamese_review_manifests_and_incremental_patch_are_safe(
+    tmp_path,
+    capsys,
+):
+    audit, card_registry, semantic_registry = _vietnamese_audit_fixture(tmp_path)
+    review = tmp_path / "review.jsonl"
+    manifests = tmp_path / "manifests"
+    scaffold = [
+        "--audit", str(audit),
+        "--registry", str(card_registry),
+        "vietnamese-review-scaffold",
+        "--semantic-registry", str(semantic_registry),
+        "--output", str(review),
+    ]
+    assert main(scaffold) == 0
+    capsys.readouterr()
+
+    create = [
+        "--audit", str(audit),
+        "--registry", str(card_registry),
+        "vietnamese-review-create-manifests",
+        "--semantic-registry", str(semantic_registry),
+        "--review", str(review),
+        "--output", str(manifests),
+    ]
+    assert main([*create, "--dry-run"]) == 0
+    assert not manifests.exists()
+    capsys.readouterr()
+    assert main(create) == 0
+    manifest = manifests / "manifest_001.jsonl"
+    first = manifest.read_bytes()
+    created = json.loads(capsys.readouterr().out)
+    assert created["manifest_count"] == 1
+    assert created["unresolved_rows"] == 1
+    assert len(first.decode("utf-8").splitlines()) == 2
+    assert main(create) == 1
+    assert "use --replace" in capsys.readouterr().err
+    assert main([*create, "--replace"]) == 0
+    capsys.readouterr()
+    assert manifest.read_bytes() == first
+
+    _complete_vietnamese_review(manifest, semantic_registry)
+    audit_before = audit.read_bytes()
+    review_before = review.read_bytes()
+    apply_patch = [
+        "--audit", str(audit),
+        "--registry", str(card_registry),
+        "apply-vietnamese-review-patch",
+        "--semantic-registry", str(semantic_registry),
+        "--review", str(review),
+        "--input", str(manifest),
+    ]
+    assert main([*apply_patch, "--dry-run"]) == 0
+    capsys.readouterr()
+    assert review.read_bytes() == review_before
+    assert audit.read_bytes() == audit_before
+
+    assert main(apply_patch) == 0
+    applied = json.loads(capsys.readouterr().out)
+    assert applied["patch_rows"] == 1
+    assert audit.read_bytes() == audit_before
+    updated = [
+        json.loads(line)
+        for line in review.read_text(encoding="utf-8").splitlines()
+    ]
+    assert updated[1]["decision"] == "rewrite"
+    assert updated[1]["approval"] == "approved"
+
+    stale = copy.deepcopy(updated)
+    stale[0]["candidate_set_sha256"] = "0" * 64
+    _write_jsonl(review, stale)
+    assert main([*create, "--replace"]) == 1
+    assert "stale_candidate_set" in capsys.readouterr().err
 
 
 def test_cli_apply_vietnamese_review_failures_are_transactional(tmp_path, capsys):

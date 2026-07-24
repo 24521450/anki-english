@@ -66,3 +66,21 @@ def test_contend_with_reviewed_secondary_variant_is_exactly_allowlisted():
     assert not is_reviewed_identity_variant_allowed(
         "contend with sb/sth", "C1", "Oxford_5000", "phrasal verb", ""
     )
+
+
+def test_takenote_reviewed_semantic_variants_are_exactly_allowlisted():
+    reviewed = (
+        ("allowance", "noun", "secondary_child_allowance"),
+        ("provision", "noun", "secondary_legal_condition"),
+        ("worthy", "adjective", "secondary_typical_of"),
+    )
+    for word, pos, secondary in reviewed:
+        assert is_reviewed_identity_variant_allowed(
+            word, "C1", "Oxford_5000", pos, "primary"
+        )
+        assert is_reviewed_identity_variant_allowed(
+            word, "C1", "Oxford_5000", pos, secondary
+        )
+        assert not is_reviewed_identity_variant_allowed(
+            word, "C1", "Oxford_5000", pos, "secondary_other"
+        )

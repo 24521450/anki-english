@@ -83,7 +83,7 @@ def test_directly_excluded_niche_sources_stay_excluded():
         "[($rY)T[)t": {
             "ox_b216b00f87a9ce7328421361",
             "cam_9e5420197a5fc6a83b6bf109",
-            "cam_1580775edc7a911438f07266",
+            "cam_098304b3dee79dbaee04a22f",
         },
         "DPE9USJCIh": {"ox_6edd2038539d2c5851b94c0a"},
         "iEZhd.29XY": {"ox_dbbec6fcf209717520e538d9"},
@@ -93,7 +93,7 @@ def test_directly_excluded_niche_sources_stay_excluded():
         "OU7k,s>M|F": {"ox_fc1484305995192c6fb78868"},
         "I_w2q^IJck": {
             "ox_901fa3923ed33651ca01fe95",
-            "cam_aa2037e9f456f4b2036398be",
+            "cam_3145e26d6f711fe5349b700c",
         },
         "LD:NA=zzJA": {"ox_ce82ee4af19257de005705c0"},
         "4H,imiI94H": {
